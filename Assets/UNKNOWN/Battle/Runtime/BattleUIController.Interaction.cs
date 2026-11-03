@@ -1,0 +1,181 @@
+using System;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
+namespace Unknown.Battle
+{
+    public sealed partial class BattleUIController
+    {
+        RectTransform interactionRoot,dragLayer,tooltip,aceSlot,faceSlot;
+        Text aceSlotText,faceSlotText;
+        CardInstance dragged;
+        RectTransform dragGhost;
+        CanvasGroup originalGroup;
+        float originalAlpha;
+        CardDropZone hoveredDrop;
+        Outline hoveredOutline;
+        Color originalOutline;
+        bool addedOutline;
+        float toastUntil;
+        string toastText="";
+        int layoutWidth,layoutHeight;
+        void BuildCombinationSlots()
+        {
+            aceSlot=Box(battlefield,"UNKNOWN A Slot",new Vector2(0.39f,0.563f),new Vector2(0.46f,0.611f),panel);
+            faceSlot=Box(battlefield,"UNKNOWN Face Slot",new Vector2(0.54f,0.563f),new Vector2(0.61f,0.611f),panel);
+            aceSlotText=Label(aceSlot,"A",Vector2.zero,Vector2.one,21,Color.white);
+            faceSlotText=Label(faceSlot,"J / Q / K",Vector2.zero,Vector2.one,18,Color.white);
+            Label(battlefield,"+",new Vector2(0.47f,0.565f),new Vector2(0.53f,0.61f),22,gold);
+            aceSlot.gameObject.AddComponent<CardDropZone>().Configure(this,CardDropKind.Ace);
+            faceSlot.gameObject.AddComponent<CardDropZone>().Configure(this,CardDropKind.Face);
+            aceSlot.gameObject.AddComponent<Button>().onClick.AddListener(()=> { aceID=-1; RefreshCombinationSlots(); });
+            faceSlot.gameObject.AddComponent<Button>().onClick.AddListener(()=> { faceID=-1; RefreshCombinationSlots(); });
+        }
+        void RefreshCombinationSlots()
+        {
+            if(engine==null) return;
+            var hand=engine.State.Players[ViewPlayer].Hand;
+            var ace=hand.FirstOrDefault(c=>c!=null && c.InstanceID==aceID);
+            var face=hand.FirstOrDefault(c=>c!=null && c.InstanceID==faceID);
+            if(ace==null) aceID=-1; if(face==null) faceID=-1;
+            aceSlotText.text=ace==null ? "A" : CardDatabase.Symbol(ace.Definition.Suit)+" A ×";
+            faceSlotText.text=face==null ? "J / Q / K" : CardDatabase.Symbol(face.Definition.Suit)+" "+CardDatabase.RankText(face.Definition.Rank)+" ×";
+            aceSlot.GetComponent<Image>().color=ace==null ? panel : new Color(0.28f,0.16f,0.38f);
+            faceSlot.GetComponent<Image>().color=face==null ? panel : new Color(0.28f,0.16f,0.38f);
+            var result=engine.CombinationPreview(ViewPlayer,aceID,faceID);
+            selectionInfo.text=result==null ? "" : "A + "+CardDatabase.RankText(face.Definition.Rank)+" = "+result.CardName;
+            if(combineButton!=null) combineButton.interactable=!Blocked() && !engine.NeedsTarget && result!=null;
+        }
+        void BuildTooltip()
+        {
+            tooltip=Box(interactionRoot,"Card Tooltip",Vector2.one*0.5f,Vector2.one*0.5f,new Color(0.035f,0.045f,0.075f,0.98f));
+            tooltip.sizeDelta=new Vector2(320,190);
+            var border=tooltip.gameObject.AddComponent<Outline>(); border.effectColor=gold; border.effectDistance=new Vector2(1,-1);
+            detail=Label(tooltip,"",new Vector2(0.04f,0.05f),new Vector2(0.96f,0.95f),18,Color.white);
+            foreach(var g in tooltip.GetComponentsInChildren<Graphic>()) g.raycastTarget=false;
+            tooltip.gameObject.SetActive(false);
+        }
+        void BuildDragLayer()
+        {
+            dragLayer=Box(interactionRoot,"Card Drag Layer",Vector2.zero,Vector2.one,Color.clear);
+            var group=dragLayer.gameObject.AddComponent<CanvasGroup>(); group.blocksRaycasts=false; group.interactable=false;
+            tooltip.SetAsLastSibling();
+        }
+        void ShowTooltip(CardInstance card,RectTransform view,PointerEventData data)
+        {
+            if(dragged!=null || passOverlay.activeSelf || resultOverlay.activeSelf) return;
+            var d=card.Definition;
+            detail.text=d.CardName+"   "+CardDatabase.Symbol(d.Suit)+$"\n{d.ManaCost} MP   공격 {card.Attack}   체력 {card.CurrentHP}/{card.MaxHP}\n\n"+d.Description;
+            tooltip.gameObject.SetActive(true); tooltip.SetAsLastSibling();
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(interactionRoot,data.position,null,out var p);
+            var bounds=interactionRoot.rect; Vector2 half=tooltip.sizeDelta/2;
+            p+=new Vector2(p.x>0 ? -half.x-22 : half.x+22,p.y>0 ? -half.y-20 : half.y+20);
+            tooltip.anchoredPosition=new Vector2(Mathf.Clamp(p.x,bounds.xMin+half.x+10,bounds.xMax-half.x-10),Mathf.Clamp(p.y,bounds.yMin+half.y+10,bounds.yMax-half.y-10));
+        }
+        void HideTooltip() { if(tooltip!=null) tooltip.gameObject.SetActive(false); }
+        void Toast(string text) { toastText=text; toastUntil=Time.unscaledTime+2.5f; }
+        public bool BeginCardDrag(int id,RectTransform original,PointerEventData data)
+        {
+            if(Blocked() || engine.NeedsTarget || original==null) return false;
+            var card=engine.State.Players[ViewPlayer].Hand.FirstOrDefault(c=>c!=null && c.InstanceID==id);
+            if(card==null) return false;
+            var d=card.Definition;
+            if(d.CardType!=CardType.Joker && (d.CardType!=CardType.Normal || d.Rank<Rank.Ace || d.Rank>Rank.King)) return false;
+            EndCardDrag(); original.GetComponent<CardHover>()?.ResetHover();
+            // Clone disabled interaction scripts before assigning the active drag context.
+            dragGhost=Instantiate(original.gameObject,dragLayer).GetComponent<RectTransform>(); dragGhost.name="DragGhost";
+            foreach(var c in dragGhost.GetComponentsInChildren<CardDrag>()) c.enabled=false;
+            foreach(var c in dragGhost.GetComponentsInChildren<CardHover>()) c.enabled=false;
+            foreach(var g in dragGhost.GetComponentsInChildren<Graphic>()) g.raycastTarget=false;
+            dragGhost.anchorMin=dragGhost.anchorMax=dragGhost.pivot=Vector2.one*0.5f; dragGhost.sizeDelta=original.rect.size; dragGhost.localScale=Vector3.one;
+            var group=dragGhost.GetComponent<CanvasGroup>(); if(group==null) group=dragGhost.gameObject.AddComponent<CanvasGroup>(); group.alpha=0.92f; group.blocksRaycasts=false;
+            dragged=card; originalGroup=original.GetComponent<CanvasGroup>(); if(originalGroup==null) originalGroup=original.gameObject.AddComponent<CanvasGroup>(); originalAlpha=originalGroup.alpha; originalGroup.alpha=0.28f;
+            var motion=original.GetComponent<HandCardMotion>(); if(motion!=null)motion.Held=true;
+            MoveCardDrag(data); return true;
+        }
+        public void MoveCardDrag(PointerEventData data)
+        {
+            if(dragged==null || dragGhost==null) return;
+            if(Blocked()) { EndCardDrag(); return; }
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(dragLayer,data.position,null,out var p); dragGhost.anchoredPosition=p;
+            HighlightDrop(data.pointerCurrentRaycast.gameObject?.GetComponentInParent<CardDropZone>());
+        }
+        bool CanDrop(CardDropZone zone)
+        {
+            if(dragged==null || zone==null || Blocked() || engine.NeedsTarget || dragged.Owner!=ViewPlayer
+                || !engine.State.Players[ViewPlayer].Hand.Any(c=>c!=null && c.InstanceID==dragged.InstanceID)) return false;
+            var d=dragged.Definition;
+            if(zone.Kind==CardDropKind.Ace) return d.CardType==CardType.Normal && d.Rank==Rank.Ace;
+            if(zone.Kind==CardDropKind.Face) return d.CardType==CardType.Normal && d.Rank>=Rank.Jack && d.Rank<=Rank.King;
+            if(d.CardType!=CardType.Joker || zone.Owner!=ViewPlayer || zone.Slot<0 || zone.Slot>=engine.Config.FieldSlots) return false;
+            var unit=engine.State.Players[ViewPlayer].Board[zone.Slot];
+            return unit!=null && unit.CurrentHP>0 && !unit.JokerUsed && engine.State.Players[ViewPlayer].CurrentMana>=2;
+        }
+        public void HighlightDrop(CardDropZone zone)
+        {
+            if(dragged==null) return;
+            if(hoveredDrop==zone && hoveredOutline!=null) return;
+            RestoreDropOutline(); hoveredDrop=zone;
+            var color=CanDrop(zone) ? gold : new Color(1,0.24f,0.25f);
+            if(dragGhost!=null) dragGhost.GetComponent<Outline>().effectColor=color;
+            if(zone==null) return;
+            hoveredOutline=zone.GetComponent<Outline>(); addedOutline=hoveredOutline==null;
+            if(addedOutline) hoveredOutline=zone.gameObject.AddComponent<Outline>();
+            originalOutline=hoveredOutline.effectColor; hoveredOutline.effectColor=color; hoveredOutline.effectDistance=new Vector2(3,-3);
+        }
+        public void ClearDropHighlight(CardDropZone zone) { if(hoveredDrop==zone) { RestoreDropOutline(); hoveredDrop=null; } }
+        void RestoreDropOutline()
+        {
+            if(hoveredOutline!=null) { if(addedOutline) { hoveredOutline.enabled=false; Destroy(hoveredOutline); } else hoveredOutline.effectColor=originalOutline; }
+            hoveredOutline=null; addedOutline=false;
+        }
+        public bool DropCard(CardDropZone zone)
+        {
+            if(!CanDrop(zone)) { if(dragged!=null) Toast("이 위치에는 사용할 수 없습니다"); EndCardDrag(); return false; }
+            int id=dragged.InstanceID,actor=ViewPlayer; var kind=zone.Kind; int slot=zone.Slot;
+            int target=kind==CardDropKind.Unit ? engine.State.Players[actor].Board[slot].InstanceID : -1;
+            EndCardDrag(); // Clear before dispatch: duplicate Drop/EndDrag cannot submit twice.
+            if(kind==CardDropKind.Ace) { aceID=id; RefreshCombinationSlots(); return true; }
+            if(kind==CardDropKind.Face) { faceID=id; RefreshCombinationSlots(); return true; }
+            Dispatch(BattleAction.Joker,id,target,()=>engine.Gamble(actor,id,target),"JOKER"); return true;
+        }
+        public void EndCardDrag()
+        {
+            RestoreDropOutline(); hoveredDrop=null; dragged=null;
+            if(originalGroup!=null) { originalGroup.alpha=originalAlpha; var motion=originalGroup.GetComponent<HandCardMotion>(); if(motion!=null)motion.Held=false; } originalGroup=null;
+            if(dragGhost!=null) { dragGhost.gameObject.SetActive(false); Destroy(dragGhost.gameObject); dragGhost=null; }
+            HideTooltip();
+        }
+        void UpdateInteractionUI()
+        {
+            if(Keyboard.current?.escapeKey.wasPressedThisFrame==true)
+                CancelInteractionSelection();
+            if(dragged!=null && (Blocked() || engine.NeedsTarget)) EndCardDrag();
+            notice.text=engine.NeedsTarget && engine.State.ActivePlayer==ViewPlayer ? engine.TargetPrompt : Time.unscaledTime<toastUntil ? toastText : "";
+            if(layoutWidth==Screen.width && layoutHeight==Screen.height) return;
+            layoutWidth=Screen.width; layoutHeight=Screen.height; Canvas.ForceUpdateCanvases();
+            float width=Mathf.Min(1060,interactionRoot.rect.width-80);
+            enemyBoard.sizeDelta=ownBoard.sizeDelta=new Vector2(width,Mathf.Min(220,interactionRoot.rect.height*0.204f));
+            if(!actionBusy && !transitioning) Refresh();
+        }
+        void CancelInteractionSelection()
+        { EndCardDrag(); aceID=faceID=handID=attackerID=-1; RefreshCombinationSlots(); }
+        internal bool SmokeDrag(int id,CardDropKind kind,int slot=-1)
+        {
+            if(!Debug.isDebugBuild || !Environment.GetCommandLineArgs().Contains("-unknownSmoke") || !cardViews.TryGetValue(id,out var view)) return false;
+            var data=new PointerEventData(EventSystem.current){position=RectTransformUtility.WorldToScreenPoint(null,view.position)};
+            if(!BeginCardDrag(id,view,data)) return false;
+            var zone=kind==CardDropKind.Ace ? aceSlot.GetComponent<CardDropZone>() : kind==CardDropKind.Face ? faceSlot.GetComponent<CardDropZone>()
+                : ownBoard.Cast<Transform>().Where(t=>t.gameObject.activeSelf).ElementAt(slot).GetComponent<CardDropZone>();
+            return DropCard(zone);
+        }
+        internal bool SmokeCombine(int ace,int face)
+        {
+            if(!SmokeDrag(ace,CardDropKind.Ace) || !SmokeDrag(face,CardDropKind.Face)) return false;
+            if(!combineButton.interactable) return false;
+            combineButton.onClick.Invoke(); return true;
+        }
+    }
+}

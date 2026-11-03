@@ -1,0 +1,51 @@
+.unknown-root { flex-grow: 1; background-color: rgb(6, 10, 17); color: rgb(222, 228, 231); font-size: 18px; }
+.night-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.room-scroll { flex-grow: 1; flex-basis: 0; min-height: 0; width: 100%; }
+.room-scroll > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container { flex-grow: 1; align-items: center; justify-content: center; }
+.menu-shell { width: 94%; max-width: 660px; flex-shrink: 0; padding: 44px 28px; align-self: center; align-items: center; justify-content: center; }
+.title { width: 100%; font-size: 70px; letter-spacing: 8px; -unity-text-align: middle-center; color: rgb(237, 241, 243); margin: 0; }
+.flourish { width: 340px; height: 28px; margin-top: 3px; margin-bottom: 32px; }
+.page-content { width: 100%; opacity: 1; transition-property: opacity; transition-duration: 0.14s; transition-timing-function: ease-in-out; }
+.page-content.page-hidden { opacity: 0; }
+.menu-page { align-items: center; width: 100%; }
+.page-hint { font-size: 13px; color: rgb(136, 152, 164); -unity-text-align: middle-center; white-space: normal; margin-bottom: 16px; }
+.menu-action {
+    flex-direction: row; align-items: center; justify-content: center;
+    width: 350px; max-width: 100%; min-height: 44px; margin: 3px 0; padding: 7px 16px;
+    border-width: 0; border-radius: 0; background-color: rgba(0, 0, 0, 0); color: rgb(195, 205, 212);
+    transition-property: background-color, color; transition-duration: 0.2s;
+}
+.action-text { font-size: 22px; -unity-text-align: middle-center; margin: 0 22px; }
+.selection-mark { font-size: 15px; color: rgb(224, 237, 244); opacity: 0; transition-property: opacity; transition-duration: 0.18s; }
+.menu-action:hover, .menu-action:focus { background-color: rgba(145, 178, 197, 0.055); color: rgb(255, 255, 255); }
+.menu-action:hover .selection-mark, .menu-action:focus .selection-mark { opacity: 1; }
+.menu-action:active { background-color: rgba(145, 178, 197, 0.12); }
+.menu-action:disabled { opacity: 0.3; }
+.menu-action:disabled .selection-mark { opacity: 0; }
+.secondary-action { min-height: 34px; }
+.secondary-action .action-text { font-size: 15px; color: rgb(145, 162, 174); }
+.secondary-action:hover .action-text, .secondary-action:focus .action-text { color: rgb(236, 242, 246); }
+.quiet-note { font-size: 12px; color: rgb(107, 129, 146); -unity-text-align: middle-center; white-space: normal; margin-top: 16px; }
+.code-input { width: 300px; max-width: 100%; height: 48px; margin: 0 0 18px; }
+.code-input > .unity-text-field__input {
+    background-color: rgba(15, 25, 36, 0.7); color: rgb(235, 241, 245);
+    border-width: 0 0 1px; border-bottom-color: rgb(110, 133, 151); border-radius: 0;
+    font-size: 26px; -unity-text-align: middle-center; padding: 6px 12px;
+}
+.code-input:focus > .unity-text-field__input { border-bottom-color: rgb(225, 236, 242); }
+.room-code { font-size: 34px; letter-spacing: 7px; color: rgb(240, 245, 247); -unity-text-align: middle-center; margin: 0 0 2px; }
+.player-count { font-size: 12px; color: rgb(132, 153, 168); margin: 14px 0 12px; -unity-text-align: middle-center; }
+.seats { flex-direction: row; width: 360px; max-width: 100%; justify-content: center; margin-bottom: 10px; }
+.seat { flex-grow: 1; flex-basis: 0; align-items: center; padding: 10px; border-top-width: 1px; border-top-color: rgba(140, 163, 182, 0.28); margin: 0 9px; }
+.seat-numeral { font-size: 21px; color: rgb(170, 191, 207); margin-bottom: 32px; }
+.seat-name { font-size: 13px; white-space: normal; -unity-text-align: middle-center; color: rgb(202, 213, 222); }
+.seat-empty { opacity: 0.4; }
+.waiting-note { font-size: 12px; color: rgb(130, 151, 168); -unity-text-align: middle-center; margin: 7px 0 9px; }
+.chapter-title { font-size: 26px; -unity-text-align: middle-center; margin: 16px 0 18px; }
+.feedback { width: 100%; align-items: center; margin-top: 17px; min-height: 0; }
+.busy-mark { font-size: 16px; color: rgb(190, 213, 228); -unity-text-align: middle-center; margin-bottom: 5px; }
+.status { font-size: 12px; color: rgb(125, 147, 164); white-space: normal; -unity-text-align: middle-center; }
+.error-box { width: 100%; margin-top: 8px; padding: 10px 12px; border-top-width: 1px; border-top-color: rgba(206, 163, 145, 0.25); }
+.error-message { font-size: 12px; color: rgb(218, 174, 155); white-space: normal; -unity-text-align: middle-center; }
+.footer { position: absolute; left: 0; right: 0; bottom: 12px; align-items: center; }
+.key-hints { font-size: 10px; color: rgb(113, 134, 150); -unity-text-align: middle-center; }
