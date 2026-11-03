@@ -6,6 +6,7 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
+using Unity.Services.Core.Environments;
 using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,7 +15,7 @@ namespace Unknown.Multiplayer
 {
     /// <summary>One private MPS session and its NGO connection, using the scene's existing manager.</summary>
     [DisallowMultipleComponent]
-    public sealed class RoomController : MonoBehaviour
+    public sealed partial class RoomController : MonoBehaviour
     {
         const string StartMessage = "UNKNOWN.Start.v1";
         const string ReturnRequest = "UNKNOWN.ReturnRequest.v2", ReturnMessage = "UNKNOWN.ReturnLobby.v2";
@@ -22,8 +23,10 @@ namespace Unknown.Multiplayer
         [SerializeField] NetworkManager networkManager;
         [Tooltip("Leave empty to use the built-in connection test screen. Otherwise add this scene to Build Profiles.")]
         [SerializeField] string gameplayScene;
-        [Tooltip("Optional Authentication profile for Editor + standalone tests on the same PC. Use letters/numbers only.")]
+        [Tooltip("Optional fixed Authentication profile. Leave empty to preserve default and automatically isolate simultaneous processes.")]
         [SerializeField] string authenticationProfile;
+        [SerializeField] string servicesEnvironment = "production";
+        public string ServicesEnvironment => servicesEnvironment;
 
         public event Action Changed;
         public event Action GameStarted;
@@ -90,12 +93,15 @@ namespace Unknown.Multiplayer
                 }
             }
             Busy = true;
+            LastConnectionFailure = "";
             Error = "";
             Status = code == null ? "로그인 및 Relay 방 생성 중…" : "로그인 및 방 연결 중…";
             Notify();
             try
             {
                 ValidateManager();
+                Trace("ManagerValidated", NetworkState());
+                ConnectionStage = "Authentication";
                 initialization ??= InitializeAsync();
                 try { await initialization; }
                 catch { initialization = null; throw; }
@@ -110,20 +116,27 @@ namespace Unknown.Multiplayer
                 ISession session;
                 if (code == null)
                 {
+                    ConnectionStage = "CreateSessionWithRelay";
+                    Trace("RelayStart", "operation=CreateSession MaxPlayers=2 private=true");
                     var options = new SessionOptions { Name = "UNKNOWN 1vs1", Type = SessionType, MaxPlayers = 2, IsPrivate = true }
                         .WithRelayNetwork();
                     session = await MultiplayerService.Instance.CreateSessionAsync(options, timeout.Token);
                 }
                 else
                 {
+                    ConnectionStage = "JoinSessionByCodeWithRelay";
+                    Trace("RelayStart", $"operation=JoinSessionByCode SessionCode={code}");
                     session = await MultiplayerService.Instance.JoinSessionByCodeAsync(code,
                         new JoinSessionOptions { Type = SessionType }, timeout.Token);
                 }
                 Session = session;
+                Trace(code == null ? "SessionCreated" : "SessionJoined", $"SessionId={session.Id} SessionCode={session.Code} Host={session.IsHost} members={session.PlayerCount}/{session.MaxPlayers}");
                 Subscribe(session);
                 lifetime.Token.ThrowIfCancellationRequested();
                 if (!networkManager.IsConnectedClient) throw new InvalidOperationException("Relay 연결을 완료하지 못했습니다.");
                 if (session.MaxPlayers != 2) throw new InvalidOperationException("UNKNOWN 1vs1 방 코드가 아닙니다.");
+                ConnectionStage = "Connected";
+                Trace("RelayConnected", NetworkState());
                 networkManager.CustomMessagingManager.RegisterNamedMessageHandler(StartMessage, OnStartMessage);
                 networkManager.CustomMessagingManager.RegisterNamedMessageHandler(ReturnRequest, OnReturnRequest);
                 networkManager.CustomMessagingManager.RegisterNamedMessageHandler(ReturnMessage, OnReturnMessage);
@@ -133,7 +146,8 @@ namespace Unknown.Multiplayer
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                LastConnectionFailure = DescribeFailure(e);
+                Trace("ConnectionFailed", $"stage={ConnectionStage} {LastConnectionFailure} {NetworkState()}", true);
                 await CleanupAsync();
                 if (!destroyed) SetError(Explain(e));
             }
@@ -152,19 +166,20 @@ namespace Unknown.Multiplayer
 
         async Task InitializeAsync()
         {
+            string profile = LocalAuthenticationProfile.Acquire(authenticationProfile);
+            Trace("ServicesInitialize", $"profile={profile} ProjectId={Application.cloudProjectId} environment={servicesEnvironment} state={UnityServices.State}");
             if (UnityServices.State != ServicesInitializationState.Initialized)
-                await UnityServices.InitializeAsync();
+                await UnityServices.InitializeAsync(new InitializationOptions().SetProfile(profile).SetEnvironmentName(servicesEnvironment));
             var auth = AuthenticationService.Instance;
-            // Separate cached identities when testing two processes on the same machine.
-            string profile = authenticationProfile;
-            var args = Environment.GetCommandLineArgs();
-            for (int i = 0; i + 1 < args.Length; i++)
-                if (args[i] == "-unknownProfile") profile = args[i + 1];
+            // An external initializer must never silently make two processes share an already signed-in account.
+            if (auth.IsSignedIn && auth.Profile != profile)
+                throw new InvalidOperationException("이미 로그인된 인증 프로필이 실행 인스턴스와 다릅니다. 자동 인증 컴포넌트를 확인하고 다시 실행하세요.");
             if (!auth.IsSignedIn)
             {
-                if (!string.IsNullOrWhiteSpace(profile)) auth.SwitchProfile(profile);
+                if (auth.Profile != profile) auth.SwitchProfile(profile);
                 await auth.SignInAnonymouslyAsync();
             }
+            Trace("Authenticated", $"profile={auth.Profile} PlayerId={auth.PlayerId} ProjectId={Application.cloudProjectId} environment={servicesEnvironment}");
         }
 
         void ValidateManager()
@@ -174,6 +189,8 @@ namespace Unknown.Multiplayer
                 throw new InvalidOperationException("씬에 활성 NetworkManager가 정확히 하나 있어야 합니다. 기존 NetworkManager에 RoomController를 연결하세요.");
             if (!(networkManager.NetworkConfig.NetworkTransport is UnityTransport))
                 throw new InvalidOperationException("기존 NetworkManager의 Network Transport에 UnityTransport를 지정하세요.");
+            if(networkManager.GetComponents<UnityTransport>().Length != 1)
+                throw new InvalidOperationException("기존 NetworkManager에는 UnityTransport가 정확히 하나 있어야 합니다.");
             if (networkManager.IsListening || networkManager.ShutdownInProgress)
                 throw new InvalidOperationException("이전 네트워크 연결이 종료된 후 다시 시도하세요.");
             if (!callbacksInstalled && networkManager.ConnectionApprovalCallback != null)
@@ -203,12 +220,14 @@ namespace Unknown.Multiplayer
             response.CreatePlayerObject = allowed && networkManager.NetworkConfig.PlayerPrefab != null;
             response.Pending = false;
             response.Reason = allowed ? "" : "방이 가득 찼거나 이미 시작되었습니다.";
+            Trace("ConnectionApproval", $"clientId={request.ClientNetworkId} approved={allowed} reason={response.Reason}");
             if (allowed) pendingApprovals.Add(request.ClientNetworkId);
         }
 
-        void OnConnected(ulong id) { pendingApprovals.Remove(id); establishedClients.Add(id); Notify(); }
+        void OnConnected(ulong id) { pendingApprovals.Remove(id); establishedClients.Add(id); Trace("ClientConnected", $"clientId={id} {NetworkState()}"); Notify(); }
         void OnDisconnected(ulong id)
         {
+            Trace("ClientDisconnected", $"clientId={id} reason={SafeMessage(networkManager.DisconnectReason)} {NetworkState()}");
             pendingApprovals.Remove(id);
             bool wasConnected = establishedClients.Remove(id);
             if (Session == null || closing) return;
@@ -218,12 +237,13 @@ namespace Unknown.Multiplayer
             else if (networkManager.IsHost && wasConnected) Status = "참가자의 연결이 종료되었습니다. 새 참가자를 기다립니다.";
             Notify();
         }
-        void OnTransportFailure() { if (!closing) connectionLoss = "Relay 네트워크 연결에 실패했습니다. 인터넷 연결을 확인하세요."; }
-        void OnNetworkStopped(bool wasHost) { if (Session != null && !closing) connectionLoss = "네트워크 연결이 종료되었습니다."; }
+        void OnTransportFailure() { Trace("TransportFailure", NetworkState(),true); if (!closing) connectionLoss = "Relay 네트워크 연결에 실패했습니다. 인터넷 연결을 확인하세요."; }
+        void OnNetworkStopped(bool wasHost) { Trace("NetworkStopped", $"wasHost={wasHost} closing={closing} {NetworkState()}"); if (Session != null && !closing) connectionLoss = "네트워크 연결이 종료되었습니다."; }
         void OnSessionEnded() { if (!closing) connectionLoss = "방이 종료되었거나 방에서 나갔습니다."; }
         void OnHostChanged(string host) { if (!closing) connectionLoss = "방장이 나가 방을 종료합니다. 새 방으로 다시 연결하세요."; }
         void OnStateChanged(SessionState state)
         {
+            Trace("SessionStateChanged", $"state={state} {NetworkState()}");
             if (state == SessionState.Deleted) OnSessionEnded();
             else if (state == SessionState.Disconnected && !closing)
                 connectionLoss = "세션 서비스 연결이 해제되었습니다. 다시 접속하세요.";
@@ -433,6 +453,7 @@ namespace Unknown.Multiplayer
                     case SessionError.SessionDeleted: return "유효하지 않거나 종료된 방 코드입니다.";
                     case SessionError.InvalidParameter: return "방 코드 또는 요청 형식을 확인하세요.";
                     case SessionError.RateLimitExceeded: return "요청이 너무 많습니다. 잠시 후 다시 시도하세요.";
+                    case SessionError.SessionConflict: return "이미 같은 플레이어가 참가한 방입니다. 두 실행 프로그램이 서로 다른 인증 프로필을 사용하는지 확인하세요.";
                     case SessionError.NetworkManagerStartFailed:
                     case SessionError.NetworkSetupFailed: return "Relay 연결에 실패했습니다. 인터넷과 방 상태를 확인하세요.";
                 }

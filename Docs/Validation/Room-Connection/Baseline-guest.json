@@ -1,0 +1,15 @@
+{
+    "role": "guest",
+    "profile": "default",
+    "playerId": "XX2PB1QdSSfhnQmozF46WDbomFV8",
+    "projectId": "13cfb794-511c-49c9-b0d6-402d6ebe74ce",
+    "code": "",
+    "stage": "JoinSessionByCodeWithRelay",
+    "error": " type=SessionException code=SessionConflict(45) message=player is already a member of the session",
+    "pid": 44392,
+    "sessionPlayers": 0,
+    "connectedPlayers": 0,
+    "twoPlayers": false,
+    "connected": false,
+    "cleaned": true
+}

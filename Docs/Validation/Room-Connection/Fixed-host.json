@@ -1,0 +1,16 @@
+{
+    "role": "host",
+    "profile": "default",
+    "playerId": "XX2PB1QdSSfhnQmozF46WDbomFV8",
+    "projectId": "13cfb794-511c-49c9-b0d6-402d6ebe74ce",
+    "environment": "production",
+    "code": "89PWTR",
+    "stage": "Connected",
+    "error": "",
+    "pid": 59664,
+    "sessionPlayers": 2,
+    "connectedPlayers": 2,
+    "twoPlayers": true,
+    "connected": true,
+    "cleaned": true
+}

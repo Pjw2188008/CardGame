@@ -1,0 +1,17 @@
+{
+    "role": "guest",
+    "profile": "unknown_local_2",
+    "playerId": "oekLQRkJmhMFjvNgfspALFOErEuq",
+    "projectId": "13cfb794-511c-49c9-b0d6-402d6ebe74ce",
+    "environment": "production",
+    "code": "TCPF9J",
+    "stage": "Connected",
+    "error": "",
+    "pid": 46684,
+    "sessionPlayers": 2,
+    "connectedPlayers": 2,
+    "twoPlayers": true,
+    "uiTwoPlayers": true,
+    "connected": true,
+    "cleaned": true
+}

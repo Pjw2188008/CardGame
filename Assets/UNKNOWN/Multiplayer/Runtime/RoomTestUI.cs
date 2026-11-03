@@ -28,6 +28,8 @@ namespace Unknown.Multiplayer
         bool pageInitialized;
         int transition;
         float busyTime;
+        internal bool DisplaysTwoPlayers => players != null && players.text.Contains("2 / 2")
+            && player2.text.Contains("참가자") && pages[Page.Lobby].resolvedStyle.display == DisplayStyle.Flex;
 
         void Start()
         {
