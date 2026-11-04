@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Unknown.Battle
 {
-    public enum VictoryReason { None, OpponentHPZero, UnknownComplete }
+    public enum VictoryReason { None, OpponentHPZero, UnknownComplete, JokerJackpot }
     public sealed class BattleConfig
     {
         public int StartingHP { get; set; } = 30;
@@ -15,7 +15,9 @@ namespace Unknown.Battle
         public int ManaCap { get; set; } = 10;
         public int UnknownLimit { get; set; } = 3;
         public bool ShuffleDecks { get; set; } = true;
-        internal BattleConfig Copy() => (BattleConfig)MemberwiseClone();
+        public BattleMap Map { get; set; }
+        public JokerEventDefinition[] MapEvents { get; set; } = JokerEventDefinition.Defaults();
+        internal BattleConfig Copy() { var c=(BattleConfig)MemberwiseClone(); c.MapEvents=MapEvents.Select(e=>e.Copy()).ToArray(); return c; }
     }
 
     public interface IRandomSource { int Next(int exclusiveMax); }
@@ -41,6 +43,8 @@ namespace Unknown.Battle
         public int MaxMana { get; internal set; }
         public int TurnsStarted { get; internal set; }
         public int UnknownCreated { get; internal set; }
+        public int JokerSuccesses { get; internal set; }
+        public int JokerChanceDelta { get; internal set; }
         internal PlayerState(int hp, int slots) { HP = hp; Slots = new CardInstance[slots]; Board = Array.AsReadOnly(Slots); }
     }
 
@@ -153,6 +157,9 @@ namespace Unknown.Battle
             State.ActivePlayer = player; State.TurnNumber++; State.SummonsThisTurn = 0;
             State.TurnExpired = false;
             var current = State.Players[player];
+            current.TurnsStarted++;
+            if (current.TurnsStarted > 1) current.MaxMana = Math.Min(rules.ManaCap, current.MaxMana + 1);
+            current.CurrentMana = current.MaxMana;
             Log($"── 턴 {State.TurnNumber} · P{player + 1} ──");
             Emit(new BattleEvent(BattleEventKind.TurnStart, player));
             if (current.HandCards.Count == 0)
@@ -163,10 +170,8 @@ namespace Unknown.Battle
                 Draw(player, count > 0 ? count : 1);
             }
             else Draw(player, 1);
-            current.TurnsStarted++;
-            if (current.TurnsStarted > 1) current.MaxMana = Math.Min(rules.ManaCap, current.MaxMana + 1);
-            current.CurrentMana = current.MaxMana;
             foreach (var unit in current.Slots) if (unit != null) unit.HasAttacked = false;
+            StartMapTurn(player);
         }
         public bool ExpireTurn(int actor)
         {
@@ -268,7 +273,7 @@ namespace Unknown.Battle
             var combined = NewCard(result, actor); player.HandCards.Add(combined); player.UnknownCreated++;
             Emit(new BattleEvent(BattleEventKind.Combine, actor, aceID, faceID, secondary: combined.InstanceID, definition: result));
             Log($"P{actor + 1}: UNKNOWN 조합 ({player.UnknownCreated}/{rules.UnknownLimit})", actor);
-            if (player.UnknownCreated >= 3) FinishGame(actor, VictoryReason.UnknownComplete);
+            if (rules.Map==BattleMap.Normal && player.UnknownCreated >= 3) FinishGame(actor, VictoryReason.UnknownComplete);
             return true;
         }
         void FinishGame(int winner, VictoryReason reason)
@@ -287,10 +292,22 @@ namespace Unknown.Battle
             if (joker == null || unit == null) return Fail("패의 조커와 아군 필드 유닛을 선택하세요.");
             if (unit.JokerUsed) return Fail("이 유닛은 이미 조커를 사용했습니다.");
             if (player.CurrentMana < joker.Definition.ManaCost) return Fail("마나가 부족합니다");
-            SpendMana(actor, joker.Definition.ManaCost);
+            return GambleResolved(actor,joker,unit,true);
+        }
+        bool GambleResolved(int actor,CardInstance joker,CardInstance unit,bool chargeMana)
+        {
+            var player=State.Players[actor];
+            if(chargeMana)SpendMana(actor, joker.Definition.ManaCost);
             player.HandCards.Remove(joker); player.DiscardCards.Add(joker); unit.JokerUsed = true;
             Emit(new BattleEvent(BattleEventKind.JokerTravel, actor, joker.InstanceID, unit.InstanceID));
-            if (random.Next(2) == 0)
+            bool success;
+#if UNITY_EDITOR
+            if(DebugNextGamble.HasValue) { success=DebugNextGamble.Value; DebugNextGamble=null; }
+            else
+#endif
+            success=rules.Map==BattleMap.Normal ? random.Next(2)==0 : random.Next(100)<JokerChance(actor);
+            player.JokerChanceDelta=0;
+            if (success)
             {
                 int oldAttack = unit.Attack, oldMax = unit.MaxHP;
                 unit.Attack = (int)Math.Ceiling(unit.Attack * 1.5);
@@ -299,6 +316,7 @@ namespace Unknown.Battle
                 Emit(new BattleEvent(BattleEventKind.AttackChanged, actor, target: unit.InstanceID, amount: unit.Attack - oldAttack));
                 Emit(new BattleEvent(BattleEventKind.MaxHPChanged, actor, target: unit.InstanceID, amount: max - oldMax));
                 Log($"조커 성공! {unit.Definition.CardName} 공격·최대 체력 1.5배");
+                if(rules.Map==BattleMap.JokerGame && ++player.JokerSuccesses>=3)FinishGame(actor,VictoryReason.JokerJackpot);
             }
             else { Emit(new BattleEvent(BattleEventKind.JokerFailure, actor, target: unit.InstanceID)); unit.CurrentHP = 0; Log($"조커 실패! {unit.Definition.CardName} 파괴"); RemoveDead(); }
             return true;

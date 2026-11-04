@@ -52,6 +52,7 @@ namespace Unknown.Battle
                 var s = snapshots.Dequeue(); actionBusy = true;
                 if (engine == null) { engine = BattleEngine.CreateView(s); PrepareHandPlayback(s.events.Select(e => e.ToEvent()).ToArray()); Refresh(); }
                 else engine.ApplyView(s);
+                RefreshMapUI(); RefreshOpponentReveal();
                 // Authoritative progress/result changes now; visual playback never determines victory.
                 RefreshMana(); RefreshUnknownProgress();
                 // Existing views remain bound during animation, including units destroyed by this action.
@@ -117,7 +118,7 @@ namespace Unknown.Battle
         {
             if (online?.Snapshot == null || !engine.State.IsOver || !resultOverlay.activeSelf) return false;
             bool won=online.Snapshot.winner==ViewPlayer;
-            string expected=online.Snapshot.victoryReason==VictoryReason.UnknownComplete
+            string expected=online.Snapshot.victoryReason==VictoryReason.JokerJackpot ? won ? "VICTORY — JOKER JACKPOT" : "DEFEAT — OPPONENT HIT JACKPOT" : online.Snapshot.victoryReason==VictoryReason.UnknownComplete
                 ? won ? "VICTORY — UNKNOWN COMPLETE" : "DEFEAT — OPPONENT COMPLETED UNKNOWN"
                 : won ? "VICTORY — OPPONENT HP ZERO" : "DEFEAT — YOUR HP ZERO";
             return winnerText.text==expected && timerText.text=="GAME OVER" && online.Remaining==0

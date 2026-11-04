@@ -31,7 +31,7 @@ namespace Unknown.Multiplayer.Editor
                 int phase=SessionState.GetInt("UNKNOWN.AttackSuitePhase",0);
                 var started=DateTime.Parse(SessionState.GetString("UNKNOWN.AttackSuiteStarted",""),null,System.Globalization.DateTimeStyles.RoundtripKind);
                 bool failed=SessionState.GetBool("UNKNOWN.AttackSuiteFailed",false);
-                string[] paths={"Library/UNKNOWN-AttackUI-Checks.json","Library/UNKNOWN-DragUI-Checks.json","Library/UNKNOWN-PvP-Regressions.json"};
+                string[] paths={"Library/UNKNOWN-AttackUI-Checks.json","Library/UNKNOWN-DragUI-Checks.json","Library/UNKNOWN-PvP-Regressions.json","Library/UNKNOWN-JokerMap-Checks.json"};
                 if((DateTime.UtcNow-started).TotalSeconds>180) { SessionState.SetBool("UNKNOWN.AttackSuiteBatch",false); Debug.LogError("Attack suite timed out"); EditorApplication.Exit(1); return; }
                 if(!File.Exists(paths[phase]) || File.GetLastWriteTimeUtc(paths[phase])<=started)return;
                 var result=JsonUtility.FromJson<CheckResult>(File.ReadAllText(paths[phase]));
@@ -40,7 +40,7 @@ namespace Unknown.Multiplayer.Editor
                 SessionState.SetBool("UNKNOWN.AttackSuiteFailed",failed); SessionState.SetInt("UNKNOWN.AttackSuitePhase",phase);
                 if(phase==paths.Length) { SessionState.SetBool("UNKNOWN.AttackSuiteBatch",false); EditorApplication.update-=PollSuite; if(Application.isBatchMode)EditorApplication.Exit(failed?1:0); else { EditorApplication.isPlaying=false; Debug.Log("[UNKNOWN] UI suite finished. failed="+failed); } return; }
                 var ui=new GameObject("UNKNOWN UI Regression Suite").AddComponent<Unknown.Battle.BattleUIController>();
-                if(phase==1)ui.RunDragChecks(); else ui.RunPvPRegressionChecks();
+                if(phase==1)ui.RunDragChecks(); else if(phase==2)ui.RunPvPRegressionChecks(); else ui.RunJokerChecks();
         }
     }
 }

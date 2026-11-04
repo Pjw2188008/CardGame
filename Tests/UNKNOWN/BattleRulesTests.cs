@@ -4,7 +4,7 @@ using System.Linq;
 using Unknown.Battle;
 
 // Compiled with the two production model files by Run-BattleTests.ps1. No Unity runtime required.
-static class BattleRulesTests
+static partial class BattleRulesTests
 {
     static int passed, failed;
     static void Check(bool value, string message = "assertion failed") { if (!value) throw new Exception(message); }
@@ -505,6 +505,7 @@ static class BattleRulesTests
             var valid=new BattleIntent{sequence=++sequence,revision=0,turn=g.State.TurnNumber,action=BattleAction.Combine,first=ace.InstanceID,second=face.InstanceID};
             Check(a.Execute(0,valid)); Check(!a.Execute(0,valid)); Equal(1,g.State.Players[0].UnknownCreated); Equal(mana,g.State.Players[0].CurrentMana);
         });
+        JokerMapChecks();
         Console.WriteLine($"RESULT: {passed} passed, {failed} failed");
         return failed == 0 ? 0 : 1;
     }

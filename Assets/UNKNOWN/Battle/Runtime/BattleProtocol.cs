@@ -24,7 +24,7 @@ namespace Unknown.Battle
     }
     [Serializable] public sealed class PlayerViewData
     {
-        public int hp, mana, maxMana, deckCount, handCount, unknownCreated;
+        public int hp, mana, maxMana, deckCount, handCount, unknownCreated, jokerSuccesses, jokerChanceDelta;
         public CardViewData[] hand, board;
     }
     [Serializable] public sealed class EventViewData
@@ -39,9 +39,9 @@ namespace Unknown.Battle
         public static EventViewData For(BattleEvent e, int recipient)
         {
             // Hand operations reveal only their occurrence/count to the other player.
-            bool hidden = e.Owner != recipient && (e.Kind == BattleEventKind.Draw || e.Kind == BattleEventKind.Discard || e.Kind == BattleEventKind.Combine);
-            return new EventViewData { kind = e.Kind, owner = e.Owner, targetOwner = e.TargetOwner,
-                source = hidden ? -1 : e.SourceID, target = hidden ? -1 : e.TargetID,
+            bool hidden = e.Owner != recipient && (e.Kind == BattleEventKind.Draw || e.Kind == BattleEventKind.Discard || e.Kind == BattleEventKind.Combine || e.Kind==BattleEventKind.CardGranted || e.Kind==BattleEventKind.HandReturn);
+            return new EventViewData { kind = hidden && e.Kind==BattleEventKind.CardGranted ? BattleEventKind.Draw : e.Kind, owner = e.Owner, targetOwner = e.TargetOwner,
+                source = hidden || (e.Owner!=recipient && e.Kind==BattleEventKind.JokerTravel) ? -1 : e.SourceID, target = hidden ? -1 : e.TargetID,
                 amount = e.Amount, secondary = hidden ? 0 : e.Secondary, slot = e.Slot,
                 suit = hidden ? Suit.None : e.Suit, chain = e.Chain, definition = hidden ? null : e.Definition?.CardID };
         }
@@ -60,12 +60,19 @@ namespace Unknown.Battle
         public string error;
         public string[] log;
         public EventViewData[] events;
+        public BattleMap map;
+        public MapEventView mapEvent;
+        public CardViewData revealedCard;
+        public int revealedIndex=-1;
         public static BattleSnapshot For(BattleEngine engine, int recipient, int revision, double deadline, bool busy, IReadOnlyList<BattleEvent> events, double turnDuration = 40, bool clockRunning = true)
         {
             var s = engine.State;
             return new BattleSnapshot { revision = revision, recipient = recipient, active = s.ActivePlayer,
                 turn = s.TurnNumber, winner = s.Winner, victoryReason = s.VictoryReason, expired = s.TurnExpired, deadline = deadline, busy = busy, turnDuration = turnDuration, clockRunning = clockRunning,
+                map=engine.Config.Map, mapEvent=MapEventView.For(engine.MapEvent,recipient),
+                revealedCard=engine.RevealedFor(recipient)==null ? null : CardViewData.From(engine.RevealedFor(recipient)), revealedIndex=engine.RevealedIndexFor(recipient),
                 players = s.Players.Select((p, owner) => new PlayerViewData { hp = p.HP, mana = p.CurrentMana, maxMana = p.MaxMana,
+                    jokerSuccesses=owner==recipient ? p.JokerSuccesses : 0, jokerChanceDelta=owner==recipient ? p.JokerChanceDelta : 0,
                     deckCount = p.DeckCount, handCount = p.Hand.Count, unknownCreated = owner == recipient ? p.UnknownCreated : 0,
                     hand = owner == recipient ? p.Hand.Select(CardViewData.From).ToArray() : new CardViewData[0],
                     board = p.Board.Select(CardViewData.From).ToArray() }).ToArray(),
@@ -81,7 +88,7 @@ namespace Unknown.Battle
         // A view does not shuffle, draw, create a hidden deck, or execute commands.
         BattleEngine(BattleSnapshot s)
         {
-            rules = new BattleConfig { FieldSlots = s.players[0].board.Length };
+            rules = new BattleConfig { FieldSlots = s.players[0].board.Length, Map=s.map };
             State = new BattleState(rules); viewOnly = true; ApplyView(s);
         }
         public static BattleEngine CreateView(BattleSnapshot s) => new BattleEngine(s);
@@ -89,6 +96,8 @@ namespace Unknown.Battle
         {
             if (!viewOnly) throw new InvalidOperationException("Authority cannot import a client view.");
             State.ActivePlayer = s.active; State.TurnNumber = s.turn; State.Winner = s.winner; State.VictoryReason = s.victoryReason; State.TurnExpired = s.expired;
+            rules.Map=s.map; MapEvent=s.mapEvent?.ToResult(); revealViewer=s.recipient;
+            viewRevealed=s.revealedCard?.ToCard(); viewRevealedIndex=s.revealedIndex;
             State.Entries.Clear(); State.Entries.AddRange(s.log); State.LogVersion = s.revision;
             State.EntryOwners.Clear();
             viewTargets = s.targets; viewPrompt = s.prompt;
@@ -96,6 +105,7 @@ namespace Unknown.Battle
             {
                 var p = State.Players[owner]; var v = s.players[owner];
                 p.HP = v.hp; p.CurrentMana = v.mana; p.MaxMana = v.maxMana; p.UnknownCreated = v.unknownCreated;
+                p.JokerSuccesses=v.jokerSuccesses; p.JokerChanceDelta=v.jokerChanceDelta;
                 p.HandCards.Clear(); p.DeckCards.Clear();
                 // Count placeholders exist only in memory, with no identity or card definition.
                 for (int i = 0; i < v.deckCount; i++) p.DeckCards.Add(null);

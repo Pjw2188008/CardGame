@@ -12,7 +12,10 @@ $arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/BattleEngine
 $arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/BattleEvents.cs'
 $arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/TurnClock.cs'
 $arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/BattleProtocol.cs'
+$arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/JokerMapRules.cs'
+$arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/MapEventView.cs'
 $arguments += Join-Path $PSScriptRoot 'BattleRulesTests.cs'
+$arguments += Join-Path $PSScriptRoot 'JokerMapTests.cs'
 & (Join-Path $UnityEditorData 'NetCoreRuntime/dotnet.exe') (Join-Path $UnityEditorData 'DotNetSdkRoslyn/csc.dll') @arguments
 if ($LASTEXITCODE -ne 0) { throw 'Battle rules test compilation failed.' }
 & (Join-Path $UnityEditorData 'MonoBleedingEdge/bin/mono.exe') $testExe

@@ -23,6 +23,11 @@ namespace Unknown.Multiplayer
             public bool systemsFixture, timerProtocol=true;
             public int refills, refillCards, frozenClockSamples, runningClockSamples;
             public double firstTurnElapsed;
+            public BattleMap map;
+            public bool mapMatches=true, guestCannotSelect=true, mapEventsOnce=true;
+            public int grantedJokers, ownJokerSuccesses;
+            public List<int> mapEventIDs=new List<int>();
+            public List<string> mapResults=new List<string>();
         }
         Report report;
         string exchange, output;
@@ -81,9 +86,13 @@ namespace Unknown.Multiplayer
             float retry = 0;
             while (!room.HasStarted && Time.realtimeSinceStartupAsDouble < limit)
             {
+                var desired=Environment.GetCommandLineArgs().Contains("-unknownSmokeJoker") ? BattleMap.JokerGame : BattleMap.Normal;
                 if (room.ConnectedPlayers == 2 && Time.unscaledTime >= retry)
                 {
                     retry = Time.unscaledTime + 1;
+                    if(report.role=="host" && battle.SelectedMap!=desired) { battle.SelectMap(desired); continue; }
+                    if(battle.SelectedMap!=desired) { yield return null; continue; }
+                    if(report.role=="guest")report.guestCannotSelect &= !battle.SelectMap(desired==BattleMap.Normal ? BattleMap.JokerGame : BattleMap.Normal);
                     if (!battle.LocalReady) battle.ToggleReady();
                     if (room.CanStart) { var task = room.StartGameAsync(); while (!task.IsCompleted) yield return null; }
                 }
@@ -152,12 +161,21 @@ namespace Unknown.Multiplayer
                 report.firstTurnElapsed=battle.GetComponent<Unity.Netcode.NetworkManager>().ServerTime.Time-firstClockStart;
             report.snapshots++; report.revision = s.revision; report.turn = s.turn; report.winner = s.winner;
             report.victoryReason=s.victoryReason;
+            report.map=s.map; report.mapMatches &= s.map==(Environment.GetCommandLineArgs().Contains("-unknownSmokeJoker") ? BattleMap.JokerGame : BattleMap.Normal) && s.map==battle.SelectedMap;
+            report.ownJokerSuccesses=s.players[s.recipient].jokerSuccesses;
             report.privacy &= s.players[1-s.recipient].hand.Length == 0 && s.players[1-s.recipient].unknownCreated == 0
+                && s.players[1-s.recipient].jokerSuccesses==0 && s.players[1-s.recipient].jokerChanceDelta==0
+                && !s.events.Any(e=>e.owner!=s.recipient && e.kind==BattleEventKind.CardGranted)
+                && (s.mapEvent==null || s.mapEvent.owner==s.recipient || s.mapEvent.kind!=JokerEventKind.None || s.mapEvent.detail=="상대에게 비공개 사건이 적용되었습니다." || s.mapEvent.name=="효과 없음")
                 && !s.events.Any(e => e.owner != s.recipient && e.kind == BattleEventKind.Combine)
                 && !s.events.Any(e => e.owner != s.recipient && e.kind == BattleEventKind.HandRefill)
                 && !s.log.Any(l => l.StartsWith("P"+(2-s.recipient)+": UNKNOWN 조합"));
             foreach (var e in s.events)
             {
+                if(e.kind==BattleEventKind.MapEvent) { report.mapEventsOnce &= !report.mapEventIDs.Contains(e.source); report.mapEventIDs.Add(e.source); }
+                if(e.kind==BattleEventKind.CardGranted && e.owner==s.recipient)report.grantedJokers++;
+                if(e.kind==BattleEventKind.MapEvent || e.kind==BattleEventKind.AttackChanged || e.kind==BattleEventKind.MaxHPChanged || e.kind==BattleEventKind.HeroChanged)
+                    report.mapResults.Add($"{s.revision}:{e.kind}:{e.owner}:{e.target}:{e.amount}:{e.secondary}");
                 if(e.kind==BattleEventKind.HandRefill) { report.refills++; report.refillCards+=e.amount; }
                 if (e.kind == BattleEventKind.Summon) report.summons++;
                 if (e.kind == BattleEventKind.Attack)

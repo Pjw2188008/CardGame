@@ -11,8 +11,14 @@ namespace Unknown.Multiplayer
     [DisallowMultipleComponent, RequireComponent(typeof(RoomController))]
     public sealed class NetworkBattleController : MonoBehaviour
     {
-        // v3 adds Host-owned turn duration and a turn-start presentation barrier. Use the same build on both peers.
-        const string Request = "UNKNOWN.Intent.v3", State = "UNKNOWN.State.v3", Ready = "UNKNOWN.Ready.v3", Lobby = "UNKNOWN.Lobby.v3", Presented = "UNKNOWN.Presented.v3";
+        // v4 adds map selection and recipient-private map events. Use the same build on both peers.
+        const string Request = "UNKNOWN.Intent.v4", State = "UNKNOWN.State.v4", Ready = "UNKNOWN.Ready.v4", Lobby = "UNKNOWN.Lobby.v4", Presented = "UNKNOWN.Presented.v4";
+        public BattleMap SelectedMap { get; private set; }
+        public bool SelectMap(BattleMap map)
+        {
+            if(!Manager.IsHost || messages==null || room.Session==null || room.HasStarted || room.Busy || (map!=BattleMap.Normal && map!=BattleMap.JokerGame))return false;
+            SelectedMap=map; HostReady=GuestReady=false; SendLobby(); return true;
+        }
         [SerializeField, Min(1)] float turnDuration = 40;
         public double TurnDuration => Math.Max(1, turnDuration);
         public event Action Changed;
@@ -68,7 +74,7 @@ namespace Unknown.Multiplayer
             if (authority == null)
             {
                 authority = new BattleAuthority(NetworkBattleSmokeRunner.SeedOverride ?? Environment.TickCount,
-                    NetworkBattleSmokeRunner.SystemsCheck ? new BattleConfig { StartingHand=0 } : null); PrepareTurnClock();
+                    new BattleConfig { Map=SelectedMap, StartingHand=NetworkBattleSmokeRunner.SystemsCheck ? 0 : 5, MapEvents=SelectedMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() }); PrepareTurnClock();
                 busy = true; Publish(authority.Engine.DrainEvents());
             }
             if (clockRunning && !authority.Engine.State.IsOver && nm.ServerTime.Time >= deadline && !authority.Engine.State.TurnExpired)
@@ -82,22 +88,22 @@ namespace Unknown.Multiplayer
         {
             if (messages == null || room.HasStarted) return;
             if (Manager.IsHost) { HostReady = !HostReady; SendLobby(); }
-            else Send(Ready, 0, LocalReady ? "0" : "1");
+            else Send(Ready, 0, (LocalReady ? "0" : "1")+(int)SelectedMap);
         }
         void OnReady(ulong sender, FastBufferReader reader)
         {
             if (!Manager.IsHost || sender == 0 || !Manager.ConnectedClientsIds.Contains(sender) || room.HasStarted) return;
-            if (Read(reader, out var value)) { GuestReady = value == "1"; SendLobby(); }
+            if (Read(reader, out var value) && value.Length==2) { GuestReady = value[0]=='1' && value[1]-'0'==(int)SelectedMap; SendLobby(); }
         }
         void SendLobby()
         {
-            foreach (var id in Manager.ConnectedClientsIds) if (id != 0) Send(Lobby, id, (HostReady ? "1" : "0") + (GuestReady ? "1" : "0"));
+            foreach (var id in Manager.ConnectedClientsIds) if (id != 0) Send(Lobby, id, (HostReady ? "1" : "0") + (GuestReady ? "1" : "0")+(int)SelectedMap);
             Changed?.Invoke();
         }
         void OnLobby(ulong sender, FastBufferReader reader)
         {
-            if (sender != 0 || Manager.IsHost || !Read(reader, out var text) || text.Length != 2) return;
-            HostReady = text[0] == '1'; GuestReady = text[1] == '1'; Changed?.Invoke();
+            if (sender != 0 || Manager.IsHost || !Read(reader, out var text) || text.Length != 3 || text[2]<'0' || text[2]>'1') return;
+            HostReady = text[0] == '1'; GuestReady = text[1] == '1'; SelectedMap=(BattleMap)(text[2]-'0'); Changed?.Invoke();
         }
         public void Submit(BattleAction action, int first = -1, int second = -1)
         {
@@ -153,7 +159,7 @@ namespace Unknown.Multiplayer
             {
                 if(actor==0)hostPresented=true; else guestPresented=true;
                 if(!hostPresented || !guestPresented)return;
-                waitingForTurnPresentation=false; clockRunning=true; deadline=Manager.ServerTime.Time+TurnDuration;
+                waitingForTurnPresentation=false; clockRunning=!authority.Engine.State.IsOver; deadline=clockRunning ? Manager.ServerTime.Time+TurnDuration : 0;
             }
             else if(actor!=0)return;
             var pending = authority.Engine.DrainEvents();

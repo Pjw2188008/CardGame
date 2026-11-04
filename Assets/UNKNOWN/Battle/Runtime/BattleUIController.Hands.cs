@@ -36,7 +36,7 @@ namespace Unknown.Battle
         {
             if (handViewer != ViewPlayer) ResetHandViews();
             pendingDraws.Clear(); pendingEnemyDraws = 0;
-            foreach (var e in entries.Where(e => e.Kind == BattleEventKind.Draw))
+            foreach (var e in entries.Where(e => e.Kind == BattleEventKind.Draw || e.Kind==BattleEventKind.CardGranted))
                 if (e.Owner == ViewPlayer) pendingDraws.Add(e.TargetID); else pendingEnemyDraws++;
         }
         void RefreshHands(PlayerState me, PlayerState enemy)
@@ -83,6 +83,7 @@ namespace Unknown.Battle
                 backViews[i].GetComponent<HandCardMotion>().Layout(new Vector2((i-(enemyCount-1)/2f)*(backWidth+backGap),0),new Vector2(backWidth,64),handReflowDuration,created);
                 if(i<enemy.Hand.Count && enemy.Hand[i]!=null)cardViews[enemy.Hand[i].InstanceID]=backViews[i];
             }
+            RefreshOpponentReveal();
         }
         Color SuitInk(Suit suit) => suit==Suit.Diamond ? new Color(0.72f,0.12f,0.15f) : suit==Suit.Heart ? new Color(0.8f,0.22f,0.46f) : suit==Suit.Club ? new Color(0.12f,0.44f,0.3f) : new Color(0.29f,0.17f,0.4f);
         IEnumerator HandStep(float seconds, System.Action<float> step)

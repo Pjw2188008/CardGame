@@ -16,6 +16,7 @@ namespace Unknown.Battle
         [SerializeField] int seed;
         [SerializeField] bool revealHands;
         [SerializeField, Min(1)] float turnDuration = 40;
+        [SerializeField] BattleMap localMap;
         readonly TurnClock clock = new TurnClock();
         CardAnimationController animations;
         IReadOnlyList<BattleEvent> queuedTurnEvents;
@@ -59,7 +60,8 @@ namespace Unknown.Battle
             StopAllCoroutines(); if (animations != null) animations.ResetAll();
             actionBusy = transitioning = paused = false; clock.Stop();
             pauseButton.GetComponentInChildren<Text>().text = "일시정지";
-            engine = new BattleEngine(seed == 0 ? Environment.TickCount : seed, new BattleConfig { FieldSlots = Math.Max(1, fieldSlots) });
+            engine = new BattleEngine(seed == 0 ? Environment.TickCount : seed, new BattleConfig { FieldSlots = Math.Max(1, fieldSlots), Map=localMap, MapEvents=localMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() });
+            presentedMapEvents.Clear();
             queuedTurnEvents=null; var initialDraws = engine.DrainEvents();
             ResetHandViews(); PrepareHandPlayback(initialDraws);
             ClearSelection(); feedback = "패의 카드 → 빈 아군 슬롯: 소환 / 아군 유닛 → 적 유닛: 공격";
@@ -129,6 +131,7 @@ namespace Unknown.Battle
             returnLobby.gameObject.SetActive(online != null);
             animations = gameObject.AddComponent<CardAnimationController>(); animations.Initialize(root, font, () => IsPaused);
             animations.DrawPresentation = PresentDraw;
+            animations.MapPresentation = PresentMapEvent;
             BuildDeckMarkers(); BuildDragLayer();
         }
 
@@ -143,7 +146,7 @@ namespace Unknown.Battle
             for (int row = 0; row < 2; row++)
             {
                 var player = engine.State.Players[row == 0 ? ViewPlayer : 1 - ViewPlayer];
-                manaLabels[row].text = $"{player.CurrentMana} / {player.MaxMana} MP";
+                manaLabels[row].text = $"{player.CurrentMana} / {player.MaxMana} MP"+(player.CurrentMana>player.MaxMana ? " (임시 +"+(player.CurrentMana-player.MaxMana)+")" : "");
                 for (int i = 0; i < 10; i++) manaPips[row][i].color = i < player.CurrentMana ? new Color(0.2f, 0.55f, 1)
                     : i < player.MaxMana ? new Color(0.07f, 0.18f, 0.32f) : new Color(0.24f, 0.27f, 0.3f);
             }
@@ -160,8 +163,8 @@ namespace Unknown.Battle
         {
             for (int row = 0; row < 1; row++)
             {
-                int count = engine.State.Players[row == 0 ? ViewPlayer : 1 - ViewPlayer].UnknownCreated;
-                unknownLabels[row].text = (row == 0 ? "내 UNKNOWN: " : "상대 UNKNOWN: ") + count + "/3";
+                int count = engine.Config.Map==BattleMap.JokerGame ? engine.State.Players[ViewPlayer].JokerSuccesses : engine.State.Players[ViewPlayer].UnknownCreated;
+                unknownLabels[row].text = (engine.Config.Map==BattleMap.JokerGame ? "JOKER JACKPOT " : "내 UNKNOWN: ") + count + "/3";
                 for (int i = 0; i < 3; i++)
                 {
                     unknownPips[row][i].color = i < count ? new Color(0.65f, 0.27f, 0.94f) : new Color(0.13f, 0.1f, 0.2f);
@@ -294,7 +297,7 @@ namespace Unknown.Battle
             EndAttackDrag(); EndCardDrag();
             clock.Stop();
             bool won = engine.State.Winner == ViewPlayer;
-            winnerText.text = engine.State.VictoryReason == VictoryReason.UnknownComplete
+            winnerText.text = engine.State.VictoryReason==VictoryReason.JokerJackpot ? won ? "VICTORY — JOKER JACKPOT" : "DEFEAT — OPPONENT HIT JACKPOT" : engine.State.VictoryReason == VictoryReason.UnknownComplete
                 ? won ? "VICTORY — UNKNOWN COMPLETE" : "DEFEAT — OPPONENT COMPLETED UNKNOWN"
                 : won ? "VICTORY — OPPONENT HP ZERO" : "DEFEAT — YOUR HP ZERO";
             resultOverlay.SetActive(true);
@@ -376,6 +379,7 @@ namespace Unknown.Battle
             turnText.text = state.IsOver ? $"플레이어 {state.Winner + 1} 승리" : $"턴 {state.TurnNumber} · 플레이어 {state.ActivePlayer + 1}";
             notice.text = engine.NeedsTarget && state.ActivePlayer==ViewPlayer ? engine.TargetPrompt : Time.unscaledTime < toastUntil ? toastText : "";
             RefreshCombinationSlots();
+            RefreshMapUI();
             log.text = string.Join("\n", engine.VisibleLog(active).Reverse().Take(3).Reverse());
             if (lastLogCount != state.LogVersion) { pulse = 0.5f; lastLogCount = state.LogVersion; }
             RefreshBoard(ownBoard, active); RefreshBoard(enemyBoard, other);

@@ -100,14 +100,15 @@ namespace Unknown.Battle
             }
             action(1);
         }
-        public IEnumerator Banner(string title, Color color, float duration)
+        public IEnumerator Banner(string title, Color color, float duration,float height=110,int fontSize=36)
         {
-            var bar = Shape("Turn banner", Vector2.zero, new Vector2(900, 110), new Color(0.025f, 0.04f, 0.07f, 0.94f));
-            var text = MakeText(bar, title, 36, color); var group = Group(bar);
+            var bar = Shape("Turn banner", Vector2.zero, new Vector2(1000, height), new Color(0.025f, 0.04f, 0.07f, 0.94f));
+            var text = MakeText(bar, title, fontSize, color); var group = Group(bar);
             yield return Step(duration, t => { group.alpha = Mathf.Sin(t * Mathf.PI); bar.localScale = Vector3.one * (0.94f + 0.06f * t); });
             Destroy(bar.gameObject);
         }
         public Func<BattleEvent, IEnumerator> DrawPresentation;
+        public Func<BattleEvent, IEnumerator> MapPresentation;
         public IEnumerator Play(IReadOnlyList<BattleEvent> entries)
         {
             int lastHurt = -1;
@@ -117,6 +118,14 @@ namespace Unknown.Battle
                 var view = View(entry.TargetID);
                 switch (entry.Kind)
                 {
+                    case BattleEventKind.MapEvent:
+                        if(MapPresentation!=null)yield return MapPresentation(entry); break;
+                    case BattleEventKind.CardGranted:
+                        if(DrawPresentation!=null)yield return DrawPresentation(entry); break;
+                    case BattleEventKind.HandReturn:
+                        yield return Step(0.12f,_=>{}); break;
+                    case BattleEventKind.HeroChanged:
+                        Floating(-1,heroPoint(entry.Owner),entry.Amount.ToString(),red); break;
                     case BattleEventKind.ManaSpent:
                         for (int pip = entry.Secondary - entry.Amount; pip < entry.Secondary; pip++)
                             StartCoroutine(Pulse(manaPoint(entry.Owner, pip), new Color(0.3f, 0.65f, 1), 30, 0.3f));
@@ -146,7 +155,7 @@ namespace Unknown.Battle
                         Floating(entry.TargetID, target, (entry.Amount < 0 ? "↓ " : "↑ ") + "ATK " + entry.Amount.ToString("+0;-0;0"), attackColor);
                         StartCoroutine(Flash(view, attackColor, 0.22f)); yield return Step(0.08f, _ => { }); break;
                     case BattleEventKind.MaxHPChanged:
-                        Floating(entry.TargetID, target, "HP +" + entry.Amount, green);
+                        Floating(entry.TargetID, target, "HP " + entry.Amount.ToString("+0;-0;0"), entry.Amount<0 ? purple : green);
                         StartCoroutine(Pulse(target, green, 145, 0.32f));
                         if (view != null) { Vector3 scale = view.localScale; yield return Step(0.13f, t => view.localScale = scale * (1 + 0.07f * Mathf.Sin(t * Mathf.PI))); }
                         break;
