@@ -171,6 +171,7 @@ MonoBehaviour:
   seed: 0
   revealHands: 0
   turnDuration: 30
+  localMap: 1
 --- !u!1 &2099736746
 GameObject:
   m_ObjectHideFlags: 0
