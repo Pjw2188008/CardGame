@@ -119,7 +119,11 @@ namespace Unknown.Battle
             switch (i.action)
             {
                 case BattleAction.Summon: ok = Engine.Summon(actor, i.first, i.second); break;
-                case BattleAction.Attack: ok = Engine.Attack(actor, i.first, i.second); break;
+                case BattleAction.Attack:
+                    // Wire target is an instance ID. Resolve on Host, never trust a client slot or damage amount.
+                    int slot=i.second==-1 ? -1 : Array.FindIndex(Engine.State.Players[1-actor].Board.ToArray(),c=>c!=null && c.InstanceID==i.second);
+                    if(i.second!=-1 && slot<0) { Engine.State.LastError="유효한 적 유닛을 선택하세요."; return false; }
+                    ok = Engine.Attack(actor, i.first, slot); break;
                 case BattleAction.Target: ok = Engine.SelectEffectTarget(actor, i.first, i.second); break;
                 case BattleAction.Combine: ok = Engine.Combine(actor, i.first, i.second); break;
                 case BattleAction.Joker: ok = Engine.Gamble(actor, i.first, i.second); break;

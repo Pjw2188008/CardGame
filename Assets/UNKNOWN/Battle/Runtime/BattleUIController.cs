@@ -82,6 +82,7 @@ namespace Unknown.Battle
             var root = Box(canvas.transform, "Background", Vector2.zero, Vector2.one, navy);
             battlefield = Box(root, "Battlefield", Vector2.zero, Vector2.one, navy);
             interactionRoot = root;
+            BuildAttackTarget();
             opponentInfo = Label(battlefield, "", new Vector2(0.22f, 0.957f), new Vector2(0.78f, 0.995f), 21, new Color(1, 0.66f, 0.61f));
             ownInfo = Label(battlefield, "", new Vector2(0.22f, 0.26f), new Vector2(0.78f, 0.298f), 21, new Color(0.57f, 0.86f, 0.9f));
             BuildMana(1, 0.932f, 0.951f); BuildMana(0, 0.235f, 0.255f);
@@ -210,7 +211,7 @@ namespace Unknown.Battle
         {
             foreach (Transform child in parent) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
         }
-        void ClearSelection() { EndCardDrag(); HideTooltip(); handID = attackerID = jokerTarget = aceID = faceID = -1; }
+        void ClearSelection() { EndAttackDrag(); EndCardDrag(); HideTooltip(); handID = attackerID = jokerTarget = aceID = faceID = -1; }
         CardInstance SelectedHand => engine.State.Players[ViewPlayer].Hand.FirstOrDefault(c => c.InstanceID == handID);
         void Result(bool success, string message = "")
         {
@@ -232,6 +233,7 @@ namespace Unknown.Battle
         }
         IEnumerator ActionPresentation(IReadOnlyList<BattleEvent> entries)
         {
+            ObserveAttackResult(entries);
             actionBusy = true;
             try
             {
@@ -287,7 +289,7 @@ namespace Unknown.Battle
         }
         void ShowWinner()
         {
-            EndCardDrag();
+            EndAttackDrag(); EndCardDrag();
             clock.Stop();
             bool won = engine.State.Winner == ViewPlayer;
             winnerText.text = engine.State.VictoryReason == VictoryReason.UnknownComplete
@@ -321,7 +323,7 @@ namespace Unknown.Battle
             var unit = engine.State.Players[owner].Board[slot];
             if (owner != active)
             {
-                if (attackerID >= 0) Dispatch(BattleAction.Attack, attackerID, slot, () => engine.Attack(active, attackerID, slot), "공격 완료");
+                if (attackerID >= 0 && unit!=null) SendAttack(attackerID,unit.InstanceID);
                 else { feedback = "먼저 공격 가능한 아군 유닛을 선택하세요."; Refresh(); }
                 return;
             }
@@ -358,12 +360,12 @@ namespace Unknown.Battle
         void AttackPlayer()
         {
             if (Blocked()) return;
-            Dispatch(BattleAction.Attack, attackerID, -1, () => engine.Attack(engine.State.ActivePlayer, attackerID), "직접 공격 완료");
+            SendAttack(attackerID,-1);
         }
 
         void Refresh()
         {
-            EndCardDrag(); HideTooltip(); cardViews.Clear();
+            EndAttackDrag(); EndCardDrag(); HideTooltip(); cardViews.Clear();
             var state = engine.State; int active = ViewPlayer, other = 1 - active;
             var me = state.Players[active]; var enemy = state.Players[other];
             opponentInfo.text = $"상대 · 플레이어 {other + 1}     HP {enemy.HP} / {engine.Config.StartingHP}     덱 {enemy.DeckCount}     패 {enemy.Hand.Count}";
@@ -397,7 +399,7 @@ namespace Unknown.Battle
                 else
                 {
                     DrawCard(rect, card, target || card.InstanceID == attackerID || card.InstanceID == jokerTarget,
-                        engine.CanAttack(card.Owner, card), () => ClickSlot(owner, slot), true);
+                        owner==ViewPlayer && !Blocked() && engine.CanAttack(card.Owner, card), () => ClickSlot(owner, slot), true);
                     cardViews[card.InstanceID] = rect;
                 }
             }
@@ -423,8 +425,17 @@ namespace Unknown.Battle
             Label(rect, def.CardType == CardType.Joker ? "" : $"{card.CurrentHP}<size=12>/{card.MaxHP}</size>", new Vector2(0.55f, 0.055f), new Vector2(0.99f, 0.24f), 26, ink);
             var hover = rect.gameObject.AddComponent<CardHover>();
             hover.Configure(data => ShowTooltip(card, rect, data), HideTooltip, true, !onBoard);
+            hover.CanZoom=()=>!AttackDragging && dragged==null;
+            if(onBoard && card.Owner==ViewPlayer)
+            {
+                rect.gameObject.AddComponent<UnitAttackDrag>().Configure(this,card.InstanceID);
+                var status=Label(rect,"",new Vector2(0.32f,0.01f),new Vector2(0.70f,0.12f),16,ready); status.name="Attack Status";
+                var glowGO=new GameObject("Attack Ready Glow",typeof(RectTransform),typeof(CanvasRenderer),typeof(AttackGlowGraphic)); glowGO.transform.SetParent(rect,false);
+                var glow=(RectTransform)glowGO.transform; glow.anchorMin=Vector2.zero; glow.anchorMax=Vector2.one; glow.offsetMin=glow.offsetMax=Vector2.zero;
+                glowGO.GetComponent<AttackGlowGraphic>().raycastTarget=false;
+            }
             if (!onBoard) rect.gameObject.AddComponent<CardDrag>().Configure(this, card.InstanceID);
-            string state = !onBoard ? "" : card.JokerUsed ? "조커 사용됨" : canAttack ? "공격 가능" : card.HasAttacked ? "공격 완료" : "소환 대기";
+            string state = !onBoard ? "" : card.JokerUsed ? "조커 사용됨" : "";
             if (!onBoard && card.Owner == ViewPlayer && def.ManaCost > engine.State.Players[card.Owner].CurrentMana)
             { rect.gameObject.AddComponent<CanvasGroup>().alpha = 0.46f; state = "마나 부족"; }
             Label(rect, state, new Vector2(0.01f, 0), new Vector2(0.99f, 0.11f), 10, new Color(0.23f, 0.31f, 0.32f));
@@ -437,6 +448,7 @@ namespace Unknown.Battle
             directAttack.interactable = allowed && !engine.NeedsTarget && attackerID >= 0 && engine.State.Players[1 - ViewPlayer].Board.All(c => c == null);
             revealButton.interactable = allowed;
             newGameButton.interactable = !actionBusy && !transitioning;
+            RefreshAttackIndicators();
         }
         void Update()
         {
@@ -460,7 +472,8 @@ namespace Unknown.Battle
             pulse = Mathf.Max(0, pulse - Time.unscaledDeltaTime);
             divider.color = Color.Lerp(new Color(0.3f, 0.4f, 0.48f), gold, pulse * 2);
         }
-        void OnApplicationPause(bool value) { applicationPaused = value; }
-        void OnDestroy() { EndCardDrag(); StopOnline(); if (font != null) Destroy(font); }
+        void OnApplicationPause(bool value) { applicationPaused = value; if(value)EndAttackDrag(); }
+        void OnApplicationFocus(bool focused) { if(!focused)EndAttackDrag(); }
+        void OnDestroy() { EndAttackDrag(); EndCardDrag(); StopOnline(); if (font != null) Destroy(font); }
     }
 }

@@ -1,0 +1,33 @@
+﻿{
+    "checks":  {
+                   "hostComplete":  true,
+                   "guestComplete":  true,
+                   "hostCleaned":  true,
+                   "guestCleaned":  true,
+                   "hostReturned":  true,
+                   "guestReturned":  true,
+                   "hostResult":  true,
+                   "guestResult":  true,
+                   "hostView":  true,
+                   "guestView":  true,
+                   "hostPrivacy":  true,
+                   "guestPrivacy":  true,
+                   "publicStateMatches":  true,
+                   "attackResultsMatch":  true,
+                   "noErrors":  true
+               },
+    "hostPID":  34284,
+    "guestPID":  14252,
+    "turn":  17,
+    "hostAttacks":  14,
+    "guestAttacks":  3,
+    "unitAttacks":  12,
+    "directAttacks":  5,
+    "rulesPassed":  69,
+    "attackUiPassed":  44,
+    "dragUiPassed":  40,
+    "pvpUiPassed":  22,
+    "buildErrors":  0,
+    "buildWarnings":  8,
+    "assemblySha256":  "492B86FDA08E3972F51CAA88DA653AF8849396E4E1E20F3392561375C13FB8D4"
+}

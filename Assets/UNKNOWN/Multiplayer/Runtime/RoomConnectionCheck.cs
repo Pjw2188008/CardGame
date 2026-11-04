@@ -54,10 +54,10 @@ namespace Unknown.Multiplayer
             var cleanup=room.LeaveRoomAsync(); while(!cleanup.IsCompleted)yield return null;
             result.cleaned=room.Session==null; File.WriteAllText(output,JsonUtility.ToJson(result,true)); Application.Quit();
         }
-        static string ReadCode(string path)
+        internal static string ReadCode(string path)
         {
             // The other process may still be writing the exchange file. Retry without affecting the room API.
-            try { string code=File.ReadAllText(path).Trim(); return System.Text.RegularExpressions.Regex.IsMatch(code,@"^[A-Z0-9]{6}$") ? code : null; }
+            try { using var stream=new FileStream(path,FileMode.Open,FileAccess.Read,FileShare.ReadWrite); using var reader=new StreamReader(stream); string code=reader.ReadToEnd().Trim(); return System.Text.RegularExpressions.Regex.IsMatch(code,@"^[A-Z0-9]{6}$") ? code : null; }
             catch(IOException) { return null; }
         }
     }

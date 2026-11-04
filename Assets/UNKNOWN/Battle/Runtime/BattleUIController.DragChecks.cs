@@ -60,7 +60,7 @@ namespace Unknown.Battle
                 CheckFixture(1); unit=CheckUnit("Diamond_2",0); joker=CheckHand("Joker_1"); Refresh(); yield return null;
                 DragBegin(joker); DragDrop(UnitDrop(0,0)); yield return DragWait(); verify(engine.State.Players[0].Board[0]==null && engine.State.Players[0].CurrentMana==8,"Failure destroys target and still charges exactly 2 MP");
                 CheckFixture(); var ace=CheckHand("Heart_A"); var face=CheckHand("Spade_Q"); var replacement=CheckHand("Club_A"); var number=CheckHand("Diamond_2"); CheckHand("Heart_K",1); CheckHand("Club_Q",1); Refresh(); yield return null;
-                DragBegin(number); verify(dragged==null,"Number cards cannot become combination drag materials");
+                DragBegin(number); DragDrop(aceSlot.GetComponent<CardDropZone>()); verify(aceID<0,"Number cards cannot become combination drag materials");
                 DragBegin(face); DragDrop(aceSlot.GetComponent<CardDropZone>()); verify(aceID<0,"A slot rejects face card");
                 DragBegin(ace); DragDrop(aceSlot.GetComponent<CardDropZone>()); DragBegin(face); DragDrop(faceSlot.GetComponent<CardDropZone>());
                 verify(aceID==ace.InstanceID && faceID==face.InstanceID && engine.State.Players[0].Hand.Count==4,"Both materials remain in hand before confirmation");

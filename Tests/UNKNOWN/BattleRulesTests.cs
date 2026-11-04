@@ -389,6 +389,31 @@ static class BattleRulesTests
             Check(!a.Execute(1,new BattleIntent {sequence=3,revision=1,turn=turn,action=BattleAction.EndTurn}));
             Check(a.Execute(1,new BattleIntent {sequence=4,revision=1,turn=turn+1,action=BattleAction.EndTurn}));
         });
+        Test("Host resolves attack target IDs for either player and rejects stale or friendly IDs", () => {
+            for(int owner=0;owner<2;owner++) {
+                var authority=new BattleAuthority(31); var g=authority.Engine; g.State.ActivePlayer=owner;
+                foreach(var p in g.State.Players) { p.HandCards.Clear(); for(int slot=0;slot<p.Slots.Length;slot++)p.Slots[slot]=null; }
+                var unit=Unit(g,owner,"Heart_K"); var target=Unit(g,1-owner,"Heart_K",3);
+                Check(!authority.Execute(owner,new BattleIntent{sequence=1,revision=0,turn=g.State.TurnNumber,action=BattleAction.Attack,first=unit.InstanceID,second=unit.InstanceID}));
+                Check(!unit.HasAttacked); Equal(12,target.CurrentHP);
+                Check(authority.Execute(owner,new BattleIntent{sequence=2,revision=0,turn=g.State.TurnNumber,action=BattleAction.Attack,first=unit.InstanceID,second=target.InstanceID}));
+                Equal(4,unit.CurrentHP); Equal(4,target.CurrentHP); Check(unit.HasAttacked);
+                Check(!authority.Execute(owner,new BattleIntent{sequence=3,revision=1,turn=g.State.TurnNumber,action=BattleAction.Attack,first=unit.InstanceID,second=target.InstanceID}));
+                Equal(4,target.CurrentHP);
+            }
+        });
+        Test("Host blocks direct attacks with defenders and accepts ID -1 only on an empty field", () => {
+            var authority=new BattleAuthority(32); var g=authority.Engine;
+            foreach(var p in g.State.Players)for(int i=0;i<p.Slots.Length;i++)p.Slots[i]=null;
+            var unit=Unit(g,0,"Heart_K"); var defender=Unit(g,1,"Heart_K");
+            Check(!authority.Execute(0,new BattleIntent{sequence=1,revision=0,turn=g.State.TurnNumber,action=BattleAction.Attack,first=unit.InstanceID,second=-1}));
+            Check(!unit.HasAttacked); Equal(30,g.State.Players[1].HP);
+            g.State.Players[1].Slots[0]=null;
+            Check(!authority.Execute(0,new BattleIntent{sequence=2,revision=0,turn=g.State.TurnNumber,action=BattleAction.Attack,first=unit.InstanceID,second=defender.InstanceID}));
+            Check(!unit.HasAttacked);
+            Check(authority.Execute(0,new BattleIntent{sequence=3,revision=0,turn=g.State.TurnNumber,action=BattleAction.Attack,first=unit.InstanceID,second=-1}));
+            Equal(22,g.State.Players[1].HP);
+        });
         Test("authority rejects other player's hand ID and forged attack ID atomically", () => {
             var a = new BattleAuthority(20); var s = a.Engine.State; var mana = s.Players[0].CurrentMana;
             Check(!a.Execute(0,new BattleIntent {sequence=1,revision=0,turn=s.TurnNumber,action=BattleAction.Summon,first=s.Players[1].Hand[0].InstanceID,second=0}));

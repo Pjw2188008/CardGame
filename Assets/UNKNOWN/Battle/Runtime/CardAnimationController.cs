@@ -56,6 +56,7 @@ namespace Unknown.Battle
             var clone = Instantiate(original.gameObject, layer).GetComponent<RectTransform>();
             foreach(var script in clone.GetComponentsInChildren<CardHover>()) script.enabled=false;
             foreach(var script in clone.GetComponentsInChildren<CardDrag>()) script.enabled=false;
+            foreach(var script in clone.GetComponentsInChildren<UnitAttackDrag>()) script.enabled=false;
             foreach(var script in clone.GetComponentsInChildren<HandCardMotion>()) script.enabled=false;
             clone.anchorMin = clone.anchorMax = clone.pivot = new Vector2(0.5f, 0.5f); clone.sizeDelta = size;
             clone.anchoredPosition = position; clone.localScale = Vector3.one;

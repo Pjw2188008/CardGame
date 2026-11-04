@@ -16,8 +16,10 @@ namespace Unknown.Multiplayer
             public string role, status = "starting", error = "", publicState = "";
             public int revision, turn, winner = -1, snapshots, summons, attacks, combines, jokers, timeouts, viewSamples;
             public bool privacy = true, finished, cleaned, hostFieldSeen, guestFieldSeen, viewMatches = true, returnedToLobby, resultMatches;
+            public int hostAttacks, guestAttacks, directAttacks, unitAttacks;
             public VictoryReason victoryReason;
             public List<string> errors = new List<string>();
+            public List<string> attackResults = new List<string>();
         }
         Report report;
         string exchange, output;
@@ -63,9 +65,10 @@ namespace Unknown.Multiplayer
             else
             {
                 double wait = Time.realtimeSinceStartupAsDouble + 120;
-                while ((!File.Exists(exchange) || string.IsNullOrWhiteSpace(File.ReadAllText(exchange))) && Time.realtimeSinceStartupAsDouble < wait) yield return null;
-                if (!File.Exists(exchange) || string.IsNullOrWhiteSpace(File.ReadAllText(exchange))) { Fail("Host code not available"); yield break; }
-                var task = room.JoinRoomAsync(File.ReadAllText(exchange).Trim()); while (!task.IsCompleted) yield return null;
+                string code;
+                while (string.IsNullOrEmpty(code=RoomConnectionCheck.ReadCode(exchange)) && Time.realtimeSinceStartupAsDouble < wait) yield return new WaitForSecondsRealtime(0.1f);
+                if (string.IsNullOrEmpty(code)) { Fail("Host code not available"); yield break; }
+                var task = room.JoinRoomAsync(code); while (!task.IsCompleted) yield return null;
                 if (room.Session == null) { Fail(room.Error); yield break; }
             }
             report.status = "lobby"; Save();
@@ -142,7 +145,13 @@ namespace Unknown.Multiplayer
             foreach (var e in s.events)
             {
                 if (e.kind == BattleEventKind.Summon) report.summons++;
-                if (e.kind == BattleEventKind.Attack) report.attacks++;
+                if (e.kind == BattleEventKind.Attack)
+                {
+                    report.attacks++;
+                    if(e.owner==0)report.hostAttacks++; else report.guestAttacks++;
+                    if(e.target<0)report.directAttacks++; else report.unitAttacks++;
+                    report.attackResults.Add($"{s.revision}:{e.owner}:{e.source}:{e.target}:{e.amount}:{e.secondary}:{s.players[0].hp}:{s.players[1].hp}");
+                }
                 if (e.kind == BattleEventKind.Combine) report.combines++;
                 if (e.kind == BattleEventKind.JokerSuccess || e.kind == BattleEventKind.JokerFailure) report.jokers++;
                 if (e.kind == BattleEventKind.TimeOut) report.timeouts++;
@@ -169,7 +178,8 @@ namespace Unknown.Multiplayer
             if (attack != null)
             {
                 int slot = Array.FindIndex(s.players[enemy].board,c => c != null && c.occupied);
-                battle.Submit(BattleAction.Attack,attack.id,slot); return;
+                int target=slot<0 ? -1 : s.players[enemy].board[slot].id;
+                if(!FindFirstObjectByType<BattleUIController>().SmokeAttack(attack.id,target))Debug.LogError("Smoke attack drag failed"); return;
             }
             int empty = Array.FindIndex(p.board,c => c == null || !c.occupied);
             var summon = hand.Where(c => c.Definition.CardType != CardType.Joker && c.Definition.ManaCost <= p.mana).OrderByDescending(c => c.Definition.ManaCost).FirstOrDefault();

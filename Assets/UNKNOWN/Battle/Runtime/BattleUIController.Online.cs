@@ -56,6 +56,7 @@ namespace Unknown.Battle
                 RefreshMana(); RefreshUnknownProgress();
                 // Existing views remain bound during animation, including units destroyed by this action.
                 var entries = s.events.Select(e => e.ToEvent()).ToArray();
+                ObserveAttackResult(entries);
                 PrepareHandPlayback(entries);
                 foreach (var e in entries) if (e.Kind == BattleEventKind.TurnStart)
                     yield return animations.Banner(e.Owner == ViewPlayer ? "YOUR TURN" : "OPPONENT TURN", gold, 0.5f);
@@ -73,9 +74,9 @@ namespace Unknown.Battle
         void UpdateOnline()
         {
             if (online.ActionError != shownActionError)
-            { shownActionError = online.ActionError; if (!string.IsNullOrEmpty(shownActionError)) Toast(shownActionError); }
+            { shownActionError = online.ActionError; if (!string.IsNullOrEmpty(shownActionError)) { awaitingAttack=-1; AttackState=AttackDragState.Cancelled; EndAttackDrag(); Toast(shownActionError); } }
             if (!string.IsNullOrEmpty(online.Failure))
-            { winnerText.text = online.Failure; resultOverlay.SetActive(true); }
+            { awaitingAttack=-1; EndAttackDrag(); winnerText.text = online.Failure; resultOverlay.SetActive(true); }
             var remaining = online.Remaining;
             timerText.text = online.Snapshot?.winner >= 0 ? "GAME OVER" : Math.Ceiling(remaining).ToString("00") + "s";
             timerText.color = remaining <= 10 ? new Color(1, 0.3f, 0.3f) : Color.white;

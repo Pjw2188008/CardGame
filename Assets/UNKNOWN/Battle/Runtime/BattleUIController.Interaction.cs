@@ -62,12 +62,18 @@ namespace Unknown.Battle
             dragLayer=Box(interactionRoot,"Card Drag Layer",Vector2.zero,Vector2.one,Color.clear);
             var group=dragLayer.gameObject.AddComponent<CanvasGroup>(); group.blocksRaycasts=false; group.interactable=false;
             tooltip.SetAsLastSibling();
+            BuildAttackArrow();
         }
         void ShowTooltip(CardInstance card,RectTransform view,PointerEventData data)
         {
-            if(dragged!=null || passOverlay.activeSelf || resultOverlay.activeSelf) return;
+            if(AttackDragging || dragged!=null || passOverlay.activeSelf || resultOverlay.activeSelf) return;
             var d=card.Definition;
             detail.text=d.CardName+"   "+CardDatabase.Symbol(d.Suit)+$"\n{d.ManaCost} MP   공격 {card.Attack}   체력 {card.CurrentHP}/{card.MaxHP}\n\n"+d.Description;
+            if(card.Owner==ViewPlayer && BoardCard(card.InstanceID)!=null) detail.text+="\n"+AttackReason(BoardCard(card.InstanceID));
+            PositionTooltip(data);
+        }
+        void PositionTooltip(PointerEventData data)
+        {
             tooltip.gameObject.SetActive(true); tooltip.SetAsLastSibling();
             RectTransformUtility.ScreenPointToLocalPointInRectangle(interactionRoot,data.position,null,out var p);
             var bounds=interactionRoot.rect; Vector2 half=tooltip.sizeDelta/2;
@@ -78,16 +84,16 @@ namespace Unknown.Battle
         void Toast(string text) { toastText=text; toastUntil=Time.unscaledTime+2.5f; }
         public bool BeginCardDrag(int id,RectTransform original,PointerEventData data)
         {
-            if(Blocked() || engine.NeedsTarget || original==null) return false;
+            if(data.button!=PointerEventData.InputButton.Left || AttackDragging || dragged!=null || Blocked() || engine.NeedsTarget || original==null) return false;
             var card=engine.State.Players[ViewPlayer].Hand.FirstOrDefault(c=>c!=null && c.InstanceID==id);
             if(card==null) return false;
             var d=card.Definition;
-            if(d.CardType!=CardType.Joker && (d.CardType!=CardType.Normal || d.Rank<Rank.Ace || d.Rank>Rank.King)) return false;
             EndCardDrag(); original.GetComponent<CardHover>()?.ResetHover();
             // Clone disabled interaction scripts before assigning the active drag context.
             dragGhost=Instantiate(original.gameObject,dragLayer).GetComponent<RectTransform>(); dragGhost.name="DragGhost";
             foreach(var c in dragGhost.GetComponentsInChildren<CardDrag>()) c.enabled=false;
             foreach(var c in dragGhost.GetComponentsInChildren<CardHover>()) c.enabled=false;
+            foreach(var c in dragGhost.GetComponentsInChildren<HandCardMotion>()) c.enabled=false;
             foreach(var g in dragGhost.GetComponentsInChildren<Graphic>()) g.raycastTarget=false;
             dragGhost.anchorMin=dragGhost.anchorMax=dragGhost.pivot=Vector2.one*0.5f; dragGhost.sizeDelta=original.rect.size; dragGhost.localScale=Vector3.one;
             var group=dragGhost.GetComponent<CanvasGroup>(); if(group==null) group=dragGhost.gameObject.AddComponent<CanvasGroup>(); group.alpha=0.92f; group.blocksRaycasts=false;
@@ -109,8 +115,9 @@ namespace Unknown.Battle
             var d=dragged.Definition;
             if(zone.Kind==CardDropKind.Ace) return d.CardType==CardType.Normal && d.Rank==Rank.Ace;
             if(zone.Kind==CardDropKind.Face) return d.CardType==CardType.Normal && d.Rank>=Rank.Jack && d.Rank<=Rank.King;
-            if(d.CardType!=CardType.Joker || zone.Owner!=ViewPlayer || zone.Slot<0 || zone.Slot>=engine.Config.FieldSlots) return false;
+            if(zone.Kind!=CardDropKind.Unit || zone.Owner!=ViewPlayer || zone.Slot<0 || zone.Slot>=engine.Config.FieldSlots) return false;
             var unit=engine.State.Players[ViewPlayer].Board[zone.Slot];
+            if(d.CardType!=CardType.Joker) return unit==null && engine.State.Players[ViewPlayer].CurrentMana>=d.ManaCost;
             return unit!=null && unit.CurrentHP>0 && !unit.JokerUsed && engine.State.Players[ViewPlayer].CurrentMana>=2;
         }
         public void HighlightDrop(CardDropZone zone)
@@ -135,11 +142,13 @@ namespace Unknown.Battle
         {
             if(!CanDrop(zone)) { if(dragged!=null) Toast("이 위치에는 사용할 수 없습니다"); EndCardDrag(); return false; }
             int id=dragged.InstanceID,actor=ViewPlayer; var kind=zone.Kind; int slot=zone.Slot;
-            int target=kind==CardDropKind.Unit ? engine.State.Players[actor].Board[slot].InstanceID : -1;
+            bool joker=dragged.Definition.CardType==CardType.Joker;
+            int target=kind==CardDropKind.Unit && joker ? engine.State.Players[actor].Board[slot].InstanceID : -1;
             EndCardDrag(); // Clear before dispatch: duplicate Drop/EndDrag cannot submit twice.
             if(kind==CardDropKind.Ace) { aceID=id; RefreshCombinationSlots(); return true; }
             if(kind==CardDropKind.Face) { faceID=id; RefreshCombinationSlots(); return true; }
-            Dispatch(BattleAction.Joker,id,target,()=>engine.Gamble(actor,id,target),"JOKER"); return true;
+            if(joker)Dispatch(BattleAction.Joker,id,target,()=>engine.Gamble(actor,id,target),"JOKER");
+            else Dispatch(BattleAction.Summon,id,slot,()=>engine.Summon(actor,id,slot),"소환 완료"); return true;
         }
         public void EndCardDrag()
         {
@@ -153,6 +162,8 @@ namespace Unknown.Battle
             if(Keyboard.current?.escapeKey.wasPressedThisFrame==true)
                 CancelInteractionSelection();
             if(dragged!=null && (Blocked() || engine.NeedsTarget)) EndCardDrag();
+            if(AttackDragging && !ReadyToAttack(BoardCard(attackDragID)))EndAttackDrag();
+            UpdateAttackPointer();
             notice.text=engine.NeedsTarget && engine.State.ActivePlayer==ViewPlayer ? engine.TargetPrompt : Time.unscaledTime<toastUntil ? toastText : "";
             if(layoutWidth==Screen.width && layoutHeight==Screen.height) return;
             layoutWidth=Screen.width; layoutHeight=Screen.height; Canvas.ForceUpdateCanvases();
@@ -161,7 +172,7 @@ namespace Unknown.Battle
             if(!actionBusy && !transitioning) Refresh();
         }
         void CancelInteractionSelection()
-        { EndCardDrag(); aceID=faceID=handID=attackerID=-1; RefreshCombinationSlots(); }
+        { EndAttackDrag(); EndCardDrag(); aceID=faceID=handID=attackerID=-1; RefreshCombinationSlots(); }
         internal bool SmokeDrag(int id,CardDropKind kind,int slot=-1)
         {
             if(!Debug.isDebugBuild || !Environment.GetCommandLineArgs().Contains("-unknownSmoke") || !cardViews.TryGetValue(id,out var view)) return false;

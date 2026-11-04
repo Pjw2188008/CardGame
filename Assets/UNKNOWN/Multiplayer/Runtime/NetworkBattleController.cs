@@ -11,7 +11,8 @@ namespace Unknown.Multiplayer
     [DisallowMultipleComponent, RequireComponent(typeof(RoomController))]
     public sealed class NetworkBattleController : MonoBehaviour
     {
-        const string Request = "UNKNOWN.Intent.v1", State = "UNKNOWN.State.v1", Ready = "UNKNOWN.Ready.v1", Lobby = "UNKNOWN.Lobby.v1";
+        // v2 attack intents carry target instance IDs rather than slot numbers. Both peers must use this build.
+        const string Request = "UNKNOWN.Intent.v2", State = "UNKNOWN.State.v2", Ready = "UNKNOWN.Ready.v2", Lobby = "UNKNOWN.Lobby.v2";
         public event Action Changed;
         public event Action<BattleSnapshot> SnapshotReceived;
         public BattleSnapshot Snapshot { get; private set; }
