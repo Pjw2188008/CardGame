@@ -59,7 +59,7 @@ namespace Unknown.Battle
                 verify(AttackState==AttackDragState.InvalidTarget && attackArrow.color==attackInvalid && attackHintText.text=="공격 불가" && attackTargetView==null,"Own unit shows gray arrow and invalid hint without target enlargement");
                 verify(File.Exists(CaptureAttackFrame(1280,cardViews[hand.InstanceID],"Invalid")),"Rendered invalid gray arrow and cursor hint"); EndAttackDrag();
                 verify(!AttackDragging && !attackArrow.gameObject.activeSelf && Mathf.Abs(cardViews[enemy.InstanceID].localScale.x-1)<0.001f && !source.HasAttacked,"Cancel removes arrow and restores target without spending attack");
-                foreach(var zone in new[]{UnitDrop(0,1),UnitDrop(1,0),aceSlot.GetComponent<CardDropZone>(),heroAttackArea.GetComponent<CardDropZone>()})
+                foreach(var zone in new[]{UnitDrop(0,1),UnitDrop(1,0),heroAttackArea.GetComponent<CardDropZone>()})
                 { AttackBegin(source); verify(!DropAttack(zone) && !source.HasAttacked,"Invalid target cancels: "+zone.Kind+" owner="+zone.Owner+" slot="+zone.Slot); }
                 AttackBegin(source); verify(!DropAttack(null) && !source.HasAttacked,"Empty space or non-target button cancels attack");
                 AttackBegin(source); DragDrop(enemyZone); verify(source.HasAttacked && !AttackDragging,"Drop commits once and clears context before dispatch");
@@ -103,7 +103,7 @@ namespace Unknown.Battle
                 Debug.Log($"[UNKNOWN] Attack UI checks: passed={report.passed.Count}, failed={report.failed.Count}, errors={report.errors.Count}"); Destroy(gameObject);
             }
         }
-        string CaptureAttackFrame(int width,RectTransform target,string label="Unit")
+        string CaptureAttackFrame(int width,RectTransform target,string label="Unit",bool arrowRequired=true)
         {
             var cameraGO=new GameObject("Attack UI Render Check",typeof(Camera)); var camera=cameraGO.GetComponent<Camera>();
             camera.orthographic=true; camera.orthographicSize=540; camera.transform.position=new Vector3(0,0,-10); camera.clearFlags=CameraClearFlags.SolidColor; camera.backgroundColor=Color.black;
@@ -115,6 +115,7 @@ namespace Unknown.Battle
                 var screen=RectTransformUtility.WorldToScreenPoint(camera,target.position);
                 var data=new PointerEventData(EventSystem.current){position=screen,pointerCurrentRaycast=new RaycastResult{gameObject=target.gameObject}};
                 MoveAttackDrag(data); Canvas.ForceUpdateCanvases();
+                if(arrowRequired) {
                 var mesh=attackArrow.canvasRenderer.GetMesh();
                 if(mesh==null || mesh.vertexCount<90)throw new Exception("Attack arrow did not produce a visible mesh");
                 var vertices=mesh.vertices;
@@ -123,6 +124,7 @@ namespace Unknown.Battle
                 if(Mathf.Abs(Vector2.Distance(edge0,edge1)-7)>0.5f)throw new Exception("Attack shaft is not seven screen pixels wide");
                 var tip=RectTransformUtility.WorldToScreenPoint(camera,attackArrow.rectTransform.TransformPoint(vertices[vertices.Length-3]));
                 if(Vector2.Distance(tip,screen)>0.5f)throw new Exception("Attack tip does not meet the cursor");
+                }
                 camera.Render(); RenderTexture.active=texture;
                 var pixels=new Texture2D(width,width*9/16,TextureFormat.RGB24,false); pixels.ReadPixels(new Rect(0,0,width,width*9/16),0,0); pixels.Apply();
                 Directory.CreateDirectory("Library/AttackVisuals"); string path="Library/AttackVisuals/Attack-"+label+"-"+width+".png";

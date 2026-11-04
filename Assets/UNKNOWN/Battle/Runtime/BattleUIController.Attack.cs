@@ -70,7 +70,7 @@ namespace Unknown.Battle
         }
         public bool BeginAttackDrag(int id,PointerEventData data)
         {
-            if(data.button!=PointerEventData.InputButton.Left || AttackDragging || dragged!=null || !ReadyToAttack(BoardCard(id)) || !cardViews.TryGetValue(id,out var source))return false;
+            if(data.button!=PointerEventData.InputButton.Left || combinationMode || AttackDragging || dragged!=null || !ReadyToAttack(BoardCard(id)) || !cardViews.TryGetValue(id,out var source))return false;
             HideTooltip(); source.GetComponent<CardHover>()?.ResetHover();
             handID=attackerID=aceID=faceID=-1; RefreshCombinationSlots();
             attackDragID=id; attackSource=source; sourceScale=source.localScale; source.localScale=sourceScale*1.08f;

@@ -51,6 +51,8 @@ namespace Unknown.Battle
         public int revision, recipient, active, turn, winner;
         public VictoryReason victoryReason;
         public double deadline;
+        public double turnDuration = 40;
+        public bool clockRunning = true;
         public bool expired, busy;
         public PlayerViewData[] players;
         public int[] targets;
@@ -58,17 +60,17 @@ namespace Unknown.Battle
         public string error;
         public string[] log;
         public EventViewData[] events;
-        public static BattleSnapshot For(BattleEngine engine, int recipient, int revision, double deadline, bool busy, IReadOnlyList<BattleEvent> events)
+        public static BattleSnapshot For(BattleEngine engine, int recipient, int revision, double deadline, bool busy, IReadOnlyList<BattleEvent> events, double turnDuration = 40, bool clockRunning = true)
         {
             var s = engine.State;
             return new BattleSnapshot { revision = revision, recipient = recipient, active = s.ActivePlayer,
-                turn = s.TurnNumber, winner = s.Winner, victoryReason = s.VictoryReason, expired = s.TurnExpired, deadline = deadline, busy = busy,
+                turn = s.TurnNumber, winner = s.Winner, victoryReason = s.VictoryReason, expired = s.TurnExpired, deadline = deadline, busy = busy, turnDuration = turnDuration, clockRunning = clockRunning,
                 players = s.Players.Select((p, owner) => new PlayerViewData { hp = p.HP, mana = p.CurrentMana, maxMana = p.MaxMana,
                     deckCount = p.DeckCount, handCount = p.Hand.Count, unknownCreated = owner == recipient ? p.UnknownCreated : 0,
                     hand = owner == recipient ? p.Hand.Select(CardViewData.From).ToArray() : new CardViewData[0],
                     board = p.Board.Select(CardViewData.From).ToArray() }).ToArray(),
                 targets = Enumerable.Range(0, 2 * engine.Config.FieldSlots).Where(i => engine.IsValidEffectTarget(i / engine.Config.FieldSlots, i % engine.Config.FieldSlots)).ToArray(),
-                prompt = engine.TargetPrompt, log = engine.VisibleLog(recipient).ToArray(), events = events.Where(e => e.Kind != BattleEventKind.Combine || e.Owner == recipient).Select(e => EventViewData.For(e, recipient)).ToArray() };
+                prompt = engine.TargetPrompt, log = engine.VisibleLog(recipient).ToArray(), events = events.Where(e => (e.Kind != BattleEventKind.Combine && e.Kind != BattleEventKind.HandRefill) || e.Owner == recipient).Select(e => EventViewData.For(e, recipient)).ToArray() };
         }
     }
     public sealed partial class BattleEngine
@@ -109,7 +111,7 @@ namespace Unknown.Battle
         public BattleEngine Engine { get; }
         public int Revision { get; private set; }
         readonly int[] sequences = new int[2];
-        public BattleAuthority(int seed) { Engine = new BattleEngine(seed); }
+        public BattleAuthority(int seed, BattleConfig config = null) { Engine = new BattleEngine(seed, config); }
         public bool Execute(int actor, BattleIntent i)
         {
             if (actor < 0 || actor > 1 || i == null || i.sequence != sequences[actor] + 1) return false;

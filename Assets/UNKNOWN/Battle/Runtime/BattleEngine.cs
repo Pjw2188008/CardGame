@@ -153,12 +153,19 @@ namespace Unknown.Battle
             State.ActivePlayer = player; State.TurnNumber++; State.SummonsThisTurn = 0;
             State.TurnExpired = false;
             var current = State.Players[player];
+            Log($"── 턴 {State.TurnNumber} · P{player + 1} ──");
+            Emit(new BattleEvent(BattleEventKind.TurnStart, player));
+            if (current.HandCards.Count == 0)
+            {
+                int count = Math.Min(Math.Min(5, rules.HandLimit), current.DeckCount);
+                Emit(new BattleEvent(BattleEventKind.HandRefill, player, amount: count));
+                // The refill replaces the ordinary draw. Empty decks retain their existing no-fatigue behavior.
+                Draw(player, count > 0 ? count : 1);
+            }
+            else Draw(player, 1);
             current.TurnsStarted++;
             if (current.TurnsStarted > 1) current.MaxMana = Math.Min(rules.ManaCap, current.MaxMana + 1);
             current.CurrentMana = current.MaxMana;
-            Log($"── 턴 {State.TurnNumber} · P{player + 1} ──");
-            Emit(new BattleEvent(BattleEventKind.TurnStart, player));
-            Draw(player, 1);
             foreach (var unit in current.Slots) if (unit != null) unit.HasAttacked = false;
         }
         public bool ExpireTurn(int actor)

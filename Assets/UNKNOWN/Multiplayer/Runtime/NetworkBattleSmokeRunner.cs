@@ -20,12 +20,17 @@ namespace Unknown.Multiplayer
             public VictoryReason victoryReason;
             public List<string> errors = new List<string>();
             public List<string> attackResults = new List<string>();
+            public bool systemsFixture, timerProtocol=true;
+            public int refills, refillCards, frozenClockSamples, runningClockSamples;
+            public double firstTurnElapsed;
         }
         Report report;
         string exchange, output;
         RoomController room;
         NetworkBattleController battle;
         internal static int? SeedOverride { get; private set; }
+        internal static bool SystemsCheck => Debug.isDebugBuild && Environment.GetCommandLineArgs().Contains("-unknownSmoke") && Environment.GetCommandLineArgs().Contains("-unknownSmokeSystems");
+        double firstClockStart=-1;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void FromCommandLine()
         {
@@ -43,7 +48,7 @@ namespace Unknown.Multiplayer
             }
             var go = new GameObject("UNKNOWN Explicit Relay Smoke Check");
             var runner = go.AddComponent<NetworkBattleSmokeRunner>();
-            runner.report = new Report { role = role }; runner.exchange = exchangePath;
+            runner.report = new Report { role = role, systemsFixture=SystemsCheck }; runner.exchange = exchangePath;
             runner.output = exchangePath + "." + role + ".json";
             runner.StartCoroutine(runner.Run());
         }
@@ -89,6 +94,11 @@ namespace Unknown.Multiplayer
             {
                 if (!string.IsNullOrEmpty(battle.Failure)) { Fail(battle.Failure); yield break; }
                 var s = battle.Snapshot;
+                if(s!=null && s.winner<0) {
+                    report.timerProtocol &= Math.Abs(s.turnDuration-40)<0.01 && battle.Remaining>=0 && battle.Remaining<=40.1;
+                    if(!s.clockRunning) { report.frozenClockSamples++; report.timerProtocol &= s.busy && !battle.CanAct && Math.Abs(battle.Remaining-40)<0.01; }
+                    else report.runningClockSamples++;
+                }
                 if (s != null && s.winner >= 0)
                 {
                     report.finished = true; report.status = "victory"; Save();
@@ -128,7 +138,7 @@ namespace Unknown.Multiplayer
                     report.guestFieldSeen |= s.players[1].board.Any(c=>c!=null && c.occupied);
                     Save();
                 }
-                // First turn deliberately expires, exercising the real 60 second Host clock.
+                // First turn deliberately expires, exercising the real forty-second Host clock.
                 if (s != null && (s.turn > 1 || Environment.GetCommandLineArgs().Contains("-unknownSmokeNoWait")) && battle.CanAct && ui != null && !ui.IsPresenting)
                     Choose(s);
                 yield return new WaitForSecondsRealtime(0.12f);
@@ -137,13 +147,18 @@ namespace Unknown.Multiplayer
         }
         void Observe(BattleSnapshot s)
         {
+            if(s.turn==1 && s.clockRunning && firstClockStart<0)firstClockStart=battle.GetComponent<Unity.Netcode.NetworkManager>().ServerTime.Time;
+            if(s.events.Any(e=>e.kind==BattleEventKind.TimeOut) && firstClockStart>=0 && report.firstTurnElapsed==0)
+                report.firstTurnElapsed=battle.GetComponent<Unity.Netcode.NetworkManager>().ServerTime.Time-firstClockStart;
             report.snapshots++; report.revision = s.revision; report.turn = s.turn; report.winner = s.winner;
             report.victoryReason=s.victoryReason;
             report.privacy &= s.players[1-s.recipient].hand.Length == 0 && s.players[1-s.recipient].unknownCreated == 0
                 && !s.events.Any(e => e.owner != s.recipient && e.kind == BattleEventKind.Combine)
+                && !s.events.Any(e => e.owner != s.recipient && e.kind == BattleEventKind.HandRefill)
                 && !s.log.Any(l => l.StartsWith("P"+(2-s.recipient)+": UNKNOWN 조합"));
             foreach (var e in s.events)
             {
+                if(e.kind==BattleEventKind.HandRefill) { report.refills++; report.refillCards+=e.amount; }
                 if (e.kind == BattleEventKind.Summon) report.summons++;
                 if (e.kind == BattleEventKind.Attack)
                 {

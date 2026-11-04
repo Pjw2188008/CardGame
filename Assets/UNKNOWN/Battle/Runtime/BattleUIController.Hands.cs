@@ -62,9 +62,9 @@ namespace Unknown.Battle
                     rect.gameObject.AddComponent<HandCardMotion>(); handViews[card.InstanceID]=rect;
                 }
                 bool selected=handID==card.InstanceID || aceID==card.InstanceID || faceID==card.InstanceID;
-                rect.GetComponent<Outline>().effectColor=selected ? gold : SuitInk(card.Definition.Suit);
+                rect.GetComponent<Outline>().effectColor=combinationMode && (aceID==card.InstanceID || faceID==card.InstanceID) ? combinationPurple : selected ? gold : SuitInk(card.Definition.Suit);
                 var group=rect.GetComponent<CanvasGroup>(); if(group==null)group=rect.gameObject.AddComponent<CanvasGroup>();
-                if(dragged==null || dragged.InstanceID!=card.InstanceID)group.alpha=card.Definition.ManaCost>me.CurrentMana ? 0.46f : 1;
+                if(dragged==null || dragged.InstanceID!=card.InstanceID)group.alpha=!combinationMode && card.Definition.ManaCost>me.CurrentMana ? 0.46f : 1;
                 var motion=rect.GetComponent<HandCardMotion>(); motion.Held=dragged!=null && dragged.InstanceID==card.InstanceID;
                 motion.Layout(new Vector2(-total/2+width/2+i*(width+gap),handID==card.InstanceID ? 10 : 0),new Vector2(width,width*1.22f),handReflowDuration,created);
                 cardViews[card.InstanceID]=rect;
@@ -115,9 +115,15 @@ namespace Unknown.Battle
         IEnumerator InitialHandPresentation(IReadOnlyList<BattleEvent> entries)
         {
             transitioning=true;
+            clock.Begin(Mathf.Max(1,turnDuration),Time.realtimeSinceStartupAsDouble); ShowRefillFeedback(entries);
             yield return animations.Play(entries);
             animations.ClearAction(); transitioning=false; Refresh();
             clock.Begin(Mathf.Max(1,turnDuration),Time.realtimeSinceStartupAsDouble);
+        }
+        void ShowRefillFeedback(IReadOnlyList<BattleEvent> entries)
+        {
+            var refill=entries.FirstOrDefault(e=>e.Kind==BattleEventKind.HandRefill && e.Owner==ViewPlayer);
+            if(refill!=null)Toast("손패 소진 — 카드 "+refill.Amount+"장 보충");
         }
     }
 }

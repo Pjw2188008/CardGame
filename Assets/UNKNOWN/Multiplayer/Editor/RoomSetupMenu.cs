@@ -51,6 +51,7 @@ namespace Unknown.Multiplayer.Editor
             Undo.SetCurrentGroupName("Install UNKNOWN room test");
             int group = Undo.GetCurrentGroup();
             if (manager.GetComponent<RoomController>() == null) Undo.AddComponent<RoomController>(manager.gameObject);
+            if (manager.GetComponent<NetworkBattleController>() == null) Undo.AddComponent<NetworkBattleController>(manager.gameObject);
             if (manager.GetComponent<RoomTestUI>() == null) Undo.AddComponent<RoomTestUI>(manager.gameObject);
             // Preserve existing Widgets, but stop a second session/authentication flow from running beside this UI.
             var widgets = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None)

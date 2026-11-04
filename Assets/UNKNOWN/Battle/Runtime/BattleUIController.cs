@@ -15,7 +15,7 @@ namespace Unknown.Battle
         [SerializeField] int fieldSlots = 5;
         [SerializeField] int seed;
         [SerializeField] bool revealHands;
-        [SerializeField, Min(1)] float turnDuration = 60;
+        [SerializeField, Min(1)] float turnDuration = 40;
         readonly TurnClock clock = new TurnClock();
         CardAnimationController animations;
         IReadOnlyList<BattleEvent> queuedTurnEvents;
@@ -94,13 +94,14 @@ namespace Unknown.Battle
             enemyBoard.sizeDelta = ownBoard.sizeDelta = new Vector2(1060, 220);
             divider = Box(battlefield, "Field Divider", new Vector2(0.08f, 0.62f), new Vector2(0.92f, 0.622f), new Color(0.3f, 0.4f, 0.48f)).GetComponent<Image>();
             turnText = Label(battlefield, "", new Vector2(0.10f, 0.59f), new Vector2(0.30f, 0.62f), 21, gold);
-            timerText = Label(battlefield, "60", new Vector2(0.12f, 0.543f), new Vector2(0.28f, 0.59f), 30, Color.white);
+            timerText = Label(battlefield, "40", new Vector2(0.12f, 0.543f), new Vector2(0.28f, 0.59f), 30, Color.white);
             var track = Box(battlefield, "Time gauge", new Vector2(0.12f, 0.531f), new Vector2(0.28f, 0.536f), panel);
             timerFill = Box(track, "Time remaining", Vector2.zero, Vector2.one, ready).GetComponent<Image>();
             endTurn = ActionButton(battlefield, "턴 종료", new Vector2(0.75f, 0.545f), new Vector2(0.87f, 0.595f), EndTurn);
             directAttack = ActionButton(battlefield, "상대 직접 공격", new Vector2(0.82f, 0.932f), new Vector2(0.98f, 0.957f), AttackPlayer);
             BuildCombinationSlots();
-            combineButton = ActionButton(battlefield, "조합", new Vector2(0.43f, 0.502f), new Vector2(0.57f, 0.533f), Combine);
+            combineButton = ActionButton(battlefield, "UNKNOWN 조합", new Vector2(0.42f, 0.502f), new Vector2(0.58f, 0.533f), Combine);
+            combineButton.gameObject.AddComponent<CardHover>().Configure(ShowCombinationPreview,HideTooltip,false,false);
             selectionInfo = Label(battlefield, "", new Vector2(0.34f, 0.534f), new Vector2(0.66f, 0.56f), 16, gold);
             notice = Label(battlefield, "", new Vector2(0.29f, 0.30f), new Vector2(0.71f, 0.329f), 17, gold);
             log = Label(battlefield, "", new Vector2(0.015f, 0.025f), new Vector2(0.165f, 0.185f), 13, new Color(0.65f, 0.72f, 0.8f)); log.alignment = TextAnchor.LowerLeft;
@@ -211,7 +212,7 @@ namespace Unknown.Battle
         {
             foreach (Transform child in parent) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
         }
-        void ClearSelection() { EndAttackDrag(); EndCardDrag(); HideTooltip(); handID = attackerID = jokerTarget = aceID = faceID = -1; }
+        void ClearSelection() { EndAttackDrag(); EndCardDrag(); HideTooltip(); combinationMode=false; handID = attackerID = jokerTarget = aceID = faceID = -1; }
         CardInstance SelectedHand => engine.State.Players[ViewPlayer].Hand.FirstOrDefault(c => c.InstanceID == handID);
         void Result(bool success, string message = "")
         {
@@ -263,6 +264,7 @@ namespace Unknown.Battle
             {
                 yield return animations.Banner(engine.State.ActivePlayer == 0 ? "YOUR TURN" : "OPPONENT TURN", gold, 0.5f);
                 var draws = queuedTurnEvents ?? engine.DrainEvents(); queuedTurnEvents=null; PrepareHandPlayback(draws);
+                ShowRefillFeedback(draws);
                 yield return animations.Play(draws);
             }
             finally { animations.ClearAction(); transitioning = false; }
@@ -299,7 +301,8 @@ namespace Unknown.Battle
         }
         void SelectHand(CardInstance card)
         {
-            if (Blocked()) return;
+            if (Blocked() || card==null) return;
+            if(combinationMode) { SelectCombinationMaterial(card); return; }
             if (engine.NeedsTarget) { feedback = engine.TargetPrompt; Refresh(); return; }
             attackerID = jokerTarget = -1;
             handID = handID == card.InstanceID ? -1 : card.InstanceID;
@@ -317,7 +320,7 @@ namespace Unknown.Battle
         }
         void ClickSlot(int owner, int slot)
         {
-            if (Blocked()) return;
+            if (Blocked() || combinationMode) return;
             int active = ViewPlayer;
             if (engine.NeedsTarget) { Dispatch(BattleAction.Target, owner, slot, () => engine.SelectEffectTarget(active, owner, slot), "소환 효과 처리"); return; }
             var unit = engine.State.Players[owner].Board[slot];
@@ -346,7 +349,7 @@ namespace Unknown.Battle
         }
         void Combine()
         {
-            if (Blocked() || engine.NeedsTarget || engine.CombinationPreview(ViewPlayer, aceID, faceID)==null) return;
+            if (!combinationMode || Blocked() || engine.NeedsTarget || engine.CombinationPreview(ViewPlayer, aceID, faceID)==null) return;
             int ace=aceID, face=faceID, actor=ViewPlayer;
             Dispatch(BattleAction.Combine, ace, face, () => engine.Combine(actor, ace, face), "UNKNOWN 생성");
         }
@@ -444,7 +447,7 @@ namespace Unknown.Battle
         {
             bool allowed = !Blocked();
             endTurn.interactable = allowed && !engine.NeedsTarget;
-            combineButton.interactable = allowed && !engine.NeedsTarget && engine.CombinationPreview(ViewPlayer,aceID,faceID)!=null;
+            RefreshCombinationSlots();
             directAttack.interactable = allowed && !engine.NeedsTarget && attackerID >= 0 && engine.State.Players[1 - ViewPlayer].Board.All(c => c == null);
             revealButton.interactable = allowed;
             newGameButton.interactable = !actionBusy && !transitioning;
@@ -464,7 +467,7 @@ namespace Unknown.Battle
                 if (!actionBusy) StartCoroutine(ActionPresentation(engine.DrainEvents()));
             }
             timerText.text = IsPaused ? "PAUSED" : engine.State.TurnExpired || clock.Expired ? "TIME OUT" : Math.Ceiling(clock.Remaining).ToString("00") + "s";
-            Color timeColor = clock.Remaining <= 10 ? new Color(1, 0.24f, 0.24f) : Color.white;
+            Color timeColor = TimerColor(clock.Remaining);
             if (clock.Remaining <= 5 && clock.Remaining > 0) timeColor.a = 0.4f + 0.6f * Mathf.Abs(Mathf.Sin(Time.unscaledTime * 7));
             timerText.color = timeColor; timerFill.color = timeColor;
             timerFill.rectTransform.anchorMax = new Vector2(clock.Duration > 0 ? (float)(clock.Remaining / clock.Duration) : 1, 1);
@@ -473,6 +476,7 @@ namespace Unknown.Battle
             divider.color = Color.Lerp(new Color(0.3f, 0.4f, 0.48f), gold, pulse * 2);
         }
         void OnApplicationPause(bool value) { applicationPaused = value; if(value)EndAttackDrag(); }
+        static Color TimerColor(double seconds) => seconds<=5 ? new Color(1,0.24f,0.24f) : seconds<=10 ? new Color(1,0.62f,0.18f) : Color.white;
         void OnApplicationFocus(bool focused) { if(!focused)EndAttackDrag(); }
         void OnDestroy() { EndAttackDrag(); EndCardDrag(); StopOnline(); if (font != null) Destroy(font); }
     }

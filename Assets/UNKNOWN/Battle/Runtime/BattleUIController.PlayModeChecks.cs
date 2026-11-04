@@ -47,7 +47,7 @@ namespace Unknown.Battle
             engine = new BattleEngine(10, new BattleConfig { StartingHand = 0, StartingMana = 10, ManaCap = 10, ShuffleDecks = false }, new CheckDice(dice));
             foreach (var player in engine.State.Players) player.HandCards.Clear();
             ResetHandViews();
-            engine.DrainEvents(); clock.Begin(60, Time.realtimeSinceStartupAsDouble);
+            engine.DrainEvents(); clock.Begin(40, Time.realtimeSinceStartupAsDouble);
             feedback = "PLAY MODE INTEGRATION CHECK";
         }
         CardInstance CheckHand(string id, int owner = 0)

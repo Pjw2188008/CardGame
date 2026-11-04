@@ -103,7 +103,7 @@ static class BattleRulesTests
             Equal(2, b.Attack); Equal(4,b.CurrentHP); Equal(2,CardDatabase.Get("Heart_3").Attack);
         });
         Test("turn ownership and turn-start draw", () => {
-            var g = Fresh(); Check(!g.EndTurn(1)); Check(g.EndTurn(0)); Equal(1,g.State.ActivePlayer); Equal(2,g.State.TurnNumber); Equal(1,g.State.Players[1].Hand.Count);
+            var g = Fresh(); Check(!g.EndTurn(1)); Check(g.EndTurn(0)); Equal(1,g.State.ActivePlayer); Equal(2,g.State.TurnNumber); Equal(5,g.State.Players[1].Hand.Count);
         });
         Test("multiple affordable summons share mana rather than per-turn count", () => {
             var g = Fresh(); var a = Hand(g,0,"Diamond_2"); var b=Hand(g,0,"Diamond_3");
@@ -467,6 +467,43 @@ static class BattleRulesTests
                 var v=BattleEngine.CreateView(s); Check(v.State.Players[0].Board[0]==null);
                 Equal("Diamond_2",v.State.Players[0].Board[4].Definition.CardID); Equal("Club_K",v.State.Players[1].Board[1].Definition.CardID);
             }
+        });
+        Test("empty hand refills exactly five only at the next own turn", () => {
+            var g=Fresh(); g.DrainEvents(); int before=g.State.Players[1].DeckCount;
+            Check(g.EndTurn(0)); Equal(5,g.State.Players[1].Hand.Count); Equal(before-5,g.State.Players[1].DeckCount);
+            var e=g.DrainEvents(); Equal(5,e.Count(x=>x.Kind==BattleEventKind.Draw)); Equal(5,e.Single(x=>x.Kind==BattleEventKind.HandRefill).Amount);
+            g.State.Players[1].HandCards.Clear(); Equal(0,g.State.Players[1].Hand.Count); Equal(0,g.DrainEvents().Count);
+        });
+        Test("nonempty hands one through five receive only the ordinary one-card draw", () => {
+            for(int count=1;count<=5;count++) {
+                var g=Fresh(); for(int i=0;i<count;i++)Hand(g,1,"Heart_2"); g.DrainEvents(); Check(g.EndTurn(0));
+                Equal(count+1,g.State.Players[1].Hand.Count); var e=g.DrainEvents(); Equal(1,e.Count(x=>x.Kind==BattleEventKind.Draw)); Check(e.All(x=>x.Kind!=BattleEventKind.HandRefill));
+            }
+        });
+        Test("refill uses only remaining deck cards and never rebuilds an empty deck", () => {
+            foreach(int remaining in new[]{0,1,3,5,10}) {
+                var g=Fresh(); var p=g.State.Players[1]; p.DeckCards.RemoveRange(remaining,p.DeckCards.Count-remaining); g.DrainEvents();
+                Check(g.EndTurn(0)); int expected=Math.Min(5,remaining); Equal(expected,p.Hand.Count); Equal(remaining-expected,p.DeckCount);
+                var e=g.DrainEvents(); Equal(expected,e.Count(x=>x.Kind==BattleEventKind.Draw)); Equal(expected,e.Single(x=>x.Kind==BattleEventKind.HandRefill).Amount);
+                Check(g.EndTurn(1)); Check(g.EndTurn(0)); Check(p.Hand.Count<=remaining);
+            }
+        });
+        Test("refill projection exposes definitions and refill notice only to the owner", () => {
+            var g=Fresh(); g.DrainEvents(); Check(g.EndTurn(0)); var e=g.DrainEvents();
+            var own=BattleSnapshot.For(g,1,1,0,true,e,40,false); var other=BattleSnapshot.For(g,0,1,0,true,e,40,false);
+            Equal(5,own.players[1].hand.Length); Equal(0,other.players[1].hand.Length); Equal(5,other.players[1].handCount);
+            Equal(1,own.events.Count(x=>x.kind==BattleEventKind.HandRefill)); Equal(0,other.events.Count(x=>x.kind==BattleEventKind.HandRefill));
+            Check(other.events.Where(x=>x.kind==BattleEventKind.Draw).All(x=>x.target==-1 && x.definition==null));
+            Equal(40.0,own.turnDuration); Check(!own.clockRunning && own.busy); Equal(0,g.DrainEvents().Count);
+        });
+        Test("Host rejects forged combination materials and duplicate confirmation without spending", () => {
+            var a=new BattleAuthority(15); var g=a.Engine; g.State.Players[0].HandCards.Clear();
+            var ace=Hand(g,0,"Heart_A"); var face=Hand(g,0,"Club_Q"); var foreign=Hand(g,1,"Heart_K"); int sequence=0;
+            foreach(var pair in new[]{new[]{ace.InstanceID,ace.InstanceID},new[]{ace.InstanceID,foreign.InstanceID},new[]{face.InstanceID,ace.InstanceID},new[]{ace.InstanceID,int.MaxValue}})
+                Check(!a.Execute(0,new BattleIntent{sequence=++sequence,revision=0,turn=g.State.TurnNumber,action=BattleAction.Combine,first=pair[0],second=pair[1]}));
+            Equal(2,g.State.Players[0].Hand.Count); int mana=g.State.Players[0].CurrentMana;
+            var valid=new BattleIntent{sequence=++sequence,revision=0,turn=g.State.TurnNumber,action=BattleAction.Combine,first=ace.InstanceID,second=face.InstanceID};
+            Check(a.Execute(0,valid)); Check(!a.Execute(0,valid)); Equal(1,g.State.Players[0].UnknownCreated); Equal(mana,g.State.Players[0].CurrentMana);
         });
         Console.WriteLine($"RESULT: {passed} passed, {failed} failed");
         return failed == 0 ? 0 : 1;

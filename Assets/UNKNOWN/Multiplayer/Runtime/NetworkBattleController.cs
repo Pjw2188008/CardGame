@@ -11,8 +11,10 @@ namespace Unknown.Multiplayer
     [DisallowMultipleComponent, RequireComponent(typeof(RoomController))]
     public sealed class NetworkBattleController : MonoBehaviour
     {
-        // v2 attack intents carry target instance IDs rather than slot numbers. Both peers must use this build.
-        const string Request = "UNKNOWN.Intent.v2", State = "UNKNOWN.State.v2", Ready = "UNKNOWN.Ready.v2", Lobby = "UNKNOWN.Lobby.v2";
+        // v3 adds Host-owned turn duration and a turn-start presentation barrier. Use the same build on both peers.
+        const string Request = "UNKNOWN.Intent.v3", State = "UNKNOWN.State.v3", Ready = "UNKNOWN.Ready.v3", Lobby = "UNKNOWN.Lobby.v3", Presented = "UNKNOWN.Presented.v3";
+        [SerializeField, Min(1)] float turnDuration = 40;
+        public double TurnDuration => Math.Max(1, turnDuration);
         public event Action Changed;
         public event Action<BattleSnapshot> SnapshotReceived;
         public BattleSnapshot Snapshot { get; private set; }
@@ -24,14 +26,15 @@ namespace Unknown.Multiplayer
         public string Failure { get; private set; } = "";
         public bool Sending { get; private set; }
         public string ActionError { get; private set; } = "";
-        public double Remaining => Snapshot == null ? 60 : Snapshot.winner >= 0 ? 0 : Math.Max(0, Snapshot.deadline - Manager.ServerTime.Time);
-        public bool CanAct => Snapshot != null && !Snapshot.busy && !Sending && Snapshot.active == LocalPlayer && Snapshot.winner < 0 && Remaining > 0 && string.IsNullOrEmpty(Failure);
+        public double Remaining => Snapshot == null ? TurnDuration : Snapshot.winner >= 0 ? 0 : !Snapshot.clockRunning ? Snapshot.turnDuration : Math.Min(Snapshot.turnDuration, Math.Max(0, Snapshot.deadline - Manager.ServerTime.Time));
+        public bool CanAct => Snapshot != null && Snapshot.clockRunning && !Snapshot.busy && !Sending && Snapshot.active == LocalPlayer && Snapshot.winner < 0 && Remaining > 0 && string.IsNullOrEmpty(Failure);
         NetworkManager Manager => GetComponent<NetworkManager>();
         RoomController room;
         CustomMessagingManager messages;
         BattleAuthority authority;
         int sequence, lastRevision = -1, previousCount;
         bool busy;
+        bool clockRunning, waitingForTurnPresentation, hostPresented, guestPresented;
         double deadline;
         float nextLobby;
         void Awake() { room = GetComponent<RoomController>(); }
@@ -54,6 +57,7 @@ namespace Unknown.Multiplayer
                 messages.RegisterNamedMessageHandler(State, OnState);
                 messages.RegisterNamedMessageHandler(Ready, OnReady);
                 messages.RegisterNamedMessageHandler(Lobby, OnLobby);
+                messages.RegisterNamedMessageHandler(Presented, OnPresented);
             }
             if (nm.IsHost && !room.HasStarted && (previousCount != nm.ConnectedClientsIds.Count || Time.unscaledTime >= nextLobby))
             {
@@ -63,10 +67,11 @@ namespace Unknown.Multiplayer
             if (!nm.IsHost || !room.HasStarted) return;
             if (authority == null)
             {
-                authority = new BattleAuthority(NetworkBattleSmokeRunner.SeedOverride ?? Environment.TickCount); deadline = nm.ServerTime.Time + 60;
+                authority = new BattleAuthority(NetworkBattleSmokeRunner.SeedOverride ?? Environment.TickCount,
+                    NetworkBattleSmokeRunner.SystemsCheck ? new BattleConfig { StartingHand=0 } : null); PrepareTurnClock();
                 busy = true; Publish(authority.Engine.DrainEvents());
             }
-            if (!authority.Engine.State.IsOver && nm.ServerTime.Time >= deadline && !authority.Engine.State.TurnExpired)
+            if (clockRunning && !authority.Engine.State.IsOver && nm.ServerTime.Time >= deadline && !authority.Engine.State.TurnExpired)
             {
                 authority.Engine.ExpireTurn(authority.Engine.State.ActivePlayer);
                 // Keep an accepted action's events in order; it will publish expiry after its presentation.
@@ -111,31 +116,58 @@ namespace Unknown.Multiplayer
         void Execute(int actor, BattleIntent intent)
         {
             // Consume valid sequence numbers even while busy, then reject without mutating rules.
-            if (busy || Manager.ServerTime.Time >= deadline || authority.Engine.State.IsOver)
+            if (busy || !clockRunning || Manager.ServerTime.Time >= deadline || authority.Engine.State.IsOver)
             {
                 if (intent != null) authority.RejectSequence(actor, intent.sequence);
                 Reply(actor); return;
             }
             int oldTurn = authority.Engine.State.TurnNumber;
             if (!authority.Execute(actor, intent)) { Reply(actor); return; }
-            if (oldTurn != authority.Engine.State.TurnNumber) deadline = Manager.ServerTime.Time + 60;
+            if (oldTurn != authority.Engine.State.TurnNumber) PrepareTurnClock();
             busy = true; Publish(authority.Engine.DrainEvents());
         }
         public void PresentationFinished(int revision)
         {
+            if (!Manager.IsHost)
+            {
+                if (Snapshot!=null && revision==Snapshot.revision && Snapshot.busy && !Snapshot.clockRunning)
+                    Send(Presented,0,revision.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                return;
+            }
             if (!Manager.IsHost || authority == null || revision != authority.Revision || !busy) return;
+            FinishPresentation(0,revision);
+        }
+        void PrepareTurnClock()
+        {
+            clockRunning=false; deadline=0; waitingForTurnPresentation=true; hostPresented=guestPresented=false;
+        }
+        void OnPresented(ulong sender,FastBufferReader reader)
+        {
+            if(!Manager.IsHost || sender==0 || !Manager.ConnectedClientsIds.Contains(sender) || !Read(reader,out var text) || !int.TryParse(text,out int revision))return;
+            FinishPresentation(1,revision);
+        }
+        void FinishPresentation(int actor,int revision)
+        {
+            if(authority==null || !busy || revision!=authority.Revision)return;
+            if(waitingForTurnPresentation)
+            {
+                if(actor==0)hostPresented=true; else guestPresented=true;
+                if(!hostPresented || !guestPresented)return;
+                waitingForTurnPresentation=false; clockRunning=true; deadline=Manager.ServerTime.Time+TurnDuration;
+            }
+            else if(actor!=0)return;
             var pending = authority.Engine.DrainEvents();
             if (pending.Count > 0) { authority.AdvanceRevision(); Publish(pending); return; }
             if (authority.Engine.State.TurnExpired && !authority.Engine.State.IsOver)
             {
                 authority.Engine.FinishExpiredTurn(authority.Engine.State.ActivePlayer); authority.AdvanceRevision();
-                deadline = Manager.ServerTime.Time + 60; Publish(authority.Engine.DrainEvents()); return;
+                PrepareTurnClock(); Publish(authority.Engine.DrainEvents()); return;
             }
             busy = false; authority.AdvanceRevision(); Publish(Array.Empty<BattleEvent>());
         }
         void Reply(int actor)
         {
-            var s = BattleSnapshot.For(authority.Engine, actor, authority.Revision, deadline, busy, Array.Empty<BattleEvent>());
+            var s = BattleSnapshot.For(authority.Engine, actor, authority.Revision, deadline, busy, Array.Empty<BattleEvent>(), TurnDuration, clockRunning);
             s.error = string.IsNullOrEmpty(authority.Engine.State.LastError) ? "현재 상태에서 이 행동을 할 수 없습니다." : authority.Engine.State.LastError;
             if (actor == 0) Receive(s); else foreach (var id in Manager.ConnectedClientsIds) if (id != 0) Send(State, id, JsonUtility.ToJson(s));
         }
@@ -144,7 +176,7 @@ namespace Unknown.Multiplayer
             foreach (var id in Manager.ConnectedClientsIds)
             {
                 int owner = id == 0 ? 0 : 1;
-                var s = BattleSnapshot.For(authority.Engine, owner, authority.Revision, deadline, busy, events);
+                var s = BattleSnapshot.For(authority.Engine, owner, authority.Revision, deadline, busy, events, TurnDuration, clockRunning);
                 if (owner == 0) Receive(s); else Send(State, id, JsonUtility.ToJson(s));
             }
         }
@@ -182,12 +214,14 @@ namespace Unknown.Multiplayer
         {
             if (messages == null) return;
             messages.UnregisterNamedMessageHandler(Request); messages.UnregisterNamedMessageHandler(State);
-            messages.UnregisterNamedMessageHandler(Ready); messages.UnregisterNamedMessageHandler(Lobby); messages = null;
+            messages.UnregisterNamedMessageHandler(Ready); messages.UnregisterNamedMessageHandler(Lobby);
+            messages.UnregisterNamedMessageHandler(Presented); messages = null;
         }
         void OnDestroy() { Unregister(); }
         public void ResetMatch()
         {
             authority = null; Snapshot = null; busy = false; Sending = false; Failure = "";
+            clockRunning=waitingForTurnPresentation=hostPresented=guestPresented=false;
             lastRevision = -1; sequence = 0; HostReady = GuestReady = false; Changed?.Invoke();
         }
     }

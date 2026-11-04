@@ -21,21 +21,54 @@ namespace Unknown.Battle
         float toastUntil;
         string toastText="";
         int layoutWidth,layoutHeight;
+        bool combinationMode;
+        int combinationTurn;
+        Button combinationModeButton;
+        readonly Color combinationPurple=new Color(0.76f,0.38f,1);
         void BuildCombinationSlots()
         {
-            aceSlot=Box(battlefield,"UNKNOWN A Slot",new Vector2(0.39f,0.563f),new Vector2(0.46f,0.611f),panel);
-            faceSlot=Box(battlefield,"UNKNOWN Face Slot",new Vector2(0.54f,0.563f),new Vector2(0.61f,0.611f),panel);
+            aceSlot=Box(battlefield,"UNKNOWN A Slot",new Vector2(0.34f,0.565f),new Vector2(0.425f,0.611f),panel);
+            faceSlot=Box(battlefield,"UNKNOWN Face Slot",new Vector2(0.575f,0.565f),new Vector2(0.66f,0.611f),panel);
             aceSlotText=Label(aceSlot,"A",Vector2.zero,Vector2.one,21,Color.white);
             faceSlotText=Label(faceSlot,"J / Q / K",Vector2.zero,Vector2.one,18,Color.white);
-            Label(battlefield,"+",new Vector2(0.47f,0.565f),new Vector2(0.53f,0.61f),22,gold);
-            aceSlot.gameObject.AddComponent<CardDropZone>().Configure(this,CardDropKind.Ace);
-            faceSlot.gameObject.AddComponent<CardDropZone>().Configure(this,CardDropKind.Face);
-            aceSlot.gameObject.AddComponent<Button>().onClick.AddListener(()=> { aceID=-1; RefreshCombinationSlots(); });
-            faceSlot.gameObject.AddComponent<Button>().onClick.AddListener(()=> { faceID=-1; RefreshCombinationSlots(); });
+            combinationModeButton=ActionButton(battlefield,"조합 선택",new Vector2(0.435f,0.575f),new Vector2(0.565f,0.611f),ToggleCombinationMode);
+            aceSlot.gameObject.AddComponent<Button>().onClick.AddListener(()=>CombinationSlotClick(true));
+            faceSlot.gameObject.AddComponent<Button>().onClick.AddListener(()=>CombinationSlotClick(false));
+        }
+        void ToggleCombinationMode()
+        {
+            if(Blocked() || engine.NeedsTarget || AttackDragging || dragged!=null)return;
+            bool enter=!combinationMode; ClearSelection(); combinationMode=enter; combinationTurn=engine.State.TurnNumber;
+            RefreshCombinationSlots(); RefreshHands(engine.State.Players[ViewPlayer],engine.State.Players[1-ViewPlayer]);
+        }
+        void CombinationSlotClick(bool ace)
+        {
+            if(!combinationMode) { ToggleCombinationMode(); return; }
+            if(Blocked())return;
+            if(ace)aceID=-1; else faceID=-1;
+            RefreshCombinationSlots(); RefreshHands(engine.State.Players[ViewPlayer],engine.State.Players[1-ViewPlayer]);
+        }
+        void SelectCombinationMaterial(CardInstance card)
+        {
+            if(!combinationMode || Blocked() || engine.NeedsTarget || card==null || card.Owner!=ViewPlayer || !engine.State.Players[ViewPlayer].Hand.Any(c=>c!=null && c.InstanceID==card.InstanceID))return;
+            if(card.Definition.CardType!=CardType.Normal) { Toast("손패의 A와 J/Q/K를 선택하세요"); return; }
+            var rank=card.Definition.Rank;
+            if(rank==Rank.Ace)aceID=aceID==card.InstanceID ? -1 : card.InstanceID;
+            else if(rank>=Rank.Jack && rank<=Rank.King)faceID=faceID==card.InstanceID ? -1 : card.InstanceID;
+            else { Toast("손패의 A와 J/Q/K를 선택하세요"); return; }
+            handID=attackerID=jokerTarget=-1;
+            RefreshCombinationSlots(); RefreshHands(engine.State.Players[ViewPlayer],engine.State.Players[1-ViewPlayer]);
+        }
+        void ShowCombinationPreview(PointerEventData data)
+        {
+            if(engine==null || AttackDragging || dragged!=null)return;
+            var result=engine.CombinationPreview(ViewPlayer,aceID,faceID);
+            detail.text=result==null ? "조합 선택 후 손패의 A와 J/Q/K를 클릭하세요" : result.CardName+"\n공격 "+result.Attack+" · 체력 "+result.MaxHP+"\n"+result.Description+"\n조합 비용 0 MP";
+            PositionTooltip(data);
         }
         void RefreshCombinationSlots()
         {
-            if(engine==null) return;
+            if(engine==null || ViewPlayer<0 || ViewPlayer>1) return;
             var hand=engine.State.Players[ViewPlayer].Hand;
             var ace=hand.FirstOrDefault(c=>c!=null && c.InstanceID==aceID);
             var face=hand.FirstOrDefault(c=>c!=null && c.InstanceID==faceID);
@@ -46,7 +79,11 @@ namespace Unknown.Battle
             faceSlot.GetComponent<Image>().color=face==null ? panel : new Color(0.28f,0.16f,0.38f);
             var result=engine.CombinationPreview(ViewPlayer,aceID,faceID);
             selectionInfo.text=result==null ? "" : "A + "+CardDatabase.RankText(face.Definition.Rank)+" = "+result.CardName;
-            if(combineButton!=null) combineButton.interactable=!Blocked() && !engine.NeedsTarget && result!=null;
+            if(combineButton!=null) combineButton.interactable=combinationMode && !Blocked() && !engine.NeedsTarget && result!=null;
+            if(combinationModeButton!=null) {
+                combinationModeButton.interactable=!Blocked() && !engine.NeedsTarget && !AttackDragging && dragged==null;
+                combinationModeButton.GetComponentInChildren<Text>().text=combinationMode ? "선택 취소" : "조합 선택";
+            }
         }
         void BuildTooltip()
         {
@@ -84,7 +121,7 @@ namespace Unknown.Battle
         void Toast(string text) { toastText=text; toastUntil=Time.unscaledTime+2.5f; }
         public bool BeginCardDrag(int id,RectTransform original,PointerEventData data)
         {
-            if(data.button!=PointerEventData.InputButton.Left || AttackDragging || dragged!=null || Blocked() || engine.NeedsTarget || original==null) return false;
+            if(data.button!=PointerEventData.InputButton.Left || combinationMode || AttackDragging || dragged!=null || Blocked() || engine.NeedsTarget || original==null) return false;
             var card=engine.State.Players[ViewPlayer].Hand.FirstOrDefault(c=>c!=null && c.InstanceID==id);
             if(card==null) return false;
             var d=card.Definition;
@@ -113,8 +150,6 @@ namespace Unknown.Battle
             if(dragged==null || zone==null || Blocked() || engine.NeedsTarget || dragged.Owner!=ViewPlayer
                 || !engine.State.Players[ViewPlayer].Hand.Any(c=>c!=null && c.InstanceID==dragged.InstanceID)) return false;
             var d=dragged.Definition;
-            if(zone.Kind==CardDropKind.Ace) return d.CardType==CardType.Normal && d.Rank==Rank.Ace;
-            if(zone.Kind==CardDropKind.Face) return d.CardType==CardType.Normal && d.Rank>=Rank.Jack && d.Rank<=Rank.King;
             if(zone.Kind!=CardDropKind.Unit || zone.Owner!=ViewPlayer || zone.Slot<0 || zone.Slot>=engine.Config.FieldSlots) return false;
             var unit=engine.State.Players[ViewPlayer].Board[zone.Slot];
             if(d.CardType!=CardType.Joker) return unit==null && engine.State.Players[ViewPlayer].CurrentMana>=d.ManaCost;
@@ -145,8 +180,6 @@ namespace Unknown.Battle
             bool joker=dragged.Definition.CardType==CardType.Joker;
             int target=kind==CardDropKind.Unit && joker ? engine.State.Players[actor].Board[slot].InstanceID : -1;
             EndCardDrag(); // Clear before dispatch: duplicate Drop/EndDrag cannot submit twice.
-            if(kind==CardDropKind.Ace) { aceID=id; RefreshCombinationSlots(); return true; }
-            if(kind==CardDropKind.Face) { faceID=id; RefreshCombinationSlots(); return true; }
             if(joker)Dispatch(BattleAction.Joker,id,target,()=>engine.Gamble(actor,id,target),"JOKER");
             else Dispatch(BattleAction.Summon,id,slot,()=>engine.Summon(actor,id,slot),"소환 완료"); return true;
         }
@@ -163,6 +196,7 @@ namespace Unknown.Battle
                 CancelInteractionSelection();
             if(dragged!=null && (Blocked() || engine.NeedsTarget)) EndCardDrag();
             if(AttackDragging && !ReadyToAttack(BoardCard(attackDragID)))EndAttackDrag();
+            if(combinationMode && (Blocked() || engine.NeedsTarget || combinationTurn!=engine.State.TurnNumber))CancelInteractionSelection();
             UpdateAttackPointer();
             notice.text=engine.NeedsTarget && engine.State.ActivePlayer==ViewPlayer ? engine.TargetPrompt : Time.unscaledTime<toastUntil ? toastText : "";
             if(layoutWidth==Screen.width && layoutHeight==Screen.height) return;
@@ -172,7 +206,7 @@ namespace Unknown.Battle
             if(!actionBusy && !transitioning) Refresh();
         }
         void CancelInteractionSelection()
-        { EndAttackDrag(); EndCardDrag(); aceID=faceID=handID=attackerID=-1; RefreshCombinationSlots(); }
+        { EndAttackDrag(); EndCardDrag(); combinationMode=false; aceID=faceID=handID=attackerID=-1; RefreshCombinationSlots(); if(engine!=null && ViewPlayer>=0 && ViewPlayer<2)RefreshHands(engine.State.Players[ViewPlayer],engine.State.Players[1-ViewPlayer]); }
         internal bool SmokeDrag(int id,CardDropKind kind,int slot=-1)
         {
             if(!Debug.isDebugBuild || !Environment.GetCommandLineArgs().Contains("-unknownSmoke") || !cardViews.TryGetValue(id,out var view)) return false;
@@ -184,7 +218,10 @@ namespace Unknown.Battle
         }
         internal bool SmokeCombine(int ace,int face)
         {
-            if(!SmokeDrag(ace,CardDropKind.Ace) || !SmokeDrag(face,CardDropKind.Face)) return false;
+            if(!Debug.isDebugBuild || !Environment.GetCommandLineArgs().Contains("-unknownSmoke"))return false;
+            if(!combinationMode)ToggleCombinationMode();
+            if(!handViews.TryGetValue(ace,out var aceView) || !handViews.TryGetValue(face,out var faceView))return false;
+            aceView.GetComponent<Button>().onClick.Invoke(); faceView.GetComponent<Button>().onClick.Invoke();
             if(!combineButton.interactable) return false;
             combineButton.onClick.Invoke(); return true;
         }
