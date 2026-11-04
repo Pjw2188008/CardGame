@@ -24,7 +24,6 @@ namespace Unknown.Multiplayer
         Label status, error, code, players, player1, player2, gameCode, waiting, busyMark;
         TextField input;
         Button create, start, gameLeave, copy;
-        Button mapChoice;
         Page currentPage;
         bool pageInitialized;
         int transition;
@@ -117,7 +116,8 @@ namespace Unknown.Multiplayer
             player1 = Seat(seats, "I");
             player2 = Seat(seats, "II");
             waiting = Text(lobby, "", "waiting-note");
-            mapChoice=MenuButton(lobby,"맵: 일반 전장",()=> { networkBattle.SelectMap(networkBattle.SelectedMap==Unknown.Battle.BattleMap.Normal ? Unknown.Battle.BattleMap.JokerGame : Unknown.Battle.BattleMap.Normal); return Task.CompletedTask; });
+            Text(lobby,"맵: RANDOM","player-count");
+            Text(lobby,"경기 시작 시 전장이 무작위로 결정됩니다.","waiting-note");
             MenuButton(lobby, "준비 / 준비 취소", () => { networkBattle.ToggleReady(); return Task.CompletedTask; });
             start = MenuButton(lobby, "게임 시작", () => room.StartGameAsync());
             MenuButton(lobby, "방 나가기", () => room.LeaveRoomAsync(), true);
@@ -262,8 +262,6 @@ namespace Unknown.Multiplayer
             if (session.PlayerCount == 2) player2.text += networkBattle.GuestReady ? "\n준비 완료" : "\n준비 전";
             player2.parent.EnableInClassList("seat-empty", session.PlayerCount < 2);
             start.style.display = session.IsHost ? DisplayStyle.Flex : DisplayStyle.None;
-            mapChoice.SetEnabled(session.IsHost && !room.Busy && !room.HasStarted);
-            mapChoice.Q<Label>(className:"action-text").text="맵: "+(networkBattle.SelectedMap==Unknown.Battle.BattleMap.JokerGame ? "조커의 유희" : "일반 전장");
             waiting.text = session.PlayerCount < 2 ? "상대를 기다리는 중"
                 : room.CanStart ? "시작 가능" : session.IsHost ? "두 플레이어 모두 준비해 주세요" : "방장이 시작하기를 기다립니다.";
             gameCode.text = $"{session.Code}    ·    {session.PlayerCount} / 2";

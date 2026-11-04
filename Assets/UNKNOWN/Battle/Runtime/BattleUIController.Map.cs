@@ -8,11 +8,43 @@ namespace Unknown.Battle
     {
         readonly HashSet<int> presentedMapEvents=new HashSet<int>();
         RectTransform mapDecor;
-        Text mapHeader,mapStatus;
+        Text mapHeader,mapStatus,normalMapName;
+        bool mapIntroPresented;
+        RectTransform mapIntro;
+        internal int MapIntroCount { get; private set; }
+        internal bool IsMapIntroActive => mapIntro!=null && mapIntro.gameObject.activeSelf;
+        static string MapTitle(BattleMap map) => map==BattleMap.JokerGame ? "JOKER'S GAME" : "NORMAL BATTLEFIELD";
+        static string MapDescription(BattleMap map) => map==BattleMap.JokerGame
+            ? "매 턴 무작위 사건 발생\nJOKER 도박 3회 성공 또는 상대 HP 0 시 승리"
+            : "UNKNOWN 3장 생성 또는 상대 HP 0 시 승리";
+        IEnumerator PresentRandomMap(BattleMap result)
+        {
+            if(mapIntroPresented)yield break;
+            mapIntroPresented=true; MapIntroCount++;
+            mapIntro=Box(canvas.transform,"Random Map Reveal",Vector2.zero,Vector2.one,new Color(0.025f,0.015f,0.045f,1));
+            mapIntro.SetAsLastSibling(); mapIntro.GetComponent<Image>().raycastTarget=true;
+            var heading=Label(mapIntro,"RANDOM MAP",new Vector2(0.1f,0.65f),new Vector2(0.9f,0.74f),32,gold);
+            var name=Label(mapIntro,"",new Vector2(0.08f,0.47f),new Vector2(0.92f,0.62f),48,Color.white);
+            var description=Label(mapIntro,"",new Vector2(0.08f,0.28f),new Vector2(0.92f,0.44f),24,new Color(0.85f,0.75f,0.95f));
+            // Fixed visual alternation; no RNG and no authority mutation during playback.
+            double began=Time.realtimeSinceStartupAsDouble;
+            while(Time.realtimeSinceStartupAsDouble-began<2)
+            {
+                float elapsed=(float)(Time.realtimeSinceStartupAsDouble-began);
+                name.text=elapsed<0.8f ? MapTitle(((int)(elapsed/0.09f)%2)==0 ? BattleMap.Normal : BattleMap.JokerGame) : MapTitle(result);
+                description.text=elapsed<0.8f ? "" : MapDescription(result);
+                // Rapid name changes may repack a shared dynamic font atlas.
+                heading.SetVerticesDirty(); name.SetVerticesDirty(); description.SetVerticesDirty();
+                yield return null;
+            }
+            mapIntro.gameObject.SetActive(false); Destroy(mapIntro.gameObject); mapIntro=null;
+        }
         void RefreshMapUI()
         {
             if(engine==null || ViewPlayer<0 || ViewPlayer>1)return;
             bool joker=engine.Config.Map==BattleMap.JokerGame;
+            if(normalMapName==null)normalMapName=Label(battlefield,"일반 전장",new Vector2(0.015f,0.84f),new Vector2(0.18f,0.925f),20,new Color(0.8f,0.84f,0.9f));
+            normalMapName.gameObject.SetActive(!joker);
             if(joker && mapDecor==null)
             {
                 mapDecor=Box(battlefield,"Joker Map Decoration",Vector2.zero,Vector2.one,Color.clear); mapDecor.SetAsFirstSibling();

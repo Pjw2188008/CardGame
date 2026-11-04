@@ -125,7 +125,11 @@ namespace Unknown.Battle
                 var tip=RectTransformUtility.WorldToScreenPoint(camera,attackArrow.rectTransform.TransformPoint(vertices[vertices.Length-3]));
                 if(Vector2.Distance(tip,screen)>0.5f)throw new Exception("Attack tip does not meet the cursor");
                 }
-                camera.Render(); RenderTexture.active=texture;
+                // Prepare every active text before generating meshes: an offscreen resize can repack the shared font atlas.
+                var renderedText=canvas.GetComponentsInChildren<Text>();
+                foreach(var text in renderedText)if(text.font!=null)text.font.RequestCharactersInTexture(text.text,text.fontSize,text.fontStyle);
+                foreach(var text in renderedText)text.SetVerticesDirty();
+                Canvas.ForceUpdateCanvases(); camera.Render(); RenderTexture.active=texture;
                 var pixels=new Texture2D(width,width*9/16,TextureFormat.RGB24,false); pixels.ReadPixels(new Rect(0,0,width,width*9/16),0,0); pixels.Apply();
                 Directory.CreateDirectory("Library/AttackVisuals"); string path="Library/AttackVisuals/Attack-"+label+"-"+width+".png";
                 File.WriteAllBytes(path,pixels.EncodeToPNG()); Destroy(pixels); return path;

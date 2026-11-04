@@ -14,6 +14,25 @@ static partial class BattleRulesTests
     }
     static void JokerMapChecks()
     {
+        Test("Random map is unresolved in lobby and draws exactly once per match",()=>{
+            var dice=new Dice(); var maps=new RandomMapSelection(dice); Check(!maps.Current.HasValue); Equal(0,maps.DrawCount);
+            Equal(BattleMap.Normal,maps.BeginMatch()); dice.Value=1;
+            for(int i=0;i<100;i++)Equal(BattleMap.Normal,maps.BeginMatch()); Equal(1,dice.Calls); Equal(1,maps.DrawCount);
+            maps.ResetMatch(); Check(!maps.Current.HasValue); Equal(BattleMap.JokerGame,maps.BeginMatch()); Equal(2,dice.Calls); Equal(2,maps.DrawCount);
+        });
+        Test("Random maps cover both outcomes over many matches without requiring exact fifty fifty",()=>{
+            var maps=new RandomMapSelection(new SeededRandom(71)); int normal=0;
+            for(int i=0;i<10000;i++) { if(maps.BeginMatch()==BattleMap.Normal)normal++; maps.ResetMatch(); }
+            Check(normal>4500 && normal<5500,"unexpected distribution: "+normal); Equal(10000,maps.DrawCount);
+            Console.WriteLine("MAP DISTRIBUTION: Normal="+normal+", JokerGame="+(10000-normal));
+        });
+        Test("Rematch discards previous map progress and activates only new map rules",()=>{
+            foreach(var map in new[]{BattleMap.JokerGame,BattleMap.Normal,BattleMap.JokerGame}) {
+                var g=new BattleEngine(4,new BattleConfig{Map=map});
+                Check(g.State.Players.All(p=>p.JokerSuccesses==0 && p.UnknownCreated==0)); Check(!g.State.IsOver);
+                Equal(map==BattleMap.JokerGame,g.MapEvent!=null); Equal(1,g.State.TurnNumber);
+            }
+        });
         Test("Joker map has exactly fourteen unique weighted events totaling 100 percent",()=>{
             var e=JokerEventDefinition.Defaults(); Equal(14,e.Length); Equal(14,e.Select(x=>x.kind).Distinct().Count()); Equal(100,e.Sum(x=>x.weight));
             Check(e.Select(x=>x.weight).SequenceEqual(new[]{13,10,10,10,10,8,6,3,8,5,5,4,4,4}));

@@ -61,6 +61,25 @@ namespace Unknown.Battle
                 }
                 checkRecipient=0; CheckFixture(); Refresh();
                 verify((mapDecor==null || !mapDecor.gameObject.activeSelf) && unknownLabels[0].text.StartsWith("내 UNKNOWN"),"Normal map restores old background and UNKNOWN progression");
+                verify(normalMapName!=null && normalMapName.gameObject.activeSelf,"Normal battlefield name remains visible during combat");
+                verify(typeof(Unknown.Multiplayer.NetworkBattleController).GetMethod("SelectMap")==null,"Manual Host map selection API is removed");
+                foreach(var map in new[]{BattleMap.Normal,BattleMap.JokerGame})
+                {
+                    mapIntroPresented=false; int before=MapIntroCount; actionBusy=true; clock.Begin(40,Time.realtimeSinceStartupAsDouble);
+                    double began=Time.realtimeSinceStartupAsDouble; StartCoroutine(PresentRandomMap(map)); yield return new WaitForSecondsRealtime(0.25f);
+                    verify(IsMapIntroActive && Blocked(),"Random map intro blocks input: "+map);
+                    yield return new WaitForSecondsRealtime(0.8f);
+                    var labels=mapIntro.GetComponentsInChildren<Text>();
+                    verify(labels.Any(t=>t.text==MapTitle(map)) && labels.Any(t=>t.text==MapDescription(map)),"Intro displays authoritative final name and map win conditions: "+map);
+                    double renderStart=Time.realtimeSinceStartupAsDouble;
+                    verify(File.Exists(CaptureAttackFrame(1920,ownBoard,"RandomMap-"+map,false)),"Rendered random map result: "+map);
+                    double renderTime=Time.realtimeSinceStartupAsDouble-renderStart;
+                    var heading=labels.Single(t=>t.text=="RANDOM MAP");
+                    verify(heading.canvasRenderer.GetMesh()!=null && heading.canvasRenderer.GetMesh().vertexCount>0,"RANDOM MAP heading has rendered geometry: "+map);
+                    while(IsMapIntroActive)yield return null;
+                    verify(Time.realtimeSinceStartupAsDouble-began>=1.9 && Time.realtimeSinceStartupAsDouble-began<2.4+renderTime,"Random reveal lasts about two seconds: "+map);
+                    yield return PresentRandomMap(map); verify(MapIntroCount==before+1,"Later snapshots cannot repeat map reveal: "+map); actionBusy=false;
+                }
                 report.completed=true;
             }
             finally

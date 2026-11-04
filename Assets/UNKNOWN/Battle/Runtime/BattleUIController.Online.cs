@@ -55,6 +55,7 @@ namespace Unknown.Battle
                 RefreshMapUI(); RefreshOpponentReveal();
                 // Authoritative progress/result changes now; visual playback never determines victory.
                 RefreshMana(); RefreshUnknownProgress();
+                if(!mapIntroPresented)yield return PresentRandomMap(s.map);
                 // Existing views remain bound during animation, including units destroyed by this action.
                 var entries = s.events.Select(e => e.ToEvent()).ToArray();
                 ObserveAttackResult(entries);
@@ -68,7 +69,7 @@ namespace Unknown.Battle
                 Refresh();
                 appliedViewRevision = s.revision; lastViewRefreshFrame = Time.frameCount;
                 if (engine.State.IsOver) ShowWinner();
-                // Only Host presentation completion gates the next accepted action. Remote animation never changes rules.
+                // Both peers complete match/turn-start presentation before Host starts the clock.
                 online.PresentationFinished(s.revision);
             }
             presenting = false;

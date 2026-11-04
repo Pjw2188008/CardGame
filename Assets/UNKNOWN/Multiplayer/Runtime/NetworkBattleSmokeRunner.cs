@@ -28,6 +28,8 @@ namespace Unknown.Multiplayer
             public int grantedJokers, ownJokerSuccesses;
             public List<int> mapEventIDs=new List<int>();
             public List<string> mapResults=new List<string>();
+            public int round=1, hostMapDraws, introCount;
+            public bool lobbyMapHidden=true, resetState=true, introLocks=true;
         }
         Report report;
         string exchange, output;
@@ -36,6 +38,8 @@ namespace Unknown.Multiplayer
         internal static int? SeedOverride { get; private set; }
         internal static bool SystemsCheck => Debug.isDebugBuild && Environment.GetCommandLineArgs().Contains("-unknownSmoke") && Environment.GetCommandLineArgs().Contains("-unknownSmokeSystems");
         double firstClockStart=-1;
+        int round;
+        bool Rematch => Environment.GetCommandLineArgs().Contains("-unknownSmokeRematch");
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void FromCommandLine()
         {
@@ -81,18 +85,28 @@ namespace Unknown.Multiplayer
                 var task = room.JoinRoomAsync(code); while (!task.IsCompleted) yield return null;
                 if (room.Session == null) { Fail(room.Error); yield break; }
             }
+            for(round=0;round<(Rematch ? 2 : 1);round++)
+            {
+                if(round>0) { report=new Report{role=report.role,systemsFixture=SystemsCheck,round=round+1}; firstClockStart=-1; }
+                yield return MatchLoop();
+                File.WriteAllText(exchange+"."+report.role+".round"+(round+1)+".json",JsonUtility.ToJson(report,true));
+                if(report.status=="failed")yield break;
+            }
+        }
+        IEnumerator MatchLoop()
+        {
+            report.lobbyMapHidden=!battle.SelectedMap.HasValue;
+            report.resetState=battle.Snapshot==null && !battle.CanAct && !battle.BothReady;
+            report.guestCannotSelect=typeof(NetworkBattleController).GetMethod("SelectMap")==null;
             report.status = "lobby"; Save();
             double limit = Time.realtimeSinceStartupAsDouble + 900;
             float retry = 0;
             while (!room.HasStarted && Time.realtimeSinceStartupAsDouble < limit)
             {
-                var desired=Environment.GetCommandLineArgs().Contains("-unknownSmokeJoker") ? BattleMap.JokerGame : BattleMap.Normal;
+                report.lobbyMapHidden &= !battle.SelectedMap.HasValue;
                 if (room.ConnectedPlayers == 2 && Time.unscaledTime >= retry)
                 {
                     retry = Time.unscaledTime + 1;
-                    if(report.role=="host" && battle.SelectedMap!=desired) { battle.SelectMap(desired); continue; }
-                    if(battle.SelectedMap!=desired) { yield return null; continue; }
-                    if(report.role=="guest")report.guestCannotSelect &= !battle.SelectMap(desired==BattleMap.Normal ? BattleMap.JokerGame : BattleMap.Normal);
                     if (!battle.LocalReady) battle.ToggleReady();
                     if (room.CanStart) { var task = room.StartGameAsync(); while (!task.IsCompleted) yield return null; }
                 }
@@ -103,6 +117,8 @@ namespace Unknown.Multiplayer
             {
                 if (!string.IsNullOrEmpty(battle.Failure)) { Fail(battle.Failure); yield break; }
                 var s = battle.Snapshot;
+                var introUI=FindFirstObjectByType<BattleUIController>();
+                if(introUI!=null) { report.introCount=introUI.MapIntroCount; if(introUI.IsMapIntroActive)report.introLocks &= !battle.CanAct && s!=null && !s.clockRunning && Math.Abs(battle.Remaining-40)<0.01; }
                 if(s!=null && s.winner<0) {
                     report.timerProtocol &= Math.Abs(s.turnDuration-40)<0.01 && battle.Remaining>=0 && battle.Remaining<=40.1;
                     if(!s.clockRunning) { report.frozenClockSamples++; report.timerProtocol &= s.busy && !battle.CanAct && Math.Abs(battle.Remaining-40)<0.01; }
@@ -122,19 +138,17 @@ namespace Unknown.Multiplayer
                         var back = room.ReturnToLobbyAsync(); while (!back.IsCompleted) yield return null;
                         double lobbyLimit=Time.realtimeSinceStartupAsDouble+15;
                         while(room.HasStarted && Time.realtimeSinceStartupAsDouble<lobbyLimit) yield return null;
-                        report.returnedToLobby=room.Session!=null && !room.HasStarted && battle.Snapshot==null && !battle.BothReady; Save();
+                        report.returnedToLobby=room.Session!=null && !room.HasStarted && battle.Snapshot==null && !battle.BothReady && !battle.SelectedMap.HasValue; Save();
                         yield return new WaitForSecondsRealtime(3);
-                        var leave = room.LeaveRoomAsync(); while (!leave.IsCompleted) yield return null;
-                        report.cleaned = room.Session == null; Save();
+                        if(!Rematch || round==1) { var leave = room.LeaveRoomAsync(); while (!leave.IsCompleted) yield return null; report.cleaned = room.Session == null; Save(); }
                     }
                     else
                     {
                         double cleanupLimit = Time.realtimeSinceStartupAsDouble + 20;
                         while (room.HasStarted && Time.realtimeSinceStartupAsDouble < cleanupLimit) yield return null;
-                        report.returnedToLobby=room.Session!=null && !room.HasStarted && battle.Snapshot==null && !battle.BothReady; Save();
+                        report.returnedToLobby=room.Session!=null && !room.HasStarted && battle.Snapshot==null && !battle.BothReady && !battle.SelectedMap.HasValue; Save();
                         yield return new WaitForSecondsRealtime(5);
-                        var leave=room.LeaveRoomAsync(); while(!leave.IsCompleted) yield return null;
-                        report.cleaned = room.Session == null; Save();
+                        if(!Rematch || round==1) { var leave=room.LeaveRoomAsync(); while(!leave.IsCompleted) yield return null; report.cleaned = room.Session == null; Save(); }
                     }
                     yield break;
                 }
@@ -161,7 +175,8 @@ namespace Unknown.Multiplayer
                 report.firstTurnElapsed=battle.GetComponent<Unity.Netcode.NetworkManager>().ServerTime.Time-firstClockStart;
             report.snapshots++; report.revision = s.revision; report.turn = s.turn; report.winner = s.winner;
             report.victoryReason=s.victoryReason;
-            report.map=s.map; report.mapMatches &= s.map==(Environment.GetCommandLineArgs().Contains("-unknownSmokeJoker") ? BattleMap.JokerGame : BattleMap.Normal) && s.map==battle.SelectedMap;
+            report.map=s.map; report.mapMatches &= s.map==battle.SelectedMap;
+            report.hostMapDraws=battle.MapDrawCount;
             report.ownJokerSuccesses=s.players[s.recipient].jokerSuccesses;
             report.privacy &= s.players[1-s.recipient].hand.Length == 0 && s.players[1-s.recipient].unknownCreated == 0
                 && s.players[1-s.recipient].jokerSuccesses==0 && s.players[1-s.recipient].jokerChanceDelta==0

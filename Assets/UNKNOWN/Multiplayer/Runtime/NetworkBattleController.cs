@@ -11,14 +11,11 @@ namespace Unknown.Multiplayer
     [DisallowMultipleComponent, RequireComponent(typeof(RoomController))]
     public sealed class NetworkBattleController : MonoBehaviour
     {
-        // v4 adds map selection and recipient-private map events. Use the same build on both peers.
-        const string Request = "UNKNOWN.Intent.v4", State = "UNKNOWN.State.v4", Ready = "UNKNOWN.Ready.v4", Lobby = "UNKNOWN.Lobby.v4", Presented = "UNKNOWN.Presented.v4";
-        public BattleMap SelectedMap { get; private set; }
-        public bool SelectMap(BattleMap map)
-        {
-            if(!Manager.IsHost || messages==null || room.Session==null || room.HasStarted || room.Busy || (map!=BattleMap.Normal && map!=BattleMap.JokerGame))return false;
-            SelectedMap=map; HostReady=GuestReady=false; SendLobby(); return true;
-        }
+        // v5: maps are unknown in the lobby and drawn once by Host for each new match.
+        const string Request = "UNKNOWN.Intent.v5", State = "UNKNOWN.State.v5", Ready = "UNKNOWN.Ready.v5", Lobby = "UNKNOWN.Lobby.v5", Presented = "UNKNOWN.Presented.v5";
+        public BattleMap? SelectedMap { get; private set; }
+        RandomMapSelection mapSelection;
+        public int MapDrawCount => mapSelection?.DrawCount ?? 0;
         [SerializeField, Min(1)] float turnDuration = 40;
         public double TurnDuration => Math.Max(1, turnDuration);
         public event Action Changed;
@@ -52,7 +49,7 @@ namespace Unknown.Multiplayer
                 if (messages != null)
                 {
                     if (Snapshot != null && Snapshot.winner < 0) Failure = "상대방과 연결이 종료되었습니다.";
-                    Unregister(); HostReady = GuestReady = false; authority = null; Sending = false; Changed?.Invoke();
+                    Unregister(); HostReady = GuestReady = false; authority = null; Sending = false; SelectedMap=null; mapSelection?.ResetMatch(); Changed?.Invoke();
                 }
                 return;
             }
@@ -73,8 +70,11 @@ namespace Unknown.Multiplayer
             if (!nm.IsHost || !room.HasStarted) return;
             if (authority == null)
             {
+                if(mapSelection==null)mapSelection=new RandomMapSelection(new SeededRandom(NetworkBattleSmokeRunner.SeedOverride ?? Environment.TickCount));
+                SelectedMap=mapSelection.BeginMatch();
+                Debug.Log($"[UNKNOWN Map] match={MapDrawCount} map={SelectedMap} hostDraws={MapDrawCount}");
                 authority = new BattleAuthority(NetworkBattleSmokeRunner.SeedOverride ?? Environment.TickCount,
-                    new BattleConfig { Map=SelectedMap, StartingHand=NetworkBattleSmokeRunner.SystemsCheck ? 0 : 5, MapEvents=SelectedMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() }); PrepareTurnClock();
+                    new BattleConfig { Map=SelectedMap.Value, StartingHand=NetworkBattleSmokeRunner.SystemsCheck ? 0 : 5, MapEvents=SelectedMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() }); PrepareTurnClock();
                 busy = true; Publish(authority.Engine.DrainEvents());
             }
             if (clockRunning && !authority.Engine.State.IsOver && nm.ServerTime.Time >= deadline && !authority.Engine.State.TurnExpired)
@@ -88,22 +88,22 @@ namespace Unknown.Multiplayer
         {
             if (messages == null || room.HasStarted) return;
             if (Manager.IsHost) { HostReady = !HostReady; SendLobby(); }
-            else Send(Ready, 0, (LocalReady ? "0" : "1")+(int)SelectedMap);
+            else Send(Ready, 0, LocalReady ? "0" : "1");
         }
         void OnReady(ulong sender, FastBufferReader reader)
         {
             if (!Manager.IsHost || sender == 0 || !Manager.ConnectedClientsIds.Contains(sender) || room.HasStarted) return;
-            if (Read(reader, out var value) && value.Length==2) { GuestReady = value[0]=='1' && value[1]-'0'==(int)SelectedMap; SendLobby(); }
+            if (Read(reader, out var value) && (value=="0" || value=="1")) { GuestReady = value=="1"; SendLobby(); }
         }
         void SendLobby()
         {
-            foreach (var id in Manager.ConnectedClientsIds) if (id != 0) Send(Lobby, id, (HostReady ? "1" : "0") + (GuestReady ? "1" : "0")+(int)SelectedMap);
+            foreach (var id in Manager.ConnectedClientsIds) if (id != 0) Send(Lobby, id, (HostReady ? "1" : "0") + (GuestReady ? "1" : "0"));
             Changed?.Invoke();
         }
         void OnLobby(ulong sender, FastBufferReader reader)
         {
-            if (sender != 0 || Manager.IsHost || !Read(reader, out var text) || text.Length != 3 || text[2]<'0' || text[2]>'1') return;
-            HostReady = text[0] == '1'; GuestReady = text[1] == '1'; SelectedMap=(BattleMap)(text[2]-'0'); Changed?.Invoke();
+            if (sender != 0 || Manager.IsHost || !Read(reader, out var text) || text.Length != 2 || text.Any(c=>c!='0' && c!='1')) return;
+            HostReady = text[0] == '1'; GuestReady = text[1] == '1'; Changed?.Invoke();
         }
         public void Submit(BattleAction action, int first = -1, int second = -1)
         {
@@ -201,7 +201,7 @@ namespace Unknown.Multiplayer
             ActionError = s.error ?? "";
             // Equal revisions are request rejection replies; never replay their events.
             if (s.revision == lastRevision) { Changed?.Invoke(); return; }
-            lastRevision = s.revision; Snapshot = s; SnapshotReceived?.Invoke(s); Changed?.Invoke();
+            lastRevision = s.revision; Snapshot = s; SelectedMap=s.map; SnapshotReceived?.Invoke(s); Changed?.Invoke();
         }
         void Send(string name, ulong id, string text)
         {
@@ -227,6 +227,7 @@ namespace Unknown.Multiplayer
         public void ResetMatch()
         {
             authority = null; Snapshot = null; busy = false; Sending = false; Failure = "";
+            SelectedMap=null; mapSelection?.ResetMatch(); deadline=0;
             clockRunning=waitingForTurnPresentation=hostPresented=guestPresented=false;
             lastRevision = -1; sequence = 0; HostReady = GuestReady = false; Changed?.Invoke();
         }
