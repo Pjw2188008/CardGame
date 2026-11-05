@@ -29,6 +29,7 @@ namespace Unknown.Multiplayer
             public List<int> mapEventIDs=new List<int>();
             public List<string> mapResults=new List<string>();
             public int round=1, hostMapDraws, introCount;
+            public int suitTurns,suitDamage,suitStatChanges,heroHeals,manaGains;
             public bool lobbyMapHidden=true, resetState=true, introLocks=true;
         }
         Report report;
@@ -39,7 +40,8 @@ namespace Unknown.Multiplayer
         internal static bool SystemsCheck => Debug.isDebugBuild && Environment.GetCommandLineArgs().Contains("-unknownSmoke") && Environment.GetCommandLineArgs().Contains("-unknownSmokeSystems");
         double firstClockStart=-1;
         int round;
-        bool Rematch => Environment.GetCommandLineArgs().Contains("-unknownSmokeRematch");
+        int MatchCount { get { var args=Environment.GetCommandLineArgs();int at=Array.IndexOf(args,"-unknownSmokeRounds");return at>=0 && at+1<args.Length && int.TryParse(args[at+1],out int count) ? Math.Max(1,Math.Min(5,count)) : args.Contains("-unknownSmokeRematch") ? 2 : 1; } }
+        bool Rematch => MatchCount>1;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void FromCommandLine()
         {
@@ -85,7 +87,7 @@ namespace Unknown.Multiplayer
                 var task = room.JoinRoomAsync(code); while (!task.IsCompleted) yield return null;
                 if (room.Session == null) { Fail(room.Error); yield break; }
             }
-            for(round=0;round<(Rematch ? 2 : 1);round++)
+            for(round=0;round<MatchCount;round++)
             {
                 if(round>0) { report=new Report{role=report.role,systemsFixture=SystemsCheck,round=round+1}; firstClockStart=-1; }
                 yield return MatchLoop();
@@ -140,7 +142,7 @@ namespace Unknown.Multiplayer
                         while(room.HasStarted && Time.realtimeSinceStartupAsDouble<lobbyLimit) yield return null;
                         report.returnedToLobby=room.Session!=null && !room.HasStarted && battle.Snapshot==null && !battle.BothReady && !battle.SelectedMap.HasValue; Save();
                         yield return new WaitForSecondsRealtime(3);
-                        if(!Rematch || round==1) { var leave = room.LeaveRoomAsync(); while (!leave.IsCompleted) yield return null; report.cleaned = room.Session == null; Save(); }
+                        if(round==MatchCount-1) { var leave = room.LeaveRoomAsync(); while (!leave.IsCompleted) yield return null; report.cleaned = room.Session == null; Save(); }
                     }
                     else
                     {
@@ -148,7 +150,7 @@ namespace Unknown.Multiplayer
                         while (room.HasStarted && Time.realtimeSinceStartupAsDouble < cleanupLimit) yield return null;
                         report.returnedToLobby=room.Session!=null && !room.HasStarted && battle.Snapshot==null && !battle.BothReady && !battle.SelectedMap.HasValue; Save();
                         yield return new WaitForSecondsRealtime(5);
-                        if(!Rematch || round==1) { var leave=room.LeaveRoomAsync(); while(!leave.IsCompleted) yield return null; report.cleaned = room.Session == null; Save(); }
+                        if(round==MatchCount-1) { var leave=room.LeaveRoomAsync(); while(!leave.IsCompleted) yield return null; report.cleaned = room.Session == null; Save(); }
                     }
                     yield break;
                 }
@@ -187,9 +189,14 @@ namespace Unknown.Multiplayer
                 && !s.log.Any(l => l.StartsWith("P"+(2-s.recipient)+": UNKNOWN 조합"));
             foreach (var e in s.events)
             {
-                if(e.kind==BattleEventKind.MapEvent) { report.mapEventsOnce &= !report.mapEventIDs.Contains(e.source); report.mapEventIDs.Add(e.source); }
+                if(e.kind==BattleEventKind.SuitMapTurn)report.suitTurns++;
+                if(e.kind==BattleEventKind.Damage && e.source<0)report.suitDamage+=e.amount;
+                if((e.kind==BattleEventKind.AttackChanged || e.kind==BattleEventKind.MaxHPChanged) && e.source<0 && MapDefinition.IsSuit(s.map))report.suitStatChanges++;
+                if(e.kind==BattleEventKind.HeroChanged && e.amount>0)report.heroHeals+=e.amount;
+                if(e.kind==BattleEventKind.ManaGained)report.manaGains+=e.amount;
+                if(e.kind==BattleEventKind.MapEvent || e.kind==BattleEventKind.SuitMapTurn) { report.mapEventsOnce &= !report.mapEventIDs.Contains(e.source); report.mapEventIDs.Add(e.source); }
                 if(e.kind==BattleEventKind.CardGranted && e.owner==s.recipient)report.grantedJokers++;
-                if(e.kind==BattleEventKind.MapEvent || e.kind==BattleEventKind.AttackChanged || e.kind==BattleEventKind.MaxHPChanged || e.kind==BattleEventKind.HeroChanged)
+                if(e.kind==BattleEventKind.MapEvent || e.kind==BattleEventKind.SuitMapTurn || e.kind==BattleEventKind.ManaGained || e.kind==BattleEventKind.Damage || e.kind==BattleEventKind.AttackChanged || e.kind==BattleEventKind.MaxHPChanged || e.kind==BattleEventKind.HeroChanged)
                     report.mapResults.Add($"{s.revision}:{e.kind}:{e.owner}:{e.target}:{e.amount}:{e.secondary}");
                 if(e.kind==BattleEventKind.HandRefill) { report.refills++; report.refillCards+=e.amount; }
                 if (e.kind == BattleEventKind.Summon) report.summons++;

@@ -16,16 +16,18 @@ static partial class BattleRulesTests
     {
         Test("Random map is unresolved in lobby and draws exactly once per match",()=>{
             var dice=new Dice(); var maps=new RandomMapSelection(dice); Check(!maps.Current.HasValue); Equal(0,maps.DrawCount);
-            Equal(BattleMap.Normal,maps.BeginMatch()); dice.Value=1;
-            for(int i=0;i<100;i++)Equal(BattleMap.Normal,maps.BeginMatch()); Equal(1,dice.Calls); Equal(1,maps.DrawCount);
+            Equal(BattleMap.Diamond,maps.BeginMatch()); dice.Value=9000;
+            for(int i=0;i<100;i++)Equal(BattleMap.Diamond,maps.BeginMatch()); Equal(1,dice.Calls); Equal(1,maps.DrawCount);
             maps.ResetMatch(); Check(!maps.Current.HasValue); Equal(BattleMap.JokerGame,maps.BeginMatch()); Equal(2,dice.Calls); Equal(2,maps.DrawCount);
         });
-        Test("Random maps cover both outcomes over many matches without requiring exact fifty fifty",()=>{
-            var maps=new RandomMapSelection(new SeededRandom(71)); int normal=0;
-            for(int i=0;i<10000;i++) { if(maps.BeginMatch()==BattleMap.Normal)normal++; maps.ResetMatch(); }
-            Check(normal>4500 && normal<5500,"unexpected distribution: "+normal); Equal(10000,maps.DrawCount);
-            Console.WriteLine("MAP DISTRIBUTION: Normal="+normal+", JokerGame="+(10000-normal));
+        Test("Weighted random maps cover five outcomes and exclude Normal over one hundred thousand matches",()=>{
+            var maps=new RandomMapSelection(new SeededRandom(71)); var counts=MapDefinition.Defaults().ToDictionary(d=>d.map,d=>0);
+            for(int i=0;i<100000;i++) { counts[maps.BeginMatch()]++; maps.ResetMatch(); }
+            Equal(0,counts[BattleMap.Normal]); foreach(var map in new[]{BattleMap.Diamond,BattleMap.Spade,BattleMap.Heart,BattleMap.Club})Check(counts[map]>21500 && counts[map]<23500);
+            Check(counts[BattleMap.JokerGame]>9300 && counts[BattleMap.JokerGame]<10700); Equal(100000,maps.DrawCount);
+            Console.WriteLine("MAP DISTRIBUTION: "+string.Join(", ",counts.Select(p=>p.Key+"="+p.Value)));
         });
+        SuitMapChecks();
         Test("Rematch discards previous map progress and activates only new map rules",()=>{
             foreach(var map in new[]{BattleMap.JokerGame,BattleMap.Normal,BattleMap.JokerGame}) {
                 var g=new BattleEngine(4,new BattleConfig{Map=map});

@@ -8,15 +8,20 @@ namespace Unknown.Battle
     {
         readonly HashSet<int> presentedMapEvents=new HashSet<int>();
         RectTransform mapDecor;
-        Text mapHeader,mapStatus,normalMapName;
+        Text mapHeader,mapStatus,normalMapName,mapSymbols;
         bool mapIntroPresented;
         RectTransform mapIntro;
         internal int MapIntroCount { get; private set; }
         internal bool IsMapIntroActive => mapIntro!=null && mapIntro.gameObject.activeSelf;
-        static string MapTitle(BattleMap map) => map==BattleMap.JokerGame ? "JOKER'S GAME" : "NORMAL BATTLEFIELD";
-        static string MapDescription(BattleMap map) => map==BattleMap.JokerGame
-            ? "매 턴 무작위 사건 발생\nJOKER 도박 3회 성공 또는 상대 HP 0 시 승리"
-            : "UNKNOWN 3장 생성 또는 상대 HP 0 시 승리";
+        MapDefinition MapInfo(BattleMap map) => MapDefinition.For(map,engine?.Config.MapRules);
+        string MapTitle(BattleMap map) { var d=MapInfo(map); return d.symbol+" "+d.title; }
+        string MapDescription(BattleMap map) => MapInfo(map).Effects+(MapDefinition.IsSuit(map) ? "\nUNKNOWN 3장 생성 또는 상대 HP 0 시 승리" : "");
+        Color MapTint(BattleMap map) { ColorUtility.TryParseHtmlString(MapInfo(map).tint,out var color); return color; }
+        void ShowMapTooltip(UnityEngine.EventSystems.PointerEventData data)
+        {
+            if(AttackDragging || dragged!=null || passOverlay.activeSelf || resultOverlay.activeSelf)return;
+            var d=MapInfo(engine.Config.Map); detail.text=d.symbol+" "+d.name+"\n\n"+MapDescription(d.map); PositionTooltip(data);
+        }
         IEnumerator PresentRandomMap(BattleMap result)
         {
             if(mapIntroPresented)yield break;
@@ -31,7 +36,8 @@ namespace Unknown.Battle
             while(Time.realtimeSinceStartupAsDouble-began<2)
             {
                 float elapsed=(float)(Time.realtimeSinceStartupAsDouble-began);
-                name.text=elapsed<0.8f ? MapTitle(((int)(elapsed/0.09f)%2)==0 ? BattleMap.Normal : BattleMap.JokerGame) : MapTitle(result);
+                var cycle=new[]{BattleMap.Diamond,BattleMap.Spade,BattleMap.Heart,BattleMap.Club,BattleMap.JokerGame};
+                name.text=elapsed<0.8f ? MapTitle(cycle[(int)(elapsed/0.09f)%cycle.Length]) : MapTitle(result);
                 description.text=elapsed<0.8f ? "" : MapDescription(result);
                 // Rapid name changes may repack a shared dynamic font atlas.
                 heading.SetVerticesDirty(); name.SetVerticesDirty(); description.SetVerticesDirty();
@@ -43,17 +49,23 @@ namespace Unknown.Battle
         {
             if(engine==null || ViewPlayer<0 || ViewPlayer>1)return;
             bool joker=engine.Config.Map==BattleMap.JokerGame;
+            var info=MapInfo(engine.Config.Map); var tint=MapTint(engine.Config.Map);
             if(normalMapName==null)normalMapName=Label(battlefield,"일반 전장",new Vector2(0.015f,0.84f),new Vector2(0.18f,0.925f),20,new Color(0.8f,0.84f,0.9f));
+            normalMapName.text=info.symbol+" "+info.name; normalMapName.color=tint;
             normalMapName.gameObject.SetActive(!joker);
-            if(joker && mapDecor==null)
+            if(mapDecor==null)
             {
                 mapDecor=Box(battlefield,"Joker Map Decoration",Vector2.zero,Vector2.one,Color.clear); mapDecor.SetAsFirstSibling();
-                var symbols=Label(mapDecor,"♠       ♦       ♣       ♥",new Vector2(0.02f,0.38f),new Vector2(0.98f,0.7f),95,new Color(0.7f,0.12f,0.38f,0.07f));
+                mapSymbols=Label(mapDecor,"",new Vector2(0.02f,0.38f),new Vector2(0.98f,0.7f),95,Color.white);
                 mapHeader=Label(mapDecor,"",new Vector2(0.015f,0.84f),new Vector2(0.18f,0.925f),20,new Color(0.88f,0.67f,1));
                 mapStatus=Label(mapDecor,"",new Vector2(0.015f,0.66f),new Vector2(0.18f,0.81f),15,new Color(0.8f,0.68f,0.85f));
+                var hover=Box(battlefield,"Map details hover",new Vector2(0.015f,0.84f),new Vector2(0.18f,0.925f),Color.clear);
+                hover.GetComponent<Image>().raycastTarget=true; hover.gameObject.AddComponent<CardHover>().Configure(ShowMapTooltip,HideTooltip,true,false);
             }
-            battlefield.GetComponent<Image>().color=joker ? new Color(0.065f,0.025f,0.095f) : navy;
-            if(mapDecor!=null)mapDecor.gameObject.SetActive(joker);
+            battlefield.GetComponent<Image>().color=info.map==BattleMap.Normal ? navy : new Color(0.025f+tint.r*0.045f,0.015f+tint.g*0.03f,0.025f+tint.b*0.05f);
+            mapDecor.gameObject.SetActive(info.map!=BattleMap.Normal); mapHeader.gameObject.SetActive(joker);
+            mapSymbols.text=info.symbol+"       "+info.symbol+"       "+info.symbol+"       "+info.symbol; mapSymbols.color=new Color(tint.r,tint.g,tint.b,0.07f);
+            if(!joker)mapStatus.text=MapDefinition.IsSuit(info.map) ? info.Effects : "";
             if(joker)
             {
                 mapHeader.text="조커의 유희\n♠  ♦  ♣  ♥\n다음 JOKER "+engine.JokerChance(ViewPlayer)+"%";
@@ -70,6 +82,12 @@ namespace Unknown.Battle
         {
             if(!presentedMapEvents.Add(e.SourceID))yield break;
             RefreshMapUI(); RefreshOpponentReveal();
+            if(e.Kind==BattleEventKind.SuitMapTurn)
+            {
+                var effect=engine.SuitEffect;
+                if(effect!=null && effect.id==e.SourceID)yield return animations.Banner(MapInfo(effect.map).title+" EFFECT\n"+effect.detail,MapTint(effect.map),1f,160,24);
+                yield break;
+            }
             var result=engine.MapEvent;
             if(result!=null && result.ID==e.SourceID)
                 yield return animations.Banner("JOKER EVENT\n"+result.Name+"\n"+result.Detail,new Color(0.9f,0.65f,1),1.2f,190,23);

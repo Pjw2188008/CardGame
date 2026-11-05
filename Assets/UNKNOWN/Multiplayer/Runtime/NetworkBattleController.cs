@@ -11,8 +11,8 @@ namespace Unknown.Multiplayer
     [DisallowMultipleComponent, RequireComponent(typeof(RoomController))]
     public sealed class NetworkBattleController : MonoBehaviour
     {
-        // v5: maps are unknown in the lobby and drawn once by Host for each new match.
-        const string Request = "UNKNOWN.Intent.v5", State = "UNKNOWN.State.v5", Ready = "UNKNOWN.Ready.v5", Lobby = "UNKNOWN.Lobby.v5", Presented = "UNKNOWN.Presented.v5";
+        // v6 adds suit map rules and resolved turn effects. Use the same build on both peers.
+        const string Request = "UNKNOWN.Intent.v6", State = "UNKNOWN.State.v6", Ready = "UNKNOWN.Ready.v6", Lobby = "UNKNOWN.Lobby.v6", Presented = "UNKNOWN.Presented.v6";
         public BattleMap? SelectedMap { get; private set; }
         RandomMapSelection mapSelection;
         public int MapDrawCount => mapSelection?.DrawCount ?? 0;
@@ -70,11 +70,12 @@ namespace Unknown.Multiplayer
             if (!nm.IsHost || !room.HasStarted) return;
             if (authority == null)
             {
-                if(mapSelection==null)mapSelection=new RandomMapSelection(new SeededRandom(NetworkBattleSmokeRunner.SeedOverride ?? Environment.TickCount));
+                var mapRules=BattleMapSettings.LoadRules();
+                if(mapSelection==null)mapSelection=new RandomMapSelection(new SeededRandom(NetworkBattleSmokeRunner.SeedOverride ?? Environment.TickCount),mapRules);
                 SelectedMap=mapSelection.BeginMatch();
                 Debug.Log($"[UNKNOWN Map] match={MapDrawCount} map={SelectedMap} hostDraws={MapDrawCount}");
                 authority = new BattleAuthority(NetworkBattleSmokeRunner.SeedOverride ?? Environment.TickCount,
-                    new BattleConfig { Map=SelectedMap.Value, StartingHand=NetworkBattleSmokeRunner.SystemsCheck ? 0 : 5, MapEvents=SelectedMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() }); PrepareTurnClock();
+                    new BattleConfig { Map=SelectedMap.Value,MapRules=mapRules, StartingHand=NetworkBattleSmokeRunner.SystemsCheck ? 0 : 5, MapEvents=SelectedMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() }); PrepareTurnClock();
                 busy = true; Publish(authority.Engine.DrainEvents());
             }
             if (clockRunning && !authority.Engine.State.IsOver && nm.ServerTime.Time >= deadline && !authority.Engine.State.TurnExpired)

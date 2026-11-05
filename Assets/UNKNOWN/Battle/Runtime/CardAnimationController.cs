@@ -119,13 +119,19 @@ namespace Unknown.Battle
                 switch (entry.Kind)
                 {
                     case BattleEventKind.MapEvent:
+                    case BattleEventKind.SuitMapTurn:
                         if(MapPresentation!=null)yield return MapPresentation(entry); break;
                     case BattleEventKind.CardGranted:
                         if(DrawPresentation!=null)yield return DrawPresentation(entry); break;
                     case BattleEventKind.HandReturn:
                         yield return Step(0.12f,_=>{}); break;
                     case BattleEventKind.HeroChanged:
-                        Floating(-1,heroPoint(entry.Owner),entry.Amount.ToString(),red); break;
+                        Floating(-1,heroPoint(entry.Owner),entry.Amount.ToString("+0;-0;0"),entry.Amount>0 ? green : red);
+                        StartCoroutine(Pulse(heroPoint(entry.Owner),entry.Amount>0 ? green : red,115,0.3f)); break;
+                    case BattleEventKind.ManaGained:
+                        Floating(-1,heroPoint(entry.Owner),"MP +"+entry.Amount,green);
+                        for(int i=entry.Secondary;i<entry.Secondary+entry.Amount;i++)StartCoroutine(Pulse(manaPoint(entry.Owner,i),green,35,0.3f));
+                        yield return Step(0.1f,_=>{}); break;
                     case BattleEventKind.ManaSpent:
                         for (int pip = entry.Secondary - entry.Amount; pip < entry.Secondary; pip++)
                             StartCoroutine(Pulse(manaPoint(entry.Owner, pip), new Color(0.3f, 0.65f, 1), 30, 0.3f));

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Unknown.Battle
 {
-    public enum BattleMap { Normal, JokerGame }
+    public enum BattleMap { Normal=0, JokerGame=1, Diamond=2, Spade=3, Heart=4, Club=5 }
     public enum JokerEventKind { None=-1, Strengthen, Curse, Reveal, Mana, Draw, Exchange, Discard, HalveHP, Gift, Retry, JokerCurse, ForcedGamble, LastHand, Multiply }
     [Serializable] public sealed class JokerEventDefinition
     {
@@ -68,8 +68,9 @@ namespace Unknown.Battle
         void StartMapTurn(int owner)
         {
             revealViewer=revealID=revealTurn=-1; viewRevealed=null;
+            SuitEffect=null;
             foreach(var p in State.Players)p.JokerChanceDelta=0;
-            if(rules.Map!=BattleMap.JokerGame) { MapEvent=null; return; }
+            if(rules.Map!=BattleMap.JokerGame) { MapEvent=null; ResolveSuitMapTurn(owner); return; }
             var valid=rules.MapEvents.Where(e=>e.weight>0 && CanMapEvent(owner,e.kind)).ToArray();
             if(valid.Length==0) { ResolveMapEvent(owner,null); return; }
             int roll=random.Next(valid.Sum(e=>e.weight));

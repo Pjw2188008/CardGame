@@ -2,9 +2,9 @@
 
 ## 실행 및 설정
 
-`Assets/Scenes/SampleScene.unity`를 열고 Play → 온라인 대전 → 방 만들기를 선택합니다. 현재 대기실은 `맵: RANDOM`을 표시하고, 두 사람이 준비한 뒤 방장이 시작하면 Host가 경기마다 맵을 50:50으로 추첨합니다. 직접 선택 기능은 제거했습니다. [랜덤 맵 변경 및 최신 검증](UNKNOWN-Alpha02-RandomMaps.md)을 참고하세요. 기존 NetworkManager와 UnityTransport를 그대로 사용하며 추가 오브젝트 연결은 필요하지 않습니다.
+`Assets/Scenes/SampleScene.unity`를 열고 Play → 온라인 대전 → 방 만들기를 선택합니다. 현재 대기실은 `맵: RANDOM`을 표시하고, 두 사람이 준비한 뒤 방장이 시작하면 Host가 경기마다 문양 맵 4종과 조커 맵 중 하나를 가중 추첨합니다. 직접 선택 기능은 제거했습니다. [문양 맵 확장 및 최신 검증](UNKNOWN-Alpha02-SuitMaps.md)을 참고하세요. 기존 NetworkManager와 UnityTransport를 그대로 사용하며 추가 오브젝트 연결은 필요하지 않습니다.
 
-양쪽 PC에서 같은 새 빌드를 사용해야 합니다. 현재 전투 메시지 버전은 v5입니다. 인증 프로필, 저장된 로그인, Unity Cloud 프로젝트 및 환경 설정은 변경하지 않았습니다.
+양쪽 PC에서 같은 새 빌드를 사용해야 합니다. 현재 전투 메시지 버전은 v6입니다. 인증 프로필, 저장된 로그인, Unity Cloud 프로젝트 및 환경 설정은 변경하지 않았습니다.
 
 `Assets/UNKNOWN/Battle/Resources/JokerMapSettings.asset`을 선택하면 Inspector에서 사건 이름, Weight, Amount를 수정할 수 있습니다. 사건 종류 14개를 유지하고 Weight 합계를 100으로 설정해야 합니다. Amount는 강화·저주·추가 드로우·폐기·임시 마나·성공 확률 보정량에 사용되며, 반토막과 증식에서는 퍼센트입니다. 교환 1장, 선물 JOKER 1장, 마지막 패 2장 폐기 후 JOKER 1장, 강제 도박 1회는 사건의 고정 구조입니다. 잘못된 설정은 명시적인 오류를 발생시킵니다. 일반 전장은 이 에셋에 의존하지 않습니다.
 

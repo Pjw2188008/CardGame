@@ -15,6 +15,9 @@ $arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/BattleProtoc
 $arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/JokerMapRules.cs'
 $arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/MapEventView.cs'
 $arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/RandomMapSelection.cs'
+$arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/MapDefinition.cs'
+$arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/SuitMapRules.cs'
+$arguments += Join-Path $PSScriptRoot 'SuitMapTests.cs'
 $arguments += Join-Path $PSScriptRoot 'BattleRulesTests.cs'
 $arguments += Join-Path $PSScriptRoot 'JokerMapTests.cs'
 & (Join-Path $UnityEditorData 'NetCoreRuntime/dotnet.exe') (Join-Path $UnityEditorData 'DotNetSdkRoslyn/csc.dll') @arguments

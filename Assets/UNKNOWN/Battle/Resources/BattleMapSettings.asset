@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76a95e539369472b9e0e5a74b14eafc7, type: 3}
+  m_Name: BattleMapSettings
+  m_EditorClassIdentifier:
+  maps:
+  - map: 0
+    name: 일반 전장
+    title: NORMAL BATTLEFIELD
+    symbol: ◇
+    tint: '#8797AD'
+    suit: 4
+    weight: 0
+    summonAttack: 0
+    summonHP: 0
+    summonDraw: 0
+    turnDamage: 0
+    turnWeaken: 0
+    turnHeal: 0
+    turnMana: 0
+  - map: 2
+    name: 공격의 전장
+    title: DIAMOND
+    symbol: ♦
+    tint: '#ED5757'
+    suit: 0
+    weight: 2250
+    summonAttack: 1
+    summonHP: 0
+    summonDraw: 0
+    turnDamage: 1
+    turnWeaken: 0
+    turnHeal: 0
+    turnMana: 0
+  - map: 3
+    name: 제압의 전장
+    title: SPADE
+    symbol: ♠
+    tint: '#AE78EA'
+    suit: 1
+    weight: 2250
+    summonAttack: 0
+    summonHP: 1
+    summonDraw: 0
+    turnDamage: 0
+    turnWeaken: 1
+    turnHeal: 0
+    turnMana: 0
+  - map: 4
+    name: 생명의 전장
+    title: HEART
+    symbol: ♥
+    tint: '#EE79AB'
+    suit: 2
+    weight: 2250
+    summonAttack: 0
+    summonHP: 2
+    summonDraw: 0
+    turnDamage: 0
+    turnWeaken: 0
+    turnHeal: 2
+    turnMana: 0
+  - map: 5
+    name: 번영의 전장
+    title: CLUB
+    symbol: ♣
+    tint: '#68CB92'
+    suit: 3
+    weight: 2250
+    summonAttack: 0
+    summonHP: 0
+    summonDraw: 1
+    turnDamage: 0
+    turnWeaken: 0
+    turnHeal: 0
+    turnMana: 1
+  - map: 1
+    name: 조커의 유희
+    title: JOKER'S GAME
+    symbol: ★
+    tint: '#BB83E4'
+    suit: 4
+    weight: 1000
+    summonAttack: 0
+    summonHP: 0
+    summonDraw: 0
+    turnDamage: 0
+    turnWeaken: 0
+    turnHeal: 0
+    turnMana: 0

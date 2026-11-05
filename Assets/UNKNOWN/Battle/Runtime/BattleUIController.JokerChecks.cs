@@ -63,7 +63,7 @@ namespace Unknown.Battle
                 verify((mapDecor==null || !mapDecor.gameObject.activeSelf) && unknownLabels[0].text.StartsWith("내 UNKNOWN"),"Normal map restores old background and UNKNOWN progression");
                 verify(normalMapName!=null && normalMapName.gameObject.activeSelf,"Normal battlefield name remains visible during combat");
                 verify(typeof(Unknown.Multiplayer.NetworkBattleController).GetMethod("SelectMap")==null,"Manual Host map selection API is removed");
-                foreach(var map in new[]{BattleMap.Normal,BattleMap.JokerGame})
+                foreach(var map in (BattleMap[])Enum.GetValues(typeof(BattleMap)))
                 {
                     mapIntroPresented=false; int before=MapIntroCount; actionBusy=true; clock.Begin(40,Time.realtimeSinceStartupAsDouble);
                     double began=Time.realtimeSinceStartupAsDouble; StartCoroutine(PresentRandomMap(map)); yield return new WaitForSecondsRealtime(0.25f);

@@ -60,7 +60,7 @@ namespace Unknown.Battle
             StopAllCoroutines(); if (animations != null) animations.ResetAll();
             actionBusy = transitioning = paused = false; clock.Stop();
             pauseButton.GetComponentInChildren<Text>().text = "일시정지";
-            engine = new BattleEngine(seed == 0 ? Environment.TickCount : seed, new BattleConfig { FieldSlots = Math.Max(1, fieldSlots), Map=localMap, MapEvents=localMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() });
+            engine = new BattleEngine(seed == 0 ? Environment.TickCount : seed, new BattleConfig { FieldSlots = Math.Max(1, fieldSlots), Map=localMap,MapRules=BattleMapSettings.LoadRules(), MapEvents=localMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() });
             presentedMapEvents.Clear();
             queuedTurnEvents=null; var initialDraws = engine.DrainEvents();
             ResetHandViews(); PrepareHandPlayback(initialDraws);

@@ -17,7 +17,8 @@ namespace Unknown.Battle
         public bool ShuffleDecks { get; set; } = true;
         public BattleMap Map { get; set; }
         public JokerEventDefinition[] MapEvents { get; set; } = JokerEventDefinition.Defaults();
-        internal BattleConfig Copy() { var c=(BattleConfig)MemberwiseClone(); c.MapEvents=MapEvents.Select(e=>e.Copy()).ToArray(); return c; }
+        public MapDefinition[] MapRules { get; set; } = MapDefinition.Defaults();
+        internal BattleConfig Copy() { var c=(BattleConfig)MemberwiseClone(); c.MapEvents=MapEvents.Select(e=>e.Copy()).ToArray(); c.MapRules=MapRules.Select(d=>d.Copy()).ToArray(); return c; }
     }
 
     public interface IRandomSource { int Next(int exclusiveMax); }
@@ -218,6 +219,7 @@ namespace Unknown.Battle
             card.SummonedTurn = State.TurnNumber; card.HasAttacked = false; State.SummonsThisTurn++;
             Log($"P{actor + 1}: {card.Definition.CardName} 소환");
             Emit(new BattleEvent(BattleEventKind.Summon, actor, source: card.InstanceID, target: card.InstanceID, slot: slot, definition: card.Definition));
+            ApplyMapSummon(card);
             source = card; effectIndex = 0; selectedTargets.Clear(); chainHits.Clear();
             ResolveEffects(); return true;
         }
@@ -273,14 +275,14 @@ namespace Unknown.Battle
             var combined = NewCard(result, actor); player.HandCards.Add(combined); player.UnknownCreated++;
             Emit(new BattleEvent(BattleEventKind.Combine, actor, aceID, faceID, secondary: combined.InstanceID, definition: result));
             Log($"P{actor + 1}: UNKNOWN 조합 ({player.UnknownCreated}/{rules.UnknownLimit})", actor);
-            if (rules.Map==BattleMap.Normal && player.UnknownCreated >= 3) FinishGame(actor, VictoryReason.UnknownComplete);
+            if (rules.Map!=BattleMap.JokerGame && player.UnknownCreated >= 3) FinishGame(actor, VictoryReason.UnknownComplete);
             return true;
         }
         void FinishGame(int winner, VictoryReason reason)
         {
             if (State.IsOver) return;
             State.Winner = winner; State.VictoryReason = reason;
-            Log($"P{winner + 1} 승리! · " + (reason == VictoryReason.UnknownComplete ? "UNKNOWN COMPLETE" : "OPPONENT HP ZERO"));
+            Log($"P{winner + 1} 승리! · " + (reason == VictoryReason.JokerJackpot ? "JOKER JACKPOT" : reason == VictoryReason.UnknownComplete ? "UNKNOWN COMPLETE" : "OPPONENT HP ZERO"));
             Emit(new BattleEvent(BattleEventKind.GameOver, winner, secondary: (int)reason));
         }
         public bool Gamble(int actor, int jokerID, int targetID)
@@ -305,7 +307,7 @@ namespace Unknown.Battle
             if(DebugNextGamble.HasValue) { success=DebugNextGamble.Value; DebugNextGamble=null; }
             else
 #endif
-            success=rules.Map==BattleMap.Normal ? random.Next(2)==0 : random.Next(100)<JokerChance(actor);
+            success=rules.Map!=BattleMap.JokerGame ? random.Next(2)==0 : random.Next(100)<JokerChance(actor);
             player.JokerChanceDelta=0;
             if (success)
             {
@@ -387,9 +389,7 @@ namespace Unknown.Battle
             switch (effect.Kind)
             {
                 case EffectKind.Damage: case EffectKind.SelfDamage: case EffectKind.ChainDamage: case EffectKind.RandomDamage:
-                    int actual = Math.Min(target.CurrentHP, effect.Amount); target.CurrentHP -= effect.Amount;
-                    Emit(new BattleEvent(BattleEventKind.Damage, target.Owner, source.InstanceID, target.InstanceID, actual, suit: source.Definition.Suit, chain: effect.Kind == EffectKind.ChainDamage));
-                    Log($"{target.Definition.CardName}: 피해 {actual}"); break;
+                    DamageUnit(target,effect.Amount,source.InstanceID,source.Definition.Suit,effect.Kind==EffectKind.ChainDamage); break;
                 case EffectKind.Heal:
                     int healed = Math.Min(target.MaxHP - target.CurrentHP, effect.Amount); target.CurrentHP += healed;
                     Emit(new BattleEvent(BattleEventKind.Heal, target.Owner, source.InstanceID, target.InstanceID, healed, suit: source.Definition.Suit));

@@ -62,6 +62,8 @@ namespace Unknown.Battle
         public EventViewData[] events;
         public BattleMap map;
         public MapEventView mapEvent;
+        public SuitMapEffect suitEffect;
+        public MapDefinition[] mapRules;
         public CardViewData revealedCard;
         public int revealedIndex=-1;
         public static BattleSnapshot For(BattleEngine engine, int recipient, int revision, double deadline, bool busy, IReadOnlyList<BattleEvent> events, double turnDuration = 40, bool clockRunning = true)
@@ -70,6 +72,7 @@ namespace Unknown.Battle
             return new BattleSnapshot { revision = revision, recipient = recipient, active = s.ActivePlayer,
                 turn = s.TurnNumber, winner = s.Winner, victoryReason = s.VictoryReason, expired = s.TurnExpired, deadline = deadline, busy = busy, turnDuration = turnDuration, clockRunning = clockRunning,
                 map=engine.Config.Map, mapEvent=MapEventView.For(engine.MapEvent,recipient),
+                suitEffect=engine.SuitEffect?.Copy(),mapRules=engine.Config.MapRules,
                 revealedCard=engine.RevealedFor(recipient)==null ? null : CardViewData.From(engine.RevealedFor(recipient)), revealedIndex=engine.RevealedIndexFor(recipient),
                 players = s.Players.Select((p, owner) => new PlayerViewData { hp = p.HP, mana = p.CurrentMana, maxMana = p.MaxMana,
                     jokerSuccesses=owner==recipient ? p.JokerSuccesses : 0, jokerChanceDelta=owner==recipient ? p.JokerChanceDelta : 0,
@@ -97,6 +100,7 @@ namespace Unknown.Battle
             if (!viewOnly) throw new InvalidOperationException("Authority cannot import a client view.");
             State.ActivePlayer = s.active; State.TurnNumber = s.turn; State.Winner = s.winner; State.VictoryReason = s.victoryReason; State.TurnExpired = s.expired;
             rules.Map=s.map; MapEvent=s.mapEvent?.ToResult(); revealViewer=s.recipient;
+            rules.MapRules=(s.mapRules ?? MapDefinition.Defaults()).Select(d=>d.Copy()).ToArray(); SuitEffect=s.suitEffect?.Copy();
             viewRevealed=s.revealedCard?.ToCard(); viewRevealedIndex=s.revealedIndex;
             State.Entries.Clear(); State.Entries.AddRange(s.log); State.LogVersion = s.revision;
             State.EntryOwners.Clear();
