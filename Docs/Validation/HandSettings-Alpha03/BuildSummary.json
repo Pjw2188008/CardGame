@@ -1,0 +1,117 @@
+﻿{
+    "Unity":  "6000.0.74f1",
+    "Protocol":  "v8",
+    "DevelopmentBuild":  true,
+    "BuildResult":  "Succeeded",
+    "BuildErrors":  0,
+    "BuildWarnings":  8,
+    "RulesPassed":  153,
+    "PlayModePassed":  451,
+    "PlayModeFailed":  0,
+    "PlayModeErrors":  0,
+    "Scene":  "Assets/Scenes/SampleScene.unity",
+    "AssemblySHA256":  "1FF20943939FCA35890AED097D7543F44EBCDCE29E6091E99AEBE44C91F1DDE8",
+    "SourceCopyMatches":  true,
+    "Sources":  [
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/BattleEngine.cs",
+                        "SHA256":  "F8A7E2CA969294B64F32B1464E68C376CF111A5C50D4A92C6B3EE7EB75AAF0CD",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/BattleProtocol.cs",
+                        "SHA256":  "017963A3C000BB7081A10871898C686FD5A0BB0B4B763CD10CE4E335F363599D",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Attack.cs",
+                        "SHA256":  "9A59AC62BA40EB17B5208199D394795E77EDE2FA640874558C4EA8B5B5D4F6E8",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.cs",
+                        "SHA256":  "340945212ED20F25364F8D54C8488EF625D12AA6057BF4685190FBD82C0DB877",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Discard.cs",
+                        "SHA256":  "378B8288B97F4BFFFAE072962C66A8D4F87CA4C5C2CB6AA2B7AD8E39942E14AC",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.DragChecks.cs",
+                        "SHA256":  "FD16BA863501C06236411C5A67D21F89FF3A932CDFCFEAA11178C0F78057104D",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Hands.cs",
+                        "SHA256":  "9AC1B0EF0116FABAC20745FE37B4279614A98A5B151D3C160EE727DA97F0EDC6",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.HandSettingsChecks.cs",
+                        "SHA256":  "F85E10F38909F7C122EC5267940253F672679F4002F314525D89D42F524CB574",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Interaction.cs",
+                        "SHA256":  "AD458F603A8E5B5D00893BD8850800910D48E1C74379A8519D377CEBAA4D9D8E",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Poker.cs",
+                        "SHA256":  "7275860D48A3D5A0879D56BC67F6DCCA185CA2EDFD6D6B3EF87ABE0A5E9E7567",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/CardAnimationController.cs",
+                        "SHA256":  "63B6F390008695F98935827F1AB9992503B5A415BD86638ED0D90D52EAC3BC7C",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/GameAudioChannel.cs",
+                        "SHA256":  "9FA3C0885DEF73B9776BC364CECDB1A659AC00D04FB594002C57955BA62253AF",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/GamePreferences.cs",
+                        "SHA256":  "16A274BAB9B8531D2AAAE761842E503EBAF7CC5BE30EDA8DDFE6B79BFD6E68F4",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/GamePreferences.EditorChecks.cs",
+                        "SHA256":  "ABF4D63C0F2D3B625C97EB6D49A7555AECE19654CC1251ACE3DE74B0B4F1C576",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/GamePreferences.Probe.cs",
+                        "SHA256":  "FBDB686DD584606F8AB20D30754358E6A363976DED678B607514B55D982AADA7",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Battle/Runtime/GamePreferences.UI.cs",
+                        "SHA256":  "E4995FAAE1BFD1747C8C0434D6312F68453A7CFC07F0FFFF3225B76D9581CBCE",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Multiplayer/Editor/AttackCheckMenu.cs",
+                        "SHA256":  "BD498019FA18C2D76BC95273F996838443435348EC4A048F3E05038883700FBF",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Multiplayer/Runtime/NetworkBattleController.cs",
+                        "SHA256":  "1F5798CE00F503FD46DFBBF0F5AF264A029FF17539C6A36070D8702063D312C8",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Multiplayer/Runtime/NetworkBattleSmokeRunner.cs",
+                        "SHA256":  "B2F6F2A201A9DC469B47C6D685A45480762E72AE23FF4121267FBF82C310B055",
+                        "Matches":  true
+                    },
+                    {
+                        "File":  "Assets/UNKNOWN/Multiplayer/Runtime/RoomTestUI.cs",
+                        "SHA256":  "46D6D6DCDEC8E21B57461C830EB3C8D019C1F60458F3A657DD7CE5B82E5F3622",
+                        "Matches":  true
+                    }
+                ]
+}

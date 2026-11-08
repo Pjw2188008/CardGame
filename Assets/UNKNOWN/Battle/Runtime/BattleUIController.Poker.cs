@@ -36,7 +36,7 @@ namespace Unknown.Battle
                 pokerLabels[row].text=(row==0 ? "MY SYNERGY" : "ENEMY SYNERGY")+"\n"+PokerSynergy.Name(p.kind)+"\n"+PokerSynergy.Effect(p.kind);
             }
             for(int i=1;i<=9;i++)pokerRows[i].color=engine.State.Players[ViewPlayer].Poker.kind==(PokerKind)i ? gold : engine.State.Players[1-ViewPlayer].Poker.kind==(PokerKind)i ? new Color(1,0.6f,0.7f) : Color.white;
-            foreach(var p in engine.State.Players)foreach(var card in p.Board.Where(c=>c!=null))if(cardViews.TryGetValue(card.InstanceID,out var rect))UpdateCardStats(rect,card,true);
+            foreach(var p in engine.State.Players)foreach(var card in p.Board.Where(c=>c!=null))if(cardViews.TryGetValue(card.InstanceID,out var rect) && rect!=null)UpdateCardStats(rect,card,true);
         }
         IEnumerator PresentPoker(BattleEvent e)
         {
@@ -48,7 +48,7 @@ namespace Unknown.Battle
         }
         IEnumerator PulsePoker(int owner)
         {
-            var rings=engine.State.Players[owner].Poker.members.Where(id=>cardViews.ContainsKey(id)).Select(id=>cardViews[id].Find("Poker border")?.GetComponent<AttackGlowGraphic>()).Where(g=>g!=null).ToArray();
+            var rings=engine.State.Players[owner].Poker.members.Where(id=>cardViews.TryGetValue(id,out var rect) && rect!=null).Select(id=>cardViews[id].Find("Poker border")?.GetComponent<AttackGlowGraphic>()).Where(g=>g!=null).ToArray();
             yield return HandStep(0.45f,t=>{foreach(var ring in rings)if(ring!=null)ring.color=new Color(0.66f,0.4f,0.95f,0.35f+0.3f*Mathf.Sin(t*Mathf.PI));});
         }
         string StatBreakdown(CardInstance c)
@@ -61,6 +61,7 @@ namespace Unknown.Battle
         }
         void UpdateCardStats(RectTransform rect,CardInstance card,bool onBoard)
         {
+            if(rect==null)return; // Hand views can be removed by a draw before the final board rebuild.
             var atk=rect.Find("Stat ATK")?.GetComponent<Text>();var hp=rect.Find("Stat HP")?.GetComponent<Text>(); if(atk==null || hp==null)return;
             var ink=card.Definition.CardType==CardType.Unknown ? new Color(0.85f,0.73f,1) : SuitInk(card.Definition.Suit);
             atk.text=card.Definition.CardType==CardType.Joker ? "50%" : card.Attack.ToString();

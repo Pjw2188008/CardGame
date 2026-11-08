@@ -15,6 +15,7 @@ namespace Unknown.Battle
         readonly List<RectTransform> backViews = new List<RectTransform>();
         readonly HashSet<int> pendingDraws = new HashSet<int>();
         int pendingEnemyDraws, handViewer = -1;
+        readonly int[] overflowCounts=new int[2];
         readonly RectTransform[] deckMarkers = new RectTransform[2];
         void BuildDeckMarkers()
         {
@@ -35,9 +36,10 @@ namespace Unknown.Battle
         }
         void PrepareHandPlayback(IReadOnlyList<BattleEvent> entries)
         {
+            for(int owner=0;owner<2;owner++)overflowCounts[owner]=entries.Count(e=>e.Kind==BattleEventKind.Discard && e.Secondary==1 && e.Owner==owner);
             if (handViewer != ViewPlayer) ResetHandViews();
             pendingDraws.Clear(); pendingEnemyDraws = 0;
-            foreach (var e in entries.Where(e => e.Kind == BattleEventKind.Draw || e.Kind==BattleEventKind.CardGranted))
+            foreach (var e in entries.Where(e => (e.Kind == BattleEventKind.Draw && e.Secondary!=1) || e.Kind==BattleEventKind.CardGranted))
                 if (e.Owner == ViewPlayer) pendingDraws.Add(e.TargetID); else pendingEnemyDraws++;
         }
         void RefreshHands(PlayerState me, PlayerState enemy)
@@ -46,7 +48,7 @@ namespace Unknown.Battle
             Canvas.ForceUpdateCanvases();
             var cards = me.Hand.Where(c => c != null && !pendingDraws.Contains(c.InstanceID)).ToArray();
             foreach (var id in handViews.Keys.Where(id => !cards.Any(c => c.InstanceID == id)).ToArray())
-            { var view=handViews[id]; view.gameObject.SetActive(false); Destroy(view.gameObject); handViews.Remove(id); }
+            { var view=handViews[id];if(cardViews.TryGetValue(id,out var bound) && bound==view)cardViews.Remove(id); view.gameObject.SetActive(false); Destroy(view.gameObject); handViews.Remove(id); }
             float available = Mathf.Max(200, ((RectTransform)handContent.parent).rect.width);
             int count = cards.Length;
             float gap = Mathf.Lerp(24,8,Mathf.InverseLerp(1,10,count));
@@ -96,6 +98,7 @@ namespace Unknown.Battle
         }
         IEnumerator PresentDraw(BattleEvent entry)
         {
+            if(entry.Secondary==1 && entry.Kind==BattleEventKind.Draw) {yield return PresentOverflow(entry);yield break;}
             bool own=entry.Owner==ViewPlayer;
             if(own)pendingDraws.Remove(entry.TargetID); else pendingEnemyDraws=Mathf.Max(0,pendingEnemyDraws-1);
             RefreshHands(engine.State.Players[ViewPlayer],engine.State.Players[1-ViewPlayer]);
@@ -125,6 +128,8 @@ namespace Unknown.Battle
         }
         void ShowRefillFeedback(IReadOnlyList<BattleEvent> entries)
         {
+            int burned=entries.Count(e=>e.Kind==BattleEventKind.Discard && e.Secondary==1 && e.Owner==ViewPlayer);
+            if(burned>0)Toast("손패 초과: 카드 "+burned+"장 폐기");
             var refill=entries.FirstOrDefault(e=>e.Kind==BattleEventKind.HandRefill && e.Owner==ViewPlayer);
             if(refill!=null)Toast("손패 소진 — 카드 "+refill.Amount+"장 보충");
         }

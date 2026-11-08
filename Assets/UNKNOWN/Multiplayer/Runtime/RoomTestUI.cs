@@ -84,12 +84,13 @@ namespace Unknown.Multiplayer
             content.AddToClassList("page-content");
             shell.Add(content);
             var home = MakePage(Page.Home);
-            MenuButton(home, "온라인 대전", () => { ShowPage(Page.Online, true); return Task.CompletedTask; });
-            MenuButton(home, "로컬 테스트", () => { LaunchBattle(false); return Task.CompletedTask; });
-            MenuButton(home, "게임 종료", () => { Application.Quit(); return Task.CompletedTask; });
+            MenuButton(home, "게임 시작", () => { ShowPage(Page.Online, true); return Task.CompletedTask; });
+            MenuButton(home, "설정", () => { Unknown.Battle.GamePreferences.Instance.Open();document.rootVisualElement.SetEnabled(false); return Task.CompletedTask; });
+            MenuButton(home, "종료", () => { Application.Quit(); return Task.CompletedTask; });
             home = MakePage(Page.Online);
             create = MenuButton(home, "방 만들기", () => room.CreateRoomAsync());
             MenuButton(home, "방 코드로 참가", () => { ShowPage(Page.Join, true); return Task.CompletedTask; });
+            if(Debug.isDebugBuild)MenuButton(home,"로컬 테스트",()=>{LaunchBattle(false);return Task.CompletedTask;},true);
             MenuButton(home, "돌아가기", () => { ShowPage(Page.Home, true); return Task.CompletedTask; }, true);
             var joinPage = MakePage(Page.Join);
             Text(joinPage, "방 코드", "page-hint");
@@ -186,6 +187,7 @@ namespace Unknown.Multiplayer
         }
         void OnKeyDown(KeyDownEvent evt)
         {
+            if(Unknown.Battle.GamePreferences.IsOpen || Unknown.Battle.GamePreferences.ConsumedEscapeFrame==Time.frameCount)return;
             if (room.Busy) return;
             if (evt.keyCode == KeyCode.Escape && currentPage == Page.Join)
             {
@@ -268,6 +270,7 @@ namespace Unknown.Multiplayer
         }
         void Update()
         {
+            if(document!=null)document.rootVisualElement.SetEnabled(!Unknown.Battle.GamePreferences.IsOpen);
             if (busyMark == null || room == null || !room.Busy) return;
             busyTime += Time.unscaledDeltaTime;
             busyMark.style.opacity = 0.4f + 0.6f * (0.5f + 0.5f * Mathf.Sin(busyTime * 3f));
@@ -278,7 +281,7 @@ namespace Unknown.Multiplayer
             battleOnline = online;
             var go = new GameObject(online ? "UNKNOWN Online Battle" : "UNKNOWN Local Battle");
             battleUI = go.AddComponent<Unknown.Battle.BattleUIController>();
-            battleUI.ConfigureOnline(online ? networkBattle : null, () => { battleUI = null; Render(); });
+            battleUI.ConfigureOnline(online ? networkBattle : null, () => { battleUI = null;ShowPage(Page.Home,true); Render(); });
             document.rootVisualElement.style.display = DisplayStyle.None;
         }
         void OnDestroy()

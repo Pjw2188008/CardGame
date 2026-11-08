@@ -20,6 +20,7 @@ $arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/SuitMapRules
 $arguments += Join-Path $PSScriptRoot 'SuitMapTests.cs'
 $arguments += Join-Path $projectRoot 'Assets/UNKNOWN/Battle/Runtime/PokerSynergy.cs'
 $arguments += Join-Path $PSScriptRoot 'PokerTests.cs'
+$arguments += Join-Path $PSScriptRoot 'HandTests.cs'
 $arguments += Join-Path $PSScriptRoot 'BattleRulesTests.cs'
 $arguments += Join-Path $PSScriptRoot 'JokerMapTests.cs'
 & (Join-Path $UnityEditorData 'NetCoreRuntime/dotnet.exe') (Join-Path $UnityEditorData 'DotNetSdkRoslyn/csc.dll') @arguments

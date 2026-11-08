@@ -34,6 +34,9 @@ namespace Unknown.Multiplayer
             public List<string> pokerResults=new List<string>();
             public int manaRejects;
             public bool manaRejectionMatches=true;
+            public bool handLimitMatches=true,optionsClockContinues,optionsInputBlocked,optionsRestored,optionsChecked,manualRepeatRejected;
+            public int manualDiscards,overflowDiscards;
+            public List<string> handEvents=new List<string>();
         }
         Report report;
         string exchange, output;
@@ -43,6 +46,8 @@ namespace Unknown.Multiplayer
         internal static bool SystemsCheck => Debug.isDebugBuild && Environment.GetCommandLineArgs().Contains("-unknownSmoke") && Environment.GetCommandLineArgs().Contains("-unknownSmokeSystems");
         double firstClockStart=-1;
         int round;
+        bool repeatPending;
+        int repeatErrorVersion,repeatRevision,repeatHand,repeatGrave;
         bool manaProbePending;
         int manaProbeVersion,manaProbeRevision,manaProbeCard,manaProbeCost,manaProbeMana,manaProbeHand;
         int MatchCount { get { var args=Environment.GetCommandLineArgs();int at=Array.IndexOf(args,"-unknownSmokeRounds");return at>=0 && at+1<args.Length && int.TryParse(args[at+1],out int count) ? Math.Max(1,Math.Min(5,count)) : args.Contains("-unknownSmokeRematch") ? 2 : 1; } }
@@ -124,6 +129,7 @@ namespace Unknown.Multiplayer
             {
                 if (!string.IsNullOrEmpty(battle.Failure)) { Fail(battle.Failure); yield break; }
                 var s = battle.Snapshot;
+                if(repeatPending){if(battle.ActionErrorVersion>repeatErrorVersion){report.manualRepeatRejected=s.revision==repeatRevision && s.players[s.recipient].handCount==repeatHand && s.players[s.recipient].discardCount==repeatGrave && battle.ActionError.Contains("이미");repeatPending=false;Save();}else {yield return new WaitForSecondsRealtime(0.1f);continue;}}
                 if(manaProbePending) {
                     if(battle.ActionErrorVersion>manaProbeVersion) {
                         yield return new WaitForSecondsRealtime(0.35f);
@@ -180,7 +186,10 @@ namespace Unknown.Multiplayer
                 }
                 // First turn deliberately expires, exercising the real forty-second Host clock.
                 if (s != null && (s.turn > 1 || Environment.GetCommandLineArgs().Contains("-unknownSmokeNoWait")) && battle.CanAct && ui != null && !ui.IsPresenting)
+                {
+                    if(Environment.GetCommandLineArgs().Contains("-unknownSmokeHand") && !report.optionsChecked){double before=battle.Remaining;report.optionsInputBlocked=ui.SmokeOptions(true);yield return new WaitForSecondsRealtime(1.1f);report.optionsClockContinues=battle.Remaining<before-0.5 && battle.Snapshot.clockRunning;report.optionsRestored=ui.SmokeOptions(false);report.optionsChecked=true;Save();}
                     Choose(s);
+                }
                 yield return new WaitForSecondsRealtime(0.12f);
             }
             Fail("Test exceeded 15 minutes");
@@ -195,15 +204,18 @@ namespace Unknown.Multiplayer
             report.map=s.map; report.mapMatches &= s.map==battle.SelectedMap;
             report.hostMapDraws=battle.MapDrawCount;
             report.ownJokerSuccesses=s.players[s.recipient].jokerSuccesses;
+            report.handLimitMatches &= s.handLimit==8 && s.players.All(p=>p.handCount<=8);
             report.privacy &= s.players[1-s.recipient].hand.Length == 0 && s.players[1-s.recipient].unknownCreated == 0
                 && s.players[1-s.recipient].jokerSuccesses==0 && s.players[1-s.recipient].jokerChanceDelta==0
                 && !s.events.Any(e=>e.owner!=s.recipient && e.kind==BattleEventKind.CardGranted)
                 && (s.mapEvent==null || s.mapEvent.owner==s.recipient || s.mapEvent.kind!=JokerEventKind.None || s.mapEvent.detail=="상대에게 비공개 사건이 적용되었습니다." || s.mapEvent.name=="효과 없음")
                 && !s.events.Any(e => e.owner != s.recipient && e.kind == BattleEventKind.Combine)
                 && !s.events.Any(e => e.owner != s.recipient && e.kind == BattleEventKind.HandRefill)
+                && !s.events.Any(e=>e.owner!=s.recipient && (e.kind==BattleEventKind.Discard || e.kind==BattleEventKind.Draw) && (e.target!=-1 || !string.IsNullOrEmpty(e.definition)))
                 && !s.log.Any(l => l.StartsWith("P"+(2-s.recipient)+": UNKNOWN 조합"));
             foreach (var e in s.events)
             {
+                if(e.kind==BattleEventKind.Discard){report.handEvents.Add($"{s.revision}:P{e.owner+1}:reason={e.secondary}:hand={s.players[e.owner].handCount}:grave={s.players[e.owner].discardCount}");if(e.secondary==2 && e.owner==s.recipient)report.manualDiscards++;if(e.secondary==1)report.overflowDiscards++;}
                 if(e.kind==BattleEventKind.PokerChanged)report.pokerResults.Add($"{s.revision}:P{e.owner+1}:{(PokerKind)e.amount}->{(PokerKind)e.secondary}");
                 if(e.kind==BattleEventKind.SuitMapTurn)report.suitTurns++;
                 if(e.kind==BattleEventKind.Damage && e.source<0)report.suitDamage+=e.amount;
@@ -228,7 +240,7 @@ namespace Unknown.Multiplayer
                 if (e.kind == BattleEventKind.TimeOut) report.timeouts++;
             }
             report.publicState = s.turn + ":" + s.active + ":" + s.winner + ":" + string.Join("|", s.players.Select(p =>
-                p.hp + "," + p.mana + "," + p.maxMana + "," + p.handCount + "," + p.deckCount + ","+p.poker.kind+":"+string.Join(",",p.poker.members)+":"+string.Join(",",p.poker.targets)+":" +
+                p.hp + "," + p.mana + "," + p.maxMana + "," + p.handCount + "," + p.deckCount + ","+p.discardCount+","+p.manualDiscardUsed+","+p.poker.kind+":"+string.Join(",",p.poker.members)+":"+string.Join(",",p.poker.targets)+":" +
                 string.Join(";",p.board.Select(c => c == null || !c.occupied ? "-" : c.id + "," + c.definition + "," + c.attack + "," + c.hp + "," + c.maxHP + "," + c.attacked + "," + c.jokerUsed+","+c.pokerAttack+","+c.pokerHP+","+c.rawAttack+","+c.rawHP+","+c.mapAttack+","+c.mapHP+","+c.jokerAttack+","+c.jokerHP+","+c.abilityAttack+","+c.abilityHP))));
             Save();
         }
@@ -236,6 +248,12 @@ namespace Unknown.Multiplayer
         {
             int me = s.recipient, enemy = 1-me; var p = s.players[me];
             if (s.targets.Length > 0) { int t = s.targets[0]; battle.Submit(BattleAction.Target,t / 5,t % 5); return; }
+            if(Environment.GetCommandLineArgs().Contains("-unknownSmokeHand")) {
+                // Natural stockpiling reaches capacity using real turn draws; no cards or decks are injected.
+                if(s.turn<=8){battle.Submit(BattleAction.EndTurn);return;}
+                if(p.manualDiscardUsed && !report.manualRepeatRejected && !repeatPending && p.hand.Length>0){repeatPending=true;repeatErrorVersion=battle.ActionErrorVersion;repeatRevision=s.revision;repeatHand=p.handCount;repeatGrave=p.discardCount;battle.Submit(BattleAction.Discard,p.hand[0].id);return;}
+                if(!p.manualDiscardUsed && report.manualDiscards<2 && p.hand.Length>1){var discard=p.hand.OrderBy(c=>CardDatabase.Get(c.definition).ManaCost).First();if(!FindFirstObjectByType<BattleUIController>().SmokeDiscard(discard.id))Debug.LogError("Smoke discard UI failed");return;}
+            }
             var hand = p.hand.Select(c => c.ToCard()).ToArray();
             var ace = hand.FirstOrDefault(c => c.Definition.Rank == Rank.Ace && c.Definition.CardType == CardType.Normal);
             var face = hand.FirstOrDefault(c => c.Definition.Rank >= Rank.Jack && c.Definition.Rank <= Rank.King && c.Definition.CardType == CardType.Normal);

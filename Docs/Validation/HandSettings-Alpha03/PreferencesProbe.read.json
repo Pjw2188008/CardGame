@@ -1,0 +1,21 @@
+{
+    "completed": true,
+    "persisted": true,
+    "audioMatches": true,
+    "error": "",
+    "saved": {
+        "master": 0.41999998688697817,
+        "bgm": 0.3499999940395355,
+        "sfx": 0.7699999809265137,
+        "mode": 2,
+        "width": 1280,
+        "height": 720,
+        "vsync": 0
+    },
+    "modes": [
+        "startup=Windowed 1280x720 vsync=0"
+    ],
+    "modeMatches": [
+        true
+    ]
+}

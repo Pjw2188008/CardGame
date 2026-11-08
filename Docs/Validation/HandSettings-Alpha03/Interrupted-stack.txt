@@ -1,0 +1,9 @@
+﻿NullReferenceException: Object reference not set to an instance of an object.
+  at UnityEngine.Bindings.ThrowHelper.ThrowNullReferenceException (System.Object obj) [0x00018] in C:\build\output\unity\unity\Runtime\Export\Scripting\BindingsHelpers.cs:62 
+  at UnityEngine.Transform.FindRelativeTransformWithPath (System.String path, System.Boolean isActiveOnly) [0x00006] in <86f4009607fc4ddd9c77210bcfc64a4b>:0 
+  at UnityEngine.Transform.Find (System.String n) [0x00014] in C:\build\output\unity\unity\Runtime\Transform\ScriptBindings\Transform.bindings.cs:394 
+  at Unknown.Battle.BattleUIController.UpdateCardStats (UnityEngine.RectTransform rect, Unknown.Battle.CardInstance card, System.Boolean onBoard) [0x0001c] in D:\git\ECHO-\Echogame\CardGame\Library\UNKNOWN-Systems-BuildProject\Assets\UNKNOWN\Battle\Runtime\BattleUIController.Poker.cs:64 
+  at Unknown.Battle.BattleUIController.RefreshPokerUI () [0x001fa] in D:\git\ECHO-\Echogame\CardGame\Library\UNKNOWN-Systems-BuildProject\Assets\UNKNOWN\Battle\Runtime\BattleUIController.Poker.cs:39 
+  at Unknown.Battle.BattleUIController+<PresentPoker>d__191.MoveNext () [0x00023] in D:\git\ECHO-\Echogame\CardGame\Library\UNKNOWN-Systems-BuildProject\Assets\UNKNOWN\Battle\Runtime\BattleUIController.Poker.cs:43 
+  at UnityEngine.SetupCoroutine.InvokeMoveNext (System.Collections.IEnumerator enumerator, System.IntPtr returnValueAddress) [0x00020] in C:\build\output\unity\unity\Runtime\Export\Scripting\Coroutines.cs:17 
+

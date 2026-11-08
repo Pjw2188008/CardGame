@@ -9,7 +9,7 @@ namespace Unknown.Battle
     {
         public int StartingHP { get; set; } = 30;
         public int StartingHand { get; set; } = 5;
-        public int HandLimit { get; set; } = 10;
+        public int HandLimit { get; set; } = 8;
         public int FieldSlots { get; set; } = 5;
         public int StartingMana { get; set; } = 3;
         public int ManaCap { get; set; } = 10;
@@ -48,6 +48,7 @@ namespace Unknown.Battle
         public int JokerSuccesses { get; internal set; }
         public int JokerChanceDelta { get; internal set; }
         public PokerState Poker { get; internal set; } = new PokerState();
+        public bool ManualDiscardUsed { get; internal set; }
         internal PlayerState(int hp, int slots) { HP = hp; Slots = new CardInstance[slots]; Board = Array.AsReadOnly(Slots); }
     }
 
@@ -149,9 +150,10 @@ namespace Unknown.Battle
                 if (player.DeckCards.Count == 0) { Log($"P{owner + 1}: 덱이 비어 드로우 생략"); continue; }
                 int last = player.DeckCards.Count - 1;
                 var card = player.DeckCards[last]; player.DeckCards.RemoveAt(last);
-                Emit(new BattleEvent(BattleEventKind.Draw, owner, target: card.InstanceID, definition: card.Definition));
+                bool overflow=player.HandCards.Count>=rules.HandLimit;
+                Emit(new BattleEvent(BattleEventKind.Draw, owner, target: card.InstanceID, secondary:overflow ? 1 : 0, definition: card.Definition));
                 if (player.HandCards.Count >= rules.HandLimit)
-                { player.DiscardCards.Add(card); Emit(new BattleEvent(BattleEventKind.Discard, owner, target: card.InstanceID)); Log($"P{owner + 1}: 패가 가득 차 뽑은 카드 소멸"); }
+                { player.DiscardCards.Add(card); Emit(new BattleEvent(BattleEventKind.Discard, owner, target: card.InstanceID,secondary:1)); Log($"P{owner + 1}: 손패 초과 · 새 드로우 카드 폐기"); }
                 else { player.HandCards.Add(card); Log($"P{owner + 1}: 카드 1장 드로우"); }
             }
         }
@@ -160,6 +162,7 @@ namespace Unknown.Battle
             State.ActivePlayer = player; State.TurnNumber++; State.SummonsThisTurn = 0;
             State.TurnExpired = false;
             var current = State.Players[player];
+            current.ManualDiscardUsed=false;
             current.TurnsStarted++;
             if (current.TurnsStarted > 1) current.MaxMana = Math.Min(rules.ManaCap, current.MaxMana + 1);
             current.CurrentMana = current.MaxMana;
@@ -196,6 +199,18 @@ namespace Unknown.Battle
         {
             if (State.IsOver || !State.TurnExpired || NeedsTarget || actor != State.ActivePlayer) return false;
             BeginTurn(1 - actor); return true;
+        }
+        public bool DiscardHand(int actor,int cardID)
+        {
+            if(!Guard(actor))return false;
+            var p=State.Players[actor];
+            if(p.ManualDiscardUsed)return Fail("이번 턴에는 이미 카드를 버렸습니다.");
+            if(p.HandCards.Count==0)return Fail("손패에 카드가 없습니다.");
+            var card=p.HandCards.FirstOrDefault(c=>c!=null && c.Owner==actor && c.InstanceID==cardID);
+            if(card==null)return Fail("버릴 자신의 손패 카드를 선택해주세요.");
+            p.HandCards.Remove(card);p.DiscardCards.Add(card);p.ManualDiscardUsed=true;
+            Emit(new BattleEvent(BattleEventKind.Discard,actor,target:card.InstanceID,secondary:2));
+            Log($"P{actor+1}: 손패 카드 1장 버림");return true;
         }
         void SpendMana(int owner, int amount)
         {

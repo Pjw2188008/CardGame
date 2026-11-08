@@ -34,8 +34,8 @@ static partial class BattleRulesTests
             var g=PokerGame();PokerField(g,0,"Heart_5","Spade_5","Club_5");g.ReconcilePoker();var p=g.State.Players[0];p.Slots[0].CurrentHP=0;p.Slots[1].CurrentHP=1;p.Slots[2].CurrentHP=1;g.ReconcilePoker();Equal(0,p.Board.Count(c=>c!=null));Equal(PokerKind.None,p.Poker.kind);Equal(3,g.DrainEvents().Count(e=>e.Kind==BattleEventKind.Destroy));
             g=PokerGame();PokerField(g,0,"Heart_5","Spade_5","Club_5");g.ReconcilePoker();p=g.State.Players[0];var survivor=p.Slots[1];survivor.CurrentHP=4;p.Slots[0].CurrentHP=0;g.ReconcilePoker();Equal(2,survivor.CurrentHP);Equal(survivor.Definition.MaxHP,survivor.MaxHP);
         });
-        Test("Straight reward occurs once per player, respects ten-card cap, and resets next game",()=>{
-            var g=PokerGame();PokerField(g,0,hands[4]);for(int i=0;i<9;i++)Hand(g,0,"Heart_2");int deck=g.State.Players[0].DeckCount;g.ReconcilePoker();Equal(deck-2,g.State.Players[0].DeckCount);Equal(10,g.State.Players[0].Hand.Count);Check(g.State.Players[0].Poker.straightRewardUsed);
+        Test("Straight reward occurs once per player, respects eight-card cap, and resets next game",()=>{
+            var g=PokerGame();PokerField(g,0,hands[4]);for(int i=0;i<7;i++)Hand(g,0,"Heart_2");int deck=g.State.Players[0].DeckCount;g.ReconcilePoker();Equal(deck-2,g.State.Players[0].DeckCount);Equal(8,g.State.Players[0].Hand.Count);Check(g.State.Players[0].Poker.straightRewardUsed);
             var c=g.State.Players[0].Slots[4];g.State.Players[0].Slots[4]=null;g.ReconcilePoker();g.State.Players[0].Slots[4]=c;g.ReconcilePoker();Equal(deck-2,g.State.Players[0].DeckCount);
             PokerField(g,1,hands[4]);int enemyDeck=g.State.Players[1].DeckCount;g.ReconcilePoker();Equal(enemyDeck-2,g.State.Players[1].DeckCount);Check(!PokerGame().State.Players[0].Poker.straightRewardUsed);
             var empty=PokerGame();empty.State.Players[0].DeckCards.Clear();PokerField(empty,0,hands[4]);empty.ReconcilePoker();Equal(0,empty.State.Players[0].Hand.Count);Check(empty.State.Players[0].Poker.straightRewardUsed);

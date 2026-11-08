@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Unknown.Battle
 {
-    public enum BattleAction { Summon, Attack, Target, Combine, Joker, EndTurn }
+    public enum BattleAction { Summon, Attack, Target, Combine, Joker, EndTurn, Discard }
     [Serializable] public sealed class BattleIntent
     {
         public int sequence, revision, turn, first, second;
@@ -38,6 +38,8 @@ namespace Unknown.Battle
         public int hp, mana, maxMana, deckCount, handCount, unknownCreated, jokerSuccesses, jokerChanceDelta;
         public CardViewData[] hand, board;
         public PokerState poker;
+        public bool manualDiscardUsed;
+        public int discardCount;
     }
     [Serializable] public sealed class EventViewData
     {
@@ -54,13 +56,14 @@ namespace Unknown.Battle
             bool hidden = e.Owner != recipient && (e.Kind == BattleEventKind.Draw || e.Kind == BattleEventKind.Discard || e.Kind == BattleEventKind.Combine || e.Kind==BattleEventKind.CardGranted || e.Kind==BattleEventKind.HandReturn);
             return new EventViewData { kind = hidden && e.Kind==BattleEventKind.CardGranted ? BattleEventKind.Draw : e.Kind, owner = e.Owner, targetOwner = e.TargetOwner,
                 source = hidden || (e.Owner!=recipient && e.Kind==BattleEventKind.JokerTravel) ? -1 : e.SourceID, target = hidden ? -1 : e.TargetID,
-                amount = e.Amount, secondary = hidden ? 0 : e.Secondary, slot = e.Slot,
+                amount = e.Amount, secondary = hidden && e.Kind!=BattleEventKind.Draw && e.Kind!=BattleEventKind.Discard ? 0 : e.Secondary, slot = e.Slot,
                 suit = hidden ? Suit.None : e.Suit, chain = e.Chain, definition = hidden ? null : e.Definition?.CardID };
         }
     }
     [Serializable] public sealed class BattleSnapshot
     {
         public int revision, recipient, active, turn, winner;
+        public int handLimit=8;
         public VictoryReason victoryReason;
         public double deadline;
         public double turnDuration = 40;
@@ -82,6 +85,7 @@ namespace Unknown.Battle
         {
             var s = engine.State;
             return new BattleSnapshot { revision = revision, recipient = recipient, active = s.ActivePlayer,
+                handLimit=engine.Config.HandLimit,
                 turn = s.TurnNumber, winner = s.Winner, victoryReason = s.VictoryReason, expired = s.TurnExpired, deadline = deadline, busy = busy, turnDuration = turnDuration, clockRunning = clockRunning,
                 map=engine.Config.Map, mapEvent=MapEventView.For(engine.MapEvent,recipient),
                 suitEffect=engine.SuitEffect?.Copy(),mapRules=engine.Config.MapRules,
@@ -89,7 +93,7 @@ namespace Unknown.Battle
                 players = s.Players.Select((p, owner) => new PlayerViewData { hp = p.HP, mana = p.CurrentMana, maxMana = p.MaxMana,
                     jokerSuccesses=owner==recipient ? p.JokerSuccesses : 0, jokerChanceDelta=owner==recipient ? p.JokerChanceDelta : 0,
                     deckCount = p.DeckCount, handCount = p.Hand.Count, unknownCreated = owner == recipient ? p.UnknownCreated : 0,
-                    poker=p.Poker.Copy(),
+                    poker=p.Poker.Copy(),manualDiscardUsed=p.ManualDiscardUsed,discardCount=p.DiscardCount,
                     hand = owner == recipient ? p.Hand.Select(CardViewData.From).ToArray() : new CardViewData[0],
                     board = p.Board.Select(CardViewData.From).ToArray() }).ToArray(),
                 targets = Enumerable.Range(0, 2 * engine.Config.FieldSlots).Where(i => engine.IsValidEffectTarget(i / engine.Config.FieldSlots, i % engine.Config.FieldSlots)).ToArray(),
@@ -104,7 +108,7 @@ namespace Unknown.Battle
         // A view does not shuffle, draw, create a hidden deck, or execute commands.
         BattleEngine(BattleSnapshot s)
         {
-            rules = new BattleConfig { FieldSlots = s.players[0].board.Length, Map=s.map };
+            rules = new BattleConfig { FieldSlots = s.players[0].board.Length, Map=s.map,HandLimit=s.handLimit };
             State = new BattleState(rules); viewOnly = true; ApplyView(s);
         }
         public static BattleEngine CreateView(BattleSnapshot s) => new BattleEngine(s);
@@ -124,6 +128,7 @@ namespace Unknown.Battle
                 p.HP = v.hp; p.CurrentMana = v.mana; p.MaxMana = v.maxMana; p.UnknownCreated = v.unknownCreated;
                 p.JokerSuccesses=v.jokerSuccesses; p.JokerChanceDelta=v.jokerChanceDelta;
                 p.Poker=v.poker?.Copy() ?? new PokerState();
+                p.ManualDiscardUsed=v.manualDiscardUsed;p.DiscardCards.Clear();for(int i=0;i<v.discardCount;i++)p.DiscardCards.Add(null);
                 p.HandCards.Clear(); p.DeckCards.Clear();
                 // Count placeholders exist only in memory, with no identity or card definition.
                 for (int i = 0; i < v.deckCount; i++) p.DeckCards.Add(null);
@@ -158,6 +163,7 @@ namespace Unknown.Battle
                 case BattleAction.Combine: ok = Engine.Combine(actor, i.first, i.second); break;
                 case BattleAction.Joker: ok = Engine.Gamble(actor, i.first, i.second); break;
                 case BattleAction.EndTurn: ok = Engine.EndTurn(actor); break;
+                case BattleAction.Discard: ok = Engine.DiscardHand(actor,i.first);break;
                 default: return false;
             }
             if (ok) Revision++;

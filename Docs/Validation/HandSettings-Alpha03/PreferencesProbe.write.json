@@ -1,0 +1,25 @@
+{
+    "completed": true,
+    "persisted": true,
+    "audioMatches": true,
+    "error": "",
+    "saved": {
+        "master": 0.41999998688697817,
+        "bgm": 0.3499999940395355,
+        "sfx": 0.7699999809265137,
+        "mode": 2,
+        "width": 1280,
+        "height": 720,
+        "vsync": 0
+    },
+    "modes": [
+        "requested=Windowed 1280x720 vsync=0; actual=Windowed 1280x720 vsync=0",
+        "requested=FullScreenWindow 1280x720 vsync=1; actual=FullScreenWindow 1280x720 vsync=1",
+        "requested=ExclusiveFullScreen 2560x1440 vsync=0; actual=ExclusiveFullScreen 2560x1440 vsync=0"
+    ],
+    "modeMatches": [
+        true,
+        true,
+        true
+    ]
+}

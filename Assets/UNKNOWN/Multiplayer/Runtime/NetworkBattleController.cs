@@ -11,8 +11,8 @@ namespace Unknown.Multiplayer
     [DisallowMultipleComponent, RequireComponent(typeof(RoomController))]
     public sealed class NetworkBattleController : MonoBehaviour
     {
-        // v7 carries authoritative poker states and independent stat sources.
-        const string Request = "UNKNOWN.Intent.v7", State = "UNKNOWN.State.v7", Ready = "UNKNOWN.Ready.v7", Lobby = "UNKNOWN.Lobby.v7", Presented = "UNKNOWN.Presented.v7";
+        // v8 adds authoritative hand limits, discard counts and once-per-turn manual discard.
+        const string Request = "UNKNOWN.Intent.v8", State = "UNKNOWN.State.v8", Ready = "UNKNOWN.Ready.v8", Lobby = "UNKNOWN.Lobby.v8", Presented = "UNKNOWN.Presented.v8";
         public BattleMap? SelectedMap { get; private set; }
         RandomMapSelection mapSelection;
         public int MapDrawCount => mapSelection?.DrawCount ?? 0;

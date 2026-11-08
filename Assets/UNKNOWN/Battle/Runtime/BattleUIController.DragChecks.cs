@@ -96,7 +96,7 @@ namespace Unknown.Battle
                 animations.ClearAction(); yield return null;
                 verify(animations.ActiveCardGhostCount==0,"Repeated anonymous draws leave no oversized orphan card");
                 CheckFixture();
-                for(int count=1;count<=10;count++)
+                for(int count=1;count<=8;count++)
                 {
                     CheckHand("Club_2"); CheckHand("Heart_2",1); Refresh(); yield return new WaitForSecondsRealtime(0.3f);
                     var ownCenters=handViews.Values.Select(v=>interactionRoot.InverseTransformPoint(v.TransformPoint(v.rect.center)).x).ToArray();

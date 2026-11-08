@@ -1,0 +1,15 @@
+﻿[UNKNOWN Connection] pid=42720 step=ManagerValidated manager=11092 transport=UnityTransport listening=False host=False client=False connected=False localClient=0 connectedPlayers=0
+[UNKNOWN Connection] pid=42720 step=ServicesInitialize profile=default ProjectId=13cfb794-511c-49c9-b0d6-402d6ebe74ce environment=production state=Uninitialized
+[UNKNOWN Connection] pid=42720 step=Authenticated profile=default PlayerId=XX2PB1QdSSfhnQmozF46WDbomFV8 ProjectId=13cfb794-511c-49c9-b0d6-402d6ebe74ce environment=production
+[UNKNOWN Connection] pid=42720 step=RelayStart operation=CreateSession MaxPlayers=2 private=true
+[UNKNOWN Connection] pid=42720 step=ConnectionApproval clientId=0 approved=True reason=
+[UNKNOWN Connection] pid=42720 step=ClientConnected clientId=0 manager=11092 transport=UnityTransport listening=True host=True client=True connected=True localClient=0 connectedPlayers=1
+[UNKNOWN Connection] pid=42720 step=SessionCreated SessionId=iqdhFn7yg7LoZVo2qnehwK SessionCode=8BW9WQ Host=True members=1/2
+[UNKNOWN Connection] pid=42720 step=RelayConnected manager=11092 transport=UnityTransport listening=True host=True client=True connected=True localClient=0 connectedPlayers=1
+[UNKNOWN Connection] pid=42720 step=ConnectionApproval clientId=1 approved=True reason=
+[UNKNOWN Connection] pid=42720 step=ClientConnected clientId=1 manager=11092 transport=UnityTransport listening=True host=True client=True connected=True localClient=0 connectedPlayers=2
+[UNKNOWN Map] match=1 map=Club hostDraws=1
+[UNKNOWN Connection] pid=42720 step=ClientDisconnected clientId=1 reason=[Disconnect Event][Client-1][TransportClientId-4294967296][ClosedByRemote] Connection was closed by remote endpoint. manager=11092 transport=UnityTransport listening=True host=True client=True connected=True localClient=0 connectedPlayers=1
+[UNKNOWN Connection] pid=42720 step=ClientDisconnected clientId=0 reason=[Disconnect Event][Client-0][TransportClientId-0][TransportShutdown] NetworkConnectionManager was shutdown. The transport was shutdown. manager=11092 transport=UnityTransport listening=False host=True client=True connected=False localClient=0 connectedPlayers=0
+[UNKNOWN Connection] pid=42720 step=NetworkStopped wasHost=True closing=True manager=11092 transport=UnityTransport listening=False host=False client=False connected=False localClient=0 connectedPlayers=0
+[UNKNOWN Connection] pid=42720 step=NetworkStopped wasHost=True closing=True manager=11092 transport=UnityTransport listening=False host=False client=False connected=False localClient=0 connectedPlayers=0

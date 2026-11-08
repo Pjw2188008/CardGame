@@ -108,6 +108,7 @@ namespace Unknown.Battle
             Destroy(bar.gameObject);
         }
         public Func<BattleEvent, IEnumerator> DrawPresentation;
+        public Func<BattleEvent, IEnumerator> DiscardPresentation;
         public Func<BattleEvent, IEnumerator> MapPresentation;
         public Func<BattleEvent, IEnumerator> PokerPresentation;
         public IEnumerator PokerBanner(string title)
@@ -182,6 +183,7 @@ namespace Unknown.Battle
                         Destroy(drawn.gameObject); ghosts.Remove(entry.TargetID);
                         break;
                     case BattleEventKind.Discard:
+                        if(DiscardPresentation!=null){yield return DiscardPresentation(entry);break;}
                         var discarded = Clone(entry.TargetID, entry.Owner); var discardedGroup = Group(discarded);
                         yield return Step(0.2f, t => { discarded.localScale = Vector3.one * (1 - 0.95f * t); discardedGroup.alpha = 1 - t; }); break;
                     case BattleEventKind.Destroy:

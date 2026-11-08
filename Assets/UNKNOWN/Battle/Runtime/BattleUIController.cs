@@ -112,13 +112,16 @@ namespace Unknown.Battle
             var handArea = Box(battlefield, "Hand Area", new Vector2(0.12f, 0.012f), new Vector2(0.88f, 0.225f), Color.clear);
             handContent = Box(handArea, "Hand Cards", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Color.clear);
             handContent.sizeDelta = new Vector2(1200, 210);
-            var menu = Box(battlefield, "Battle Menu", new Vector2(0.01f, 0.74f), new Vector2(0.18f, 0.95f), panel);
-            ActionButton(battlefield, "메뉴", new Vector2(0.015f, 0.96f), new Vector2(0.09f, 0.993f), () => menu.gameObject.SetActive(!menu.gameObject.activeSelf));
+            var menu = Box(battlefield, "Battle Menu", new Vector2(0.01f, 0.65f), new Vector2(0.21f, 0.95f), panel);battleMenu=menu;
+            ActionButton(battlefield, "메뉴", new Vector2(0.015f, 0.96f), new Vector2(0.09f, 0.993f), ToggleBattleMenu);
             pauseButton = ActionButton(menu, "일시정지", new Vector2(0.05f, 0.72f), new Vector2(0.95f, 0.95f), () => { paused=!paused; pauseButton.GetComponentInChildren<Text>().text=paused ? "계속하기" : "일시정지"; });
             revealButton = ActionButton(menu, "패 공개 디버그", new Vector2(0.05f, 0.48f), new Vector2(0.95f, 0.70f), () => { if(!Blocked()) { revealHands=!revealHands; Refresh(); } });
             newGameButton = ActionButton(menu, "새 게임", new Vector2(0.05f, 0.25f), new Vector2(0.95f, 0.47f), () => { if(!actionBusy && !transitioning) NewMatch(); });
-            ActionButton(menu, "메인 메뉴", new Vector2(0.05f, 0.02f), new Vector2(0.95f, 0.24f), ReturnToMenu);
-            revealButton.gameObject.SetActive(Debug.isDebugBuild && online==null); newGameButton.gameObject.SetActive(Debug.isDebugBuild && online==null); pauseButton.gameObject.SetActive(online==null);
+            pauseButton.gameObject.SetActive(false);revealButton.gameObject.SetActive(false);newGameButton.gameObject.SetActive(false);
+            ActionButton(menu,"게임으로 돌아가기",new Vector2(0.05f,0.69f),new Vector2(0.95f,0.94f),ToggleBattleMenu);
+            ActionButton(menu,"설정",new Vector2(0.05f,0.38f),new Vector2(0.95f,0.63f),()=>GamePreferences.Instance.Open());
+            ActionButton(menu, "타이틀로 돌아가기", new Vector2(0.05f, 0.07f), new Vector2(0.95f, 0.32f), ReturnToMenu);
+            revealButton.gameObject.SetActive(false);newGameButton.gameObject.SetActive(false);pauseButton.gameObject.SetActive(false);
             menu.gameObject.SetActive(false);
             BuildTooltip();
             var overlay = Box(root, "Hotseat Privacy Screen", Vector2.zero, Vector2.one, new Color(0.025f, 0.04f, 0.065f, 1));
@@ -133,9 +136,10 @@ namespace Unknown.Battle
             returnLobby.gameObject.SetActive(online != null);
             animations = gameObject.AddComponent<CardAnimationController>(); animations.Initialize(root, font, () => IsPaused);
             animations.DrawPresentation = PresentDraw;
+            animations.DiscardPresentation=PresentDiscard;
             animations.MapPresentation = PresentMapEvent;
             animations.PokerPresentation = PresentPoker;
-            BuildDeckMarkers(); BuildDragLayer();
+            BuildDeckMarkers(); BuildDragLayer();BuildHandTools();
         }
 
         void BuildMana(int row, float bottom, float top)
@@ -218,7 +222,7 @@ namespace Unknown.Battle
         {
             foreach (Transform child in parent) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
         }
-        void ClearSelection() { EndAttackDrag(); EndCardDrag(); HideTooltip(); combinationMode=false; handID = attackerID = jokerTarget = aceID = faceID = -1; }
+        void ClearSelection() { EndAttackDrag(); EndCardDrag(); HideTooltip(); combinationMode=false;discardMode=false;discardID=-1; handID = attackerID = jokerTarget = aceID = faceID = -1; }
         CardInstance SelectedHand => engine.State.Players[ViewPlayer].Hand.FirstOrDefault(c => c.InstanceID == handID);
         void Result(bool success, string message = "")
         {
@@ -308,6 +312,7 @@ namespace Unknown.Battle
         void SelectHand(CardInstance card)
         {
             if (Blocked() || card==null) return;
+            if(discardMode) {if(card.Owner==ViewPlayer)discardID=discardID==card.InstanceID ? -1 : card.InstanceID;Refresh();return;}
             if(combinationMode) { SelectCombinationMaterial(card); return; }
             if (engine.NeedsTarget) { feedback = engine.TargetPrompt; Refresh(); return; }
             attackerID = jokerTarget = -1;
@@ -317,6 +322,7 @@ namespace Unknown.Battle
         }
         bool Blocked()
         {
+            if(MenuOpen || GamePreferences.IsOpen)return true;
             if (engine == null || engine.State.ActivePlayer != ViewPlayer) return true;
             if (online != null) return !online.CanAct || actionBusy || transitioning;
             // InputSystem may process a click before this component's Update; sample the clock here too.
@@ -326,7 +332,7 @@ namespace Unknown.Battle
         }
         void ClickSlot(int owner, int slot)
         {
-            if (Blocked() || combinationMode) return;
+            if (Blocked() || combinationMode || discardMode) return;
             int active = ViewPlayer;
             if (engine.NeedsTarget) { Dispatch(BattleAction.Target, owner, slot, () => engine.SelectEffectTarget(active, owner, slot), "소환 효과 처리"); return; }
             var unit = engine.State.Players[owner].Board[slot];
@@ -451,6 +457,7 @@ namespace Unknown.Battle
         }
         void RefreshControls()
         {
+            RefreshHandTools();
             bool allowed = !Blocked();
             endTurn.interactable = allowed && !engine.NeedsTarget;
             RefreshCombinationSlots();

@@ -37,7 +37,7 @@ namespace Unknown.Battle
         }
         void ToggleCombinationMode()
         {
-            if(Blocked() || engine.NeedsTarget || AttackDragging || dragged!=null)return;
+            if(discardMode || Blocked() || engine.NeedsTarget || AttackDragging || dragged!=null)return;
             bool enter=!combinationMode; ClearSelection(); combinationMode=enter; combinationTurn=engine.State.TurnNumber;
             RefreshCombinationSlots(); RefreshHands(engine.State.Players[ViewPlayer],engine.State.Players[1-ViewPlayer]);
         }
@@ -81,7 +81,7 @@ namespace Unknown.Battle
             selectionInfo.text=result==null ? "" : "A + "+CardDatabase.RankText(face.Definition.Rank)+" = "+result.CardName;
             if(combineButton!=null) combineButton.interactable=combinationMode && !Blocked() && !engine.NeedsTarget && result!=null;
             if(combinationModeButton!=null) {
-                combinationModeButton.interactable=!Blocked() && !engine.NeedsTarget && !AttackDragging && dragged==null;
+                combinationModeButton.interactable=!discardMode && !Blocked() && !engine.NeedsTarget && !AttackDragging && dragged==null;
                 combinationModeButton.GetComponentInChildren<Text>().text=combinationMode ? "선택 취소" : "조합 선택";
             }
         }
@@ -122,7 +122,7 @@ namespace Unknown.Battle
         void Toast(string text) { toastText=text; toastUntil=Time.unscaledTime+1.5f; }
         public bool BeginCardDrag(int id,RectTransform original,PointerEventData data)
         {
-            if(data.button!=PointerEventData.InputButton.Left || combinationMode || AttackDragging || dragged!=null || original==null) return false;
+            if(data.button!=PointerEventData.InputButton.Left || discardMode || combinationMode || AttackDragging || dragged!=null || original==null) return false;
             if(Blocked()) { Toast(engine.State.IsOver ? "종료된 경기입니다." : engine.State.ActivePlayer!=ViewPlayer ? "상대방의 턴입니다." : engine.State.TurnExpired ? "턴 시간이 종료되었습니다." : "현재 동작을 처리하고 있습니다."); return false; }
             if(engine.NeedsTarget) { Toast(engine.TargetPrompt); return false; }
             var card=engine.State.Players[ViewPlayer].Hand.FirstOrDefault(c=>c!=null && c.InstanceID==id);
@@ -196,7 +196,8 @@ namespace Unknown.Battle
         void UpdateInteractionUI()
         {
             if(Keyboard.current?.escapeKey.wasPressedThisFrame==true)
-                CancelInteractionSelection();
+                HandleBattleEscape();
+            if(discardMode && (engine.State.TurnNumber!=discardTurn || engine.State.ActivePlayer!=ViewPlayer || engine.State.IsOver || engine.NeedsTarget))CancelInteractionSelection();
             if(dragged!=null && (Blocked() || engine.NeedsTarget)) EndCardDrag();
             if(AttackDragging && !ReadyToAttack(BoardCard(attackDragID)))EndAttackDrag();
             if(combinationMode && (Blocked() || engine.NeedsTarget || combinationTurn!=engine.State.TurnNumber))CancelInteractionSelection();
@@ -209,7 +210,7 @@ namespace Unknown.Battle
             if(!actionBusy && !transitioning) Refresh();
         }
         void CancelInteractionSelection()
-        { EndAttackDrag(); EndCardDrag(); combinationMode=false; aceID=faceID=handID=attackerID=-1; RefreshCombinationSlots(); if(engine!=null && ViewPlayer>=0 && ViewPlayer<2)RefreshHands(engine.State.Players[ViewPlayer],engine.State.Players[1-ViewPlayer]); }
+        { EndAttackDrag(); EndCardDrag(); combinationMode=false;discardMode=false;discardID=-1; aceID=faceID=handID=attackerID=-1; RefreshCombinationSlots(); if(engine!=null && ViewPlayer>=0 && ViewPlayer<2)RefreshHands(engine.State.Players[ViewPlayer],engine.State.Players[1-ViewPlayer]);RefreshHandTools(); }
         internal bool SmokeDrag(int id,CardDropKind kind,int slot=-1)
         {
             if(!Debug.isDebugBuild || !Environment.GetCommandLineArgs().Contains("-unknownSmoke") || !cardViews.TryGetValue(id,out var view)) return false;

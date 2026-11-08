@@ -132,8 +132,8 @@ static partial class BattleRulesTests
             Check(!g.EndTurn(0)); Check(!g.Attack(0,a.InstanceID)); var c=Hand(g,0,"Heart_3"); Check(!g.Summon(0,c.InstanceID,1));
         });
         Test("full hand burns exactly the drawn card", () => {
-            var g=Fresh(); for(int i=0;i<10;i++) Hand(g,0,"Diamond_2"); int before=g.State.Players[0].DeckCount;
-            g.Draw(0,1); Equal(10,g.State.Players[0].Hand.Count); Equal(before-1,g.State.Players[0].DeckCount); Equal(1,g.State.Players[0].DiscardCount);
+            var g=Fresh(); for(int i=0;i<8;i++) Hand(g,0,"Diamond_2"); int before=g.State.Players[0].DeckCount;
+            g.Draw(0,1); Equal(8,g.State.Players[0].Hand.Count); Equal(before-1,g.State.Players[0].DeckCount); Equal(1,g.State.Players[0].DiscardCount);
         });
         Test("empty deck safely skips draw without fatigue", () => {
             var g=Fresh(); g.State.Players[0].DeckCards.Clear(); g.Draw(0,3); Equal(0,g.State.Players[0].Hand.Count); Equal(30,g.State.Players[0].HP);
@@ -250,7 +250,7 @@ static partial class BattleRulesTests
                     }
                     var physical=new List<CardInstance>();
                     foreach(var p in g.State.Players) {
-                        Check(p.Hand.Count<=10); Check(p.HP>=0); physical.AddRange(p.Hand); physical.AddRange(p.DeckCards); physical.AddRange(p.DiscardCards);
+                        Check(p.Hand.Count<=8); Check(p.HP>=0); physical.AddRange(p.Hand); physical.AddRange(p.DeckCards); physical.AddRange(p.DiscardCards);
                         foreach(var u in p.Board.Where(c=>c!=null)) { Check(u.CurrentHP>0&&u.CurrentHP<=u.MaxHP&&u.Attack>=0); physical.Add(u); }
                     }
                     Equal(physical.Count,physical.Select(c=>c.InstanceID).Distinct().Count());

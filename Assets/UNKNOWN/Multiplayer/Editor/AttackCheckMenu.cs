@@ -30,11 +30,13 @@ namespace Unknown.Multiplayer.Editor
         }
         public static void RunPokerSuiteBatch()
         {
+            if(Application.isBatchMode && !EditorApplication.isPlaying)UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity");
             SessionState.SetBool("UNKNOWN.AttackSuiteBatch",true);SessionState.SetInt("UNKNOWN.AttackSuitePhase",5);SessionState.SetBool("UNKNOWN.AttackSuiteFailed",false);
             SessionState.SetString("UNKNOWN.AttackSuiteStarted",DateTime.UtcNow.ToString("O"));RunPoker();EditorApplication.update+=PollSuite;
         }
         public static void RunSuiteBatch()
         {
+            if(Application.isBatchMode && !EditorApplication.isPlaying)UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity");
             SessionState.SetBool("UNKNOWN.AttackSuiteBatch",true); SessionState.SetInt("UNKNOWN.AttackSuitePhase",0); SessionState.SetBool("UNKNOWN.AttackSuiteFailed",false);
             SessionState.SetString("UNKNOWN.AttackSuiteStarted",DateTime.UtcNow.ToString("O"));
             Run(); EditorApplication.update+=PollSuite;
@@ -44,7 +46,7 @@ namespace Unknown.Multiplayer.Editor
                 int phase=SessionState.GetInt("UNKNOWN.AttackSuitePhase",0);
                 var started=DateTime.Parse(SessionState.GetString("UNKNOWN.AttackSuiteStarted",""),null,System.Globalization.DateTimeStyles.RoundtripKind);
                 bool failed=SessionState.GetBool("UNKNOWN.AttackSuiteFailed",false);
-                string[] paths={"Library/UNKNOWN-AttackUI-Checks.json","Library/UNKNOWN-DragUI-Checks.json","Library/UNKNOWN-PvP-Regressions.json","Library/UNKNOWN-JokerMap-Checks.json","Library/UNKNOWN-SuitMap-Checks.json","Library/UNKNOWN-Poker-Checks.json"};
+                string[] paths={"Library/UNKNOWN-AttackUI-Checks.json","Library/UNKNOWN-DragUI-Checks.json","Library/UNKNOWN-PvP-Regressions.json","Library/UNKNOWN-JokerMap-Checks.json","Library/UNKNOWN-SuitMap-Checks.json","Library/UNKNOWN-Poker-Checks.json","Library/UNKNOWN-HandSettings-Checks.json"};
                 if((DateTime.UtcNow-started).TotalSeconds>300) { SessionState.SetBool("UNKNOWN.AttackSuiteBatch",false); Debug.LogError("Attack suite timed out"); EditorApplication.Exit(1); return; }
                 if(!File.Exists(paths[phase]) || File.GetLastWriteTimeUtc(paths[phase])<=started)return;
                 var result=JsonUtility.FromJson<CheckResult>(File.ReadAllText(paths[phase]));
@@ -53,7 +55,7 @@ namespace Unknown.Multiplayer.Editor
                 SessionState.SetBool("UNKNOWN.AttackSuiteFailed",failed); SessionState.SetInt("UNKNOWN.AttackSuitePhase",phase);
                 if(phase==paths.Length) { SessionState.SetBool("UNKNOWN.AttackSuiteBatch",false); EditorApplication.update-=PollSuite; if(Application.isBatchMode)EditorApplication.Exit(failed?1:0); else { EditorApplication.isPlaying=false; Debug.Log("[UNKNOWN] UI suite finished. failed="+failed); } return; }
                 var ui=new GameObject("UNKNOWN UI Regression Suite").AddComponent<Unknown.Battle.BattleUIController>();
-                if(phase==1)ui.RunDragChecks(); else if(phase==2)ui.RunPvPRegressionChecks(); else if(phase==3)ui.RunJokerChecks(); else if(phase==4)ui.RunSuitChecks(); else ui.RunPokerChecks();
+                if(phase==1)ui.RunDragChecks(); else if(phase==2)ui.RunPvPRegressionChecks(); else if(phase==3)ui.RunJokerChecks(); else if(phase==4)ui.RunSuitChecks(); else if(phase==5)ui.RunPokerChecks(); else ui.RunHandSettingsChecks();
         }
     }
 }

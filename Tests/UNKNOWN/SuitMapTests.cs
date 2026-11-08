@@ -60,7 +60,7 @@ static partial class BattleRulesTests
         Test("Club summon draw stacks with card ability, handles empty decks and hand burn privately",()=>{
             var g=SuitFixture(BattleMap.Club); int deck=g.State.Players[0].DeckCount; var c=Hand(g,0,"Club_4"); Check(g.Summon(0,c.InstanceID,0)); FinishEffects(g); Equal(deck-2,g.State.Players[0].DeckCount);
             g=SuitFixture(BattleMap.Club); g.State.Players[0].DeckCards.Clear(); c=Hand(g,0,"Club_4"); Check(g.Summon(0,c.InstanceID,0)); Equal(0,g.State.Players[0].Hand.Count);
-            g=SuitFixture(BattleMap.Club); c=Hand(g,0,"Club_3"); for(int i=0;i<9;i++)Hand(g,0,"Heart_2"); Check(g.Summon(0,c.InstanceID,0)); Equal(10,g.State.Players[0].Hand.Count);
+            g=SuitFixture(BattleMap.Club); c=Hand(g,0,"Club_3"); for(int i=0;i<7;i++)Hand(g,0,"Heart_2"); Check(g.Summon(0,c.InstanceID,0)); Equal(8,g.State.Players[0].Hand.Count);
             var events=g.DrainEvents(); var hidden=BattleSnapshot.For(g,1,1,0,true,events); Check(hidden.events.Where(e=>e.kind==BattleEventKind.Draw).All(e=>e.definition==null && e.target==-1));
         });
         Test("Normal and Joker never receive suit fixed bonuses; UNKNOWN is excluded on every map",()=>{
