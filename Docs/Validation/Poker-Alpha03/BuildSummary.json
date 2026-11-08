@@ -1,0 +1,13 @@
+﻿{
+    "Unity":  "6000.0.74f1",
+    "DevelopmentBuild":  true,
+    "BuildResult":  "Succeeded",
+    "BuildErrors":  0,
+    "BuildWarnings":  8,
+    "RulesPassed":  144,
+    "PlayModePassed":  414,
+    "PlayModeFailed":  0,
+    "PlayModeErrors":  0,
+    "AssemblySHA256":  "9EB3F70C48B1C4F267630CF36085C210F3AB047E6D742A9231C0978AB5A705BD",
+    "SourceCopyMatches":  true
+}

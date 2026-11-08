@@ -14,6 +14,7 @@ namespace Unknown.Battle
         readonly Queue<BattleSnapshot> snapshots = new Queue<BattleSnapshot>();
         bool presenting;
         string shownActionError = "";
+        int shownErrorVersion=-1;
         int appliedViewRevision = -1, lastViewRefreshFrame = -1;
         public bool IsPresenting => actionBusy || transitioning || presenting;
         int ViewPlayer
@@ -54,7 +55,7 @@ namespace Unknown.Battle
                 else engine.ApplyView(s);
                 RefreshMapUI(); RefreshOpponentReveal();
                 // Authoritative progress/result changes now; visual playback never determines victory.
-                RefreshMana(); RefreshUnknownProgress();
+                RefreshMana(); RefreshUnknownProgress();RefreshPokerUI();
                 if(!mapIntroPresented)yield return PresentRandomMap(s.map);
                 // Existing views remain bound during animation, including units destroyed by this action.
                 var entries = s.events.Select(e => e.ToEvent()).ToArray();
@@ -76,8 +77,8 @@ namespace Unknown.Battle
         }
         void UpdateOnline()
         {
-            if (online.ActionError != shownActionError)
-            { shownActionError = online.ActionError; if (!string.IsNullOrEmpty(shownActionError)) { awaitingAttack=-1; AttackState=AttackDragState.Cancelled; EndAttackDrag(); Toast(shownActionError); } }
+            if (online.ActionErrorVersion != shownErrorVersion)
+            { shownErrorVersion=online.ActionErrorVersion;shownActionError = online.ActionError; if (!string.IsNullOrEmpty(shownActionError)) { awaitingAttack=-1; AttackState=AttackDragState.Cancelled; EndAttackDrag(); ReturnRejectedCard();Toast(shownActionError); } }
             if (!string.IsNullOrEmpty(online.Failure))
             { awaitingAttack=-1; EndAttackDrag(); winnerText.text = online.Failure; resultOverlay.SetActive(true); }
             var remaining = online.Remaining;
@@ -108,9 +109,12 @@ namespace Unknown.Battle
                     var c=engine.State.Players[owner].Board[slot];
                     var expected=online.Snapshot.players[owner].board[slot];
                     if ((c!=null)!=(expected?.occupied==true)) return false;
-                    if (c!=null && (c.InstanceID!=expected.id || c.Attack!=expected.attack || c.CurrentHP!=expected.hp
+                    if (c!=null && (c.InstanceID!=expected.id || c.Attack!=expected.attack || c.CurrentHP!=expected.hp || c.MaxHP!=expected.maxHP
                         || !cardViews.TryGetValue(c.InstanceID,out var view) || view.parent!=(owner==ViewPlayer ? ownBoard : enemyBoard))) return false;
+                    if(c!=null && (cardViews[c.InstanceID].Find("Stat ATK").GetComponent<UnityEngine.UI.Text>().text!=c.Attack.ToString()
+                        || c.PokerAttack!=expected.pokerAttack || c.PokerHP!=expected.pokerHP))return false;
                 }
+            for(int owner=0;owner<2;owner++)if(!pokerLabels[owner==ViewPlayer ? 0 : 1].text.Contains(PokerSynergy.Name(online.Snapshot.players[owner].poker.kind)))return false;
             return ownBoard.gameObject.activeInHierarchy && enemyBoard.gameObject.activeInHierarchy
                 && ownBoard.Cast<Transform>().Count(t=>t.gameObject.activeSelf)==5 && enemyBoard.Cast<Transform>().Count(t=>t.gameObject.activeSelf)==5
                 && ownInfo.text.Contains("플레이어 "+(ViewPlayer+1)) && opponentInfo.text.Contains("플레이어 "+(2-ViewPlayer));
@@ -124,6 +128,11 @@ namespace Unknown.Battle
                 : won ? "VICTORY — OPPONENT HP ZERO" : "DEFEAT — YOUR HP ZERO";
             return winnerText.text==expected && timerText.text=="GAME OVER" && online.Remaining==0
                 && !endTurn.interactable && !combineButton.interactable;
+        }
+        internal bool MatchesManaRejection(int id,int required,int current)
+        {
+            return Time.unscaledTime<toastUntil && toastText.Contains("필요 마나: "+required+" / 현재 마나: "+current)
+                && notice.text==toastText && handViews.TryGetValue(id,out var rect) && rect.GetComponent<CanvasGroup>().alpha==1;
         }
     }
 }

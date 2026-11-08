@@ -22,7 +22,9 @@ static partial class BattleRulesTests
     }
     static BattleEngine Fresh(IRandomSource dice = null, BattleConfig config = null)
     {
-        var game = new BattleEngine(42, config ?? new BattleConfig { StartingHand = 0, ShuffleDecks = false, StartingMana = 10, ManaCap = 10 }, dice);
+        config=config ?? new BattleConfig { StartingHand = 0, ShuffleDecks = false, StartingMana = 10, ManaCap = 10 };
+        config.EnablePoker=false; // Alpha 0.1/0.2 effect fixtures isolate their original subject. Poker has dedicated enabled fixtures.
+        var game = new BattleEngine(42, config, dice);
         foreach (var p in game.State.Players) { p.HandCards.Clear(); }
         return game;
     }
@@ -283,7 +285,7 @@ static partial class BattleRulesTests
             var g=Fresh(null,new BattleConfig{StartingHand=0,ShuffleDecks=false});
             for(int slot=0;slot<3;slot++) { var c=Hand(g,0,"Diamond_2"); Check(g.Summon(0,c.InstanceID,slot)); }
             Equal(0,g.State.Players[0].CurrentMana); var fourth=Hand(g,0,"Diamond_2"); Check(!g.Summon(0,fourth.InstanceID,3));
-            Equal("마나가 부족합니다",g.State.LastError); Equal(1,g.State.Players[0].Hand.Count); Check(g.State.Players[0].Board[3]==null);
+            Check(g.State.LastError.StartsWith("마나가 부족합니다")); Equal(1,g.State.Players[0].Hand.Count); Check(g.State.Players[0].Board[3]==null);
         });
         Test("occupied/full field never charges mana", () => {
             var g=Fresh(); for(int slot=0;slot<5;slot++) Unit(g,0,"Heart_K",slot); var c=Hand(g,0,"Heart_2");

@@ -1,0 +1,69 @@
+﻿{
+    "ExecutedUTC":  "2026-11-08T08:44:45.0330152Z",
+    "SamePC":  true,
+    "SystemsFixture":  false,
+    "Seed":  348,
+    "IndependentPlayerIDs":  true,
+    "ProjectMatches":  true,
+    "EnvironmentMatches":  true,
+    "FinalCleaned":  true,
+    "Rounds":  [
+                   {
+                       "Round":  1,
+                       "Map":  4,
+                       "Turns":  9,
+                       "BothFinished":  true,
+                       "Winner":  0,
+                       "PublicStateEqual":  true,
+                       "PokerTransitionsEqual":  true,
+                       "PokerTransitions":  [
+                                                "34:P1:None-\u003eOnePair"
+                                            ],
+                       "HostViewSamples":  60,
+                       "GuestViewSamples":  47,
+                       "ViewMatches":  true,
+                       "Privacy":  true,
+                       "ResultMatches":  true,
+                       "ManaRejectionMatches":  true,
+                       "HostManaRejects":  2,
+                       "GuestManaRejects":  2,
+                       "MapMatches":  true,
+                       "MapEventsOnce":  true,
+                       "ResetState":  true,
+                       "ReturnedToLobby":  true,
+                       "Errors":  0
+                   },
+                   {
+                       "Round":  2,
+                       "Map":  1,
+                       "Turns":  19,
+                       "BothFinished":  true,
+                       "Winner":  0,
+                       "PublicStateEqual":  true,
+                       "PokerTransitionsEqual":  true,
+                       "PokerTransitions":  [
+                                                "40:P1:None-\u003eOnePair",
+                                                "60:P1:OnePair-\u003eTwoPair",
+                                                "72:P1:TwoPair-\u003eOnePair",
+                                                "100:P1:OnePair-\u003eNone",
+                                                "156:P1:None-\u003eOnePair",
+                                                "178:P2:None-\u003eOnePair",
+                                                "182:P1:OnePair-\u003eNone",
+                                                "186:P2:OnePair-\u003eNone"
+                                            ],
+                       "HostViewSamples":  145,
+                       "GuestViewSamples":  125,
+                       "ViewMatches":  true,
+                       "Privacy":  true,
+                       "ResultMatches":  true,
+                       "ManaRejectionMatches":  true,
+                       "HostManaRejects":  2,
+                       "GuestManaRejects":  2,
+                       "MapMatches":  true,
+                       "MapEventsOnce":  true,
+                       "ResetState":  true,
+                       "ReturnedToLobby":  true,
+                       "Errors":  0
+                   }
+               ]
+}

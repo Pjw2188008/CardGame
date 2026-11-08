@@ -45,8 +45,24 @@ namespace Unknown.Battle
         public int InstanceID { get; }
         public CardDefinition Definition { get; }
         public int Owner { get; }
-        public int Attack { get; internal set; }
-        public int MaxHP { get; internal set; }
+        int coreAttack,coreHP;
+        public int PokerAttack { get; internal set; }
+        public int PokerHP { get; internal set; }
+        public int MapAttack { get; internal set; }
+        public int MapHP { get; internal set; }
+        public int JokerAttack { get; internal set; }
+        public int JokerHP { get; internal set; }
+        public int AbilityAttack { get; internal set; }
+        public int AbilityHP { get; internal set; }
+        public int NonPokerAttack => Math.Max(0,coreAttack);
+        public int NonPokerHP => Math.Max(1,coreHP);
+        internal int RawAttack => coreAttack;
+        internal int RawHP => coreHP;
+        internal void ImportCore(int attack,int hp) { coreAttack=attack; coreHP=hp; }
+        public int Attack { get=>Math.Max(0,coreAttack+PokerAttack); internal set=>coreAttack=value-PokerAttack; }
+        public int MaxHP { get=>Math.Max(1,coreHP+PokerHP); internal set=>coreHP=value-PokerHP; }
+        public int OtherAttack => coreAttack-Definition.Attack-MapAttack-JokerAttack-AbilityAttack;
+        public int OtherHP => coreHP-Definition.MaxHP-MapHP-JokerHP-AbilityHP;
         public int CurrentHP { get; internal set; }
         public int SummonedTurn { get; internal set; } = -1;
         public bool HasAttacked { get; internal set; }

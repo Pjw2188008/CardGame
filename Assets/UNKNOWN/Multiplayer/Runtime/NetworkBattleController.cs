@@ -11,8 +11,8 @@ namespace Unknown.Multiplayer
     [DisallowMultipleComponent, RequireComponent(typeof(RoomController))]
     public sealed class NetworkBattleController : MonoBehaviour
     {
-        // v6 adds suit map rules and resolved turn effects. Use the same build on both peers.
-        const string Request = "UNKNOWN.Intent.v6", State = "UNKNOWN.State.v6", Ready = "UNKNOWN.Ready.v6", Lobby = "UNKNOWN.Lobby.v6", Presented = "UNKNOWN.Presented.v6";
+        // v7 carries authoritative poker states and independent stat sources.
+        const string Request = "UNKNOWN.Intent.v7", State = "UNKNOWN.State.v7", Ready = "UNKNOWN.Ready.v7", Lobby = "UNKNOWN.Lobby.v7", Presented = "UNKNOWN.Presented.v7";
         public BattleMap? SelectedMap { get; private set; }
         RandomMapSelection mapSelection;
         public int MapDrawCount => mapSelection?.DrawCount ?? 0;
@@ -29,6 +29,7 @@ namespace Unknown.Multiplayer
         public string Failure { get; private set; } = "";
         public bool Sending { get; private set; }
         public string ActionError { get; private set; } = "";
+        public int ActionErrorVersion { get; private set; }
         public double Remaining => Snapshot == null ? TurnDuration : Snapshot.winner >= 0 ? 0 : !Snapshot.clockRunning ? Snapshot.turnDuration : Math.Min(Snapshot.turnDuration, Math.Max(0, Snapshot.deadline - Manager.ServerTime.Time));
         public bool CanAct => Snapshot != null && Snapshot.clockRunning && !Snapshot.busy && !Sending && Snapshot.active == LocalPlayer && Snapshot.winner < 0 && Remaining > 0 && string.IsNullOrEmpty(Failure);
         NetworkManager Manager => GetComponent<NetworkManager>();
@@ -200,6 +201,7 @@ namespace Unknown.Multiplayer
                 throw new InvalidOperationException("Snapshot recipient does not match the local connection.");
             Sending = false;
             ActionError = s.error ?? "";
+            if(!string.IsNullOrEmpty(ActionError))ActionErrorVersion++;
             // Equal revisions are request rejection replies; never replay their events.
             if (s.revision == lastRevision) { Changed?.Invoke(); return; }
             lastRevision = s.revision; Snapshot = s; SelectedMap=s.map; SnapshotReceived?.Invoke(s); Changed?.Invoke();

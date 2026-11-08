@@ -1,0 +1,146 @@
+﻿PASS 52 exact stat/effect rows and 3 UNKNOWN rows
+PASS 54-card deck, distinct jokers, 57 definitions
+PASS independent decks and starting hand + turn draw
+PASS same seed reproducible, different seed shuffles
+PASS runtime instances do not mutate definitions or other cards
+PASS turn ownership and turn-start draw
+PASS multiple affordable summons share mana rather than per-turn count
+PASS cannot summon on enemy turn or out of range/full board
+PASS custom field capacity
+PASS summoning sickness, next own turn, once per turn
+PASS simultaneous combat kills both
+PASS enemy field blocks direct attack without consuming attack
+PASS win prevents all further commands
+PASS full hand burns exactly the drawn card
+PASS empty deck safely skips draw without fatigue
+PASS manual target gates turn and rejects wrong owner/slot
+PASS no enemy target skips damage but keeps later self buff
+PASS damage + debuff uses same target
+PASS destroyed target does not redirect follow-up debuff
+PASS attack reduction clamps at zero
+PASS healing clamps at max HP
+PASS max HP raises current by same amount and same ally keeps buffs
+PASS all-allies includes source; HP then healing preserves order
+PASS self damage precedes selected enemy damage
+PASS self destruction cancels follow-up damage
+PASS chain hits two different targets, cannot double hit
+PASS chain with one enemy only damages once
+PASS random damage chooses living valid target
+PASS draw and discard effects handle empty/full hands
+PASS A + each face previews and combines across suits
+PASS field materials cannot combine; missing/cancelled selection is harmless
+PASS UNKNOWN 3 per player persists after cards disappear
+PASS UNKNOWN summon costs mana, combination is free
+PASS joker is not a summon
+PASS joker success rounds up, increases current by max delta
+PASS joker failure destroys target and consumes joker
+PASS joker once per unit, invalid target never consumes it
+PASS every summon definition resolves without stale targets
+PASS seeded complete matches maintain invariants through random actions
+PASS mana costs match all 57 definitions
+PASS each player's first turn starts at 3, second at 4
+PASS mana refills without carry-over and opponent mana is untouched
+PASS maximum mana caps at 10 for both players
+PASS multiple summons consume exact mana, fourth unaffordable summon is atomic
+PASS occupied/full field never charges mana
+PASS free combination at zero mana, UNKNOWN pays its summon cost
+PASS joker charges 2 on either result; insufficient mana never rolls
+PASS invalid or already-used joker target does not charge or reroll
+PASS clock follows real elapsed time across uneven frames
+PASS clock pauses, resumes without charging pause duration, and stops
+PASS clock clamps at zero and resets for the next turn
+PASS timeout blocks all new actions until one explicit turn transition
+PASS timeout finishes committed chain targets once then waits for presentation
+PASS manual end duplicate with stale actor cannot skip a turn
+PASS effect events carry actual clamped ATK and heal changes
+PASS combat events capture actual damage before simultaneous destruction
+PASS direct attack caps floating damage at remaining hero HP and emits win
+PASS summon and mana events are emitted once and drains cannot replay results
+PASS network projections never contain opponent hand definitions or deck order
+PASS UNKNOWN projection hides material IDs and resulting type from opponent
+PASS private discard only reveals discarded identity to its owner
+PASS authority rejects wrong actor, duplicate sequence, stale revision and stale turn
+PASS Host resolves attack target IDs for either player and rejects stale or friendly IDs
+PASS Host blocks direct attacks with defenders and accepts ID -1 only on an empty field
+PASS authority rejects other player's hand ID and forged attack ID atomically
+PASS public board snapshots preserve resolved stats, attack readiness and target prompt
+PASS third UNKNOWN ends immediately in hand with one terminal event for either player
+PASS HP victory has explicit reason and new matches reset both victory paths
+PASS empty wire slots are explicit and populated slots retain logical indices for both recipients
+PASS empty hand refills exactly five only at the next own turn
+PASS nonempty hands one through five receive only the ordinary one-card draw
+PASS refill uses only remaining deck cards and never rebuilds an empty deck
+PASS refill projection exposes definitions and refill notice only to the owner
+PASS Host rejects forged combination materials and duplicate confirmation without spending
+PASS Poker highest category and targets: None
+PASS Poker highest category and targets: OnePair
+PASS Poker highest category and targets: TwoPair
+PASS Poker highest category and targets: Triple
+PASS Poker highest category and targets: Straight
+PASS Poker highest category and targets: Flush
+PASS Poker highest category and targets: FullHouse
+PASS Poker highest category and targets: FourKind
+PASS Poker highest category and targets: StraightFlush
+PASS Poker highest category and targets: RoyalFlush
+PASS Ace straights allow low and high only, with exact royal flush recognition
+PASS Hand, UNKNOWN and Joker never participate; all-field two-pair includes UNKNOWN
+PASS Matching-only bonuses never affect a kicker or UNKNOWN
+PASS Pair to triple replacement, member swap and independent opponent hand are idempotent
+PASS Health bonus removal preserves damage and resolves a finite death cascade
+PASS Straight reward occurs once per player, respects ten-card cap, and resets next game
+PASS Royal and straight flush are exclusive categories without the straight reward
+PASS Map and Joker layers survive poker loss; existing final-stat 1.5x gamble is preserved
+PASS Public snapshots carry both poker states and exact stat causes without hidden hand data
+PASS Clamped negative core and source totals survive recipient projection
+PASS Real summon activates pair and real combat removes it with exact damage
+PASS Unaffordable summon and Joker rejection preserve hand, mana, field and synergy
+PASS Random map is unresolved in lobby and draws exactly once per match
+MAP DISTRIBUTION: Normal=0, Diamond=22481, Spade=22635, Heart=22632, Club=22181, JokerGame=10071
+PASS Weighted random maps cover five outcomes and exclude Normal over one hundred thousand matches
+PASS Five map weighted boundaries are exact and Normal stays out of the online pool
+PASS Matching normal summon gets its map bonus once: Diamond
+PASS Turn effect once, host-owned and identical public projections: Diamond
+PASS Suit map UNKNOWN victory and HP victory stop all new actions: Diamond
+PASS Matching normal summon gets its map bonus once: Spade
+PASS Turn effect once, host-owned and identical public projections: Spade
+PASS Suit map UNKNOWN victory and HP victory stop all new actions: Spade
+PASS Matching normal summon gets its map bonus once: Heart
+PASS Turn effect once, host-owned and identical public projections: Heart
+PASS Suit map UNKNOWN victory and HP victory stop all new actions: Heart
+PASS Matching normal summon gets its map bonus once: Club
+PASS Turn effect once, host-owned and identical public projections: Club
+PASS Suit map UNKNOWN victory and HP victory stop all new actions: Club
+PASS Diamond damage kills exactly one random enemy and never damages the hero
+PASS Spade reduction accumulates, clamps at zero and empty fields are harmless
+PASS Heart heals only active hero and clamps the actual heal at starting maximum HP
+PASS Club mana caps at ten, does not increase maximum or carry over
+PASS Club summon draw stacks with card ability, handles empty decks and hand burn privately
+PASS Normal and Joker never receive suit fixed bonuses; UNKNOWN is excluded on every map
+PASS Suit bonuses stack with self abilities and use editable copied map values
+PASS Rematch discards previous map progress and activates only new map rules
+PASS Joker map has exactly fourteen unique weighted events totaling 100 percent
+PASS Joker event resolves once: Strengthen
+PASS Joker event resolves once: Curse
+PASS Joker event resolves once: Reveal
+PASS Joker event resolves once: Mana
+PASS Joker event resolves once: Draw
+PASS Joker event resolves once: Exchange
+PASS Joker event resolves once: Discard
+PASS Joker event resolves once: HalveHP
+PASS Joker event resolves once: Gift
+PASS Joker event resolves once: Retry
+PASS Joker event resolves once: JokerCurse
+PASS Joker event resolves once: ForcedGamble
+PASS Joker event resolves once: LastHand
+PASS Joker event resolves once: Multiply
+PASS Joker stat events clamp and preserve current-health rules on either branch
+PASS Invalid events are conditionally redrawn and impossible pools finish without looping
+PASS Gift and last hand create new instances without removing base-deck Jokers
+PASS Exchange preserves UNKNOWN identity, provenance and instance state
+PASS Temporary mana is capped at ten and resets next personal turn
+PASS Reveal is recipient-only, expires at turn end and disappears when card leaves
+PASS Private map events hide event type, Joker grants and opponent victory counters
+PASS One-use seventy/thirty percent modifiers have exact boundaries and expire
+PASS Forced gamble failure spends no mana and does not reduce progress
+PASS Joker map disables UNKNOWN victory and wins immediately on third successful gamble
+RESULT: 144 passed, 0 failed

@@ -105,7 +105,8 @@ namespace Unknown.Battle
         {
             if(AttackDragging || dragged!=null || passOverlay.activeSelf || resultOverlay.activeSelf) return;
             var d=card.Definition;
-            detail.text=d.CardName+"   "+CardDatabase.Symbol(d.Suit)+$"\n{d.ManaCost} MP   공격 {card.Attack}   체력 {card.CurrentHP}/{card.MaxHP}\n\n"+d.Description;
+            tooltip.sizeDelta=new Vector2(420,350);
+            detail.text=d.CardName+"   "+CardDatabase.Symbol(d.Suit)+$"\n{d.ManaCost} MP\n"+StatBreakdown(card)+"\n\n"+d.Description;
             if(card.Owner==ViewPlayer && BoardCard(card.InstanceID)!=null) detail.text+="\n"+AttackReason(BoardCard(card.InstanceID));
             PositionTooltip(data);
         }
@@ -118,10 +119,12 @@ namespace Unknown.Battle
             tooltip.anchoredPosition=new Vector2(Mathf.Clamp(p.x,bounds.xMin+half.x+10,bounds.xMax-half.x-10),Mathf.Clamp(p.y,bounds.yMin+half.y+10,bounds.yMax-half.y-10));
         }
         void HideTooltip() { if(tooltip!=null) tooltip.gameObject.SetActive(false); }
-        void Toast(string text) { toastText=text; toastUntil=Time.unscaledTime+2.5f; }
+        void Toast(string text) { toastText=text; toastUntil=Time.unscaledTime+1.5f; }
         public bool BeginCardDrag(int id,RectTransform original,PointerEventData data)
         {
-            if(data.button!=PointerEventData.InputButton.Left || combinationMode || AttackDragging || dragged!=null || Blocked() || engine.NeedsTarget || original==null) return false;
+            if(data.button!=PointerEventData.InputButton.Left || combinationMode || AttackDragging || dragged!=null || original==null) return false;
+            if(Blocked()) { Toast(engine.State.IsOver ? "종료된 경기입니다." : engine.State.ActivePlayer!=ViewPlayer ? "상대방의 턴입니다." : engine.State.TurnExpired ? "턴 시간이 종료되었습니다." : "현재 동작을 처리하고 있습니다."); return false; }
+            if(engine.NeedsTarget) { Toast(engine.TargetPrompt); return false; }
             var card=engine.State.Players[ViewPlayer].Hand.FirstOrDefault(c=>c!=null && c.InstanceID==id);
             if(card==null) return false;
             var d=card.Definition;
@@ -152,8 +155,7 @@ namespace Unknown.Battle
             var d=dragged.Definition;
             if(zone.Kind!=CardDropKind.Unit || zone.Owner!=ViewPlayer || zone.Slot<0 || zone.Slot>=engine.Config.FieldSlots) return false;
             var unit=engine.State.Players[ViewPlayer].Board[zone.Slot];
-            if(d.CardType!=CardType.Joker) return unit==null && engine.State.Players[ViewPlayer].CurrentMana>=d.ManaCost;
-            return unit!=null && unit.CurrentHP>0 && !unit.JokerUsed && engine.State.Players[ViewPlayer].CurrentMana>=2;
+            return true; // Host validates mana, occupancy and Joker eligibility.
         }
         public void HighlightDrop(CardDropZone zone)
         {
@@ -175,10 +177,11 @@ namespace Unknown.Battle
         }
         public bool DropCard(CardDropZone zone)
         {
-            if(!CanDrop(zone)) { if(dragged!=null) Toast("이 위치에는 사용할 수 없습니다"); EndCardDrag(); return false; }
+            RememberDrop();
+            if(!CanDrop(zone)) { if(dragged!=null) Toast("소환할 수 없는 위치입니다."); EndCardDrag(); ReturnRejectedCard(); return false; }
             int id=dragged.InstanceID,actor=ViewPlayer; var kind=zone.Kind; int slot=zone.Slot;
             bool joker=dragged.Definition.CardType==CardType.Joker;
-            int target=kind==CardDropKind.Unit && joker ? engine.State.Players[actor].Board[slot].InstanceID : -1;
+            int target=kind==CardDropKind.Unit && joker ? engine.State.Players[actor].Board[slot]?.InstanceID ?? -1 : -1;
             EndCardDrag(); // Clear before dispatch: duplicate Drop/EndDrag cannot submit twice.
             if(joker)Dispatch(BattleAction.Joker,id,target,()=>engine.Gamble(actor,id,target),"JOKER");
             else Dispatch(BattleAction.Summon,id,slot,()=>engine.Summon(actor,id,slot),"소환 완료"); return true;

@@ -1,0 +1,9 @@
+﻿[UNKNOWN Connection] pid=24360 step=ManagerValidated manager=11088 transport=UnityTransport listening=False host=False client=False connected=False localClient=0 connectedPlayers=0
+[UNKNOWN Connection] pid=24360 step=ServicesInitialize profile=unknown_local_2 ProjectId=13cfb794-511c-49c9-b0d6-402d6ebe74ce environment=production state=Uninitialized
+[UNKNOWN Connection] pid=24360 step=Authenticated profile=unknown_local_2 PlayerId=oekLQRkJmhMFjvNgfspALFOErEuq ProjectId=13cfb794-511c-49c9-b0d6-402d6ebe74ce environment=production
+[UNKNOWN Connection] pid=24360 step=RelayStart operation=JoinSessionByCode SessionCode=P8CRFK
+[UNKNOWN Connection] pid=24360 step=ClientConnected clientId=1 manager=11088 transport=UnityTransport listening=True host=False client=True connected=True localClient=1 connectedPlayers=0
+[UNKNOWN Connection] pid=24360 step=SessionJoined SessionId=B5RZj6p6c3KyS7iUUEB2qN SessionCode=P8CRFK Host=False members=2/2
+[UNKNOWN Connection] pid=24360 step=RelayConnected manager=11088 transport=UnityTransport listening=True host=False client=True connected=True localClient=1 connectedPlayers=2
+[UNKNOWN Connection] pid=24360 step=ClientDisconnected clientId=1 reason=[Disconnect Event][Client-1][TransportClientId-4294967296][TransportShutdown] NetworkConnectionManager was shutdown. The transport was shutdown. manager=11088 transport=UnityTransport listening=True host=False client=True connected=True localClient=1 connectedPlayers=0
+[UNKNOWN Connection] pid=24360 step=NetworkStopped wasHost=False closing=True manager=11088 transport=UnityTransport listening=False host=False client=False connected=False localClient=0 connectedPlayers=0

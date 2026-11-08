@@ -1,0 +1,30 @@
+{
+    "completed": true,
+    "legacyNullMaterialized": true,
+    "passed": [
+        "P0 both fields contain 5 slots after Unity JSON roundtrip",
+        "P0 own card appears below",
+        "P0 opponent card appears above",
+        "P0 labels map to snapshot recipient",
+        "P0 both mana rows visible",
+        "P1 both fields contain 5 slots after Unity JSON roundtrip",
+        "P1 own card appears below",
+        "P1 opponent card appears above",
+        "P1 labels map to snapshot recipient",
+        "P1 both mana rows visible",
+        "Combination 1 succeeds",
+        "Combination 2 succeeds",
+        "Combination 3 succeeds",
+        "Third combine ends before animation",
+        "P0 only own progress visible",
+        "P0 correct result text",
+        "P0 progress glow is private",
+        "P0 terminal controls disabled",
+        "P1 only own progress visible",
+        "P1 correct result text",
+        "P1 progress glow is private",
+        "P1 terminal controls disabled"
+    ],
+    "failed": [],
+    "errors": []
+}

@@ -20,6 +20,7 @@ namespace Unknown.Battle
         void ShowMapTooltip(UnityEngine.EventSystems.PointerEventData data)
         {
             if(AttackDragging || dragged!=null || passOverlay.activeSelf || resultOverlay.activeSelf)return;
+            tooltip.sizeDelta=new Vector2(340,220);
             var d=MapInfo(engine.Config.Map); detail.text=d.symbol+" "+d.name+"\n\n"+MapDescription(d.map); PositionTooltip(data);
         }
         IEnumerator PresentRandomMap(BattleMap result)

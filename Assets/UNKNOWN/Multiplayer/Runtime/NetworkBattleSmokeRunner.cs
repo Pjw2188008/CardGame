@@ -31,6 +31,9 @@ namespace Unknown.Multiplayer
             public int round=1, hostMapDraws, introCount;
             public int suitTurns,suitDamage,suitStatChanges,heroHeals,manaGains;
             public bool lobbyMapHidden=true, resetState=true, introLocks=true;
+            public List<string> pokerResults=new List<string>();
+            public int manaRejects;
+            public bool manaRejectionMatches=true;
         }
         Report report;
         string exchange, output;
@@ -40,6 +43,8 @@ namespace Unknown.Multiplayer
         internal static bool SystemsCheck => Debug.isDebugBuild && Environment.GetCommandLineArgs().Contains("-unknownSmoke") && Environment.GetCommandLineArgs().Contains("-unknownSmokeSystems");
         double firstClockStart=-1;
         int round;
+        bool manaProbePending;
+        int manaProbeVersion,manaProbeRevision,manaProbeCard,manaProbeCost,manaProbeMana,manaProbeHand;
         int MatchCount { get { var args=Environment.GetCommandLineArgs();int at=Array.IndexOf(args,"-unknownSmokeRounds");return at>=0 && at+1<args.Length && int.TryParse(args[at+1],out int count) ? Math.Max(1,Math.Min(5,count)) : args.Contains("-unknownSmokeRematch") ? 2 : 1; } }
         bool Rematch => MatchCount>1;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -119,6 +124,16 @@ namespace Unknown.Multiplayer
             {
                 if (!string.IsNullOrEmpty(battle.Failure)) { Fail(battle.Failure); yield break; }
                 var s = battle.Snapshot;
+                if(manaProbePending) {
+                    if(battle.ActionErrorVersion>manaProbeVersion) {
+                        yield return new WaitForSecondsRealtime(0.35f);
+                        var probeUI=FindFirstObjectByType<BattleUIController>();var current=battle.Snapshot;
+                        report.manaRejectionMatches &= current!=null && current.revision==manaProbeRevision && current.players[current.recipient].mana==manaProbeMana
+                            && current.players[current.recipient].handCount==manaProbeHand && current.players[current.recipient].hand.Any(c=>c.id==manaProbeCard)
+                            && probeUI!=null && probeUI.MatchesManaRejection(manaProbeCard,manaProbeCost,manaProbeMana);
+                        report.manaRejects++;manaProbePending=false;Save();
+                    } else {yield return new WaitForSecondsRealtime(0.1f);continue;}
+                }
                 var introUI=FindFirstObjectByType<BattleUIController>();
                 if(introUI!=null) { report.introCount=introUI.MapIntroCount; if(introUI.IsMapIntroActive)report.introLocks &= !battle.CanAct && s!=null && !s.clockRunning && Math.Abs(battle.Remaining-40)<0.01; }
                 if(s!=null && s.winner<0) {
@@ -189,6 +204,7 @@ namespace Unknown.Multiplayer
                 && !s.log.Any(l => l.StartsWith("P"+(2-s.recipient)+": UNKNOWN 조합"));
             foreach (var e in s.events)
             {
+                if(e.kind==BattleEventKind.PokerChanged)report.pokerResults.Add($"{s.revision}:P{e.owner+1}:{(PokerKind)e.amount}->{(PokerKind)e.secondary}");
                 if(e.kind==BattleEventKind.SuitMapTurn)report.suitTurns++;
                 if(e.kind==BattleEventKind.Damage && e.source<0)report.suitDamage+=e.amount;
                 if((e.kind==BattleEventKind.AttackChanged || e.kind==BattleEventKind.MaxHPChanged) && e.source<0 && MapDefinition.IsSuit(s.map))report.suitStatChanges++;
@@ -212,8 +228,8 @@ namespace Unknown.Multiplayer
                 if (e.kind == BattleEventKind.TimeOut) report.timeouts++;
             }
             report.publicState = s.turn + ":" + s.active + ":" + s.winner + ":" + string.Join("|", s.players.Select(p =>
-                p.hp + "," + p.mana + "," + p.maxMana + "," + p.handCount + "," + p.deckCount + ":" +
-                string.Join(";",p.board.Select(c => c == null || !c.occupied ? "-" : c.id + "," + c.definition + "," + c.attack + "," + c.hp + "," + c.maxHP + "," + c.attacked + "," + c.jokerUsed))));
+                p.hp + "," + p.mana + "," + p.maxMana + "," + p.handCount + "," + p.deckCount + ","+p.poker.kind+":"+string.Join(",",p.poker.members)+":"+string.Join(",",p.poker.targets)+":" +
+                string.Join(";",p.board.Select(c => c == null || !c.occupied ? "-" : c.id + "," + c.definition + "," + c.attack + "," + c.hp + "," + c.maxHP + "," + c.attacked + "," + c.jokerUsed+","+c.pokerAttack+","+c.pokerHP+","+c.rawAttack+","+c.rawHP+","+c.mapAttack+","+c.mapHP+","+c.jokerAttack+","+c.jokerHP+","+c.abilityAttack+","+c.abilityHP))));
             Save();
         }
         void Choose(BattleSnapshot s)
@@ -237,6 +253,13 @@ namespace Unknown.Multiplayer
                 if(!FindFirstObjectByType<BattleUIController>().SmokeAttack(attack.id,target))Debug.LogError("Smoke attack drag failed"); return;
             }
             int empty = Array.FindIndex(p.board,c => c == null || !c.occupied);
+            if(Environment.GetCommandLineArgs().Contains("-unknownSmokeMana") && report.manaRejects<2 && empty>=0) {
+                var denied=hand.FirstOrDefault(c=>c.Definition.CardType!=CardType.Joker && c.Definition.ManaCost>p.mana);
+                if(denied!=null) {
+                    manaProbeVersion=battle.ActionErrorVersion;manaProbeRevision=s.revision;manaProbeCard=denied.InstanceID;manaProbeCost=denied.Definition.ManaCost;manaProbeMana=p.mana;manaProbeHand=p.handCount;manaProbePending=true;
+                    if(!FindFirstObjectByType<BattleUIController>().SmokeDrag(denied.InstanceID,CardDropKind.Unit,empty)) {report.manaRejectionMatches=false;manaProbePending=false;report.manaRejects++;}return;
+                }
+            }
             var summon = hand.Where(c => c.Definition.CardType != CardType.Joker && c.Definition.ManaCost <= p.mana).OrderByDescending(c => c.Definition.ManaCost).FirstOrDefault();
             if (empty >= 0 && summon != null) { battle.Submit(BattleAction.Summon,summon.InstanceID,empty); return; }
             battle.Submit(BattleAction.EndTurn);

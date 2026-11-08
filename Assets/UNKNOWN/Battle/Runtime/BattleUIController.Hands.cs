@@ -28,6 +28,7 @@ namespace Unknown.Battle
         }
         void ResetHandViews()
         {
+            if(dragLayer!=null)foreach(Transform view in dragLayer)if(view.name=="Rejected card return") {view.gameObject.SetActive(false);Destroy(view.gameObject);}
             foreach (var view in handViews.Values) if (view != null) { view.gameObject.SetActive(false); Destroy(view.gameObject); }
             foreach (var view in backViews) if (view != null) { view.gameObject.SetActive(false); Destroy(view.gameObject); }
             handViews.Clear(); backViews.Clear(); pendingDraws.Clear(); pendingEnemyDraws = 0; handViewer = ViewPlayer;
@@ -64,7 +65,8 @@ namespace Unknown.Battle
                 bool selected=handID==card.InstanceID || aceID==card.InstanceID || faceID==card.InstanceID;
                 rect.GetComponent<Outline>().effectColor=combinationMode && (aceID==card.InstanceID || faceID==card.InstanceID) ? combinationPurple : selected ? gold : SuitInk(card.Definition.Suit);
                 var group=rect.GetComponent<CanvasGroup>(); if(group==null)group=rect.gameObject.AddComponent<CanvasGroup>();
-                if(dragged==null || dragged.InstanceID!=card.InstanceID)group.alpha=!combinationMode && card.Definition.ManaCost>me.CurrentMana ? 0.46f : 1;
+                if(dragged==null || dragged.InstanceID!=card.InstanceID)group.alpha=1;
+                UpdateCardStats(rect,card,false);
                 var motion=rect.GetComponent<HandCardMotion>(); motion.Held=dragged!=null && dragged.InstanceID==card.InstanceID;
                 motion.Layout(new Vector2(-total/2+width/2+i*(width+gap),handID==card.InstanceID ? 10 : 0),new Vector2(width,width*1.22f),handReflowDuration,created);
                 cardViews[card.InstanceID]=rect;

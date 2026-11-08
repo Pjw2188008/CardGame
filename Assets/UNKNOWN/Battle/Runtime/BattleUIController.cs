@@ -57,6 +57,8 @@ namespace Unknown.Battle
         }
         void NewMatch()
         {
+            if(pokerList!=null)pokerList.gameObject.SetActive(false);
+            lastDropID=-1;toastUntil=0;
             StopAllCoroutines(); if (animations != null) animations.ResetAll();
             actionBusy = transitioning = paused = false; clock.Stop();
             pauseButton.GetComponentInChildren<Text>().text = "일시정지";
@@ -95,9 +97,9 @@ namespace Unknown.Battle
             ownBoard = Box(battlefield, "Friendly Five Slots", new Vector2(0.5f, 0.395f), new Vector2(0.5f, 0.395f), Color.clear);
             enemyBoard.sizeDelta = ownBoard.sizeDelta = new Vector2(1060, 220);
             divider = Box(battlefield, "Field Divider", new Vector2(0.08f, 0.62f), new Vector2(0.92f, 0.622f), new Color(0.3f, 0.4f, 0.48f)).GetComponent<Image>();
-            turnText = Label(battlefield, "", new Vector2(0.10f, 0.59f), new Vector2(0.30f, 0.62f), 21, gold);
-            timerText = Label(battlefield, "40", new Vector2(0.12f, 0.543f), new Vector2(0.28f, 0.59f), 30, Color.white);
-            var track = Box(battlefield, "Time gauge", new Vector2(0.12f, 0.531f), new Vector2(0.28f, 0.536f), panel);
+            turnText = Label(battlefield, "", new Vector2(0.215f, 0.59f), new Vector2(0.335f, 0.62f), 21, gold);
+            timerText = Label(battlefield, "40", new Vector2(0.225f, 0.543f), new Vector2(0.325f, 0.59f), 30, Color.white);
+            var track = Box(battlefield, "Time gauge", new Vector2(0.225f, 0.531f), new Vector2(0.325f, 0.536f), panel);
             timerFill = Box(track, "Time remaining", Vector2.zero, Vector2.one, ready).GetComponent<Image>();
             endTurn = ActionButton(battlefield, "턴 종료", new Vector2(0.75f, 0.545f), new Vector2(0.87f, 0.595f), EndTurn);
             directAttack = ActionButton(battlefield, "상대 직접 공격", new Vector2(0.82f, 0.932f), new Vector2(0.98f, 0.957f), AttackPlayer);
@@ -105,7 +107,7 @@ namespace Unknown.Battle
             combineButton = ActionButton(battlefield, "UNKNOWN 조합", new Vector2(0.42f, 0.502f), new Vector2(0.58f, 0.533f), Combine);
             combineButton.gameObject.AddComponent<CardHover>().Configure(ShowCombinationPreview,HideTooltip,false,false);
             selectionInfo = Label(battlefield, "", new Vector2(0.34f, 0.534f), new Vector2(0.66f, 0.56f), 16, gold);
-            notice = Label(battlefield, "", new Vector2(0.29f, 0.30f), new Vector2(0.71f, 0.329f), 17, gold);
+            notice = Label(battlefield, "", new Vector2(0.29f, 0.30f), new Vector2(0.71f, 0.35f), 17, gold);
             log = Label(battlefield, "", new Vector2(0.015f, 0.025f), new Vector2(0.165f, 0.185f), 13, new Color(0.65f, 0.72f, 0.8f)); log.alignment = TextAnchor.LowerLeft;
             var handArea = Box(battlefield, "Hand Area", new Vector2(0.12f, 0.012f), new Vector2(0.88f, 0.225f), Color.clear);
             handContent = Box(handArea, "Hand Cards", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Color.clear);
@@ -132,6 +134,7 @@ namespace Unknown.Battle
             animations = gameObject.AddComponent<CardAnimationController>(); animations.Initialize(root, font, () => IsPaused);
             animations.DrawPresentation = PresentDraw;
             animations.MapPresentation = PresentMapEvent;
+            animations.PokerPresentation = PresentPoker;
             BuildDeckMarkers(); BuildDragLayer();
         }
 
@@ -220,7 +223,7 @@ namespace Unknown.Battle
         void Result(bool success, string message = "")
         {
             feedback = success ? message : engine.State.LastError;
-            if (!success) Toast(feedback);
+            if (!success) {Toast(feedback);ReturnRejectedCard();}
             if (success) { handID = attackerID = jokerTarget = -1; }
             Refresh();
         }
@@ -232,7 +235,7 @@ namespace Unknown.Battle
             try { success = command(); }
             catch { actionBusy = false; throw; }
             if (!success) { actionBusy = false; Result(false); return; }
-            feedback = message; ClearSelection(); RefreshMana();
+            feedback = message; ClearSelection(); RefreshMana();RefreshPokerUI();
             StartCoroutine(ActionPresentation(engine.DrainEvents()));
         }
         IEnumerator ActionPresentation(IReadOnlyList<BattleEvent> entries)
@@ -384,7 +387,7 @@ namespace Unknown.Battle
             if (lastLogCount != state.LogVersion) { pulse = 0.5f; lastLogCount = state.LogVersion; }
             RefreshBoard(ownBoard, active); RefreshBoard(enemyBoard, other);
             RefreshHands(me, enemy);
-            RefreshMana(); RefreshUnknownProgress(); BindAnimations(); RefreshControls();
+            RefreshMana(); RefreshUnknownProgress(); RefreshPokerUI(); BindAnimations(); RefreshControls();
         }
         void RefreshBoard(RectTransform board, int owner)
         {
@@ -428,8 +431,9 @@ namespace Unknown.Battle
             Label(rect, unknown ? "UNKNOWN" : def.CardType == CardType.Joker ? "★" : CardDatabase.Symbol(def.Suit), new Vector2(0.05f, 0.48f), new Vector2(0.95f, 0.83f), unknown ? 22 : 46, ink);
             var description = Label(rect, def.Description, new Vector2(0.04f, 0.23f), new Vector2(0.96f, 0.49f), 14, unknown ? ink : new Color(0.15f, 0.18f, 0.2f));
             description.resizeTextForBestFit = true; description.resizeTextMinSize = 11; description.resizeTextMaxSize = 14;
-            Label(rect, def.CardType == CardType.Joker ? "50%" : card.Attack.ToString(), new Vector2(0.01f, 0.055f), new Vector2(0.34f, 0.24f), 26, ink);
-            Label(rect, def.CardType == CardType.Joker ? "" : $"{card.CurrentHP}<size=12>/{card.MaxHP}</size>", new Vector2(0.55f, 0.055f), new Vector2(0.99f, 0.24f), 26, ink);
+            Label(rect, "", new Vector2(0.01f, 0.055f), new Vector2(0.34f, 0.24f), 26, ink).name="Stat ATK";
+            Label(rect, "", new Vector2(0.55f, 0.055f), new Vector2(0.99f, 0.24f), 26, ink).name="Stat HP";
+            UpdateCardStats(rect,card,false);
             var hover = rect.gameObject.AddComponent<CardHover>();
             hover.Configure(data => ShowTooltip(card, rect, data), HideTooltip, true, !onBoard);
             hover.CanZoom=()=>!AttackDragging && dragged==null;
@@ -443,8 +447,6 @@ namespace Unknown.Battle
             }
             if (!onBoard) rect.gameObject.AddComponent<CardDrag>().Configure(this, card.InstanceID);
             string state = !onBoard ? "" : card.JokerUsed ? "조커 사용됨" : "";
-            if (!onBoard && card.Owner == ViewPlayer && def.ManaCost > engine.State.Players[card.Owner].CurrentMana)
-            { rect.gameObject.AddComponent<CanvasGroup>().alpha = 0.46f; state = "마나 부족"; }
             Label(rect, state, new Vector2(0.01f, 0), new Vector2(0.99f, 0.11f), 10, new Color(0.23f, 0.31f, 0.32f));
         }
         void RefreshControls()

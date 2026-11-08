@@ -3,7 +3,7 @@ namespace Unknown.Battle
     public enum BattleEventKind
     {
         TurnStart, TimeOut, ManaSpent, Summon, Attack, Damage, Heal, AttackChanged,
-        MaxHPChanged, Draw, Discard, Destroy, Combine, JokerTravel, JokerSuccess, JokerFailure, GameOver, HandRefill, MapEvent, CardGranted, HandReturn, HeroChanged, SuitMapTurn, ManaGained
+        MaxHPChanged, Draw, Discard, Destroy, Combine, JokerTravel, JokerSuccess, JokerFailure, GameOver, HandRefill, MapEvent, CardGranted, HandReturn, HeroChanged, SuitMapTurn, ManaGained, PokerChanged
     }
 
     /// <summary>Immutable resolved result. No mutable unit reference survives destruction.</summary>

@@ -15,17 +15,29 @@ namespace Unknown.Battle
         public int id, owner, attack, hp, maxHP, summonedTurn;
         public bool occupied, attacked, jokerUsed;
         public string definition;
+        public int pokerAttack,pokerHP,mapAttack,mapHP,jokerAttack,jokerHP,abilityAttack,abilityHP;
+        public int rawAttack,rawHP;
+        public bool hasStatLayers;
         public static CardViewData From(CardInstance c) => c == null ? new CardViewData() : new CardViewData {
             occupied = true,
             id = c.InstanceID, owner = c.Owner, definition = c.Definition.CardID, attack = c.Attack,
-            hp = c.CurrentHP, maxHP = c.MaxHP, summonedTurn = c.SummonedTurn, attacked = c.HasAttacked, jokerUsed = c.JokerUsed };
-        public CardInstance ToCard() => !occupied ? null : new CardInstance(id, CardDatabase.Get(definition), owner) {
-            Attack = attack, CurrentHP = hp, MaxHP = maxHP, SummonedTurn = summonedTurn, HasAttacked = attacked, JokerUsed = jokerUsed };
+            hp = c.CurrentHP, maxHP = c.MaxHP, summonedTurn = c.SummonedTurn, attacked = c.HasAttacked, jokerUsed = c.JokerUsed,
+            hasStatLayers=true,rawAttack=c.RawAttack,rawHP=c.RawHP,
+            pokerAttack=c.PokerAttack,pokerHP=c.PokerHP,mapAttack=c.MapAttack,mapHP=c.MapHP,jokerAttack=c.JokerAttack,jokerHP=c.JokerHP,abilityAttack=c.AbilityAttack,abilityHP=c.AbilityHP };
+        public CardInstance ToCard() {
+            if(!occupied)return null;
+            var c=new CardInstance(id, CardDatabase.Get(definition), owner) {
+            PokerAttack=pokerAttack,PokerHP=pokerHP,Attack = attack, CurrentHP = hp, MaxHP = maxHP, SummonedTurn = summonedTurn, HasAttacked = attacked, JokerUsed = jokerUsed,
+            MapAttack=mapAttack,MapHP=mapHP,JokerAttack=jokerAttack,JokerHP=jokerHP,AbilityAttack=abilityAttack,AbilityHP=abilityHP };
+            if(hasStatLayers)c.ImportCore(rawAttack,rawHP);
+            return c;
+        }
     }
     [Serializable] public sealed class PlayerViewData
     {
         public int hp, mana, maxMana, deckCount, handCount, unknownCreated, jokerSuccesses, jokerChanceDelta;
         public CardViewData[] hand, board;
+        public PokerState poker;
     }
     [Serializable] public sealed class EventViewData
     {
@@ -77,6 +89,7 @@ namespace Unknown.Battle
                 players = s.Players.Select((p, owner) => new PlayerViewData { hp = p.HP, mana = p.CurrentMana, maxMana = p.MaxMana,
                     jokerSuccesses=owner==recipient ? p.JokerSuccesses : 0, jokerChanceDelta=owner==recipient ? p.JokerChanceDelta : 0,
                     deckCount = p.DeckCount, handCount = p.Hand.Count, unknownCreated = owner == recipient ? p.UnknownCreated : 0,
+                    poker=p.Poker.Copy(),
                     hand = owner == recipient ? p.Hand.Select(CardViewData.From).ToArray() : new CardViewData[0],
                     board = p.Board.Select(CardViewData.From).ToArray() }).ToArray(),
                 targets = Enumerable.Range(0, 2 * engine.Config.FieldSlots).Where(i => engine.IsValidEffectTarget(i / engine.Config.FieldSlots, i % engine.Config.FieldSlots)).ToArray(),
@@ -110,6 +123,7 @@ namespace Unknown.Battle
                 var p = State.Players[owner]; var v = s.players[owner];
                 p.HP = v.hp; p.CurrentMana = v.mana; p.MaxMana = v.maxMana; p.UnknownCreated = v.unknownCreated;
                 p.JokerSuccesses=v.jokerSuccesses; p.JokerChanceDelta=v.jokerChanceDelta;
+                p.Poker=v.poker?.Copy() ?? new PokerState();
                 p.HandCards.Clear(); p.DeckCards.Clear();
                 // Count placeholders exist only in memory, with no identity or card definition.
                 for (int i = 0; i < v.deckCount; i++) p.DeckCards.Add(null);

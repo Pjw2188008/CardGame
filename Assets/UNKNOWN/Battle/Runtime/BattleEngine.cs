@@ -15,6 +15,7 @@ namespace Unknown.Battle
         public int ManaCap { get; set; } = 10;
         public int UnknownLimit { get; set; } = 3;
         public bool ShuffleDecks { get; set; } = true;
+        public bool EnablePoker { get; set; } = true;
         public BattleMap Map { get; set; }
         public JokerEventDefinition[] MapEvents { get; set; } = JokerEventDefinition.Defaults();
         public MapDefinition[] MapRules { get; set; } = MapDefinition.Defaults();
@@ -46,6 +47,7 @@ namespace Unknown.Battle
         public int UnknownCreated { get; internal set; }
         public int JokerSuccesses { get; internal set; }
         public int JokerChanceDelta { get; internal set; }
+        public PokerState Poker { get; internal set; } = new PokerState();
         internal PlayerState(int hp, int slots) { HP = hp; Slots = new CardInstance[slots]; Board = Array.AsReadOnly(Slots); }
     }
 
@@ -213,13 +215,14 @@ namespace Unknown.Battle
             if (card == null) return Fail("패에 있는 카드를 선택하세요.");
             if (card.Definition.CardType == CardType.Joker) return Fail("조커는 유닛으로 소환할 수 없습니다.");
             if (slot < 0 || slot >= rules.FieldSlots || player.Slots[slot] != null) return Fail("비어 있는 아군 필드 칸을 선택하세요.");
-            if (player.CurrentMana < card.Definition.ManaCost) return Fail("마나가 부족합니다");
+            if (player.CurrentMana < card.Definition.ManaCost) return Fail($"마나가 부족합니다.\n필요 마나: {card.Definition.ManaCost} / 현재 마나: {player.CurrentMana}");
             SpendMana(actor, card.Definition.ManaCost);
             player.HandCards.Remove(card); player.Slots[slot] = card;
             card.SummonedTurn = State.TurnNumber; card.HasAttacked = false; State.SummonsThisTurn++;
             Log($"P{actor + 1}: {card.Definition.CardName} 소환");
             Emit(new BattleEvent(BattleEventKind.Summon, actor, source: card.InstanceID, target: card.InstanceID, slot: slot, definition: card.Definition));
             ApplyMapSummon(card);
+            ReconcilePoker();
             source = card; effectIndex = 0; selectedTargets.Clear(); chainHits.Clear();
             ResolveEffects(); return true;
         }
@@ -293,7 +296,7 @@ namespace Unknown.Battle
             var unit = player.Slots.FirstOrDefault(c => c != null && c.InstanceID == targetID);
             if (joker == null || unit == null) return Fail("패의 조커와 아군 필드 유닛을 선택하세요.");
             if (unit.JokerUsed) return Fail("이 유닛은 이미 조커를 사용했습니다.");
-            if (player.CurrentMana < joker.Definition.ManaCost) return Fail("마나가 부족합니다");
+            if (player.CurrentMana < joker.Definition.ManaCost) return Fail($"마나가 부족합니다.\n필요 마나: {joker.Definition.ManaCost} / 현재 마나: {player.CurrentMana}");
             return GambleResolved(actor,joker,unit,true);
         }
         bool GambleResolved(int actor,CardInstance joker,CardInstance unit,bool chargeMana)
@@ -314,6 +317,7 @@ namespace Unknown.Battle
                 int oldAttack = unit.Attack, oldMax = unit.MaxHP;
                 unit.Attack = (int)Math.Ceiling(unit.Attack * 1.5);
                 int max = (int)Math.Ceiling(unit.MaxHP * 1.5); unit.CurrentHP += max - unit.MaxHP; unit.MaxHP = max;
+                unit.JokerAttack+=unit.Attack-oldAttack; unit.JokerHP+=max-oldMax;
                 Emit(new BattleEvent(BattleEventKind.JokerSuccess, actor, target: unit.InstanceID));
                 Emit(new BattleEvent(BattleEventKind.AttackChanged, actor, target: unit.InstanceID, amount: unit.Attack - oldAttack));
                 Emit(new BattleEvent(BattleEventKind.MaxHPChanged, actor, target: unit.InstanceID, amount: max - oldMax));
@@ -396,10 +400,12 @@ namespace Unknown.Battle
                     Log($"{target.Definition.CardName}: 체력 +{healed}"); break;
                 case EffectKind.ModifyAttack:
                     int attackBefore = target.Attack; target.Attack = Math.Max(0, target.Attack + effect.Amount);
+                    target.AbilityAttack+=target.Attack-attackBefore;
                     Emit(new BattleEvent(BattleEventKind.AttackChanged, target.Owner, source.InstanceID, target.InstanceID, target.Attack - attackBefore, suit: source.Definition.Suit));
                     Log($"{target.Definition.CardName}: 공격력 {target.Attack - attackBefore:+0;-0;0}"); break;
                 case EffectKind.IncreaseMaxHP:
                     target.MaxHP += effect.Amount; target.CurrentHP += effect.Amount;
+                    target.AbilityHP+=effect.Amount;
                     Emit(new BattleEvent(BattleEventKind.MaxHPChanged, target.Owner, source.InstanceID, target.InstanceID, effect.Amount, suit: source.Definition.Suit));
                     Log($"{target.Definition.CardName}: 최대·현재 체력 +{effect.Amount}"); break;
             }
@@ -407,11 +413,7 @@ namespace Unknown.Battle
         }
         void RemoveDead()
         {
-            foreach (var player in State.Players)
-                for (int i = 0; i < rules.FieldSlots; i++)
-                    if (player.Slots[i] != null && player.Slots[i].CurrentHP <= 0)
-                    { var dead = player.Slots[i]; Emit(new BattleEvent(BattleEventKind.Destroy, dead.Owner, target: dead.InstanceID, slot: i));
-                        player.Slots[i] = null; player.DiscardCards.Add(dead); Log($"{dead.Definition.CardName} 파괴"); }
+            ReconcilePoker();
         }
     }
 }

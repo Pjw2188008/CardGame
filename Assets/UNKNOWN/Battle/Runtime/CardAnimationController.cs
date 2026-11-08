@@ -109,6 +109,13 @@ namespace Unknown.Battle
         }
         public Func<BattleEvent, IEnumerator> DrawPresentation;
         public Func<BattleEvent, IEnumerator> MapPresentation;
+        public Func<BattleEvent, IEnumerator> PokerPresentation;
+        public IEnumerator PokerBanner(string title)
+        {
+            var bar=Shape("Poker notification",new Vector2(0,355),new Vector2(1060,150),new Color(0.025f,0.02f,0.045f,0.95f));
+            MakeText(bar,title,23,new Color(0.88f,0.72f,1));var group=Group(bar);
+            yield return Step(1.1f,t=>group.alpha=Mathf.Sin(t*Mathf.PI));Destroy(bar.gameObject);
+        }
         public IEnumerator Play(IReadOnlyList<BattleEvent> entries)
         {
             int lastHurt = -1;
@@ -118,6 +125,8 @@ namespace Unknown.Battle
                 var view = View(entry.TargetID);
                 switch (entry.Kind)
                 {
+                    case BattleEventKind.PokerChanged:
+                        if(PokerPresentation!=null)yield return PokerPresentation(entry);break;
                     case BattleEventKind.MapEvent:
                     case BattleEventKind.SuitMapTurn:
                         if(MapPresentation!=null)yield return MapPresentation(entry); break;
@@ -161,7 +170,7 @@ namespace Unknown.Battle
                         Floating(entry.TargetID, target, (entry.Amount < 0 ? "↓ " : "↑ ") + "ATK " + entry.Amount.ToString("+0;-0;0"), attackColor);
                         StartCoroutine(Flash(view, attackColor, 0.22f)); yield return Step(0.08f, _ => { }); break;
                     case BattleEventKind.MaxHPChanged:
-                        Floating(entry.TargetID, target, "HP " + entry.Amount.ToString("+0;-0;0"), entry.Amount<0 ? purple : green);
+                        Floating(entry.TargetID, target, "MAX HP " + entry.Amount.ToString("+0;-0;0"), entry.Amount<0 ? red : green);
                         StartCoroutine(Pulse(target, green, 145, 0.32f));
                         if (view != null) { Vector3 scale = view.localScale; yield return Step(0.13f, t => view.localScale = scale * (1 + 0.07f * Mathf.Sin(t * Mathf.PI))); }
                         break;

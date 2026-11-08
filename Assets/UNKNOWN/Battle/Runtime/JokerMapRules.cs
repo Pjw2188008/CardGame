@@ -145,6 +145,7 @@ namespace Unknown.Battle
         void ChangeMapStats(CardInstance c,int attack,int max)
         {
             int da=attack-c.Attack,dh=max-c.MaxHP; c.Attack=attack; c.MaxHP=max;
+            c.MapAttack+=da; c.MapHP+=dh;
             c.CurrentHP=dh>0 ? c.CurrentHP+dh : Math.Min(c.CurrentHP,max);
             if(da!=0)Emit(new BattleEvent(BattleEventKind.AttackChanged,c.Owner,target:c.InstanceID,amount:da));
             if(dh!=0)Emit(new BattleEvent(BattleEventKind.MaxHPChanged,c.Owner,target:c.InstanceID,amount:dh));

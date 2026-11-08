@@ -14,6 +14,7 @@ static partial class BattleRulesTests
     }
     static void JokerMapChecks()
     {
+        PokerChecks();
         Test("Random map is unresolved in lobby and draws exactly once per match",()=>{
             var dice=new Dice(); var maps=new RandomMapSelection(dice); Check(!maps.Current.HasValue); Equal(0,maps.DrawCount);
             Equal(BattleMap.Diamond,maps.BeginMatch()); dice.Value=9000;
