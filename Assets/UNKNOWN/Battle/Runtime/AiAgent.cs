@@ -4,6 +4,21 @@ using System.Diagnostics;
 using System.Linq;
 namespace Unknown.Battle
 {
+    // Policy tuning only: never changes either player's cards, resources or rules.
+    public sealed class AiSearchSettings
+    {
+        public int Candidates {get;}
+        public int Continuations {get;}
+        public int OwnSteps {get;}
+        public int ReplySteps {get;}
+        public int NodeBudget {get;}
+        public AiSearchSettings(int candidates=12,int continuations=3,int ownSteps=4,int replySteps=5,int nodeBudget=384)
+        {
+            Candidates=Math.Max(1,Math.Min(16,candidates));Continuations=Math.Max(1,Math.Min(5,continuations));
+            OwnSteps=Math.Max(1,Math.Min(6,ownSteps));ReplySteps=Math.Max(0,Math.Min(5,replySteps));
+            NodeBudget=Math.Max(16,Math.Min(1024,nodeBudget));
+        }
+    }
     public sealed class AiMove
     {
         public BattleAction Action;
@@ -19,40 +34,95 @@ namespace Unknown.Battle
         public AiDifficulty Difficulty {get;}
         public IReadOnlyList<AiMove> LastCandidates {get;private set;}=new AiMove[0];
         public int SimulationNodes {get;private set;}
-        public const int MaxCandidates=12,MaxNodes=64,MaxDepth=2;
-        public AiAgent(AiDifficulty difficulty,int seed){Difficulty=difficulty;random=new SeededRandom(seed);}
+        public int ReplyNodes {get;private set;}
+        public AiSearchSettings Search {get;}
+        public const int MaxCandidates=12,MaxNodes=384,MaxDepth=4;
+        public AiAgent(AiDifficulty difficulty,int seed,AiSearchSettings search=null){Difficulty=difficulty;random=new SeededRandom(seed);Search=search??new AiSearchSettings();}
         public AiMove Decide(AiObservation o)
         {
-            SimulationNodes=0;var moves=Generate(o);foreach(var m in moves)Score(o,m,Difficulty);
+            SimulationNodes=0;ReplyNodes=0;var moves=Generate(o);foreach(var m in moves)Score(o,m,Difficulty);
             LastCandidates=moves.OrderByDescending(m=>m.Score).ToArray();
             if(moves.Count==0)return new AiMove(BattleAction.EndTurn){Reason="행동 없음"};
             var win=moves.FirstOrDefault(m=>m.Score>=100000);if(win!=null)return win;
             if(Difficulty==AiDifficulty.Easy)return Easy(o,moves);
             if(Difficulty==AiDifficulty.Normal || o.View.targets.Length>0)return LastCandidates[0];
-            var watch=Stopwatch.StartNew();double before=Value(o.Simulation(0),o.Actor);AiMove best=LastCandidates[0];double bestScore=double.NegativeInfinity;
-            foreach(var m in LastCandidates.Take(MaxCandidates)) {
-                if(watch.ElapsedMilliseconds>=20 || SimulationNodes>=MaxNodes)break;
-                if(m.Action==BattleAction.EndTurn){if(bestScore<0){best=m;bestScore=0;}continue;}
-                double total=0;int branches=m.Action==BattleAction.Joker ? 2 : 1;
+            return Plan(o);
+        }
+        AiMove Plan(AiObservation o)
+        {
+            // Fixed work budget makes normal decisions independent of machine speed.
+            // The wall-clock guard is an emergency escape, not a difficulty setting.
+            var watch=Stopwatch.StartNew();double before=Value(o.Simulation(0),o.Actor);
+            bool Available()=>SimulationNodes<Search.NodeBudget && watch.ElapsedMilliseconds<100;
+            var known=new HashSet<int>(o.View.players[o.Actor].hand.Select(c=>c.id));
+            var roots=LastCandidates.Where(c=>c.Action!=BattleAction.EndTurn).Take(Search.Candidates-1)
+                .Concat(LastCandidates.Where(c=>c.Action==BattleAction.EndTurn)).ToArray();
+            AiMove best=LastCandidates[0];double bestScore=double.NegativeInfinity;
+            foreach(var root in roots) {
+                int branches=root.Action==BattleAction.Joker ? 2 : 1;
+                // Never compare a half-evaluated gamble against a full expectation.
+                if(!Available() || Search.NodeBudget-SimulationNodes<branches)break;
+                double total=0;bool complete=true;
                 for(int outcome=0;outcome<branches;outcome++) {
-                    var g=o.Simulation(outcome);SimulationNodes++;if(!m.Execute(g,o.Actor)){total-=10000;continue;}ResolveTargets(g,o.Actor);
-                    double immediate=Value(g,o.Actor)-before,next=0;
-                    if(!g.State.IsOver && !g.NeedsTarget && watch.ElapsedMilliseconds<20) {
-                        var nextView=AiObservation.Capture(g,o.Actor);var candidates=Generate(nextView);foreach(var c in candidates)Score(nextView,c,AiDifficulty.Normal);
-                        foreach(var n in candidates.Where(c=>c.Action!=BattleAction.EndTurn).OrderByDescending(c=>c.Score).Take(3)) {
-                            if(SimulationNodes>=MaxNodes || watch.ElapsedMilliseconds>=20)break;
-                            // Reconstruct from the same filtered initial observation, then replay the two actions.
-                            var child=o.Simulation(outcome);SimulationNodes++;m.Execute(child,o.Actor);ResolveTargets(child,o.Actor);
-                            if(n.Execute(child,o.Actor)){ResolveTargets(child,o.Actor);next=Math.Max(next,Value(child,o.Actor)-Value(g,o.Actor));}
+                    if(!Available()){complete=false;break;}
+                    var path=new List<AiMove>{root};var g=Replay(o,path,outcome);SimulationNodes++;
+                    if(g==null){total-=1000000;continue;}
+                    // Plan several affordable actions, including attack ordering and clearing blockers.
+                    for(int depth=1;depth<Search.OwnSteps && !g.State.IsOver && g.State.ActivePlayer==o.Actor && root.Action!=BattleAction.EndTurn;depth++) {
+                        var view=AiObservation.Capture(g,o.Actor);var candidates=Generate(view);
+                        foreach(var c in candidates)Score(view,c,AiDifficulty.Hard);
+                        double current=Value(g,o.Actor);BattleEngine next=null;AiMove chosen=null;
+                        foreach(var c in candidates.Where(c=>c.Action!=BattleAction.EndTurn && c.Action!=BattleAction.Joker &&
+                            (c.Action==BattleAction.Attack || c.Action==BattleAction.Target || known.Contains(c.First))).OrderByDescending(c=>c.Score).Take(Search.Continuations)) {
+                            if(!Available())break;
+                            path.Add(c);var child=Replay(o,path,outcome);path.RemoveAt(path.Count-1);SimulationNodes++;
+                            if(child==null)continue;
+                            double value=Value(child,o.Actor)+c.Score*.03;
+                            if(value>current){current=value;next=child;chosen=c;}
                         }
+                        if(chosen==null)break;path.Add(chosen);g=next;
                     }
-                    double score=immediate+next*.70+m.Score*.18;
-                    double probability=branches==2 ? (outcome==0 ? Chance(o) : 1-Chance(o)) : 1;
-                    total+=score*probability;
+                    double position=root.Action==BattleAction.EndTurn ? before : Value(g,o.Actor);
+                    double publicBefore=root.Action==BattleAction.EndTurn ? PublicValue(o.Simulation(outcome),o.Actor) : PublicValue(g,o.Actor);
+                    // Opponent's public-board best reply: unknown cards are never treated as known threats.
+                    if(!g.State.IsOver && Search.ReplySteps>0) {
+                        if(g.State.ActivePlayer==o.Actor)g.EndTurn(o.Actor);
+                        for(int depth=0;depth<Search.ReplySteps && !g.State.IsOver && Available();depth++) {
+                            var view=AiObservation.Capture(g,1-o.Actor);var attacks=Generate(view).Where(c=>c.Action==BattleAction.Attack).ToArray();
+                            foreach(var attack in attacks)Score(view,attack,AiDifficulty.Normal);
+                            BattleEngine worst=null;double worstValue=PublicValue(g,o.Actor);
+                            foreach(var attack in attacks.OrderByDescending(c=>c.Score).Take(Search.Continuations)) {
+                                if(!Available())break;
+                                var reply=AiObservation.Capture(g,1-o.Actor).Simulation(outcome);SimulationNodes++;ReplyNodes++;
+                                if(!attack.Execute(reply,1-o.Actor))continue;
+                                // Evaluate only public board/HP here. Recapturing for the opponent masks our private counters.
+                                double value=PublicValue(reply,o.Actor);
+                                if(value<worstValue){worstValue=value;worst=reply;}
+                            }
+                            if(worst==null)break;g=worst;
+                        }
+                        if(g.State.IsOver)position=g.State.Winner==o.Actor ? 1000000 : -1000000;
+                        else position+=.9*(PublicValue(g,o.Actor)-publicBefore);
+                    }
+                    double score=position-before+root.Score*.12;
+                    total+=score*(branches==2 ? (outcome==0 ? Chance(o) : 1-Chance(o)) : 1);
                 }
-                if(total>bestScore){bestScore=total;best=m;}
+                if(complete && total>bestScore){bestScore=total;best=root;}
             }
-            best.Reason+=" · 제한 탐색 "+SimulationNodes+"노드";return best;
+            best.Reason+=" · 연속 행동/공개 반격 "+SimulationNodes+"노드 (반격 "+ReplyNodes+")";
+            return best;
+        }
+        static BattleEngine Replay(AiObservation o,IEnumerable<AiMove> path,int outcome)
+        {
+            var g=o.Simulation(outcome);
+            foreach(var move in path){if(!move.Execute(g,o.Actor))return null;ResolveTargets(g,o.Actor);if(g.State.IsOver)break;}
+            return g;
+        }
+        static double PublicValue(BattleEngine g,int actor)
+        {
+            if(g.State.IsOver)return g.State.Winner==actor ? 1000000 : -1000000;
+            double Side(int owner) {var p=g.State.Players[owner];return p.HP*2+p.Board.Where(c=>c!=null).Sum(c=>c.Attack*1.4+c.CurrentHP*.85)+(int)p.Poker.kind*3;}
+            return Side(actor)-Side(1-actor);
         }
         static double Chance(AiObservation o) => Math.Max(0,Math.Min(1,(50+o.View.players[o.Actor].jokerChanceDelta)/100.0));
         public static List<AiMove> Generate(AiObservation o)
@@ -161,7 +231,8 @@ namespace Unknown.Battle
             if(g.State.IsOver)return g.State.Winner==a ? 1000000 : -1000000;
             double Side(int owner) {var p=g.State.Players[owner];var board=p.Board.Where(c=>c!=null).ToArray();double v=p.HP*2+board.Sum(c=>c.Attack*1.4+c.CurrentHP*.85)+p.Hand.Count*1.4;
                 v+=(int)p.Poker.kind*3;if(owner==a)v+=g.Config.Map==BattleMap.JokerGame ? p.JokerSuccesses*35 : p.UnknownCreated*28;
-                if(owner==a && g.State.Players[1-a].Board.Where(c=>c!=null).Sum(c=>c.Attack)>=p.HP)v-=80;
+                // Direct damage is legal only after all blockers have been removed.
+                if(owner==a && board.Length==0 && g.State.Players[1-a].Board.Where(c=>c!=null).Sum(c=>c.Attack)>=p.HP)v-=80;
                 return v;}
             return Side(a)-Side(1-a);
         }

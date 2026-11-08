@@ -1,0 +1,21 @@
+﻿{
+    "date":  "2026-11-08T22:25:27.2504674+09:00",
+    "unity":  "6000.0.74f1",
+    "result":  "Succeeded",
+    "errors":  0,
+    "warnings":  8,
+    "developmentBuild":  true,
+    "executable":  "Builds/UNKNOWN-AI-Hard/UNKNOWN.exe",
+    "assemblySha256":  "00C35F6DCF4CD4BCA07CCE280B2C5DAB35172B180835F9CCE766F299F274D1D6",
+    "ruleTestsPassed":  184,
+    "uiChecksPassed":  43,
+    "hardVersusNormal":  {
+                             "hard":  17,
+                             "unfinished":  0,
+                             "pairedSeats":  true,
+                             "normal":  3
+                         },
+    "buildLog":  "Library/HardAI-Build-Retry.log",
+    "standaloneHumanPlayTested":  false,
+    "onlineRetested":  false
+}

@@ -55,6 +55,47 @@ static partial class BattleRulesTests
             foreach(var id in new[]{"Heart_A","Spade_A","Diamond_A","Club_A","Heart_J","Spade_Q","Diamond_K","Joker_1"})Hand(g,0,id);
             foreach(AiDifficulty difficulty in Enum.GetValues(typeof(AiDifficulty)))for(int seed=0;seed<20;seed++)Equal(BattleAction.EndTurn,new AiAgent(difficulty,seed).Decide(AiObservation.Capture(g,0)).Action);
         });
+        Test("Hard saves the correct attacker for a three-action lethal behind a blocker",()=>{
+            var g=AiFixture();var first=Unit(g,0,"Diamond_5");var small=Unit(g,0,"Heart_3",1);small.Attack=3;
+            var last=Unit(g,0,"Diamond_6",2);var blocker=Unit(g,1,"Diamond_2");blocker.Attack=0;blocker.CurrentHP=2;
+            g.State.Players[1].HP=8;var bot=new AiAgent(AiDifficulty.Hard,9);var move=bot.Decide(AiObservation.Capture(g,0));
+            Equal(BattleAction.Attack,move.Action);Equal(small.InstanceID,move.First);Equal(blocker.InstanceID,move.Second);
+            Check(move.Execute(g,0));Check(g.Attack(0,first.InstanceID,-1));Check(g.Attack(0,last.InstanceID,-1));Equal(0,g.State.Winner);
+        });
+        Test("Hard rejects a tempting trade that permits a public-board lethal reply",()=>{
+            var g=AiFixture();g.State.Players[0].HP=3;var own=Unit(g,0,"Heart_3");own.Attack=5;own.CurrentHP=4;
+            var big=Unit(g,1,"Diamond_5");big.Attack=5;big.MaxHP=5;big.CurrentHP=5;
+            var small=Unit(g,1,"Spade_2",1);small.Attack=3;small.CurrentHP=1;
+            var bot=new AiAgent(AiDifficulty.Hard,9);var move=bot.Decide(AiObservation.Capture(g,0));
+            Equal(BattleAction.Attack,move.Action);Equal(small.InstanceID,move.Second);Check(bot.ReplyNodes>0);
+            Equal(4,own.CurrentHP);Equal(5,big.CurrentHP);Equal(1,g.State.TurnNumber);
+        });
+        Test("Hard tuning bounds work and can disable reply search without changing game rules",()=>{
+            var settings=new AiSearchSettings(100,100,100,100,10000);Equal(16,settings.Candidates);Equal(5,settings.Continuations);Equal(6,settings.OwnSteps);Equal(5,settings.ReplySteps);Equal(1024,settings.NodeBudget);
+            var g=AiFixture();Unit(g,0,"Heart_3");Unit(g,1,"Diamond_2");Hand(g,0,"Club_5");
+            var bot=new AiAgent(AiDifficulty.Hard,1,new AiSearchSettings(nodeBudget:16,replySteps:0));var move=bot.Decide(AiObservation.Capture(g,0));
+            Check(bot.SimulationNodes<=16);Equal(0,bot.ReplyNodes);Check(move.Execute(g,0));
+        });
+        Test("Hard versus Normal paired-seat strength sample",()=>{
+            int hardWins=0,normalWins=0,unfinished=0,decisions=0;double longest=0;
+            foreach(var map in new[]{BattleMap.Diamond,BattleMap.Spade,BattleMap.Heart,BattleMap.Club,BattleMap.JokerGame})
+            for(int seed=1;seed<=2;seed++)for(int hardSeat=0;hardSeat<2;hardSeat++) {
+                var g=new BattleEngine(seed*97,new BattleConfig{Map=map});
+                var bots=new[]{new AiAgent(hardSeat==0 ? AiDifficulty.Hard : AiDifficulty.Normal,seed),new AiAgent(hardSeat==1 ? AiDifficulty.Hard : AiDifficulty.Normal,seed+11)};
+                int turn=g.State.TurnNumber,actions=0;
+                for(int n=0;n<1600 && !g.State.IsOver;n++) {
+                    if(turn!=g.State.TurnNumber){turn=g.State.TurnNumber;actions=0;}
+                    int actor=g.State.ActivePlayer;var watch=Stopwatch.StartNew();
+                    var move=actions>=32 && !g.NeedsTarget ? new AiMove(BattleAction.EndTurn) : bots[actor].Decide(AiObservation.Capture(g,actor));
+                    if(actor==hardSeat){longest=Math.Max(longest,watch.Elapsed.TotalMilliseconds);decisions++;}
+                    Check(move.Execute(g,actor));Check(bots[actor].SimulationNodes<=AiAgent.MaxNodes);actions++;g.DrainEvents();
+                }
+                if(!g.State.IsOver)unfinished++;else if(g.State.Winner==hardSeat)hardWins++;else normalWins++;
+            }
+            Console.WriteLine("HARD vs NORMAL hard="+hardWins+" normal="+normalWins+" unfinished="+unfinished+" hardDecisions="+decisions+" maxDecisionMs="+longest.ToString("F2"));
+            // A finite seed sample measures regressions, not a guaranteed win rate against humans.
+            Equal(0,unfinished);
+        });
         Test("AI vs AI across all maps and difficulties terminates without illegal moves or extra cards",()=>{
             int finished=0,actions=0;var seen=new bool[7];var max=new Stopwatch();max.Start();
             foreach(AiDifficulty difficulty in Enum.GetValues(typeof(AiDifficulty)))foreach(var map in new[]{BattleMap.Diamond,BattleMap.Spade,BattleMap.Heart,BattleMap.Club,BattleMap.JokerGame})for(int seed=1;seed<=3;seed++) {
