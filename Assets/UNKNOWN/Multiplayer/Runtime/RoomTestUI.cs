@@ -10,7 +10,9 @@ namespace Unknown.Multiplayer
     [DisallowMultipleComponent, RequireComponent(typeof(RoomController))]
     public sealed class RoomTestUI : MonoBehaviour
     {
-        enum Page { Home, Online, Join, Lobby, Game }
+        enum Page { Home, Online, Join, Lobby, Game, Tutorial }
+        Label tutorialRecord;
+        Button tutorialContinue,tutorialRestart;
         RoomController room;
         NetworkBattleController networkBattle;
         Unknown.Battle.BattleUIController battleUI;
@@ -85,8 +87,14 @@ namespace Unknown.Multiplayer
             shell.Add(content);
             var home = MakePage(Page.Home);
             MenuButton(home, "게임 시작", () => { ShowPage(Page.Online, true); return Task.CompletedTask; });
+            MenuButton(home,"튜토리얼",()=>{ShowTutorialChoices();return Task.CompletedTask;});
             MenuButton(home, "설정", () => { Unknown.Battle.GamePreferences.Instance.Open();document.rootVisualElement.SetEnabled(false); return Task.CompletedTask; });
             MenuButton(home, "종료", () => { Application.Quit(); return Task.CompletedTask; });
+            var lesson=MakePage(Page.Tutorial);
+            tutorialRecord=Text(lesson,"", "page-hint");
+            tutorialContinue=MenuButton(lesson,"이어하기",()=>{LaunchTutorial(Unknown.Battle.TutorialProgress.Load().nextStep);return Task.CompletedTask;});
+            tutorialRestart=MenuButton(lesson,"튜토리얼 시작",()=>{Unknown.Battle.TutorialProgress.Reset();LaunchTutorial(1);return Task.CompletedTask;});
+            MenuButton(lesson,"돌아가기",()=>{ShowPage(Page.Home,true);return Task.CompletedTask;},true);
             home = MakePage(Page.Online);
             create = MenuButton(home, "방 만들기", () => room.CreateRoomAsync());
             MenuButton(home, "방 코드로 참가", () => { ShowPage(Page.Join, true); return Task.CompletedTask; });
@@ -227,7 +235,7 @@ namespace Unknown.Multiplayer
             {
                 if (currentPage != page || room.Busy) return;
                 if (page == Page.Join) input.Focus();
-                else if (page == Page.Home) create.Focus();
+                else if (page==Page.Home || page==Page.Online || page==Page.Tutorial) actions.Find(b=>pages[page].Contains(b) && b.enabledInHierarchy && b.resolvedStyle.display!=DisplayStyle.None)?.Focus();
                 else if (page == Page.Lobby) { if (room.CanStart) start.Focus(); else copy.Focus(); }
                 else gameLeave.Focus();
             }).StartingIn(30);
@@ -284,6 +292,30 @@ namespace Unknown.Multiplayer
             battleUI.ConfigureOnline(online ? networkBattle : null, () => { battleUI = null;ShowPage(Page.Home,true); Render(); });
             document.rootVisualElement.style.display = DisplayStyle.None;
         }
+        void ShowTutorialChoices()
+        {
+            var p=Unknown.Battle.TutorialProgress.Load();
+            tutorialRecord.text=p.completed ? "튜토리얼 완료" : p.lastCompleted>0 ? "완료 "+p.lastCompleted+" / 7 · STEP "+p.nextStep+"부터 이어합니다." : "7단계 실습형 튜토리얼";
+            tutorialContinue.style.display=p.lastCompleted>0 && !p.completed ? DisplayStyle.Flex : DisplayStyle.None;
+            tutorialRestart.Q<Label>(className:"action-text").text=p.lastCompleted>0 ? "처음부터" : "튜토리얼 시작";
+            ShowPage(Page.Tutorial,true);
+        }
+        void LaunchTutorial(int step)
+        {
+            if(battleUI!=null || room.Session!=null)return;
+            battleOnline=false;
+            var go=new GameObject("UNKNOWN Offline Tutorial");battleUI=go.AddComponent<Unknown.Battle.BattleUIController>();
+            battleUI.ConfigureTutorial(step,()=>{battleUI=null;ShowPage(Page.Home,true);Render();});
+            document.rootVisualElement.style.display=DisplayStyle.None;
+        }
+#if UNITY_EDITOR
+        public void RunTutorialChecksFromTitle(){Invoke(nameof(BeginTutorialChecksFromTitle),.25f);}
+        void BeginTutorialChecksFromTitle()
+        {
+            if(!actions.Exists(b=>b.tooltip=="튜토리얼"))throw new InvalidOperationException("Title tutorial action missing");
+            ShowTutorialChoices();LaunchTutorial(1);battleUI.RunTutorialChecks();
+        }
+#endif
         void OnDestroy()
         {
             transition++;

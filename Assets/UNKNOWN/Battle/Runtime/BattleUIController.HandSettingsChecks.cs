@@ -6,10 +6,22 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 namespace Unknown.Battle
 {
     public sealed partial class BattleUIController
     {
+        bool ClickCheckUI(RectTransform target)
+        {
+            Canvas.ForceUpdateCanvases();
+            var data=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,position=RectTransformUtility.WorldToScreenPoint(canvas.worldCamera,target.TransformPoint(target.rect.center))};
+            var hits=new List<RaycastResult>();EventSystem.current.RaycastAll(data,hits);
+            if(hits.Count==0)return false;
+            var handler=ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject);
+            var button=target.GetComponent<Button>();if(handler!=target.gameObject || button==null || !button.IsInteractable())return false;
+            data.pointerCurrentRaycast=data.pointerPressRaycast=hits[0];data.pointerPress=handler;
+            ExecuteEvents.Execute(handler,data,ExecuteEvents.pointerDownHandler);ExecuteEvents.Execute(handler,data,ExecuteEvents.pointerUpHandler);ExecuteEvents.Execute(handler,data,ExecuteEvents.pointerClickHandler);return true;
+        }
         [Serializable] sealed class HandSettingsReport {public bool completed;public List<string> passed=new List<string>(),failed=new List<string>(),errors=new List<string>();}
         public void RunHandSettingsChecks() {Invoke(nameof(BeginHandSettingsChecks),0.15f);}
         void BeginHandSettingsChecks() {StopAllCoroutines();StartCoroutine(HandSettingsChecks());}
@@ -28,15 +40,15 @@ namespace Unknown.Battle
                 verify(toastText.Contains("2장 폐기") && graveMarkers[0].GetComponentInChildren<Text>().text=="묘지 2","Batched overflow feedback and grave count");
                 verify(File.Exists(CaptureAttackFrame(1920,ownBoard,"HandEight",false)),"Rendered eight-card hand and small discard tools");
                 var c=engine.State.Players[0].Hand[0];ToggleDiscard();verify(discardMode && discardID<0,"Discard button enters explicit selection mode");
-                ToggleDiscard();verify(!engine.State.Players[0].ManualDiscardUsed && toastText.Contains("선택"),"Confirmation without a card cannot discard");
+                ToggleDiscard();verify(!discardMode && !engine.State.Players[0].ManualDiscardUsed,"Second button click cancels mode without using discard");ToggleDiscard();
                 DragBegin(c);verify(dragged==null,"Discard mode blocks summon/Joker dragging");ToggleCombinationMode();verify(!combinationMode,"Discard mode blocks combination selection");
-                SelectHand(c);verify(discardID==c.InstanceID && handViews[c.InstanceID].GetComponent<Outline>().effectColor==new Color(1,0.45f,0.35f),"Selected discard card has a distinct highlight");
-                verify(File.Exists(CaptureAttackFrame(1920,ownBoard,"ManualDiscard",false)),"Rendered selected manual discard");
+                verify(discardButton.GetComponentInChildren<Text>().text=="버리기 취소","Discard mode clearly offers cancellation");
+                verify(File.Exists(CaptureAttackFrame(1920,ownBoard,"ManualDiscard",false)),"Rendered immediate-click discard mode");
                 HandleBattleEscape();verify(!discardMode && !MenuOpen && engine.State.Players[0].Hand.Count==8,"ESC cancels discard without opening menu or changing hand");
-                ToggleDiscard();SelectHand(c);ToggleDiscard();yield return DragWait();yield return null;
-                verify(engine.State.Players[0].Hand.Count==7 && engine.State.Players[0].DiscardCount==3 && engine.State.Players[0].ManualDiscardUsed,"Confirmed discard animates to grave and reflows hand");
+                ToggleDiscard();handViews[c.InstanceID].GetComponent<Button>().onClick.Invoke();SelectHand(c);yield return DragWait();yield return null;
+                verify(engine.State.Players[0].Hand.Count==7 && engine.State.Players[0].DiscardCount==3 && engine.State.Players[0].ManualDiscardUsed,"Single actual hand-button click discards once, animates to grave and reflows hand");
                 ToggleDiscard();verify(!discardMode && toastText.Contains("이미"),"Second discard shows once-per-turn reason");
-                CheckFixture();checkRecipient=0;var last=CheckHand("Joker_1");Refresh();ToggleDiscard();SelectHand(last);ToggleDiscard();yield return DragWait();verify(engine.State.Players[0].Hand.Count==0 && !engine.State.IsOver,"Last discard never refills immediately");
+                CheckFixture();checkRecipient=0;var last=CheckHand("Joker_1");Refresh();ToggleDiscard();SelectHand(last);yield return DragWait();verify(engine.State.Players[0].Hand.Count==0 && !engine.State.IsOver,"Last discard never refills immediately");
                 CheckFixture();var card=CheckHand("Heart_2");Refresh();HandleBattleEscape();double before=clock.Remaining;yield return new WaitForSecondsRealtime(0.25f);
                 verify(MenuOpen && Blocked() && clock.Remaining<before,"ESC menu blocks inputs while forty-second clock continues");
                 var preferences=GamePreferences.Instance;preferences.Open();yield return null;

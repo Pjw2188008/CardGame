@@ -31,6 +31,7 @@ namespace Unknown.Battle
         { online = controller; returned = onReturn; }
         void Dispatch(BattleAction action, int first, int second, Func<bool> localCommand, string message)
         {
+            if(tutorial!=null && !tutorial.Allows(action)){Toast("현재 목표에 맞는 행동을 해주세요. 도움말을 확인할 수 있습니다.");return;}
             if (online == null) RunCommand(localCommand, message);
             else if (!Blocked()) { online.Submit(action, first, second); ClearSelection(); feedback = "Host 응답을 기다리는 중"; }
         }

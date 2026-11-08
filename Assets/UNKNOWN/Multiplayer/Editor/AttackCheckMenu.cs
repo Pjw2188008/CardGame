@@ -16,6 +16,8 @@ namespace Unknown.Multiplayer.Editor
         }
         static void Changed(PlayModeStateChange state)
         {
+            if(state==PlayModeStateChange.EnteredPlayMode && SessionState.GetBool("UNKNOWN.RunHandUI",false))
+            {SessionState.SetBool("UNKNOWN.RunHandUI",false);new GameObject("UNKNOWN Hand UI Checks").AddComponent<Unknown.Battle.BattleUIController>().RunHandSettingsChecks();}
             if(state==PlayModeStateChange.EnteredPlayMode && SessionState.GetBool("UNKNOWN.RunPokerUI",false))
             { SessionState.SetBool("UNKNOWN.RunPokerUI",false); new GameObject("UNKNOWN Poker UI Checks").AddComponent<Unknown.Battle.BattleUIController>().RunPokerChecks(); }
             if(state==PlayModeStateChange.EnteredPlayMode && SessionState.GetBool("UNKNOWN.RunAttackUI",false))
@@ -33,6 +35,13 @@ namespace Unknown.Multiplayer.Editor
             if(Application.isBatchMode && !EditorApplication.isPlaying)UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity");
             SessionState.SetBool("UNKNOWN.AttackSuiteBatch",true);SessionState.SetInt("UNKNOWN.AttackSuitePhase",5);SessionState.SetBool("UNKNOWN.AttackSuiteFailed",false);
             SessionState.SetString("UNKNOWN.AttackSuiteStarted",DateTime.UtcNow.ToString("O"));RunPoker();EditorApplication.update+=PollSuite;
+        }
+        public static void RunHandSettingsSuiteBatch()
+        {
+            UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity");
+            SessionState.SetBool("UNKNOWN.AttackSuiteBatch",true);SessionState.SetInt("UNKNOWN.AttackSuitePhase",6);SessionState.SetBool("UNKNOWN.AttackSuiteFailed",false);
+            SessionState.SetString("UNKNOWN.AttackSuiteStarted",DateTime.UtcNow.ToString("O"));SessionState.SetBool("UNKNOWN.RunHandUI",true);
+            EditorApplication.isPlaying=true;EditorApplication.update+=PollSuite;
         }
         public static void RunSuiteBatch()
         {

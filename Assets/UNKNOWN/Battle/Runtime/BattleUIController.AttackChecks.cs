@@ -112,6 +112,7 @@ namespace Unknown.Battle
             try
             {
                 canvas.renderMode=RenderMode.ScreenSpaceCamera; canvas.worldCamera=camera; canvas.planeDistance=1; Canvas.ForceUpdateCanvases();
+                if(tutorial!=null)RefreshTutorialRings();
                 var screen=RectTransformUtility.WorldToScreenPoint(camera,target.position);
                 var data=new PointerEventData(EventSystem.current){position=screen,pointerCurrentRaycast=new RaycastResult{gameObject=target.gameObject}};
                 MoveAttackDrag(data); Canvas.ForceUpdateCanvases();

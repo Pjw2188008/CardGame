@@ -53,7 +53,7 @@ namespace Unknown.Battle
         void Start()
         {
             font = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Apple SD Gothic Neo", "Arial" }, 18);
-            BuildCanvas(); if (online == null) NewMatch(); else StartOnline();
+            BuildCanvas(); if(tutorialRequested)StartTutorial(); else if (online == null) NewMatch(); else StartOnline();
         }
         void NewMatch()
         {
@@ -244,6 +244,8 @@ namespace Unknown.Battle
         }
         IEnumerator ActionPresentation(IReadOnlyList<BattleEvent> entries)
         {
+            tutorial?.Observe(entries);
+            if(tutorial!=null && entries.Any(e=>e.Kind==BattleEventKind.Summon || e.Kind==BattleEventKind.Attack || e.Kind==BattleEventKind.Discard || e.Kind==BattleEventKind.PokerChanged || e.Kind==BattleEventKind.JokerSuccess || e.Kind==BattleEventKind.JokerFailure || e.Kind==BattleEventKind.Combine))TutorialCue(!entries.Any(e=>e.Kind==BattleEventKind.JokerFailure));
             ObserveAttackResult(entries);
             actionBusy = true;
             try
@@ -301,6 +303,7 @@ namespace Unknown.Battle
         }
         void ShowWinner()
         {
+            if(tutorial!=null)return;
             EndAttackDrag(); EndCardDrag();
             clock.Stop();
             bool won = engine.State.Winner == ViewPlayer;
@@ -312,7 +315,7 @@ namespace Unknown.Battle
         void SelectHand(CardInstance card)
         {
             if (Blocked() || card==null) return;
-            if(discardMode) {if(card.Owner==ViewPlayer)discardID=discardID==card.InstanceID ? -1 : card.InstanceID;Refresh();return;}
+            if(discardMode) {DiscardSelected(card);return;}
             if(combinationMode) { SelectCombinationMaterial(card); return; }
             if (engine.NeedsTarget) { feedback = engine.TargetPrompt; Refresh(); return; }
             attackerID = jokerTarget = -1;
@@ -322,6 +325,7 @@ namespace Unknown.Battle
         }
         bool Blocked()
         {
+            if(tutorial!=null && (tutorialSwitching || tutorialFinished || tutorial.Step==1))return true;
             if(MenuOpen || GamePreferences.IsOpen)return true;
             if (engine == null || engine.State.ActivePlayer != ViewPlayer) return true;
             if (online != null) return !online.CanAct || actionBusy || transitioning;
@@ -355,6 +359,7 @@ namespace Unknown.Battle
         }
         void EndTurn()
         {
+            if(tutorial!=null)return;
             if (Blocked()) return;
             if (engine.NeedsTarget) { feedback = engine.TargetPrompt; Refresh(); return; }
             if (online != null) online.Submit(BattleAction.EndTurn); else StartCoroutine(TransitionTurn(false));
@@ -471,6 +476,7 @@ namespace Unknown.Battle
             if (divider == null || engine == null) return;
             UpdateInteractionUI();
             if (online != null) { UpdateOnline(); return; }
+            if(tutorial!=null){TickTutorial();return;}
             bool held = IsPaused || transitioning || passOverlay.activeSelf;
             if (engine.State.IsOver) clock.Stop();
             else clock.Tick(Time.realtimeSinceStartupAsDouble, held);
@@ -491,6 +497,6 @@ namespace Unknown.Battle
         void OnApplicationPause(bool value) { applicationPaused = value; if(value)EndAttackDrag(); }
         static Color TimerColor(double seconds) => seconds<=5 ? new Color(1,0.24f,0.24f) : seconds<=10 ? new Color(1,0.62f,0.18f) : Color.white;
         void OnApplicationFocus(bool focused) { if(!focused)EndAttackDrag(); }
-        void OnDestroy() { EndAttackDrag(); EndCardDrag(); StopOnline(); if (font != null) Destroy(font); }
+        void OnDestroy() { EndAttackDrag(); EndCardDrag(); StopOnline(); if(tutorialTone!=null)Destroy(tutorialTone); if (font != null) Destroy(font); }
     }
 }

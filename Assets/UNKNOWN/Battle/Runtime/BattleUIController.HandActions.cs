@@ -25,20 +25,29 @@ namespace Unknown.Battle
             if(discardButton==null || engine==null)return;
             if(discardMode && (engine.State.TurnNumber!=discardTurn || engine.State.ActivePlayer!=ViewPlayer || engine.State.IsOver || engine.NeedsTarget)) {discardMode=false;discardID=-1;}
             var p=engine.State.Players[ViewPlayer];handCountLabel.text=$"HAND {p.Hand.Count}/{engine.Config.HandLimit}";handCountLabel.color=p.Hand.Count>=engine.Config.HandLimit ? gold : Color.white;
-            discardButton.GetComponentInChildren<Text>().text=discardMode ? "버리기 확정" : p.ManualDiscardUsed ? "버리기 사용됨" : "카드 버리기";
+            // Recompute every refresh: a previous lesson/animation must not leave this disabled.
+            discardButton.interactable=!Blocked() && !engine.NeedsTarget && !p.ManualDiscardUsed && p.Hand.Count>0;
+            discardButton.GetComponentInChildren<Text>().text=discardMode ? "버리기 취소" : p.ManualDiscardUsed ? "버리기 사용됨" : "카드 버리기";
             for(int row=0;row<2;row++)graveMarkers[row].GetComponentInChildren<Text>().text="묘지 "+engine.State.Players[row==0 ? ViewPlayer : 1-ViewPlayer].DiscardCount;
             if(discardMode && handViews.TryGetValue(discardID,out var selected))selected.GetComponent<Outline>().effectColor=new Color(1,0.45f,0.35f);
         }
         void ToggleDiscard()
         {
+            if(tutorial!=null && tutorial.Step!=4)return;
             if(Blocked()) {Toast(engine.State.ActivePlayer!=ViewPlayer ? "현재 자신의 턴이 아닙니다." : "현재 행동을 처리할 수 없습니다.");return;}
             var p=engine.State.Players[ViewPlayer];
             if(p.ManualDiscardUsed){Toast("이번 턴에는 이미 카드를 버렸습니다.");return;}
             if(p.Hand.Count==0){Toast("손패에 카드가 없습니다.");return;}
             if(engine.NeedsTarget){Toast(engine.TargetPrompt);return;}
-            if(!discardMode){ClearSelection();discardMode=true;discardTurn=engine.State.TurnNumber;Toast("버릴 카드 1장을 선택한 뒤 다시 확정하세요.");Refresh();return;}
-            if(discardID<0){Toast("버릴 카드를 선택해주세요.");return;}
-            int actor=ViewPlayer,id=discardID;ClearSelection();Dispatch(BattleAction.Discard,id,0,()=>engine.DiscardHand(actor,id),"손패 카드 1장 버림");
+            if(discardMode){ClearSelection();Toast("버리기를 취소했습니다.");Refresh();return;}
+            ClearSelection();discardMode=true;discardTurn=engine.State.TurnNumber;Toast("버릴 손패 카드를 클릭하면 바로 버립니다. ESC로 취소할 수 있습니다.");Refresh();
+        }
+        void DiscardSelected(CardInstance card)
+        {
+            if(!discardMode || Blocked() || card==null || card.Owner!=ViewPlayer
+                || !engine.State.Players[ViewPlayer].Hand.Any(c=>c.InstanceID==card.InstanceID))return;
+            int actor=ViewPlayer,id=card.InstanceID;
+            ClearSelection();Dispatch(BattleAction.Discard,id,0,()=>engine.DiscardHand(actor,id),"손패 카드 1장 버림");
         }
         void ToggleBattleMenu()
         {
@@ -76,7 +85,7 @@ namespace Unknown.Battle
         {
             if(!Debug.isDebugBuild || !System.Environment.GetCommandLineArgs().Contains("-unknownSmoke"))return false;
             var card=engine.State.Players[ViewPlayer].Hand.FirstOrDefault(c=>c!=null && c.InstanceID==id);if(card==null)return false;
-            ToggleDiscard();if(!discardMode)return false;SelectHand(card);if(discardID!=id)return false;ToggleDiscard();return !discardMode;
+            ToggleDiscard();if(!discardMode)return false;SelectHand(card);return !discardMode;
         }
         internal bool SmokeOptions(bool open)
         {

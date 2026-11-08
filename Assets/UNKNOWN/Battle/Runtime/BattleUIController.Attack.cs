@@ -57,7 +57,7 @@ namespace Unknown.Battle
             int actor=ViewPlayer;
             return actor<0 || actor>=engine.State.Players.Count ? null : engine.State.Players[actor].Board.FirstOrDefault(c=>c!=null && c.InstanceID==id);
         }
-        bool ReadyToAttack(CardInstance card) => !discardMode && card!=null && card.CurrentHP>0 && !Blocked() && !presenting && engine.CanAttack(ViewPlayer,card);
+        bool ReadyToAttack(CardInstance card) => (tutorial==null || tutorial.Step==3) && !discardMode && card!=null && card.CurrentHP>0 && !Blocked() && !presenting && engine.CanAttack(ViewPlayer,card);
         string AttackReason(CardInstance card)
         {
             if(engine.State.IsOver)return "게임이 종료되었습니다.";

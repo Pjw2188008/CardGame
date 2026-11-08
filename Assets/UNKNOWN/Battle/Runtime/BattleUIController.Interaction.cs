@@ -37,6 +37,8 @@ namespace Unknown.Battle
         }
         void ToggleCombinationMode()
         {
+            if(tutorial!=null && tutorial.Step!=7)return;
+            if(tutorial!=null && combinationMode && engine.CombinationPreview(ViewPlayer,aceID,faceID)!=null){Combine();return;}
             if(discardMode || Blocked() || engine.NeedsTarget || AttackDragging || dragged!=null)return;
             bool enter=!combinationMode; ClearSelection(); combinationMode=enter; combinationTurn=engine.State.TurnNumber;
             RefreshCombinationSlots(); RefreshHands(engine.State.Players[ViewPlayer],engine.State.Players[1-ViewPlayer]);
@@ -82,7 +84,7 @@ namespace Unknown.Battle
             if(combineButton!=null) combineButton.interactable=combinationMode && !Blocked() && !engine.NeedsTarget && result!=null;
             if(combinationModeButton!=null) {
                 combinationModeButton.interactable=!discardMode && !Blocked() && !engine.NeedsTarget && !AttackDragging && dragged==null;
-                combinationModeButton.GetComponentInChildren<Text>().text=combinationMode ? "선택 취소" : "조합 선택";
+                combinationModeButton.GetComponentInChildren<Text>().text=tutorial!=null && combinationMode && result!=null ? "조합 확정" : combinationMode ? "선택 취소" : tutorial!=null ? "UNKNOWN 조합" : "조합 선택";
             }
         }
         void BuildTooltip()
@@ -122,6 +124,7 @@ namespace Unknown.Battle
         void Toast(string text) { toastText=text; toastUntil=Time.unscaledTime+1.5f; }
         public bool BeginCardDrag(int id,RectTransform original,PointerEventData data)
         {
+            if(tutorial!=null && tutorial.Step!=2 && tutorial.Step!=5 && tutorial.Step!=6)return false;
             if(data.button!=PointerEventData.InputButton.Left || discardMode || combinationMode || AttackDragging || dragged!=null || original==null) return false;
             if(Blocked()) { Toast(engine.State.IsOver ? "종료된 경기입니다." : engine.State.ActivePlayer!=ViewPlayer ? "상대방의 턴입니다." : engine.State.TurnExpired ? "턴 시간이 종료되었습니다." : "현재 동작을 처리하고 있습니다."); return false; }
             if(engine.NeedsTarget) { Toast(engine.TargetPrompt); return false; }
