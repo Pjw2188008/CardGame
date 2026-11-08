@@ -1,0 +1,17 @@
+﻿{
+    "date":  "2026-11-08T23:11:50.3658058+09:00",
+    "unity":  "6000.0.74f1",
+    "result":  "Succeeded",
+    "errors":  0,
+    "warnings":  8,
+    "developmentBuild":  true,
+    "executable":  "Builds/UNKNOWN-FieldVictory/UNKNOWN.exe",
+    "assemblySha256":  "1D7EADDC0B2BAAF8666C3E2DDBDCEBE980D652BD128A2083BD4B1F1B56D5EC60",
+    "ruleChecks":  189,
+    "aiUiChecks":  43,
+    "tutorialUiChecks":  38,
+    "regressionUiChecks":  455,
+    "relayConnectionRetested":  false,
+    "standaloneHumanPlayTested":  false,
+    "buildLog":  "Library/UnknownField-Build.log"
+}

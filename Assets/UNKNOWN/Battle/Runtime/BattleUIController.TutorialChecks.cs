@@ -70,8 +70,15 @@ namespace Unknown.Battle
                     combinationModeButton.onClick.Invoke();hand=engine.State.Players[0].Hand.Where(c=>c.Definition.CardType==CardType.Normal).ToArray();foreach(var c in hand)handViews[c.InstanceID].GetComponent<Button>().onClick.Invoke();combinationModeButton.onClick.Invoke();
                     if(n<2){yield return TutorialWait(()=>!actionBusy && engine.State.Players[0].Hand.Count(c=>c.Definition.CardType==CardType.Normal)==2);yield return null;verify(engine.State.Players[0].UnknownCreated==n+1,"Next pair arrives after existing animation "+(n+1));}
                 }
+                yield return TutorialWait(()=>!actionBusy);yield return null;
+                verify(!engine.State.IsOver && !tutorialFinished,"Three UNKNOWN in hand do not complete lesson");
+                for(int slot=0;slot<3;slot++) {
+                    card=engine.State.Players[0].Hand.First(c=>c.Definition.CardType==CardType.Unknown);
+                    DragBegin(card);verify(dragged!=null,"Lesson 7 allows UNKNOWN drag "+slot);DragDrop(UnitDrop(0,slot));
+                    yield return TutorialWait(()=>!actionBusy);yield return null;
+                }
                 yield return TutorialWait(()=>tutorialFinished);yield return null;
-                verify(tutorialDone.gameObject.activeInHierarchy && !resultOverlay.activeSelf && engine.State.VictoryReason==VictoryReason.UnknownComplete,"Third distinct UNKNOWN invokes real victory and tutorial completion screen");
+                verify(tutorialDone.gameObject.activeInHierarchy && !resultOverlay.activeSelf && engine.State.VictoryReason==VictoryReason.UnknownComplete,"Third field UNKNOWN invokes real victory and tutorial completion screen");
                 var p=TutorialProgress.Load();verify(p.completed && p.lastCompleted==7 && p.nextStep==7,"Final completion persists all checkpoint fields");
                 CaptureAttackFrame(1280,tutorialDone,"Tutorial-Complete",false);
                 LoadTutorialStep(6);yield return null;engine.DebugNextGamble=true;card=engine.State.Players[0].Hand[0];DragBegin(card);DragDrop(UnitDrop(0,0));

@@ -172,7 +172,7 @@ namespace Unknown.Battle
         {
             for (int row = 0; row < 1; row++)
             {
-                int count = engine.Config.Map==BattleMap.JokerGame ? engine.State.Players[ViewPlayer].JokerSuccesses : engine.State.Players[ViewPlayer].UnknownCreated;
+                int count = engine.Config.Map==BattleMap.JokerGame ? engine.State.Players[ViewPlayer].JokerSuccesses : engine.State.Players[ViewPlayer].UnknownProgress;
                 unknownLabels[row].text = (engine.Config.Map==BattleMap.JokerGame ? "JOKER JACKPOT " : "내 UNKNOWN: ") + count + "/3";
                 for (int i = 0; i < 3; i++)
                 {

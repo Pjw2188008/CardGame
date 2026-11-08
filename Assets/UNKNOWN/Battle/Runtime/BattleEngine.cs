@@ -45,6 +45,9 @@ namespace Unknown.Battle
         public int MaxMana { get; internal set; }
         public int TurnsStarted { get; internal set; }
         public int UnknownCreated { get; internal set; }
+        public int UnknownHeld => HandCards.Count(c=>c?.Definition.CardType==CardType.Unknown)+UnknownProgress;
+        // Victory requires three living UNKNOWN units on the field simultaneously.
+        public int UnknownProgress => Slots.Count(c=>c?.Definition.CardType==CardType.Unknown && c.CurrentHP>0);
         public int JokerSuccesses { get; internal set; }
         public int JokerChanceDelta { get; internal set; }
         public PokerState Poker { get; internal set; } = new PokerState();
@@ -285,15 +288,14 @@ namespace Unknown.Battle
         {
             if (!Guard(actor)) return false;
             var player = State.Players[actor];
-            if (player.UnknownCreated >= rules.UnknownLimit) return Fail("UNKNOWN은 플레이어당 게임에서 최대 3장만 생성할 수 있습니다.");
+            if (player.UnknownHeld >= rules.UnknownLimit) return Fail($"UNKNOWN은 손패와 필드에 최대 {rules.UnknownLimit}장까지 보유할 수 있습니다.");
             var result = CombinationPreview(actor, aceID, faceID);
             if (result == null) return Fail("패의 A와 J/Q/K를 순서대로 선택하세요.");
             foreach (int id in new[] { aceID, faceID })
             { var card = player.HandCards.Find(c => c.InstanceID == id); player.HandCards.Remove(card); player.DiscardCards.Add(card); }
             var combined = NewCard(result, actor); player.HandCards.Add(combined); player.UnknownCreated++;
             Emit(new BattleEvent(BattleEventKind.Combine, actor, aceID, faceID, secondary: combined.InstanceID, definition: result));
-            Log($"P{actor + 1}: UNKNOWN 조합 ({player.UnknownCreated}/{rules.UnknownLimit})", actor);
-            if (rules.Map!=BattleMap.JokerGame && player.UnknownCreated >= 3) FinishGame(actor, VictoryReason.UnknownComplete);
+            Log($"P{actor + 1}: UNKNOWN 조합 (보유 {player.UnknownHeld}/{rules.UnknownLimit}, 필드 {player.UnknownProgress}/3)", actor);
             return true;
         }
         void FinishGame(int winner, VictoryReason reason)
@@ -401,6 +403,8 @@ namespace Unknown.Battle
                 return;
             }
             source = null; selectedTargets.Clear(); chainHits.Clear();
+            if(rules.Map!=BattleMap.JokerGame && State.Players[State.ActivePlayer].UnknownProgress>=3)
+                FinishGame(State.ActivePlayer,VictoryReason.UnknownComplete);
         }
         void Apply(CardEffect effect, CardInstance target)
         {

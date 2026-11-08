@@ -140,7 +140,7 @@ namespace Unknown.Battle
                 var targets=enemy.board.Where(c=>c?.occupied==true).ToArray();
                 if(targets.Length==0)moves.Add(new AiMove(BattleAction.Attack,c.id,-1));else foreach(var t in targets)moves.Add(new AiMove(BattleAction.Attack,c.id,t.id));
             }
-            if(p.unknownCreated<o.Rules.UnknownLimit)foreach(var ace in p.hand.Where(c=>CardDatabase.Get(c.definition).CardType==CardType.Normal && CardDatabase.Get(c.definition).Rank==Rank.Ace))
+            if(p.unknownProgress+p.hand.Count(c=>CardDatabase.Get(c.definition).CardType==CardType.Unknown)<o.Rules.UnknownLimit)foreach(var ace in p.hand.Where(c=>CardDatabase.Get(c.definition).CardType==CardType.Normal && CardDatabase.Get(c.definition).Rank==Rank.Ace))
                 foreach(var face in p.hand.Where(c=>CardDatabase.Get(c.definition).CardType==CardType.Normal && CardDatabase.Get(c.definition).Rank>=Rank.Jack && CardDatabase.Get(c.definition).Rank<=Rank.King))moves.Add(new AiMove(BattleAction.Combine,ace.id,face.id));
             if(!p.manualDiscardUsed && p.handCount>=7)foreach(var c in p.hand)moves.Add(new AiMove(BattleAction.Discard,c.id));
             moves.Add(new AiMove(BattleAction.EndTurn));return moves;
@@ -187,6 +187,7 @@ namespace Unknown.Battle
             var h=p.hand.First(x=>x.id==m.First);
             var d=CardDatabase.Get(h.definition);
             if(m.Action==BattleAction.Summon) {
+                if(d.CardType==CardType.Unknown && s.map!=BattleMap.JokerGame && p.unknownProgress==2){m.Score=1000000;m.Reason="UNKNOWN 필드 3장 배치로 승리";return;}
                 var cards=own.Select(c=>c.ToCard()).ToList();cards.Add(h.ToCard());var next=PokerSynergy.Evaluate(cards);
                 double synergy=PokerStrength(next)-PokerStrength(p.poker);
                 m.Score=d.Attack*1.2+d.MaxHP*.65-d.ManaCost*.9+synergy+2;
@@ -210,10 +211,10 @@ namespace Unknown.Battle
                     }
                     m.Score+=Math.Max(0,potential-PokerStrength(next))*.35;
                 }
-                if(Material(p,h) && s.map!=BattleMap.JokerGame)m.Score-=p.unknownCreated>=1 ? 12 : 4;
+                if(Material(p,h) && s.map!=BattleMap.JokerGame)m.Score-=p.unknownProgress>=1 ? 12 : 4;
                 m.Reason=next.kind!=p.poker.kind ? "시너지 "+PokerSynergy.Name(next.kind)+" · 비용과 카드 효과" : "능력치·비용·효과·맵 효율";return;
             }
-            if(m.Action==BattleAction.Combine){m.Score=s.map!=BattleMap.JokerGame && p.unknownCreated==2 ? 1000000 : s.map==BattleMap.JokerGame ? 4 : 19+p.unknownCreated*10;m.Reason=m.Score>=100000 ? "UNKNOWN 세 번째 생성으로 즉시 승리" : "UNKNOWN 전투 가치와 생성 승리 진행";return;}
+            if(m.Action==BattleAction.Combine){m.Score=s.map==BattleMap.JokerGame ? 4 : 19+p.unknownProgress*10;m.Reason="UNKNOWN 전투 가치와 필드 배치 승리 준비";return;}
             if(m.Action==BattleAction.Joker){var t=own.First(c=>c.id==m.Second);double chance=Chance(o);m.Score=chance*UnitValue(t)*.5-(1-chance)*UnitValue(t)+2;
                 if(s.map==BattleMap.JokerGame)m.Score+=chance*(p.jokerSuccesses==2 ? 300 : 15+p.jokerSuccesses*12);
                 if(t.summonedTurn<s.turn && !t.attacked && foes.Length==0)m.Score-=t.attack*1.5;
@@ -230,7 +231,7 @@ namespace Unknown.Battle
         {
             if(g.State.IsOver)return g.State.Winner==a ? 1000000 : -1000000;
             double Side(int owner) {var p=g.State.Players[owner];var board=p.Board.Where(c=>c!=null).ToArray();double v=p.HP*2+board.Sum(c=>c.Attack*1.4+c.CurrentHP*.85)+p.Hand.Count*1.4;
-                v+=(int)p.Poker.kind*3;if(owner==a)v+=g.Config.Map==BattleMap.JokerGame ? p.JokerSuccesses*35 : p.UnknownCreated*28;
+                v+=(int)p.Poker.kind*3;if(owner==a)v+=g.Config.Map==BattleMap.JokerGame ? p.JokerSuccesses*35 : p.UnknownProgress*28;
                 // Direct damage is legal only after all blockers have been removed.
                 if(owner==a && board.Length==0 && g.State.Players[1-a].Board.Where(c=>c!=null).Sum(c=>c.Attack)>=p.HP)v-=80;
                 return v;}

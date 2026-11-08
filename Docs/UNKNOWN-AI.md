@@ -10,6 +10,7 @@ Windows Development Build: 강화 HARD 버전은 `Builds/UNKNOWN-AI-Hard/UNKNOWN
 
 ## 전투 구조
 
+- UNKNOWN 승리는 손패 생성 누적이 아니라 **살아 있는 아군 필드 UNKNOWN 3장 동시 배치**로 판정한다. 파괴된 카드는 진행도에서 빠지고 재조합할 수 있다. 조커 맵 예외 및 상세 규칙은 `UNKNOWN-FieldVictory.md`를 따른다.
 - 사람은 항상 플레이어 0, AI는 플레이어 1이다. 로컬 핫시트와 달리 턴이 바뀌어도 시점과 자신의 손패를 유지한다. AI 손패는 뒷면으로 표시한다.
 - `BattleCommands.Execute`가 공통 명령 진입점이다. 로컬 사람 입력, AI, 온라인 Host의 BattleAuthority가 모두 같은 BattleEngine 소환/공격/효과 대상/조합/도박/버리기/턴 종료 함수를 호출한다. 온라인의 인증된 actor, sequence, revision 검증은 그대로 유지한다.
 - 기존 54장, HP 30, 필드 5장, 손패 8장, 마나, 소환 후 공격 제한, 버리기 1회, 포커 9종, UNKNOWN/JOKER 맵별 승리 조건을 변경하지 않는다.

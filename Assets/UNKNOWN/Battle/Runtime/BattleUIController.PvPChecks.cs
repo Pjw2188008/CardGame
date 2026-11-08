@@ -53,15 +53,21 @@ namespace Unknown.Battle
                     verify(opponentInfo.text.Contains("플레이어 "+(2-recipient)) && ownInfo.text.Contains("플레이어 "+(recipient+1)),"P"+recipient+" labels map to snapshot recipient");
                     verify(manaLabels[0].text.Contains("10 / 10") && manaLabels[1].text.Contains("10 / 10"),"P"+recipient+" both mana rows visible");
                 }
-                // Three successful combinations, with prior results removed to prove cumulative counting.
+                // Hand combinations do not win; all three must be summoned to the field.
+                foreach(var player in host.State.Players)Array.Clear(player.Slots,0,player.Slots.Length);
                 for(int i=0;i<3;i++)
                 {
-                    host.State.Players[0].HandCards.Clear();
+                    host.State.Players[0].HandCards.RemoveAll(c=>c.Definition.CardType!=CardType.Unknown);
                     var a=host.NewCard(CardDatabase.Get("Heart_A"),0); var f=host.NewCard(CardDatabase.Get(new[]{"Spade_J","Spade_Q","Spade_K"}[i]),0);
                     host.State.Players[0].HandCards.Add(a); host.State.Players[0].HandCards.Add(f);
                     verify(host.Combine(0,a.InstanceID,f.InstanceID),"Combination "+(i+1)+" succeeds");
                 }
-                verify(host.State.IsOver && host.State.Winner==0 && host.State.VictoryReason==VictoryReason.UnknownComplete,"Third combine ends before animation");
+                verify(!host.State.IsOver,"Three UNKNOWN in hand do not win");
+                for(int slot=0;slot<3;slot++) {
+                    host.State.Players[0].CurrentMana=10;
+                    verify(host.Summon(0,host.State.Players[0].Hand.First(c=>c.Definition.CardType==CardType.Unknown).InstanceID,slot),"UNKNOWN summon "+slot);
+                }
+                verify(host.State.IsOver && host.State.Winner==0 && host.State.VictoryReason==VictoryReason.UnknownComplete,"Third field UNKNOWN ends before animation");
                 var entries=host.DrainEvents();
                 for(int recipient=0;recipient<2;recipient++)
                 {

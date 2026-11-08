@@ -202,13 +202,43 @@ static partial class BattleRulesTests
             var g=Fresh(); var a=Unit(g,0,"Heart_A"); var f=Hand(g,0,"Spade_K"); Check(!g.Combine(0,a.InstanceID,f.InstanceID));
             Check(g.CombinationPreview(0,-1,f.InstanceID)==null); Equal(1,g.State.Players[0].Hand.Count); Equal(0,g.State.Players[0].UnknownCreated);
         });
-        Test("UNKNOWN 3 per player persists after cards disappear", () => {
+        Test("UNKNOWN hand cards do not win and discarded cards can be replaced", () => {
             var g=Fresh(); for(int i=0;i<4;i++) { var a=Hand(g,0,"Heart_A"); var f=Hand(g,0,"Diamond_K"); Equal(i<3,g.Combine(0,a.InstanceID,f.InstanceID)); }
-            Equal(3,g.State.Players[0].UnknownCreated); g.State.Players[0].HandCards.Clear(); Equal(3,g.State.Players[0].UnknownCreated); Equal(0,g.State.Players[1].UnknownCreated);
+            var p=g.State.Players[0];Equal(3,p.UnknownCreated);Equal(0,p.UnknownProgress);Check(!g.State.IsOver);
+            Check(g.DiscardHand(0,p.Hand.First(c=>c.Definition.CardType==CardType.Unknown).InstanceID));Equal(2,p.UnknownHeld);
+            Check(g.Combine(0,Hand(g,0,"Heart_A").InstanceID,Hand(g,0,"Spade_J").InstanceID));Equal(4,p.UnknownCreated);Equal(3,p.UnknownHeld);Check(!g.State.IsOver);
         });
         Test("UNKNOWN summon costs mana, combination is free", () => {
             var g=Fresh(); var c=Hand(g,0,"Unknown_Q"); Check(g.Summon(0,c.InstanceID,0)); Equal(12,c.Attack); Equal(18,c.MaxHP);
             var a=Hand(g,0,"Heart_A"); var f=Hand(g,0,"Spade_J"); Check(g.Combine(0,a.InstanceID,f.InstanceID)); Equal(1,g.State.SummonsThisTurn);
+        });
+        Test("Destroyed UNKNOWN leaves field progress and permits replacement creation",()=>{
+            var g=Fresh();var p=g.State.Players[0];var unknown=Unit(g,0,"Unknown_J");unknown.CurrentHP=1;p.UnknownCreated=3;
+            Hand(g,0,"Unknown_Q");Equal(1,p.UnknownProgress);Equal(2,p.UnknownHeld);
+            var enemy=Unit(g,1,"Spade_K");Check(g.EndTurn(0));Check(g.Attack(1,enemy.InstanceID,0));Equal(0,p.UnknownProgress);Equal(1,p.UnknownHeld);Equal(3,p.UnknownCreated);
+            Check(g.EndTurn(1));Check(g.Combine(0,Hand(g,0,"Heart_A").InstanceID,Hand(g,0,"Spade_K").InstanceID));Equal(4,p.UnknownCreated);Equal(2,p.UnknownHeld);Check(!g.State.IsOver);
+            var snapshot=BattleSnapshot.For(g,0,1,30,false,g.DrainEvents());Equal(0,snapshot.players[0].unknownProgress);Equal(0,BattleEngine.CreateView(snapshot).State.Players[0].UnknownProgress);
+        });
+        Test("Gamble failure removes UNKNOWN progress without changing lifetime creation",()=>{
+            var g=Fresh(new Dice{Value=1});var p=g.State.Players[0];var u=Unit(g,0,"Unknown_J");p.UnknownCreated=1;
+            Check(g.Gamble(0,Hand(g,0,"Joker_1").InstanceID,u.InstanceID));Equal(0,p.UnknownProgress);Equal(0,p.UnknownHeld);Equal(1,p.UnknownCreated);Check(!g.State.IsOver);
+        });
+        Test("Third UNKNOWN waits for summon effects and synchronizes private progress",()=>{
+            var g=Fresh();Unit(g,0,"Unknown_J");Unit(g,0,"Unknown_Q",1);var enemy=Unit(g,1,"Heart_K");enemy.MaxHP=enemy.CurrentHP=100;
+            Check(g.Summon(0,Hand(g,0,"Unknown_K").InstanceID,2));Check(g.NeedsTarget);Check(!g.State.IsOver);Equal(3,g.State.Players[0].UnknownProgress);
+            Check(g.SelectEffectTarget(0,1,0));Equal(VictoryReason.UnknownComplete,g.State.VictoryReason);
+            var own=BattleSnapshot.For(g,0,1,0,false,g.DrainEvents());var other=BattleSnapshot.For(g,1,1,0,false,new BattleEvent[0]);
+            Equal(3,own.players[0].unknownProgress);Equal(0,other.players[0].unknownProgress);Equal(3,BattleEngine.CreateView(own).State.Players[0].UnknownProgress);Equal(0,other.players[0].hand.Length);
+        });
+        Test("UNKNOWN destroyed before final effect completion cannot trigger field victory",()=>{
+            var g=Fresh();var u=Unit(g,0,"Unknown_J");Unit(g,0,"Unknown_Q",1);var enemy=Unit(g,1,"Heart_K");enemy.MaxHP=enemy.CurrentHP=100;
+            Check(g.Summon(0,Hand(g,0,"Unknown_K").InstanceID,2));Check(g.NeedsTarget);u.CurrentHP=0;g.ReconcilePoker();
+            Check(g.SelectEffectTarget(0,1,0));Equal(2,g.State.Players[0].UnknownProgress);Check(!g.State.IsOver);
+        });
+        Test("Joker map does not grant victory for three field UNKNOWN",()=>{
+            var g=Fresh(config:new BattleConfig{Map=BattleMap.JokerGame,MapEvents=new JokerEventDefinition[0],StartingMana=10});
+            Unit(g,0,"Unknown_J");Unit(g,0,"Unknown_Q",1);Check(g.Summon(0,Hand(g,0,"Unknown_K").InstanceID,2));FinishEffects(g);
+            Equal(3,g.State.Players[0].UnknownProgress);Check(!g.State.IsOver);
         });
         Test("joker is not a summon", () => { var g=Fresh(); var j=Hand(g,0,"Joker_1"); Check(!g.Summon(0,j.InstanceID,0)); Equal(1,g.State.Players[0].Hand.Count); });
         Test("joker success rounds up, increases current by max delta", () => {
@@ -429,7 +459,7 @@ static partial class BattleRulesTests
             Equal(2,view.State.Players[1].Board[0].Attack); Equal(3,view.State.Players[1].Board[0].CurrentHP);
             Check(view.State.Players[1].Board[0].JokerUsed); Check(view.NeedsTarget); Check(view.IsValidEffectTarget(1,0));
         });
-        Test("third UNKNOWN ends immediately in hand with one terminal event for either player", () => {
+        Test("only third living field UNKNOWN wins with one terminal event for either player", () => {
             for (int owner=0; owner<2; owner++) {
                 var g=Fresh(); if(owner==1) Check(g.EndTurn(0)); g.DrainEvents();
                 foreach(var face in new[]{"J","Q","K"}) {
@@ -437,11 +467,16 @@ static partial class BattleRulesTests
                     var a=Hand(g,owner,"Heart_A"); var f=Hand(g,owner,"Spade_"+face);
                     int mana=g.State.Players[owner].CurrentMana; Check(g.Combine(owner,a.InstanceID,f.InstanceID));
                     Equal(mana,g.State.Players[owner].CurrentMana); Equal(before+1,g.State.Players[owner].UnknownCreated);
-                    Equal(before==2,g.State.IsOver);
-                    if(before<2) g.State.Players[owner].HandCards.Clear();
+                    Check(!g.State.IsOver);
+                    if(before<2) g.State.Players[owner].HandCards.RemoveAll(c=>c.Definition.CardType!=CardType.Unknown);
+                }
+                for(int slot=0;slot<3;slot++) {
+                    var card=g.State.Players[owner].Hand.First(c=>c.Definition.CardType==CardType.Unknown);
+                    Check(g.Summon(owner,card.InstanceID,slot));FinishEffects(g);Equal(slot==2,g.State.IsOver);
+                    if(slot<2){Check(g.EndTurn(owner));Check(g.EndTurn(1-owner));}
                 }
                 Equal(owner,g.State.Winner); Equal(VictoryReason.UnknownComplete,g.State.VictoryReason);
-                Equal(3,g.State.Players[owner].UnknownCreated); Check(g.State.Players[owner].Board.All(c=>c==null));
+                Equal(3,g.State.Players[owner].UnknownCreated);Equal(3,g.State.Players[owner].UnknownProgress);
                 var events=g.DrainEvents(); Equal(1,events.Count(e=>e.Kind==BattleEventKind.GameOver));
                 for(int recipient=0;recipient<2;recipient++) {
                     var snapshot=BattleSnapshot.For(g,recipient,3,60,false,events); var view=BattleEngine.CreateView(snapshot);

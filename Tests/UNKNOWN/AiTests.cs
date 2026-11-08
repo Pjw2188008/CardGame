@@ -14,8 +14,8 @@ static partial class BattleRulesTests
                 Equal(0,observation.View.players[1].hand.Length);Equal(0,observation.View.players[1].unknownCreated);
                 var m=agent.Decide(observation);Equal(BattleAction.Attack,m.Action);Equal(-1,m.Second);Check(m.Execute(g,0));Equal(0,g.State.Winner);
             });
-            Test(difficulty+" AI takes third Unknown win without gambling",()=>{
-                var g=AiFixture();g.State.Players[0].UnknownCreated=2;Hand(g,0,"Heart_A");Hand(g,0,"Spade_K");var m=new AiAgent(difficulty,1).Decide(AiObservation.Capture(g,0));Equal(BattleAction.Combine,m.Action);Check(m.Execute(g,0));Equal(VictoryReason.UnknownComplete,g.State.VictoryReason);
+            Test(difficulty+" AI summons third field Unknown for victory without gambling",()=>{
+                var g=AiFixture();g.State.Players[0].UnknownCreated=2;Unit(g,0,"Unknown_J");Unit(g,0,"Unknown_Q",1);Hand(g,0,"Unknown_K");var m=new AiAgent(difficulty,1).Decide(AiObservation.Capture(g,0));Equal(BattleAction.Summon,m.Action);Check(m.Execute(g,0));Equal(VictoryReason.UnknownComplete,g.State.VictoryReason);
             });
             Test(difficulty+" AI legal candidates honor mana, summoning sickness, pending targets and once-discard",()=>{
                 var g=AiFixture();var c=Hand(g,0,"Heart_5");Hand(g,0,"Joker_1");var u=Unit(g,0,"Spade_2");u.SummonedTurn=g.State.TurnNumber;g.State.Players[0].CurrentMana=1;
@@ -51,7 +51,7 @@ static partial class BattleRulesTests
         });
         Test("All difficulties preserve full-hand Unknown materials and a next-turn jackpot Joker",()=>{
             var g=AiFixture(BattleMap.JokerGame);var p=g.State.Players[0];p.UnknownCreated=3;p.JokerSuccesses=2;p.CurrentMana=0;
-            for(int i=0;i<5;i++){var c=Unit(g,0,"Heart_3",i);c.HasAttacked=true;}
+            for(int i=0;i<5;i++){var c=Unit(g,0,i<3 ? "Unknown_J" : "Heart_3",i);c.HasAttacked=true;}
             foreach(var id in new[]{"Heart_A","Spade_A","Diamond_A","Club_A","Heart_J","Spade_Q","Diamond_K","Joker_1"})Hand(g,0,id);
             foreach(AiDifficulty difficulty in Enum.GetValues(typeof(AiDifficulty)))for(int seed=0;seed<20;seed++)Equal(BattleAction.EndTurn,new AiAgent(difficulty,seed).Decide(AiObservation.Capture(g,0)).Action);
         });

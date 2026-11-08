@@ -35,7 +35,7 @@ namespace Unknown.Battle
     }
     [Serializable] public sealed class PlayerViewData
     {
-        public int hp, mana, maxMana, deckCount, handCount, unknownCreated, jokerSuccesses, jokerChanceDelta;
+        public int hp, mana, maxMana, deckCount, handCount, unknownCreated, unknownProgress, jokerSuccesses, jokerChanceDelta;
         public CardViewData[] hand, board;
         public PokerState poker;
         public bool manualDiscardUsed;
@@ -93,6 +93,7 @@ namespace Unknown.Battle
                 players = s.Players.Select((p, owner) => new PlayerViewData { hp = p.HP, mana = p.CurrentMana, maxMana = p.MaxMana,
                     jokerSuccesses=owner==recipient ? p.JokerSuccesses : 0, jokerChanceDelta=owner==recipient ? p.JokerChanceDelta : 0,
                     deckCount = p.DeckCount, handCount = p.Hand.Count, unknownCreated = owner == recipient ? p.UnknownCreated : 0,
+                    unknownProgress = owner == recipient ? p.UnknownProgress : 0,
                     poker=p.Poker.Copy(),manualDiscardUsed=p.ManualDiscardUsed,discardCount=p.DiscardCount,
                     hand = owner == recipient ? p.Hand.Select(CardViewData.From).ToArray() : new CardViewData[0],
                     board = p.Board.Select(CardViewData.From).ToArray() }).ToArray(),

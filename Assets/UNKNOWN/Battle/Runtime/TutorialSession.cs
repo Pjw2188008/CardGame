@@ -46,18 +46,18 @@ namespace Unknown.Battle
         public bool Allows(BattleAction action)
         {
             if(Complete)return false;
-            if(action==BattleAction.Target)return Engine.NeedsTarget && (Step==2 || Step==5);
+            if(action==BattleAction.Target)return Engine.NeedsTarget && (Step==2 || Step==5 || Step==7);
             return Step==2 || Step==5 ? action==BattleAction.Summon
                 : Step==3 ? action==BattleAction.Attack
                 : Step==4 ? OverflowShown && action==BattleAction.Discard
                 : Step==6 ? action==BattleAction.Joker
-                : Step==7 && action==BattleAction.Combine;
+                : Step==7 && (action==BattleAction.Combine || action==BattleAction.Summon);
         }
         public void Observe(IEnumerable<BattleEvent> events)
         {
             foreach(var e in events.Where(e=>e.Owner==0))
             {
-                if(e.Kind==BattleEventKind.Summon)summoned=true;
+                if(e.Kind==BattleEventKind.Summon){summoned=true;if(Step==7)Engine.State.Players[0].CurrentMana=10;}
                 if(e.Kind==BattleEventKind.Attack) { if(e.TargetID<0 && e.Amount>0)DirectAttack=true;else if(e.TargetID>=0 && e.Amount>0)UnitAttack=true; }
                 if(e.Kind==BattleEventKind.Discard && e.Secondary==1)OverflowShown=true;
                 if(e.Kind==BattleEventKind.Discard && e.Secondary==2)discarded=true;
@@ -83,7 +83,7 @@ namespace Unknown.Battle
                     case 4:return OverflowShown && discarded && p.ManualDiscardUsed && p.Hand.Count==7 && p.DiscardCount==2;
                     case 5:return !Engine.NeedsTarget && p.Poker.kind==PokerKind.OnePair && p.Board.Count(c=>c!=null && c.PokerAttack==2 && c.Attack==c.NonPokerAttack+2)==2;
                     case 6:return Gambled && p.DiscardCards.Any(c=>c.Definition.CardType==CardType.Joker);
-                    case 7:return made.Contains(Rank.Jack) && made.Contains(Rank.Queen) && made.Contains(Rank.King) && p.UnknownCreated==3 && Engine.State.Winner==0 && Engine.State.VictoryReason==VictoryReason.UnknownComplete;
+                    case 7:return made.Contains(Rank.Jack) && made.Contains(Rank.Queen) && made.Contains(Rank.King) && p.UnknownProgress==3 && Engine.State.Winner==0 && Engine.State.VictoryReason==VictoryReason.UnknownComplete;
                     default:return false;
                 }
             }

@@ -35,6 +35,8 @@ static partial class BattleRulesTests
             });
             Test("Suit map UNKNOWN victory and HP victory stop all new actions: "+map,()=>{
                 var g=SuitFixture(map); for(int i=0;i<3;i++)Check(g.Combine(0,Hand(g,0,"Heart_A").InstanceID,Hand(g,0,"Club_K").InstanceID));
+                Check(!g.State.IsOver);
+                for(int slot=0;slot<3;slot++){g.State.Players[0].CurrentMana=10;Check(g.Summon(0,g.State.Players[0].Hand.First(c=>c.Definition.CardType==CardType.Unknown).InstanceID,slot));FinishEffects(g);}
                 Equal(VictoryReason.UnknownComplete,g.State.VictoryReason); Check(!g.EndTurn(0)); Check(!g.Summon(0,-1,0));
                 g=SuitFixture(map); var unit=Unit(g,0,"Diamond_2"); g.State.Players[1].HP=1; Check(g.Attack(0,unit.InstanceID)); Equal(VictoryReason.OpponentHPZero,g.State.VictoryReason);
             });

@@ -15,7 +15,7 @@ namespace Unknown.Battle
         internal bool IsMapIntroActive => mapIntro!=null && mapIntro.gameObject.activeSelf;
         MapDefinition MapInfo(BattleMap map) => MapDefinition.For(map,engine?.Config.MapRules);
         string MapTitle(BattleMap map) { var d=MapInfo(map); return d.symbol+" "+d.title; }
-        string MapDescription(BattleMap map) => MapInfo(map).Effects+(MapDefinition.IsSuit(map) ? "\nUNKNOWN 3장 생성 또는 상대 HP 0 시 승리" : "");
+        string MapDescription(BattleMap map) => MapInfo(map).Effects+(MapDefinition.IsSuit(map) ? "\n필드에 UNKNOWN 3장 배치 또는 상대 HP 0 시 승리" : "");
         Color MapTint(BattleMap map) { ColorUtility.TryParseHtmlString(MapInfo(map).tint,out var color); return color; }
         void ShowMapTooltip(UnityEngine.EventSystems.PointerEventData data)
         {

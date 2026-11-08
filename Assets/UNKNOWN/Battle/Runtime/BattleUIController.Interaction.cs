@@ -124,12 +124,13 @@ namespace Unknown.Battle
         void Toast(string text) { toastText=text; toastUntil=Time.unscaledTime+1.5f; }
         public bool BeginCardDrag(int id,RectTransform original,PointerEventData data)
         {
-            if(tutorial!=null && tutorial.Step!=2 && tutorial.Step!=5 && tutorial.Step!=6)return false;
+            if(tutorial!=null && tutorial.Step!=2 && tutorial.Step!=5 && tutorial.Step!=6 && tutorial.Step!=7)return false;
             if(data.button!=PointerEventData.InputButton.Left || discardMode || combinationMode || AttackDragging || dragged!=null || original==null) return false;
             if(Blocked()) { Toast(engine.State.IsOver ? "종료된 경기입니다." : engine.State.ActivePlayer!=ViewPlayer ? "상대방의 턴입니다." : engine.State.TurnExpired ? "턴 시간이 종료되었습니다." : "현재 동작을 처리하고 있습니다."); return false; }
             if(engine.NeedsTarget) { Toast(engine.TargetPrompt); return false; }
             var card=engine.State.Players[ViewPlayer].Hand.FirstOrDefault(c=>c!=null && c.InstanceID==id);
             if(card==null) return false;
+            if(tutorial?.Step==7 && card.Definition.CardType!=CardType.Unknown)return false;
             var d=card.Definition;
             EndCardDrag(); original.GetComponent<CardHover>()?.ResetHover();
             // Clone disabled interaction scripts before assigning the active drag context.

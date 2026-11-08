@@ -37,8 +37,8 @@ namespace Unknown.Battle
         void ShowAiResult()
         {
             var p=engine.State.Players[0];winnerText.text=engine.State.Winner==0 ? "VICTORY" : "DEFEAT";
-            string reason=engine.State.VictoryReason==VictoryReason.UnknownComplete ? "UNKNOWN 누적 3장 생성" : engine.State.VictoryReason==VictoryReason.JokerJackpot ? "JOKER 도박 누적 3회 성공" : "상대 HP 0";
-            aiResultInfo.text=$"{aiDifficulty.ToString().ToUpperInvariant()} AI · {MapInfo(engine.Config.Map).name}\n총 {engine.State.TurnNumber}턴 · 승리 조건: {reason}\n나의 UNKNOWN {p.UnknownCreated}/3 · JOKER 성공 {p.JokerSuccesses}/3";
+            string reason=engine.State.VictoryReason==VictoryReason.UnknownComplete ? "필드에 UNKNOWN 3장 배치" : engine.State.VictoryReason==VictoryReason.JokerJackpot ? "JOKER 도박 누적 3회 성공" : "상대 HP 0";
+            aiResultInfo.text=$"{aiDifficulty.ToString().ToUpperInvariant()} AI · {MapInfo(engine.Config.Map).name}\n총 {engine.State.TurnNumber}턴 · 승리 조건: {reason}\n나의 UNKNOWN {p.UnknownProgress}/3 · JOKER 성공 {p.JokerSuccesses}/3";
         }
         IReadOnlyList<BattleEvent> HumanAiEvents(IReadOnlyList<BattleEvent> entries)
         {
