@@ -1,0 +1,327 @@
+﻿[
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Editor\\BattleSetupMenu.cs",
+        "sha256":  "E56760ED27A2A9E337FF5F8D0CB2C9429DF9EFD8065ECE76D8F3F9EB11AD84BC",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\AiAgent.cs",
+        "sha256":  "338BF154111B4D93205702EB9B53BD70985BD9BEE57732B3757AB8516F386E10",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\AiObservation.cs",
+        "sha256":  "0380488F13D3DD23DD75D56B2DD6AD30BC4BF6E43F290AB7748BB1CF2CA06AF3",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\AttackArrowGraphic.cs",
+        "sha256":  "857A3E97B044CE0AA0DF4D99F06FEF0C2EF8C913EB291A8BE87D9D4D0AE9FDB3",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\AttackGlowGraphic.cs",
+        "sha256":  "156EA8C03FAB8356961A97877DE3670C2A4509F90CD1023E9F75844E357F77AB",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleCommands.cs",
+        "sha256":  "8E3981250395D0F883CF08A6DD9CB3B3EA7917B327C948F685D1982790B985B9",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleEngine.cs",
+        "sha256":  "F8A7E2CA969294B64F32B1464E68C376CF111A5C50D4A92C6B3EE7EB75AAF0CD",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleEvents.cs",
+        "sha256":  "AC5579AFCC1B6C2ED3EE1BA7E1C1CA6DB8F9C530A74B6D6BFBF8AFB58E6699B4",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleMapSettings.cs",
+        "sha256":  "564D89EFA0E4489D6948AAD1793DCA1FE5BDE0399B387D0A4223E3AA60A98DC6",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleProtocol.cs",
+        "sha256":  "49A013676F654697294AEBF922A3CEEE05A205D9740D33DEB9ADDAF43E381EDC",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.AI.cs",
+        "sha256":  "AC33AABB168D62F16555AF983116FC7BC10EA3015D4148A0E88107CF8191CFF1",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.AiChecks.cs",
+        "sha256":  "5CF0690EA9F6BE0FE4DA8E8B3B941814F60A1007D35B7FD5A947ADECAA2BD3E0",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Attack.cs",
+        "sha256":  "65B401CCD37A17A189DA65645BD7F5B825F711718DBB83CF8531B1A3C0F7FF73",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.AttackChecks.cs",
+        "sha256":  "34133D5DB150EF3A1C6AE70EC682C8EB6625CFFA0AF6E547D960D56BE3DAC2E5",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.cs",
+        "sha256":  "52367E4D44746DE20A2AFB3D49544A21BCFF5C6DD90AB8724BD65F5E3D978F76",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.DragChecks.cs",
+        "sha256":  "FD16BA863501C06236411C5A67D21F89FF3A932CDFCFEAA11178C0F78057104D",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.HandActions.cs",
+        "sha256":  "5B0146C23AE42A7DFE84F6C59279D19E8D3C92241BD2B671D5E4CD0DE0B883B6",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Hands.cs",
+        "sha256":  "D2D6382389AA48CD5A364F0A3F5116ECEF0AA3A3E07C7A15B6E95B3FF0A1FF48",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.HandSettingsChecks.cs",
+        "sha256":  "E912678DCA67F818BF4EA3A5BBA2E7801AF1D1FE32554C4B4E5B9D5027223A86",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Interaction.cs",
+        "sha256":  "057E12CF418BC9BC0C9373478A6E10A8F248DEE1B57016EFB4830DEFA09378AE",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.JokerChecks.cs",
+        "sha256":  "4C69B5DF92CB3BAFBDC7ABEECAB791FE6B3EC22EF534A996EA132F3F072E0D73",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Map.cs",
+        "sha256":  "36B1F8A27CBBBFA1F83A2D93801EBF5297D2A757B896110E6F46D83866DF9163",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.MapDebug.cs",
+        "sha256":  "0A8346495F918657FB62EDCBC0C067F7E17EEB7E7234ED63DC9B0CD0E84FB61B",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Online.cs",
+        "sha256":  "B628A49F606C14480F2DD3D3B8817B4D78D593AFB28392A9871533449BDBE638",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.PlayModeChecks.cs",
+        "sha256":  "8A4FB3094A0B639C74D96732EDD4491B24B0DF979770E92DBEA0BF63B3D3D972",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Poker.cs",
+        "sha256":  "7275860D48A3D5A0879D56BC67F6DCCA185CA2EDFD6D6B3EF87ABE0A5E9E7567",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.PokerChecks.cs",
+        "sha256":  "0A62129AA3700C2088DB6B50B799463380C9B18889205F0070DEDB43BE1A168B",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.PvPChecks.cs",
+        "sha256":  "0766A3134EEBECF57EFB34507D948A600B25584CB318148EF87002A91641CA9C",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.SuitChecks.cs",
+        "sha256":  "6D654C3D096F90BB8BD032055A12D780DD18840C252DCD6197035DC53F86B6CF",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Tutorial.cs",
+        "sha256":  "4A74676DD666F88971FCF5B97FCFD56048949F81344442BA2DDB0A903EC3FF3F",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.TutorialChecks.cs",
+        "sha256":  "2E75E8FFF3FC6568B3D6CD7E81C413A7720EAA62FA3388AD85534BEB18CD7E69",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\CardAnimationController.cs",
+        "sha256":  "63B6F390008695F98935827F1AB9992503B5A415BD86638ED0D90D52EAC3BC7C",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\CardData.cs",
+        "sha256":  "9AC2B188F5917095F26665A21AC7218A2C6BD3D100B5FE75E33EE6B33D14D593",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\CardDrag.cs",
+        "sha256":  "6405ED80DD83328E1A5893828C09E75A3518F80A45594FF1A4941D4D855DA9F6",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\CardHover.cs",
+        "sha256":  "F8A7FAC1ACFB4A01DD6B5195634FCDE631EA8093465B09412D6E49F3CC33306B",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\GameAudioChannel.cs",
+        "sha256":  "9FA3C0885DEF73B9776BC364CECDB1A659AC00D04FB594002C57955BA62253AF",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\GamePreferences.cs",
+        "sha256":  "16A274BAB9B8531D2AAAE761842E503EBAF7CC5BE30EDA8DDFE6B79BFD6E68F4",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\GamePreferences.EditorChecks.cs",
+        "sha256":  "ABF4D63C0F2D3B625C97EB6D49A7555AECE19654CC1251ACE3DE74B0B4F1C576",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\GamePreferences.Probe.cs",
+        "sha256":  "FBDB686DD584606F8AB20D30754358E6A363976DED678B607514B55D982AADA7",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\GamePreferences.UI.cs",
+        "sha256":  "E4995FAAE1BFD1747C8C0434D6312F68453A7CFC07F0FFFF3225B76D9581CBCE",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\HandCardMotion.cs",
+        "sha256":  "E29741DCEE4A15BCDA4D9320B306C517F7B938121D3ADE8E267AA3AE4F352376",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\JokerMapRules.cs",
+        "sha256":  "EC0661173EE69E3654C79375BFE4DCDC5B76F87DE93BDF1736779B22265F5C85",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\JokerMapSettings.cs",
+        "sha256":  "B46E62B3D25759FBBB553D3A4BDF56D5B7777A6D2AC062887A43656F8D9B6B10",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\MapDefinition.cs",
+        "sha256":  "F2915D77C6E30CA1DA137916EB766C1CC091751D5D53556E21F3DE57ABF8BAB6",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\MapEventView.cs",
+        "sha256":  "B316C8D8546872BDB7314086403EFA01123BEFB039B62465EFF8C1A4DCBB2ED8",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\PokerSynergy.cs",
+        "sha256":  "4FE7A401F71CAFBF3DDE048E10CADE30E37711ECE63C88FD908006C5DAAF7E9D",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\RandomMapSelection.cs",
+        "sha256":  "75FF910E7A34FC455D14E2FD43F56171B5643A494FDDB395887072A262EC2011",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\SuitMapRules.cs",
+        "sha256":  "38080982DA70C8577C2EFDE88BDDE6E983C30E0AD3B78C5B04C26C5C7749414F",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\TurnClock.cs",
+        "sha256":  "0D938F43398980D3772C7158D602FA10C842F3681F1C36688AFA9805B2EC96FC",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\TutorialProgress.cs",
+        "sha256":  "51792BB7FF70C9EAF4A441A1E7E725D80B7B84CF0DDDA49FC05ADBCE592ABA65",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\TutorialSession.cs",
+        "sha256":  "8EDD4B750ADDE0151CAE2B43BDDB1BB2FF679665CD32EC4FCFDB13E76AF26DFF",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Editor\\AiCheckMenu.cs",
+        "sha256":  "BFD4D590649C70F27474FDCBE123D52ECB79688D13C48FBEA5846F8117714A05",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Editor\\AttackCheckMenu.cs",
+        "sha256":  "71F27A18F519CB9A8FB384D16B7FDD674FA9877E274149F26EEF9D1CCF254746",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Editor\\JokerMapDebugWindow.cs",
+        "sha256":  "441F7E650F42ABBA6420D31874B11EB55ABDCF3DBD5FDD6699F621A1814BE71E",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Editor\\OfflineModesCheckMenu.cs",
+        "sha256":  "66D8262128756F1EDC7112FABD726B4257F370A4F880B02EF31272E6CBF3D486",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Editor\\OnlineTestMenu.cs",
+        "sha256":  "15D3B358B4E788283F4189AF8766A7F67FD91A41C97B5D40E90B41208AD284C5",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Editor\\RoomSetupMenu.cs",
+        "sha256":  "B89257D0BB67EF06A85322B2EDBFCF0DD4F7EC7C8EB9F5525BDAB88B9B4D660E",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Editor\\TutorialCheckMenu.cs",
+        "sha256":  "2DEF2FC3618D6A81A3983C58C15465159452798FF1DB293B48252294A066920D",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Runtime\\LocalAuthenticationProfile.cs",
+        "sha256":  "E483D6BA19196931D164CC657B35F3E63008AF37CA00059ED0D527F58CE87331",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Runtime\\NetworkBattleController.cs",
+        "sha256":  "1F5798CE00F503FD46DFBBF0F5AF264A029FF17539C6A36070D8702063D312C8",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Runtime\\NetworkBattleSmokeRunner.cs",
+        "sha256":  "B2F6F2A201A9DC469B47C6D685A45480762E72AE23FF4121267FBF82C310B055",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Runtime\\RoomConnectionCheck.cs",
+        "sha256":  "619C6DE68F376CB292957526371E2D875AC36B6EB7DF3276E45C348DDD87A87C",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Runtime\\RoomController.cs",
+        "sha256":  "177A3138F8B812D70812FBC3F84B04D76725683B6D7C876A7344FDDF27BC6AF6",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Runtime\\RoomController.Diagnostics.cs",
+        "sha256":  "45F4B638618912B647E93C42137F49972AC586D34F0C376287444A88F70E212C",
+        "matchesValidationCopy":  true
+    },
+    {
+        "path":  "Assets\\UNKNOWN\\Multiplayer\\Runtime\\RoomTestUI.cs",
+        "sha256":  "25C2C57F5C75B3DF5E366A8E347DC03B0836B776EA8A30F562D9266B14D01968",
+        "matchesValidationCopy":  true
+    }
+]

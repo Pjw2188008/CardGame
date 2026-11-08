@@ -57,6 +57,7 @@ namespace Unknown.Battle
         }
         void NewMatch()
         {
+            if(aiMode)ResetAiMatch();
             if(pokerList!=null)pokerList.gameObject.SetActive(false);
             lastDropID=-1;toastUntil=0;
             StopAllCoroutines(); if (animations != null) animations.ResetAll();
@@ -64,7 +65,7 @@ namespace Unknown.Battle
             pauseButton.GetComponentInChildren<Text>().text = "일시정지";
             engine = new BattleEngine(seed == 0 ? Environment.TickCount : seed, new BattleConfig { FieldSlots = Math.Max(1, fieldSlots), Map=localMap,MapRules=BattleMapSettings.LoadRules(), MapEvents=localMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() });
             presentedMapEvents.Clear();
-            queuedTurnEvents=null; var initialDraws = engine.DrainEvents();
+            queuedTurnEvents=null; var initialDraws = HumanAiEvents(engine.DrainEvents());
             ResetHandViews(); PrepareHandPlayback(initialDraws);
             ClearSelection(); feedback = "패의 카드 → 빈 아군 슬롯: 소환 / 아군 유닛 → 적 유닛: 공격";
             passOverlay.SetActive(false); resultOverlay.SetActive(false); Refresh();
@@ -134,6 +135,7 @@ namespace Unknown.Battle
             ActionButton(result, "메인 메뉴", new Vector2(0.33f, 0.36f), new Vector2(0.67f, 0.44f), ReturnToMenu);
             returnLobby = ActionButton(result, "대기실로 돌아가기", new Vector2(0.33f, 0.26f), new Vector2(0.67f, 0.33f), ReturnToLobby);
             returnLobby.gameObject.SetActive(online != null);
+            if(aiMode)BuildAiResult(result);
             animations = gameObject.AddComponent<CardAnimationController>(); animations.Initialize(root, font, () => IsPaused);
             animations.DrawPresentation = PresentDraw;
             animations.DiscardPresentation=PresentDiscard;
@@ -244,6 +246,7 @@ namespace Unknown.Battle
         }
         IEnumerator ActionPresentation(IReadOnlyList<BattleEvent> entries)
         {
+            entries=HumanAiEvents(entries);
             tutorial?.Observe(entries);
             if(tutorial!=null && entries.Any(e=>e.Kind==BattleEventKind.Summon || e.Kind==BattleEventKind.Attack || e.Kind==BattleEventKind.Discard || e.Kind==BattleEventKind.PokerChanged || e.Kind==BattleEventKind.JokerSuccess || e.Kind==BattleEventKind.JokerFailure || e.Kind==BattleEventKind.Combine))TutorialCue(!entries.Any(e=>e.Kind==BattleEventKind.JokerFailure));
             ObserveAttackResult(entries);
@@ -256,10 +259,10 @@ namespace Unknown.Battle
                     PrepareHandPlayback(pending);
                     yield return animations.Play(pending);
                     // Expiry can resolve the remaining target selections while the first visual is playing.
-                    pending = engine.DrainEvents();
+                    pending = HumanAiEvents(engine.DrainEvents());
                 }
             }
-            finally { animations.ClearAction(); actionBusy = false; Refresh(); }
+            finally { animations.ClearAction(); actionBusy = false; Refresh();if(aiMode)aiNextAction=Time.unscaledTime+.4f; }
             if (engine.State.IsOver) ShowWinner();
             else if (engine.State.TurnExpired) StartCoroutine(TransitionTurn(true));
         }
@@ -281,6 +284,7 @@ namespace Unknown.Battle
             }
             finally { animations.ClearAction(); transitioning = false; }
             clock.Begin(Math.Max(1, turnDuration), Time.realtimeSinceStartupAsDouble);
+            if(aiMode)aiNextAction=Time.unscaledTime+.4f;
             Refresh();
         }
         IEnumerator TransitionTurn(bool timedOut)
@@ -290,11 +294,11 @@ namespace Unknown.Battle
             int actor = engine.State.ActivePlayer;
             bool success = timedOut ? engine.FinishExpiredTurn(actor) : engine.EndTurn(actor);
             if (!success) { transitioning = false; Result(false); yield break; }
-            queuedTurnEvents=engine.DrainEvents(); PrepareHandPlayback(queuedTurnEvents);
+            queuedTurnEvents=HumanAiEvents(engine.DrainEvents()); PrepareHandPlayback(queuedTurnEvents);
             yield return animations.Banner("TURN END", gold, 0.5f);
             ClearSelection(); feedback = "패에서 카드를 선택하거나 아군 유닛으로 공격하세요.";
             Refresh(); transitioning = false;
-            if (!revealHands)
+            if (!revealHands && !aiMode)
             {
                 passText.text = $"플레이어 {engine.State.ActivePlayer + 1}에게 화면을 넘겨 주세요.\n패는 준비 완료 후 공개됩니다.";
                 passOverlay.SetActive(true);
@@ -311,6 +315,7 @@ namespace Unknown.Battle
                 ? won ? "VICTORY — UNKNOWN COMPLETE" : "DEFEAT — OPPONENT COMPLETED UNKNOWN"
                 : won ? "VICTORY — OPPONENT HP ZERO" : "DEFEAT — YOUR HP ZERO";
             resultOverlay.SetActive(true);
+            if(aiMode)ShowAiResult();
         }
         void SelectHand(CardInstance card)
         {
@@ -389,8 +394,10 @@ namespace Unknown.Battle
             var state = engine.State; int active = ViewPlayer, other = 1 - active;
             var me = state.Players[active]; var enemy = state.Players[other];
             opponentInfo.text = $"상대 · 플레이어 {other + 1}     HP {enemy.HP} / {engine.Config.StartingHP}     덱 {enemy.DeckCount}     패 {enemy.Hand.Count}";
+            if(aiMode)opponentInfo.text=$"{aiDifficulty.ToString().ToUpperInvariant()} AI     HP {enemy.HP} / {engine.Config.StartingHP}     덱 {enemy.DeckCount}     패 {enemy.Hand.Count}";
             ownInfo.text = $"나 · 플레이어 {active + 1}     HP {me.HP} / {engine.Config.StartingHP}     덱 {me.DeckCount}     패 {me.Hand.Count}/{engine.Config.HandLimit}";
             turnText.text = state.IsOver ? $"플레이어 {state.Winner + 1} 승리" : $"턴 {state.TurnNumber} · 플레이어 {state.ActivePlayer + 1}";
+            if(aiMode && !state.IsOver)turnText.text=$"턴 {state.TurnNumber} · "+(state.ActivePlayer==0 ? "나" : "AI 생각 중");
             notice.text = engine.NeedsTarget && state.ActivePlayer==ViewPlayer ? engine.TargetPrompt : Time.unscaledTime < toastUntil ? toastText : "";
             RefreshCombinationSlots();
             RefreshMapUI();
@@ -493,6 +500,7 @@ namespace Unknown.Battle
             RefreshControls();
             pulse = Mathf.Max(0, pulse - Time.unscaledDeltaTime);
             divider.color = Color.Lerp(new Color(0.3f, 0.4f, 0.48f), gold, pulse * 2);
+            TickAi();
         }
         void OnApplicationPause(bool value) { applicationPaused = value; if(value)EndAttackDrag(); }
         static Color TimerColor(double seconds) => seconds<=5 ? new Color(1,0.24f,0.24f) : seconds<=10 ? new Color(1,0.62f,0.18f) : Color.white;

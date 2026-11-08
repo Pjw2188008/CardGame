@@ -1,0 +1,20 @@
+﻿{
+    "samePC":  true,
+    "turns":  17,
+    "finished":  true,
+    "cleaned":  true,
+    "differentPlayerIDs":  true,
+    "sameProjectID":  true,
+    "publicStateMatches":  true,
+    "hostViewSamples":  86,
+    "guestViewSamples":  63,
+    "manualDiscards":  [
+                           2,
+                           2
+                       ],
+    "overflowDiscards":  5,
+    "privacy":  true,
+    "resultsMatch":  true,
+    "errors":  0,
+    "assemblySHA256":  "4276C1185044CE64BACA6E489A1EFEF7BC9298176268FAE7B580C6645D989061"
+}

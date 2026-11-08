@@ -121,6 +121,7 @@ namespace Unknown.Battle
         IEnumerator InitialHandPresentation(IReadOnlyList<BattleEvent> entries)
         {
             transitioning=true;
+            if(aiMode)yield return PresentRandomMap(engine.Config.Map);
             clock.Begin(Mathf.Max(1,turnDuration),Time.realtimeSinceStartupAsDouble); ShowRefillFeedback(entries);
             yield return animations.Play(entries);
             animations.ClearAction(); transitioning=false; Refresh();

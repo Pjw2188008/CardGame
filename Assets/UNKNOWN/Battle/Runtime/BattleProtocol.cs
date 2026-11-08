@@ -150,22 +150,7 @@ namespace Unknown.Battle
             if (actor < 0 || actor > 1 || i == null || i.sequence != sequences[actor] + 1) return false;
             sequences[actor] = i.sequence;
             if (i.revision != Revision || i.turn != Engine.State.TurnNumber || actor != Engine.State.ActivePlayer) return false;
-            bool ok;
-            switch (i.action)
-            {
-                case BattleAction.Summon: ok = Engine.Summon(actor, i.first, i.second); break;
-                case BattleAction.Attack:
-                    // Wire target is an instance ID. Resolve on Host, never trust a client slot or damage amount.
-                    int slot=i.second==-1 ? -1 : Array.FindIndex(Engine.State.Players[1-actor].Board.ToArray(),c=>c!=null && c.InstanceID==i.second);
-                    if(i.second!=-1 && slot<0) { Engine.State.LastError="유효한 적 유닛을 선택하세요."; return false; }
-                    ok = Engine.Attack(actor, i.first, slot); break;
-                case BattleAction.Target: ok = Engine.SelectEffectTarget(actor, i.first, i.second); break;
-                case BattleAction.Combine: ok = Engine.Combine(actor, i.first, i.second); break;
-                case BattleAction.Joker: ok = Engine.Gamble(actor, i.first, i.second); break;
-                case BattleAction.EndTurn: ok = Engine.EndTurn(actor); break;
-                case BattleAction.Discard: ok = Engine.DiscardHand(actor,i.first);break;
-                default: return false;
-            }
+            bool ok=BattleCommands.Execute(Engine,actor,i.action,i.first,i.second);
             if (ok) Revision++;
             return ok;
         }

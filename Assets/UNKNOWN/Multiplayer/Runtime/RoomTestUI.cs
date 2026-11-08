@@ -10,7 +10,10 @@ namespace Unknown.Multiplayer
     [DisallowMultipleComponent, RequireComponent(typeof(RoomController))]
     public sealed class RoomTestUI : MonoBehaviour
     {
-        enum Page { Home, Online, Join, Lobby, Game, Tutorial }
+        enum Page { Home, Online, Join, Lobby, Game, Tutorial, AiSelect }
+        Unknown.Battle.AiDifficulty selectedAi=Unknown.Battle.AiDifficulty.Normal;
+        Label aiDescription;
+        readonly List<Button> aiDifficultyButtons=new List<Button>();
         Label tutorialRecord;
         Button tutorialContinue,tutorialRestart;
         RoomController room;
@@ -86,10 +89,16 @@ namespace Unknown.Multiplayer
             content.AddToClassList("page-content");
             shell.Add(content);
             var home = MakePage(Page.Home);
-            MenuButton(home, "게임 시작", () => { ShowPage(Page.Online, true); return Task.CompletedTask; });
+            MenuButton(home, "온라인 대전", () => { ShowPage(Page.Online, true); return Task.CompletedTask; });
             MenuButton(home,"튜토리얼",()=>{ShowTutorialChoices();return Task.CompletedTask;});
+            MenuButton(home,"AI 대전",()=>{ShowAiSelection();return Task.CompletedTask;});
             MenuButton(home, "설정", () => { Unknown.Battle.GamePreferences.Instance.Open();document.rootVisualElement.SetEnabled(false); return Task.CompletedTask; });
             MenuButton(home, "종료", () => { Application.Quit(); return Task.CompletedTask; });
+            var aiPage=MakePage(Page.AiSelect);
+            for(int i=0;i<3;i++){int choice=i;aiDifficultyButtons.Add(MenuButton(aiPage,((Unknown.Battle.AiDifficulty)i).ToString().ToUpperInvariant(),()=>{selectedAi=(Unknown.Battle.AiDifficulty)choice;UpdateAiChoices();return Task.CompletedTask;}));}
+            aiDescription=Text(aiPage,"", "page-hint");
+            MenuButton(aiPage,"대전 시작",()=>{LaunchAI();return Task.CompletedTask;});
+            MenuButton(aiPage,"뒤로 가기",()=>{ShowPage(Page.Home,true);return Task.CompletedTask;},true);
             var lesson=MakePage(Page.Tutorial);
             tutorialRecord=Text(lesson,"", "page-hint");
             tutorialContinue=MenuButton(lesson,"이어하기",()=>{LaunchTutorial(Unknown.Battle.TutorialProgress.Load().nextStep);return Task.CompletedTask;});
@@ -235,7 +244,7 @@ namespace Unknown.Multiplayer
             {
                 if (currentPage != page || room.Busy) return;
                 if (page == Page.Join) input.Focus();
-                else if (page==Page.Home || page==Page.Online || page==Page.Tutorial) actions.Find(b=>pages[page].Contains(b) && b.enabledInHierarchy && b.resolvedStyle.display!=DisplayStyle.None)?.Focus();
+                else if (page==Page.Home || page==Page.Online || page==Page.Tutorial || page==Page.AiSelect) actions.Find(b=>pages[page].Contains(b) && b.enabledInHierarchy && b.resolvedStyle.display!=DisplayStyle.None)?.Focus();
                 else if (page == Page.Lobby) { if (room.CanStart) start.Focus(); else copy.Focus(); }
                 else gameLeave.Focus();
             }).StartingIn(30);
@@ -300,6 +309,20 @@ namespace Unknown.Multiplayer
             tutorialRestart.Q<Label>(className:"action-text").text=p.lastCompleted>0 ? "처음부터" : "튜토리얼 시작";
             ShowPage(Page.Tutorial,true);
         }
+        void UpdateAiChoices()
+        {
+            string[] descriptions={"기본적인 전투를 연습할 수 있는 상대입니다.","카드 능력과 조합을 활용하는 상대입니다.","전장 상황과 승리 조건을 분석하는 전략적인 상대입니다."};
+            aiDescription.text=descriptions[(int)selectedAi];
+            for(int i=0;i<3;i++)aiDifficultyButtons[i].Q<Label>(className:"action-text").text=(i==(int)selectedAi ? "✓ " : "")+((Unknown.Battle.AiDifficulty)i).ToString().ToUpperInvariant();
+        }
+        void ShowAiSelection(){UpdateAiChoices();ShowPage(Page.AiSelect,true);}
+        void LaunchAI()
+        {
+            if(battleUI!=null || room.Session!=null)return;
+            battleOnline=false;var go=new GameObject("UNKNOWN Offline AI");battleUI=go.AddComponent<Unknown.Battle.BattleUIController>();
+            battleUI.ConfigureAI(selectedAi,()=>{battleUI=null;ShowPage(Page.Home,true);Render();},()=>{battleUI=null;ShowAiSelection();Render();});
+            document.rootVisualElement.style.display=DisplayStyle.None;
+        }
         void LaunchTutorial(int step)
         {
             if(battleUI!=null || room.Session!=null)return;
@@ -309,6 +332,8 @@ namespace Unknown.Multiplayer
             document.rootVisualElement.style.display=DisplayStyle.None;
         }
 #if UNITY_EDITOR
+        public void RunAiChecksFromTitle(){Invoke(nameof(BeginAiChecksFromTitle),.25f);}
+        void BeginAiChecksFromTitle(){ShowAiSelection();selectedAi=Unknown.Battle.AiDifficulty.Easy;LaunchAI();battleUI.RunAiChecks();}
         public void RunTutorialChecksFromTitle(){Invoke(nameof(BeginTutorialChecksFromTitle),.25f);}
         void BeginTutorialChecksFromTitle()
         {

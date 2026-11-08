@@ -70,7 +70,7 @@ namespace Unknown.Battle
             if(joker)
             {
                 mapHeader.text="조커의 유희\n♠  ♦  ♣  ♥\n다음 JOKER "+engine.JokerChance(ViewPlayer)+"%";
-                mapStatus.text=engine.MapEvent==null ? "" : engine.MapEvent.Name+"\n"+engine.MapEvent.Detail;
+                var visible=MapEventView.For(engine.MapEvent,ViewPlayer);mapStatus.text=visible==null ? "" : visible.name+"\n"+visible.detail;
             }
             foreach(var pip in unknownPips[0])
             {
@@ -89,7 +89,7 @@ namespace Unknown.Battle
                 if(effect!=null && effect.id==e.SourceID)yield return animations.Banner(MapInfo(effect.map).title+" EFFECT\n"+effect.detail,MapTint(effect.map),1f,160,24);
                 yield break;
             }
-            var result=engine.MapEvent;
+            var result=MapEventView.For(engine.MapEvent,ViewPlayer)?.ToResult();
             if(result!=null && result.ID==e.SourceID)
                 yield return animations.Banner("JOKER EVENT\n"+result.Name+"\n"+result.Detail,new Color(0.9f,0.65f,1),1.2f,190,23);
         }

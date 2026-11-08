@@ -24,7 +24,7 @@ namespace Unknown.Battle
 #if UNITY_EDITOR
                 if (checkRecipient >= 0) return checkRecipient;
 #endif
-                return online == null ? engine.State.ActivePlayer : online.LocalPlayer;
+                return aiMode ? 0 : online == null ? engine.State.ActivePlayer : online.LocalPlayer;
             }
         }
         public void ConfigureOnline(NetworkBattleController controller, Action onReturn)
@@ -32,7 +32,7 @@ namespace Unknown.Battle
         void Dispatch(BattleAction action, int first, int second, Func<bool> localCommand, string message)
         {
             if(tutorial!=null && !tutorial.Allows(action)){Toast("현재 목표에 맞는 행동을 해주세요. 도움말을 확인할 수 있습니다.");return;}
-            if (online == null) RunCommand(localCommand, message);
+            if (online == null) {int actor=ViewPlayer;RunCommand(()=>BattleCommands.Execute(engine,actor,action,first,second),message);}
             else if (!Blocked()) { online.Submit(action, first, second); ClearSelection(); feedback = "Host 응답을 기다리는 중"; }
         }
         void StartOnline()

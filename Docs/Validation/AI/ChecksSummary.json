@@ -1,0 +1,56 @@
+﻿[
+    {
+        "report":  "UNKNOWN-AI-Checks.json",
+        "passed":  43,
+        "failed":  0,
+        "errors":  0
+    },
+    {
+        "report":  "UNKNOWN-Tutorial-Checks.json",
+        "passed":  34,
+        "failed":  0,
+        "errors":  0
+    },
+    {
+        "report":  "UNKNOWN-AttackUI-Checks.json",
+        "passed":  43,
+        "failed":  0,
+        "errors":  0
+    },
+    {
+        "report":  "UNKNOWN-DragUI-Checks.json",
+        "passed":  58,
+        "failed":  0,
+        "errors":  0
+    },
+    {
+        "report":  "UNKNOWN-PvP-Regressions.json",
+        "passed":  22,
+        "failed":  0,
+        "errors":  0
+    },
+    {
+        "report":  "UNKNOWN-JokerMap-Checks.json",
+        "passed":  107,
+        "failed":  0,
+        "errors":  0
+    },
+    {
+        "report":  "UNKNOWN-SuitMap-Checks.json",
+        "passed":  50,
+        "failed":  0,
+        "errors":  0
+    },
+    {
+        "report":  "UNKNOWN-Poker-Checks.json",
+        "passed":  134,
+        "failed":  0,
+        "errors":  0
+    },
+    {
+        "report":  "UNKNOWN-HandSettings-Checks.json",
+        "passed":  37,
+        "failed":  0,
+        "errors":  0
+    }
+]
