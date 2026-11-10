@@ -23,7 +23,7 @@ namespace Unknown.Battle
         void ShowMapTooltip(UnityEngine.EventSystems.PointerEventData data)
         {
             if(AttackDragging || dragged!=null || passOverlay.activeSelf || resultOverlay.activeSelf)return;
-            tooltip.sizeDelta=new Vector2(340,220);
+            HideCardPreview();tooltip.sizeDelta=new Vector2(340,220);
             var d=MapInfo(engine.Config.Map); detail.text=d.symbol+" "+d.name+"\n\n"+MapDescription(d.map); PositionTooltip(data);
         }
         IEnumerator PresentRandomMap(BattleMap result)
@@ -125,9 +125,9 @@ namespace Unknown.Battle
                 if(!show) { if(face!=null) { face.gameObject.SetActive(false); Destroy(face.gameObject); } continue; }
                 if(face!=null)continue;
                 var front=Box(back,"Revealed Face",Vector2.zero,Vector2.one,paper); front.GetComponent<Image>().raycastTarget=true;
-                Label(front,CardDatabase.Symbol(card.Definition.Suit)+" "+CardDatabase.RankText(card.Definition.Rank),Vector2.zero,Vector2.one,17,SuitInk(card.Definition.Suit));
+                DrawCard(front,card,false,false,()=>{},false);front.GetComponent<CardDrag>().enabled=false;
                 var visible=card;
-                front.gameObject.AddComponent<CardHover>().Configure(data=>ShowTooltip(visible,front,data),HideTooltip,true,false);
+                front.GetComponent<CardHover>().Configure(data=>ShowTooltip(visible,front,data),HideTooltip,true,false);
             }
         }
     }

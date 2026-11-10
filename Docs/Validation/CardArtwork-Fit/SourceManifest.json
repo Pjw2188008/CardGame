@@ -1,0 +1,22 @@
+[
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.CardArt.cs",
+    "sha256": "272DCF2AD70C8A85A773476CC8B0CB2D738CBEC58D6AE3B9265A52A2DD968F2A"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/CardArtLayout.cs",
+    "sha256": "4E07D93DF21A8D9178C6600A337F6CFDBC7388E639846C64BB22CBAB6F9CD3B1"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.cs",
+    "sha256": "56E407E0E18BAEA65A7EAF56CE5A256769918C128BEBA0A938033FCDF6A9ABE2"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Poker.cs",
+    "sha256": "2DA718D7827C22D214803362D5C13E972A53F14C08915C0C32B85370AD52D0C3"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.CardArtChecks.cs",
+    "sha256": "34824109A1839ECEA55602B4F28C69E1A51E8B682DF648068B761F34BD275B18"
+  }
+]

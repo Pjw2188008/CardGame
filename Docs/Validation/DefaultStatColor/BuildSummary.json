@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-10T14:40:12.0516996+09:00",
+  "unity": "6000.0.74f1",
+  "result": "Succeeded",
+  "errors": 0,
+  "warnings": 8,
+  "development": true,
+  "executable": "Builds/UNKNOWN-DefaultStatText/UNKNOWN.exe",
+  "assemblySha256": "7A605BFA9F8DBA3895489155DC1CEDCF1F1474BA7FFF5E9222544892046422AD",
+  "uiPassed": 175,
+  "uiFailed": 0,
+  "uiErrors": 0,
+  "buildLog": "Library/DefaultStatColor-Build.log",
+  "relayRetested": false
+}

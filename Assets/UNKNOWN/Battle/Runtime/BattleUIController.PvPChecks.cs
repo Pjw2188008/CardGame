@@ -48,8 +48,8 @@ namespace Unknown.Battle
                     engine=BattleEngine.CreateView(wire); Refresh(); yield return null;
                     verify(ownBoard.childCount==5 && enemyBoard.childCount==5,"P"+recipient+" both fields contain 5 slots after Unity JSON roundtrip");
                     int ownSlot=recipient==0 ? 4 : 1, enemySlot=recipient==0 ? 1 : 4;
-                    verify(ownBoard.GetChild(ownSlot).GetComponentsInChildren<UnityEngine.UI.Text>().Any(t=>t.text.Contains(recipient==0 ? "♦" : "♣")),"P"+recipient+" own card appears below");
-                    verify(enemyBoard.GetChild(enemySlot).GetComponentsInChildren<UnityEngine.UI.Text>().Any(t=>t.text.Contains(recipient==0 ? "♣" : "♦")),"P"+recipient+" opponent card appears above");
+                    verify(ownBoard.GetChild(ownSlot).Find("Card Artwork").GetComponent<UnityEngine.UI.RawImage>().texture==CardArtSettings.TextureFor(recipient==0 ? "Diamond_2" : "Club_K"),"P"+recipient+" own card appears below");
+                    verify(enemyBoard.GetChild(enemySlot).Find("Card Artwork").GetComponent<UnityEngine.UI.RawImage>().texture==CardArtSettings.TextureFor(recipient==0 ? "Club_K" : "Diamond_2"),"P"+recipient+" opponent card appears above");
                     verify(opponentInfo.text.Contains("플레이어 "+(2-recipient)) && ownInfo.text.Contains("플레이어 "+(recipient+1)),"P"+recipient+" labels map to snapshot recipient");
                     verify(manaLabels[0].text.Contains("10 / 10") && manaLabels[1].text.Contains("10 / 10"),"P"+recipient+" both mana rows visible");
                 }

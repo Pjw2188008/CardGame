@@ -9,6 +9,7 @@ namespace Unknown.Battle
     /// <summary>Plays immutable engine results. Never rolls dice, spends mana or applies combat rules.</summary>
     public sealed class CardAnimationController : MonoBehaviour
     {
+        public Action<RectTransform,CardDefinition> CardFacePresentation;
         RectTransform layer;
         Font font;
         Func<bool> paused;
@@ -241,6 +242,7 @@ namespace Unknown.Battle
             yield return Step(0.18f, t => { ace.localScale = face.localScale = Vector3.one * (1 - t); });
             StartCoroutine(Pulse(Vector2.zero, purple, 260, 0.42f));
             var result = CardBack(entry.Secondary, Vector2.zero, entry.Definition.CardName + "\n" + entry.Definition.Attack + " / " + entry.Definition.MaxHP, new Color(0.15f, 0.08f, 0.25f));
+            CardFacePresentation?.Invoke(result,entry.Definition);
             yield return Step(0.15f, t => result.localScale = Vector3.one * (0.1f + t * 1.1f));
             yield return Step(0.32f, t => { result.anchoredPosition = Vector2.Lerp(Vector2.zero, handPoint(entry.Owner), Smooth(t)); result.localScale = Vector3.one * (1.2f - t * 0.2f); });
         }

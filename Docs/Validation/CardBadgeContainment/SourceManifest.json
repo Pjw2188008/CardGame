@@ -1,0 +1,18 @@
+[
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/CardArtLayout.cs",
+    "sha256": "213589019DDE6A69034C5E34F4293F1E8053C919ACFC43227C042403FFCB8F74"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/CardBadgeCenter.cs",
+    "sha256": "A3DC7BC46ECDA569B2B341EC5D24112BC44F838F1140ED7B2890A63467AEED0C"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.CardArtChecks.cs",
+    "sha256": "959EB05B42AE6212E88F89F611ECDB7ADEEE8FCDC6BDFC1881F19B61621B5040"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.AttackChecks.cs",
+    "sha256": "E5A71B9F65DF6FFB23B938AC188083DA54A46E4B70607E4D32B3C71195AAA75B"
+  }
+]

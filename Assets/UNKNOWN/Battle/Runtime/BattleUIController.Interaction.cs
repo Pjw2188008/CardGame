@@ -64,6 +64,7 @@ namespace Unknown.Battle
         void ShowCombinationPreview(PointerEventData data)
         {
             if(engine==null || AttackDragging || dragged!=null)return;
+            HideCardPreview();
             var result=engine.CombinationPreview(ViewPlayer,aceID,faceID);
             detail.text=result==null ? "조합 선택 후 손패의 A와 J/Q/K를 클릭하세요" : result.CardName+"\n공격 "+result.Attack+" · 체력 "+result.MaxHP+"\n"+result.Description+"\n조합 비용 0 MP";
             PositionTooltip(data);
@@ -106,10 +107,7 @@ namespace Unknown.Battle
         void ShowTooltip(CardInstance card,RectTransform view,PointerEventData data)
         {
             if(AttackDragging || dragged!=null || passOverlay.activeSelf || resultOverlay.activeSelf) return;
-            var d=card.Definition;
-            tooltip.sizeDelta=new Vector2(420,350);
-            detail.text=d.CardName+"   "+CardDatabase.Symbol(d.Suit)+$"\n{d.ManaCost} MP\n"+StatBreakdown(card)+"\n\n"+d.Description;
-            if(card.Owner==ViewPlayer && BoardCard(card.InstanceID)!=null) detail.text+="\n"+AttackReason(BoardCard(card.InstanceID));
+            ShowCardPreview(card);
             PositionTooltip(data);
         }
         void PositionTooltip(PointerEventData data)
@@ -120,7 +118,7 @@ namespace Unknown.Battle
             p+=new Vector2(p.x>0 ? -half.x-22 : half.x+22,p.y>0 ? -half.y-20 : half.y+20);
             tooltip.anchoredPosition=new Vector2(Mathf.Clamp(p.x,bounds.xMin+half.x+10,bounds.xMax-half.x-10),Mathf.Clamp(p.y,bounds.yMin+half.y+10,bounds.yMax-half.y-10));
         }
-        void HideTooltip() { if(tooltip!=null) tooltip.gameObject.SetActive(false); }
+        void HideTooltip() { HideCardPreview();if(tooltip!=null) tooltip.gameObject.SetActive(false); }
         void Toast(string text) { toastText=text; toastUntil=Time.unscaledTime+1.5f; }
         public bool BeginCardDrag(int id,RectTransform original,PointerEventData data)
         {

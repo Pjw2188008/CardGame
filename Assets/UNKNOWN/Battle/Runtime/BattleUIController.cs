@@ -138,6 +138,7 @@ namespace Unknown.Battle
             if(aiMode)BuildAiResult(result);
             animations = gameObject.AddComponent<CardAnimationController>(); animations.Initialize(root, font, () => IsPaused);
             animations.DrawPresentation = PresentDraw;
+            animations.CardFacePresentation=DrawAnimationCard;
             animations.DiscardPresentation=PresentDiscard;
             animations.MapPresentation = PresentMapEvent;
             animations.PokerPresentation = PresentPoker;
@@ -445,27 +446,28 @@ namespace Unknown.Battle
             if (!selected && !canAttack) outline.effectColor = unknown ? new Color(0.68f, 0.34f, 0.95f) : ink;
             var cost = Box(rect, "Mana cost", new Vector2(0.02f, 0.82f), new Vector2(0.2f, 0.99f), new Color(0.08f, 0.3f, 0.6f));
             Label(cost, def.ManaCost.ToString(), Vector2.zero, Vector2.one, 22, Color.white);
-            Label(rect, def.CardType == CardType.Normal ? CardDatabase.RankText(def.Rank) : def.CardName, new Vector2(0.22f, 0.82f), new Vector2(0.98f, 0.99f), unknown ? 14 : 22, ink);
-            Label(rect, unknown ? "UNKNOWN" : def.CardType == CardType.Joker ? "★" : CardDatabase.Symbol(def.Suit), new Vector2(0.05f, 0.48f), new Vector2(0.95f, 0.83f), unknown ? 22 : 46, ink);
+            var rankLabel=Label(rect, def.CardType == CardType.Normal ? CardDatabase.RankText(def.Rank) : def.CardName, new Vector2(0.22f, 0.82f), new Vector2(0.98f, 0.99f), unknown ? 14 : 22, ink);rankLabel.name="Card Rank";
+            var symbolLabel=Label(rect, unknown ? "UNKNOWN" : def.CardType == CardType.Joker ? "★" : CardDatabase.Symbol(def.Suit), new Vector2(0.05f, 0.48f), new Vector2(0.95f, 0.83f), unknown ? 22 : 46, ink);symbolLabel.name="Card Symbol";
             var description = Label(rect, def.Description, new Vector2(0.04f, 0.23f), new Vector2(0.96f, 0.49f), 14, unknown ? ink : new Color(0.15f, 0.18f, 0.2f));
-            description.resizeTextForBestFit = true; description.resizeTextMinSize = 11; description.resizeTextMaxSize = 14;
+            description.name="Card Description";description.resizeTextForBestFit = true; description.resizeTextMinSize = 11; description.resizeTextMaxSize = 14;
             Label(rect, "", new Vector2(0.01f, 0.055f), new Vector2(0.34f, 0.24f), 26, ink).name="Stat ATK";
             Label(rect, "", new Vector2(0.55f, 0.055f), new Vector2(0.99f, 0.24f), 26, ink).name="Stat HP";
             UpdateCardStats(rect,card,false);
+            ApplyCardArtwork(rect,card);
             var hover = rect.gameObject.AddComponent<CardHover>();
             hover.Configure(data => ShowTooltip(card, rect, data), HideTooltip, true, !onBoard);
             hover.CanZoom=()=>!AttackDragging && dragged==null;
             if(onBoard && card.Owner==ViewPlayer)
             {
                 rect.gameObject.AddComponent<UnitAttackDrag>().Configure(this,card.InstanceID);
-                var status=Label(rect,"",new Vector2(0.32f,0.01f),new Vector2(0.70f,0.12f),16,ready); status.name="Attack Status";
+                var status=Label(rect,"",new Vector2(0.36f,0.84f),new Vector2(0.70f,0.96f),16,ready); status.name="Attack Status";
                 var glowGO=new GameObject("Attack Ready Glow",typeof(RectTransform),typeof(CanvasRenderer),typeof(AttackGlowGraphic)); glowGO.transform.SetParent(rect,false);
                 var glow=(RectTransform)glowGO.transform; glow.anchorMin=Vector2.zero; glow.anchorMax=Vector2.one; glow.offsetMin=glow.offsetMax=Vector2.zero;
-                glowGO.GetComponent<AttackGlowGraphic>().raycastTarget=false;
+                glowGO.GetComponent<AttackGlowGraphic>().raycastTarget=false;glowGO.GetComponent<AttackGlowGraphic>().enabled=rect.GetComponent<CardArtLayout>()==null;
             }
             if (!onBoard) rect.gameObject.AddComponent<CardDrag>().Configure(this, card.InstanceID);
             string state = !onBoard ? "" : card.JokerUsed ? "조커 사용됨" : "";
-            Label(rect, state, new Vector2(0.01f, 0), new Vector2(0.99f, 0.11f), 10, new Color(0.23f, 0.31f, 0.32f));
+            Label(rect, state, new Vector2(0.1f,0.41f), new Vector2(0.9f,0.46f), 10, new Color(0.23f, 0.31f, 0.32f));
         }
         void RefreshControls()
         {

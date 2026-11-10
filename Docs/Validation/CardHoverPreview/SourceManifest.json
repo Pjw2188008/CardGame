@@ -1,0 +1,26 @@
+[
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Interaction.cs",
+    "sha256": "86A33DB579F4E30D14E54EC216CED0DAA0B1CF2FBF877D6A70FBABB98D9DC7E6"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Map.cs",
+    "sha256": "04DE085921383F8663702BEF534E83AB1927CAF483FEDC3770551242C56CD331"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/CardArtLayout.cs",
+    "sha256": "5959CD7BC16ED0A377EE4BECDD1B62457542456A166D9894E8FB3BA82D4F4098"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.AttackChecks.cs",
+    "sha256": "233EBC1198D0D895507ED00D406DE411697BDC1DECE7EFEDA7B0AD0A934293EA"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.HoverPreview.cs",
+    "sha256": "634DCE763A5D8B578E199C1799F6A63A7EF40DCDBBC422BC9AFDCB4CD24B6C65"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.HoverPreviewChecks.cs",
+    "sha256": "DB5E983E95088AF4C84577E8AA83AC6B5C77EE08BFF2032333FC369B8788F093"
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "result": "Succeeded",
+  "errors": 0,
+  "warnings": 8,
+  "exe": "D:/git/ECHO-/Echogame/CardGame/Builds/UNKNOWN-CardOnlyHover/UNKNOWN.exe",
+  "assemblySHA256": "9EFB1344CC6E7A2F30BE042F664C0506DDF28548462A8BE11CD55559C81BEA9B",
+  "log": "Library/CardOnlyHover-Build.log"
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "file": "UNKNOWN-Poker-Checks.json",
+    "passed": 138,
+    "failed": 0,
+    "errors": 0
+  },
+  {
+    "file": "UNKNOWN-HandSettings-Checks.json",
+    "passed": 37,
+    "failed": 0,
+    "errors": 0
+  }
+]

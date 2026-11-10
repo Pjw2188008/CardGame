@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-10T14:01:32.9588775+09:00",
+  "unity": "6000.0.74f1",
+  "result": "Succeeded",
+  "errors": 0,
+  "warnings": 8,
+  "development": true,
+  "executable": "Builds/UNKNOWN-CardArtwork-Fit/UNKNOWN.exe",
+  "assemblySha256": "863982B46C0D40E8A4EC42404F8D282FA443AD2E12EB7CAAD91CE1EF3D29705D",
+  "uiPassed": 659,
+  "uiFailed": 0,
+  "uiErrors": 0,
+  "buildLog": "Library/CardArtwork-Refine-Build.log",
+  "relayRetested": false
+}

@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-10T14:32:29.3946033+09:00",
+  "unity": "6000.0.74f1",
+  "result": "Succeeded",
+  "errors": 0,
+  "warnings": 8,
+  "development": true,
+  "executable": "Builds/UNKNOWN-CardBadges-Fixed/UNKNOWN.exe",
+  "assemblySha256": "EF67FEB431D688D5F93B6A2866838A63C62B7446783021B311F02892639C7948",
+  "uiPassed": 741,
+  "uiFailed": 0,
+  "uiErrors": 0,
+  "buildLog": "Library/CardBadgeContainment-Build.log",
+  "relayRetested": false
+}

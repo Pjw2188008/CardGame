@@ -1,0 +1,76 @@
+{
+  "suites": [
+    {
+      "suite": "UNKNOWN-AttackUI-Checks.json",
+      "passed": 312,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T06:12:12.7854233Z"
+    },
+    {
+      "suite": "UNKNOWN-DragUI-Checks.json",
+      "passed": 58,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T06:12:28.8108673Z"
+    },
+    {
+      "suite": "UNKNOWN-PvP-Regressions.json",
+      "passed": 26,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T06:12:38.5120403Z"
+    },
+    {
+      "suite": "UNKNOWN-JokerMap-Checks.json",
+      "passed": 107,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T06:13:21.5357068Z"
+    },
+    {
+      "suite": "UNKNOWN-SuitMap-Checks.json",
+      "passed": 80,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T06:13:32.8650474Z"
+    },
+    {
+      "suite": "UNKNOWN-Poker-Checks.json",
+      "passed": 138,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T06:13:39.1667111Z"
+    },
+    {
+      "suite": "UNKNOWN-HandSettings-Checks.json",
+      "passed": 37,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T06:13:44.9729270Z"
+    }
+  ],
+  "total": 758,
+  "sources": [
+    {
+      "file": "BattleUIController.HoverPreview.cs",
+      "sha256": "5F1308C050C1F38144FB243453A7B4036093C1E306BC69EDC01DF664302D9914"
+    },
+    {
+      "file": "BattleUIController.HoverPreviewChecks.cs",
+      "sha256": "3765CD6EC832D4721308C5827FD8370DDF531B1EEF43C9B1C427546614ECDB55"
+    },
+    {
+      "file": "BattleUIController.Interaction.cs",
+      "sha256": "3AF2459E10C9B87197FF9CDED8CC88DB473EB06E1FB0CEAC6E4A865EF9B4B3D1"
+    },
+    {
+      "file": "BattleUIController.JokerChecks.cs",
+      "sha256": "46F0748873AD9FBE78EF41512A6948FDC2B689C15C4C81F2182D22A2843875DE"
+    },
+    {
+      "file": "BattleUIController.PokerChecks.cs",
+      "sha256": "DFC943F0A0FE840C0D78C9122AE959226E2F5BCFA9461405AE36F042A574B21E"
+    }
+  ]
+}

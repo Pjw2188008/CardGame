@@ -24,7 +24,7 @@ namespace Unknown.Battle
             Application.logMessageReceived+=listener;
             try
             {
-                checkRecipient=0; CheckFixture(); var source=CheckUnit("Heart_K",0,1); var enemy=CheckUnit("Heart_K",1,3); var hand=CheckHand("Club_2"); Refresh(); yield return null;
+                checkRecipient=0;VerifyCardArt(verify);yield return VerifyCardBadgeReflow(verify);yield return VerifyHoverPreview(verify); CheckFixture(); var source=CheckUnit("Heart_K",0,1); var enemy=CheckUnit("Heart_K",1,3); var hand=CheckHand("Club_2"); Refresh(); yield return null;
                 var sourceView=cardViews[source.InstanceID]; Vector2 position=sourceView.anchoredPosition;
                 verify(sourceView.GetComponent<Outline>().effectColor==ready && sourceView.Find("Attack Status").GetComponent<Text>().text=="⚔","Ready own unit has green border and sword");
                 verify(cardViews[enemy.InstanceID].GetComponent<UnitAttackDrag>()==null,"Enemy cannot start an attack drag");

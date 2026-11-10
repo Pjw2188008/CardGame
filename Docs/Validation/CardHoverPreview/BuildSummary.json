@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-10T15:00:56.2703743+09:00",
+  "unity": "6000.0.74f1",
+  "result": "Succeeded",
+  "errors": 0,
+  "warnings": 8,
+  "development": true,
+  "executable": "Builds/UNKNOWN-CardHover/UNKNOWN.exe",
+  "assemblySha256": "D344A9A6488FAC5884E518D14D9A4FADCC2698DA585DB6481E5FD829C05ACE43",
+  "uiPassed": 757,
+  "uiFailed": 0,
+  "uiErrors": 0,
+  "buildLog": "Library/CardHoverPreview-Build.log",
+  "relayRetested": false
+}

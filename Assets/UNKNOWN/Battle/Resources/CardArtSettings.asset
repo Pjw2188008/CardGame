@@ -1,0 +1,129 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 212fa7d0f7c246e698d928e861bde9eb, type: 3}
+  m_Name: CardArtSettings
+  m_EditorClassIdentifier:
+  cards:
+  - cardID: Diamond_2
+    texture: {fileID: 2800000, guid: 67a29c59af8dacb4ea12157da6c2a771, type: 3}
+  - cardID: Diamond_3
+    texture: {fileID: 2800000, guid: 3d6caa7b79eef3648944d075138ea927, type: 3}
+  - cardID: Diamond_4
+    texture: {fileID: 2800000, guid: aa041740f6a4ad94eaf55c5a29650763, type: 3}
+  - cardID: Diamond_5
+    texture: {fileID: 2800000, guid: b89ab6f65c70c114ca25477c1b70364e, type: 3}
+  - cardID: Diamond_6
+    texture: {fileID: 2800000, guid: d7e7ee315458d1249b3e720aa8c42d85, type: 3}
+  - cardID: Diamond_7
+    texture: {fileID: 2800000, guid: 3ff73c938ec4ee24e806739c58c09061, type: 3}
+  - cardID: Diamond_8
+    texture: {fileID: 2800000, guid: 8caa2cd3f6346094bb2f88c2576acd58, type: 3}
+  - cardID: Diamond_9
+    texture: {fileID: 2800000, guid: 00d3450f6e09a7e4b93152e6e8a21438, type: 3}
+  - cardID: Diamond_10
+    texture: {fileID: 2800000, guid: 6aca70dfdfd5cdd4ba49625dad518796, type: 3}
+  - cardID: Diamond_A
+    texture: {fileID: 2800000, guid: fe2ebf89965ea1f478be408f585521b8, type: 3}
+  - cardID: Diamond_J
+    texture: {fileID: 2800000, guid: ba6007252cbf5fc47bff6d6009503ed4, type: 3}
+  - cardID: Diamond_Q
+    texture: {fileID: 2800000, guid: d4c37f225a2870a4a9ff974030ffdc39, type: 3}
+  - cardID: Diamond_K
+    texture: {fileID: 2800000, guid: bf513684e3229f24a8b7626d0d086d45, type: 3}
+  - cardID: Spade_2
+    texture: {fileID: 2800000, guid: fa31af105d800ef4397e55aca5f77677, type: 3}
+  - cardID: Spade_3
+    texture: {fileID: 2800000, guid: d24b5fa66a5077046a4332fa267fa0e4, type: 3}
+  - cardID: Spade_4
+    texture: {fileID: 2800000, guid: 53ee1211d88a6144080074f3aeeded4e, type: 3}
+  - cardID: Spade_5
+    texture: {fileID: 2800000, guid: bdebb3f8c96a0094486abb3d0df4502c, type: 3}
+  - cardID: Spade_6
+    texture: {fileID: 2800000, guid: caa0fd90d609a1041beaf5647d5835c0, type: 3}
+  - cardID: Spade_7
+    texture: {fileID: 2800000, guid: 2375b4d377e3d054b8c6b8ae3530a11a, type: 3}
+  - cardID: Spade_8
+    texture: {fileID: 2800000, guid: ee4356eb7ee2e5f4ea5e01699569189d, type: 3}
+  - cardID: Spade_9
+    texture: {fileID: 2800000, guid: edcdb5fa4e14cb247aec832a0771f286, type: 3}
+  - cardID: Spade_10
+    texture: {fileID: 2800000, guid: 856dfc4cb08df92448de3d48ac009e2f, type: 3}
+  - cardID: Spade_A
+    texture: {fileID: 2800000, guid: acff9fba0550aa444a179577d775071f, type: 3}
+  - cardID: Spade_J
+    texture: {fileID: 2800000, guid: 9068f8607751e2242a9c14aa549ca902, type: 3}
+  - cardID: Spade_Q
+    texture: {fileID: 2800000, guid: 962f0f7fabf934a4286c5212977fc48a, type: 3}
+  - cardID: Spade_K
+    texture: {fileID: 2800000, guid: e085e8a6479f3bb47b7147ac61f18f99, type: 3}
+  - cardID: Heart_2
+    texture: {fileID: 2800000, guid: 44afbae080061d3418e74d2aaf47afa4, type: 3}
+  - cardID: Heart_3
+    texture: {fileID: 2800000, guid: 6b6c2bf3b55fcc446b48b8db11b86cc8, type: 3}
+  - cardID: Heart_4
+    texture: {fileID: 2800000, guid: 11dfefc334f3ff543b1d5ce309f58a62, type: 3}
+  - cardID: Heart_5
+    texture: {fileID: 2800000, guid: f14ed347e1c9a254992cbab16651135b, type: 3}
+  - cardID: Heart_6
+    texture: {fileID: 2800000, guid: 1f4b950d5cf149646842a127227c06f3, type: 3}
+  - cardID: Heart_7
+    texture: {fileID: 2800000, guid: 5a9e36d86343bb048a92067a582aeea5, type: 3}
+  - cardID: Heart_8
+    texture: {fileID: 2800000, guid: 2f0ae02013fe8fd428fb15ecc3404c25, type: 3}
+  - cardID: Heart_9
+    texture: {fileID: 2800000, guid: fa4e6edbb1cfef34c9a4fcc711c018e3, type: 3}
+  - cardID: Heart_10
+    texture: {fileID: 2800000, guid: 2448516e7011aa640a0e385fcf186c20, type: 3}
+  - cardID: Heart_A
+    texture: {fileID: 2800000, guid: dccde1e5e024afe4aa2f7c56ef88e7f5, type: 3}
+  - cardID: Heart_J
+    texture: {fileID: 2800000, guid: 4659032a03ada37469376d09cc6ae1f9, type: 3}
+  - cardID: Heart_Q
+    texture: {fileID: 2800000, guid: 9ffecf1753f67c6428b5a7d063a474e1, type: 3}
+  - cardID: Heart_K
+    texture: {fileID: 2800000, guid: efbd82a78f85d3042a764461699fe595, type: 3}
+  - cardID: Club_2
+    texture: {fileID: 2800000, guid: 2b07b77d8996e0a44b7d7fadef1a3989, type: 3}
+  - cardID: Club_3
+    texture: {fileID: 2800000, guid: ea6717d413f53954a813df773beb93d3, type: 3}
+  - cardID: Club_4
+    texture: {fileID: 2800000, guid: 23d94fbcff5e8564daa86ba93e84f4f0, type: 3}
+  - cardID: Club_5
+    texture: {fileID: 2800000, guid: f694f007d919f6e45b9657632bd17308, type: 3}
+  - cardID: Club_6
+    texture: {fileID: 2800000, guid: e8133b60215cc32418aa3ab866c9af5c, type: 3}
+  - cardID: Club_7
+    texture: {fileID: 2800000, guid: 91068b18b03faaa4492609493d84a19f, type: 3}
+  - cardID: Club_8
+    texture: {fileID: 2800000, guid: 036a6c2e3d215534394fc24d5686f2a7, type: 3}
+  - cardID: Club_9
+    texture: {fileID: 2800000, guid: afafda1cc82c50e42b204d853b1abbef, type: 3}
+  - cardID: Club_10
+    texture: {fileID: 2800000, guid: 94e9f3727c15f764485a311365d90c4e, type: 3}
+  - cardID: Club_A
+    texture: {fileID: 2800000, guid: 3ecff034a50509a408bb3530d33bb210, type: 3}
+  - cardID: Club_J
+    texture: {fileID: 2800000, guid: b43a5f2810f133746b54cf4c2c3f8bf7, type: 3}
+  - cardID: Club_Q
+    texture: {fileID: 2800000, guid: 9e6a9221f462c6b4fb911a2a922e8735, type: 3}
+  - cardID: Club_K
+    texture: {fileID: 2800000, guid: 3154c17b487fcf04bb33897f5d280ec3, type: 3}
+  - cardID: Joker_1
+    texture: {fileID: 2800000, guid: fda260c6737a1054ebf648e3756027dd, type: 3}
+  - cardID: Joker_2
+    texture: {fileID: 2800000, guid: 6428678369d739243a2761951ab436af, type: 3}
+  - cardID: Unknown_J
+    texture: {fileID: 2800000, guid: 20d46a2badedcdb4eae1edb34236c797, type: 3}
+  - cardID: Unknown_Q
+    texture: {fileID: 2800000, guid: 827396b73f862d54794bc9fadc946d0d, type: 3}
+  - cardID: Unknown_K
+    texture: {fileID: 2800000, guid: 71b3a900f001947468f776d9ea6cfd84, type: 3}

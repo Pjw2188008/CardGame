@@ -31,7 +31,7 @@ namespace Unknown.Battle
                     verify(!pokerList.gameObject.activeSelf,"Reference starts collapsed: "+(PokerKind)k);
                     foreach(var c in engine.State.Players[0].Board.Where(c=>c!=null)) {
                         var rect=cardViews[c.InstanceID];bool member=engine.State.Players[0].Poker.members.Contains(c.InstanceID);
-                        verify(rect.Find("Stat ATK").GetComponent<Text>().text==c.Attack.ToString() && rect.Find("Stat HP").GetComponent<Text>().text.Contains(">"+c.MaxHP+"</color>"),"Final field stat text: "+c.Definition.CardID+" / "+(PokerKind)k);
+                        verify(rect.Find("Stat ATK").GetComponent<Text>().text==c.Attack.ToString() && rect.Find("Stat HP").GetComponent<Text>().text==c.CurrentHP.ToString(),"Final field stat text: "+c.Definition.CardID+" / "+(PokerKind)k);
                         verify(rect.Find("Poker Icon").gameObject.activeSelf==member && rect.Find("Poker border").gameObject.activeSelf==member,"Only composition members have inner border/icon: "+c.Definition.CardID+" / "+(PokerKind)k);
                     }
                     if(k==6) {
@@ -52,8 +52,17 @@ namespace Unknown.Battle
                 PokerFixture();var unit=CheckUnit("Heart_5",0);CheckUnit("Spade_5",0,1);CheckUnit("Club_5",0,2);engine.ReconcilePoker();engine.DrainEvents();
                 unit.MapAttack=2;unit.MapHP=2;unit.Attack+=2;unit.MaxHP+=2;unit.CurrentHP+=2;unit.AbilityAttack=1;unit.Attack++;unit.JokerAttack=3;unit.Attack+=3;unit.CurrentHP--;Refresh();yield return null;
                 ShowTooltip(unit,cardViews[unit.InstanceID],DragData(cardViews[unit.InstanceID]));
-                verify(detail.text.Contains("포커 시너지") && detail.text.Contains("맵 효과") && detail.text.Contains("카드 특수 능력") && detail.text.Contains("JOKER 효과") && detail.text.Contains("받은 피해"),"Tooltip explains each applied source and damage");
-                verify(cardViews[unit.InstanceID].Find("Stat ATK").GetComponent<Text>().color==statUp && cardViews[unit.InstanceID].Find("Stat HP").GetComponent<Text>().text.Contains(ColorUtility.ToHtmlStringRGB(statDown)),"Strengthened attack green; wounded current HP red");
+                verify(hoverCardPreview!=null && !detail.gameObject.activeSelf && hoverCardPreview.Find("Stat ATK").GetComponent<Text>().text==unit.Attack.ToString() && hoverCardPreview.Find("Stat HP").GetComponent<Text>().text==unit.CurrentHP.ToString(),"Hover shows current card stats without a separate modifier explanation");
+                var defaultInk=new Color(.98f,.92f,.82f);
+                verify(cardViews[unit.InstanceID].Find("Stat ATK").GetComponent<Text>().color==defaultInk && cardViews[unit.InstanceID].Find("Stat HP").GetComponent<Text>().color==defaultInk,"Buffed attack and wounded HP keep default text color");
+                                var attackLabel=cardViews[unit.InstanceID].Find("Stat ATK").GetComponent<Text>();
+                int beforeAttack=unit.Attack;unit.Attack=0;UpdateCardStats(cardViews[unit.InstanceID],unit,false);
+                verify(attackLabel.text=="0" && attackLabel.color==defaultInk,"Reduced attack keeps default text color");unit.Attack=beforeAttack;UpdateCardStats(cardViews[unit.InstanceID],unit,false);
+                var hpLabel=cardViews[unit.InstanceID].Find("Stat HP").GetComponent<Text>();
+                int beforeHP=unit.CurrentHP;unit.CurrentHP-=2;UpdateCardStats(cardViews[unit.InstanceID],unit,false);
+                verify(hpLabel.text==(beforeHP-2).ToString() && !hpLabel.text.Contains("/") && hpLabel.color==defaultInk,"Damage displays only current HP");
+                unit.CurrentHP+=1;UpdateCardStats(cardViews[unit.InstanceID],unit,false);verify(hpLabel.text==(beforeHP-1).ToString() && hpLabel.color==defaultInk,"Recovery refreshes current HP number");
+                unit.MaxHP+=3;unit.CurrentHP+=3;UpdateCardStats(cardViews[unit.InstanceID],unit,false);verify(hpLabel.text==(beforeHP+2).ToString() && hpLabel.color==defaultInk,"Health increase refreshes current HP number");
                 verify(File.Exists(CaptureAttackFrame(1920,ownBoard,"PokerStats",false)),"Rendered layered stat tooltip");HideTooltip();
                 engine.State.Players[0].Slots[1].CurrentHP=0;engine.ReconcilePoker();var changed=engine.DrainEvents();Refresh();
                 verify(engine.State.Players[0].Poker.kind==PokerKind.OnePair && unit.PokerAttack==2 && unit.PokerHP==0 && unit.MapAttack==2 && unit.JokerAttack==3 && unit.AbilityAttack==1,"Triple downgrade removes only poker bonus");

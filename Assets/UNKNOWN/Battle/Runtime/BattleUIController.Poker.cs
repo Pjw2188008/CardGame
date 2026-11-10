@@ -10,7 +10,6 @@ namespace Unknown.Battle
         readonly Text[] pokerLabels=new Text[2];
         RectTransform pokerList;
         readonly Text[] pokerRows=new Text[10];
-        readonly Color statUp=new Color(0.05f,0.52f,0.22f),statDown=new Color(0.82f,0.13f,0.16f);
         void BuildPokerUI()
         {
             for(int row=0;row<2;row++) {
@@ -63,19 +62,17 @@ namespace Unknown.Battle
         {
             if(rect==null)return; // Hand views can be removed by a draw before the final board rebuild.
             var atk=rect.Find("Stat ATK")?.GetComponent<Text>();var hp=rect.Find("Stat HP")?.GetComponent<Text>(); if(atk==null || hp==null)return;
-            var ink=card.Definition.CardType==CardType.Unknown ? new Color(0.85f,0.73f,1) : SuitInk(card.Definition.Suit);
+            bool hasArtwork=rect.Find("Card Artwork")!=null;var ink=hasArtwork ? new Color(.98f,.92f,.82f) : card.Definition.CardType==CardType.Unknown ? new Color(0.85f,0.73f,1) : SuitInk(card.Definition.Suit);
             atk.text=card.Definition.CardType==CardType.Joker ? "50%" : card.Attack.ToString();
-            atk.color=card.Attack>card.Definition.Attack ? statUp : card.Attack<card.Definition.Attack ? statDown : ink;
-            Color current=card.CurrentHP<card.MaxHP ? statDown : card.MaxHP>card.Definition.MaxHP ? statUp : card.MaxHP<card.Definition.MaxHP ? statDown : ink;
-            Color maximum=card.MaxHP>card.Definition.MaxHP ? statUp : card.MaxHP<card.Definition.MaxHP ? statDown : ink;
-            hp.text=card.Definition.CardType==CardType.Joker ? "" : "<color=#"+ColorUtility.ToHtmlStringRGB(current)+">"+card.CurrentHP+"</color><size=12>/<color=#"+ColorUtility.ToHtmlStringRGB(maximum)+">"+card.MaxHP+"</color></size>";
+            atk.color=ink;
+            hp.text=card.Definition.CardType==CardType.Joker ? "" : card.CurrentHP.ToString();hp.color=ink;
             if(!onBoard)return;
             bool member=engine.State.Players[card.Owner].Poker.members.Contains(card.InstanceID);
             var icon=rect.Find("Poker Icon");
             if(icon==null) { var marker=Label(rect,"✦",new Vector2(0.74f,0.66f),new Vector2(0.96f,0.83f),18,new Color(0.66f,0.4f,0.95f));marker.name="Poker Icon";icon=marker.transform;
                 var innerGO=new GameObject("Poker border",typeof(RectTransform),typeof(CanvasRenderer),typeof(AttackGlowGraphic));innerGO.transform.SetParent(rect,false);
                 var inner=innerGO.GetComponent<RectTransform>();inner.anchorMin=new Vector2(0.035f,0.035f);inner.anchorMax=new Vector2(0.965f,0.965f);inner.offsetMin=inner.offsetMax=Vector2.zero;
-                var ring=innerGO.GetComponent<AttackGlowGraphic>();ring.raycastTarget=false;ring.color=new Color(0.66f,0.4f,0.95f,0.35f);
+                var ring=innerGO.GetComponent<AttackGlowGraphic>();ring.raycastTarget=false;ring.enabled=rect.GetComponent<CardArtLayout>()==null;ring.color=new Color(0.66f,0.4f,0.95f,0.35f);
             }
             icon.gameObject.SetActive(member);rect.Find("Poker border").gameObject.SetActive(member);
             rect.GetComponent<CardHover>()?.Configure(data=>ShowTooltip(card,rect,data),HideTooltip,true,false);

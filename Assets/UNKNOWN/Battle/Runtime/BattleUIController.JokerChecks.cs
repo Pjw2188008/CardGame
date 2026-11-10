@@ -45,7 +45,7 @@ namespace Unknown.Battle
                 engine.ResolveMapEvent(0,data.Single(e=>e.kind==JokerEventKind.Reveal)); engine.DrainEvents(); Refresh();
                 verify(backViews.Count==1 && backViews[0].Find("Revealed Face")!=null,"Reveal shows exactly the selected opponent card face");
                 var face=(RectTransform)backViews[0].Find("Revealed Face"); ShowTooltip(secret,face,DragData(face));
-                verify(detail.text.Contains(secret.Definition.CardName) && detail.text.Contains("MP") && detail.text.Contains(secret.Definition.Description),"Revealed face tooltip shows name, mana and ability");
+                verify(hoverCardPreview!=null && !detail.gameObject.activeSelf && hoverCardPreview.Find("Card Artwork").GetComponent<RawImage>().texture==CardArtSettings.TextureFor(secret.Definition.CardID),"Revealed face hover displays only the enlarged public card");
                 verify(File.Exists(CaptureAttackFrame(1920,ownBoard,"JokerMap",false)),"Rendered purple map, own jackpot progress and revealed opponent card");
                 engine.State.Players[1].HandCards.Remove(secret); RefreshOpponentReveal();
                 verify(!face.gameObject.activeSelf && !tooltip.gameObject.activeSelf,"Removing the revealed card immediately hides face and tooltip");
