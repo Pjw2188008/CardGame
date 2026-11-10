@@ -13,6 +13,20 @@ namespace Unknown.Multiplayer.Editor
 {
     public static class RoomSetupMenu
     {
+        [MenuItem("UNKNOWN/Maps/Connect Supplied Backgrounds")]
+        public static void ConnectMapBackgrounds()
+        {
+            var settings=AssetDatabase.LoadAssetAtPath<Unknown.Battle.BattleMapSettings>("Assets/UNKNOWN/Battle/Resources/BattleMapSettings.asset");
+            if(settings==null)throw new InvalidOperationException("BattleMapSettings asset is missing.");
+            Texture2D Load(string name) => AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Map/"+name+".png")
+                ?? throw new InvalidOperationException("Map image is missing: "+name);
+            settings.normalBackground=Load("O_MAP");settings.jokerBackground=Load("J_MAP");
+            settings.diamondBackground=Load("D_MAP");settings.spadeBackground=Load("S_MAP");
+            settings.heartBackground=Load("H_MAP");settings.clubBackground=Load("C_MAP");
+            EditorUtility.SetDirty(settings);AssetDatabase.SaveAssets();
+        }
+        public static void RunMapBackgroundChecksBatch(){ConnectMapBackgrounds();AttackCheckMenu.RunSuiteBatch();}
+
         [MenuItem("UNKNOWN/Multiplayer/Build Windows Test Player %&b")]
         public static void BuildWindowsTestPlayer()
         {

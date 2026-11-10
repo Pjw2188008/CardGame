@@ -1,0 +1,19 @@
+﻿{
+    "date":  "2026-11-10T12:30:33.3125647+09:00",
+    "unity":  "6000.0.74f1",
+    "result":  "Succeeded",
+    "errors":  0,
+    "warnings":  8,
+    "development":  true,
+    "executable":  "Builds/UNKNOWN-Title/UNKNOWN.exe",
+    "assemblySha256":  "D5B2383BF2BA72C5A4221F9347F49594CD49DC882DD322E3FA43DA4687FE6022",
+    "uiPassed":  33,
+    "uiFailed":  0,
+    "uiErrors":  0,
+    "resolutions":  [
+                        "1280x720",
+                        "1920x1080"
+                    ],
+    "buildLog":  "Library/TitleBackground-Build.log",
+    "relayRetested":  false
+}

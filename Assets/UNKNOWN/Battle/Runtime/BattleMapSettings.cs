@@ -7,6 +7,19 @@ namespace Unknown.Battle
     public sealed class BattleMapSettings : ScriptableObject
     {
         public MapDefinition[] maps=MapDefinition.Defaults();
+        [Header("Map backgrounds (Assets/Map)")]
+        public Texture2D normalBackground,jokerBackground,diamondBackground,spadeBackground,heartBackground,clubBackground;
+        public Texture2D BackgroundFor(BattleMap map)
+        {
+            switch(map) {
+                case BattleMap.JokerGame:return jokerBackground;
+                case BattleMap.Diamond:return diamondBackground;
+                case BattleMap.Spade:return spadeBackground;
+                case BattleMap.Heart:return heartBackground;
+                case BattleMap.Club:return clubBackground;
+                default:return normalBackground;
+            }
+        }
         public static MapDefinition[] LoadRules()
         {
             var asset=Resources.Load<BattleMapSettings>("BattleMapSettings");

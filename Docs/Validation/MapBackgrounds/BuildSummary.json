@@ -1,0 +1,15 @@
+﻿{
+    "date":  "2026-11-10T12:20:28.1604137+09:00",
+    "unity":  "6000.0.74f1",
+    "result":  "Succeeded",
+    "errors":  0,
+    "warnings":  8,
+    "development":  true,
+    "executable":  "Builds/UNKNOWN-MapBackgrounds/UNKNOWN.exe",
+    "assemblySha256":  "09437FA61B871FE8BAECB9EC5C1F160A229499A96B3B5B51BD3B62D5C08EEFBE",
+    "uiPassed":  485,
+    "uiFailed":  0,
+    "uiErrors":  0,
+    "relayRetested":  false,
+    "buildLog":  "Library/MapBackgrounds-Build.log"
+}

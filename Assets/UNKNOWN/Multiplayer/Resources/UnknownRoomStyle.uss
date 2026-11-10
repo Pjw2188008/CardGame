@@ -1,5 +1,16 @@
 .unknown-root { flex-grow: 1; background-color: rgb(6, 10, 17); color: rgb(222, 228, 231); font-size: 18px; }
 .night-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.title-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.title-art-home .title, .title-art-home .flourish { display: none; }
+.title-art-home .menu-shell { position: absolute; top: 62%; left: 0; right: 0; bottom: 1%; width: auto; max-width: none; padding: 0 16px; justify-content: flex-start; }
+.title-art-home .menu-action { min-height: 34px; margin: 1px 0; padding: 4px 16px; background-color: rgba(10, 4, 3, 0.6); color: rgb(246, 226, 187); }
+.title-art-home .menu-action:hover, .title-art-home .menu-action:focus { background-color: rgba(78, 43, 15, 0.85); color: rgb(255, 244, 211); }
+.title-art-home .action-text { font-size: 21px; }
+.title-art-home .selection-mark { color: rgb(240, 192, 103); }
+.title-art-home .feedback { margin-top: 4px; }
+.menu-art .title { color: rgb(246, 226, 187); }
+.menu-art .menu-action { color: rgb(246, 226, 187); background-color: rgba(10, 4, 3, 0.55); }
+.menu-art .menu-action:hover, .menu-art .menu-action:focus { color: rgb(255, 244, 211); background-color: rgba(78, 43, 15, 0.85); }
 .room-scroll { flex-grow: 1; flex-basis: 0; min-height: 0; width: 100%; }
 .room-scroll > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container { flex-grow: 1; align-items: center; justify-content: center; }
 .menu-shell { width: 94%; max-width: 660px; flex-shrink: 0; padding: 44px 28px; align-self: center; align-items: center; justify-content: center; }

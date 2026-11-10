@@ -8,6 +8,9 @@ namespace Unknown.Battle
     {
         readonly HashSet<int> presentedMapEvents=new HashSet<int>();
         RectTransform mapDecor;
+        RawImage mapBackground;
+        AspectRatioFitter mapBackgroundAspect;
+        BattleMapSettings mapBackgroundSettings;
         Text mapHeader,mapStatus,normalMapName,mapSymbols;
         bool mapIntroPresented;
         RectTransform mapIntro;
@@ -63,9 +66,26 @@ namespace Unknown.Battle
                 var hover=Box(battlefield,"Map details hover",new Vector2(0.015f,0.84f),new Vector2(0.18f,0.925f),Color.clear);
                 hover.GetComponent<Image>().raycastTarget=true; hover.gameObject.AddComponent<CardHover>().Configure(ShowMapTooltip,HideTooltip,true,false);
             }
-            battlefield.GetComponent<Image>().color=info.map==BattleMap.Normal ? navy : new Color(0.025f+tint.r*0.045f,0.015f+tint.g*0.03f,0.025f+tint.b*0.05f);
+            if(mapBackground==null)
+            {
+                mapBackgroundSettings=Resources.Load<BattleMapSettings>("BattleMapSettings");
+                var background=new GameObject("Map Background",typeof(RectTransform),typeof(RawImage),typeof(AspectRatioFitter));
+                background.transform.SetParent(battlefield,false);
+                mapBackground=background.GetComponent<RawImage>();mapBackground.raycastTarget=false;
+                mapBackgroundAspect=background.GetComponent<AspectRatioFitter>();
+                mapBackgroundAspect.aspectMode=AspectRatioFitter.AspectMode.EnvelopeParent;
+            }
+            var texture=mapBackgroundSettings==null ? null : mapBackgroundSettings.BackgroundFor(info.map);
+            if(mapBackground.texture!=texture) {
+                mapBackground.texture=texture;
+                if(texture!=null)mapBackgroundAspect.aspectRatio=(float)texture.width/texture.height;
+            }
+            mapBackground.gameObject.SetActive(texture!=null);
+            mapBackground.transform.SetAsFirstSibling();
+            battlefield.GetComponent<Image>().color=texture!=null ? Color.clear : info.map==BattleMap.Normal ? navy : new Color(0.025f+tint.r*0.045f,0.015f+tint.g*0.03f,0.025f+tint.b*0.05f);
             mapDecor.gameObject.SetActive(info.map!=BattleMap.Normal); mapHeader.gameObject.SetActive(joker);
             mapSymbols.text=info.symbol+"       "+info.symbol+"       "+info.symbol+"       "+info.symbol; mapSymbols.color=new Color(tint.r,tint.g,tint.b,0.07f);
+            mapSymbols.gameObject.SetActive(texture==null);
             if(!joker)mapStatus.text=MapDefinition.IsSuit(info.map) ? info.Effects : "";
             if(joker)
             {

@@ -19,6 +19,21 @@ namespace Unknown.Battle
             try
             {
                 var definitions=BattleMapSettings.LoadRules(); verify(definitions.Length==6 && definitions.Sum(d=>d.weight)==10000,"Map asset contains five weighted maps and preserved Normal");
+                var backgroundNames=new[]{"O_MAP","J_MAP","D_MAP","S_MAP","H_MAP","C_MAP"};
+                foreach(BattleMap map in Enum.GetValues(typeof(BattleMap))) {
+                    checkRecipient=0;CheckFixture();
+                    var authority=new BattleEngine(4,new BattleConfig{Map=map,MapRules=definitions,StartingHand=0});
+                    var expected=UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Map/"+backgroundNames[(int)map]+".png");
+                    foreach(int recipient in new[]{0,1}) {
+                        checkRecipient=recipient;engine=BattleEngine.CreateView(BattleSnapshot.For(authority,recipient,1,0,false,new BattleEvent[0]));Refresh();
+                        yield return null;Canvas.ForceUpdateCanvases();
+                        verify(expected!=null && mapBackground.texture==expected && mapBackground.gameObject.activeSelf,"Snapshot selects exact background for recipient "+recipient+": "+map);
+                    }
+                    verify(!mapBackground.raycastTarget && mapBackground.transform.GetSiblingIndex()==0,"Background stays behind UI and accepts no pointer input: "+map);
+                    var rect=mapBackground.rectTransform.rect;var parent=battlefield.rect;
+                    verify(rect.width>=parent.width-.5f && rect.height>=parent.height-.5f && Mathf.Abs(rect.width/rect.height-(float)expected.width/expected.height)<.01f,"Background covers viewport without stretching: "+map);
+                    verify(File.Exists(CaptureAttackFrame(1920,ownBoard,"Background-"+map,false)),"Rendered supplied map background: "+map);
+                }
                 foreach(var map in new[]{BattleMap.Diamond,BattleMap.Spade,BattleMap.Heart,BattleMap.Club})
                 {
                     checkRecipient=0; CheckFixture();

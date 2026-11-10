@@ -1,0 +1,42 @@
+﻿[
+    {
+        "file":  "Assets/UNKNOWN/Battle/Runtime/BattleMapSettings.cs",
+        "sha256":  "B95B1A962A2F0D7B24C382247B2001637E80663F61AE282723ABF66DE8F81E2B"
+    },
+    {
+        "file":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Map.cs",
+        "sha256":  "6F064DC96FD20772812DFE7C0CA5ECCDA81A28BF01C3A838D15B71860A67F1FA"
+    },
+    {
+        "file":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.SuitChecks.cs",
+        "sha256":  "AE4DB059A7C943F6CDF961CF4CFDEA8B4F98BC16227F40D987083D274587913F"
+    },
+    {
+        "file":  "Assets/UNKNOWN/Multiplayer/Editor/RoomSetupMenu.cs",
+        "sha256":  "76A671395D6009D1DA13E12591A3CD4A9886D6D9BE4C2A74255B08418BE819EF"
+    },
+    {
+        "file":  "Assets/Map/C_MAP.png",
+        "sha256":  "2810FD13400A8713801C1F140ABF35CB32726997F8148409950C39415F75B1C3"
+    },
+    {
+        "file":  "Assets/Map/D_MAP.png",
+        "sha256":  "8CDE98F8258A88A9CA3CB8A342EA78C710B85A991701FB9D2A534518B85F220F"
+    },
+    {
+        "file":  "Assets/Map/H_MAP.png",
+        "sha256":  "32307FC565C21FDDC3E7B62D5F18DA572B8F7E61149DB1BDA656477C6F37232E"
+    },
+    {
+        "file":  "Assets/Map/J_MAP.png",
+        "sha256":  "D7BB459609F249AC9408AE13FFA8F94FB41DAA584C9D403BFFF8B840526B041F"
+    },
+    {
+        "file":  "Assets/Map/O_MAP.png",
+        "sha256":  "B0318E6B8B9DD000FE1BF16A550509259615E045860F182FF1A7B079893AC473"
+    },
+    {
+        "file":  "Assets/Map/S_MAP.png",
+        "sha256":  "352F236735559FDC107E682729F9CF3C8BE9CA689EBB95492E42C6C78D4DD412"
+    }
+]

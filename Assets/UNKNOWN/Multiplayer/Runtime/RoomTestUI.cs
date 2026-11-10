@@ -8,7 +8,7 @@ namespace Unknown.Multiplayer
 {
     /// <summary>Atmospheric room menu. Connection state stays in RoomController.</summary>
     [DisallowMultipleComponent, RequireComponent(typeof(RoomController))]
-    public sealed class RoomTestUI : MonoBehaviour
+    public sealed partial class RoomTestUI : MonoBehaviour
     {
         enum Page { Home, Online, Join, Lobby, Game, Tutorial, AiSelect }
         Unknown.Battle.AiDifficulty selectedAi=Unknown.Battle.AiDifficulty.Normal;
@@ -24,6 +24,8 @@ namespace Unknown.Multiplayer
         PanelSettings panelSettings;
         Font koreanFont, titleFont;
         VisualElement content, errorBox;
+        Image titleBackdrop;
+        Image menuBackdrop;
         readonly Dictionary<Page, VisualElement> pages = new Dictionary<Page, VisualElement>();
         readonly List<Button> actions = new List<Button>();
         Label status, error, code, players, player1, player2, gameCode, waiting, busyMark;
@@ -68,6 +70,15 @@ namespace Unknown.Multiplayer
             var stylesheet = Resources.Load<StyleSheet>("UnknownRoomStyle");
             if (stylesheet != null) root.styleSheets.Add(stylesheet);
             root.Add(new NightBackdrop());
+            var visuals=Resources.Load<RoomVisualSettings>("RoomVisualSettings");
+            if(visuals!=null && visuals.menuBackground!=null) {
+                menuBackdrop=new Image {name="menu-background",image=visuals.menuBackground,scaleMode=ScaleMode.ScaleAndCrop,pickingMode=PickingMode.Ignore};
+                menuBackdrop.AddToClassList("title-backdrop");root.Add(menuBackdrop);
+            }
+            if(visuals!=null && visuals.titleBackground!=null) {
+                titleBackdrop=new Image {name="title-background",image=visuals.titleBackground,scaleMode=ScaleMode.ScaleAndCrop,pickingMode=PickingMode.Ignore};
+                titleBackdrop.AddToClassList("title-backdrop");root.Add(titleBackdrop);
+            }
             var scroll = new ScrollView(ScrollViewMode.Vertical);
             scroll.AddToClassList("room-scroll");
             scroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
@@ -238,6 +249,12 @@ namespace Unknown.Multiplayer
         }
         void ActivatePage(Page page, bool focus)
         {
+            bool illustratedHome=page==Page.Home && titleBackdrop!=null;
+            document.rootVisualElement.EnableInClassList("title-art-home",illustratedHome);
+            if(titleBackdrop!=null)titleBackdrop.style.display=illustratedHome ? DisplayStyle.Flex : DisplayStyle.None;
+            bool illustratedMenu=page!=Page.Home && menuBackdrop!=null;
+            document.rootVisualElement.EnableInClassList("menu-art",illustratedMenu);
+            if(menuBackdrop!=null)menuBackdrop.style.display=illustratedMenu ? DisplayStyle.Flex : DisplayStyle.None;
             foreach (var entry in pages) entry.Value.style.display = entry.Key == page ? DisplayStyle.Flex : DisplayStyle.None;
             if (!focus) return;
             content.schedule.Execute(() =>

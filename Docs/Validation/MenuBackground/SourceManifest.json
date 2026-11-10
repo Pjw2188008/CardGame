@@ -1,0 +1,26 @@
+﻿[
+    {
+        "file":  "Assets/Title/back.png",
+        "sha256":  "821AAB5554375C52EE3750BB46DFFAC9CD252E4542A422E6145045F15725FCE2"
+    },
+    {
+        "file":  "Assets/UNKNOWN/Multiplayer/Runtime/RoomVisualSettings.cs",
+        "sha256":  "9F460855B278F2CF3BBEBEA39DE061B289061C93F5E9002134416FAC02617183"
+    },
+    {
+        "file":  "Assets/UNKNOWN/Multiplayer/Runtime/RoomTestUI.cs",
+        "sha256":  "982D7866FE7EEB0309B9CE235EC05AE6F0F6F5DB00F9ABDC91A31AD6EEB35A8E"
+    },
+    {
+        "file":  "Assets/UNKNOWN/Multiplayer/Runtime/RoomTestUI.TitleChecks.cs",
+        "sha256":  "BD19026B2F62705EF8235369FF95C2F31999AE113B7EDA173635DBBF7CDDF735"
+    },
+    {
+        "file":  "Assets/UNKNOWN/Multiplayer/Editor/TitleCheckMenu.cs",
+        "sha256":  "E562857C562B362C72A09182ADB2911010528D401F6D9FBEDAD0A8BACC695E72"
+    },
+    {
+        "file":  "Assets/UNKNOWN/Multiplayer/Resources/UnknownRoomStyle.uss",
+        "sha256":  "D70938C040871AAEE6D5C4E6D876509C41CC98A3889C82776CD8856E21D89208"
+    }
+]

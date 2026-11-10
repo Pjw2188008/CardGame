@@ -1,0 +1,15 @@
+﻿{
+    "date":  "2026-11-10T12:43:51.4638446+09:00",
+    "unity":  "6000.0.74f1",
+    "result":  "Succeeded",
+    "errors":  0,
+    "warnings":  8,
+    "development":  true,
+    "executable":  "Builds/UNKNOWN-MenuBackgrounds/UNKNOWN.exe",
+    "assemblySha256":  "DF2878836A8871A8F4D29163740D07143C220704C81AF35DF290149DC800A85A",
+    "uiPassed":  59,
+    "uiFailed":  0,
+    "uiErrors":  0,
+    "relayRetested":  false,
+    "buildLog":  "Library/MenuBackground-Build.log"
+}
