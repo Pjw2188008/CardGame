@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76a95e539369472b9e0e5a74b14eafc7, type: 3}
   m_Name: BattleMapSettings
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   maps:
   - map: 0
     name: "\uC77C\uBC18 \uC804\uC7A5"
@@ -103,3 +103,9 @@ MonoBehaviour:
   spadeBackground: {fileID: 2800000, guid: 8baf9fe83d9771141a65cc046c343583, type: 3}
   heartBackground: {fileID: 2800000, guid: 09545ec484ab5074bb35aef0c353947a, type: 3}
   clubBackground: {fileID: 2800000, guid: efa11e2e22c2ea14aba83e07cd5ac0db, type: 3}
+  normalCardBack: {fileID: 2800000, guid: 7e4b29356396f7b4c93c9800b237be1d, type: 3}
+  jokerCardBack: {fileID: 2800000, guid: 3c3dab3872b957442ac2dbc828de8920, type: 3}
+  diamondCardBack: {fileID: 2800000, guid: c63c8b3cd3f77f44e9a33f5434994406, type: 3}
+  spadeCardBack: {fileID: 2800000, guid: 71288c05835c9eb4f84ca48f279c9c46, type: 3}
+  heartCardBack: {fileID: 2800000, guid: 7f8f1478a47f98743bdab6b0407b1f12, type: 3}
+  clubCardBack: {fileID: 2800000, guid: 924bdea9684f3e041a5c930989dd8a20, type: 3}

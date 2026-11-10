@@ -76,6 +76,7 @@ namespace Unknown.Battle
                 mapBackgroundAspect.aspectMode=AspectRatioFitter.AspectMode.EnvelopeParent;
             }
             var texture=mapBackgroundSettings==null ? null : mapBackgroundSettings.BackgroundFor(info.map);
+            RefreshDeckArtwork(info.map);
             if(mapBackground.texture!=texture) {
                 mapBackground.texture=texture;
                 if(texture!=null)mapBackgroundAspect.aspectRatio=(float)texture.width/texture.height;

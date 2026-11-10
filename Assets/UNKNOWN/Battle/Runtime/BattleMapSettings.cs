@@ -9,6 +9,19 @@ namespace Unknown.Battle
         public MapDefinition[] maps=MapDefinition.Defaults();
         [Header("Map backgrounds (Assets/Map)")]
         public Texture2D normalBackground,jokerBackground,diamondBackground,spadeBackground,heartBackground,clubBackground;
+        [Header("Deck backs (Assets/CARD/CardBack)")]
+        public Texture2D normalCardBack,jokerCardBack,diamondCardBack,spadeCardBack,heartCardBack,clubCardBack;
+        public Texture2D CardBackFor(BattleMap map)
+        {
+            switch(map) {
+                case BattleMap.JokerGame:return jokerCardBack;
+                case BattleMap.Diamond:return diamondCardBack;
+                case BattleMap.Spade:return spadeCardBack;
+                case BattleMap.Heart:return heartCardBack;
+                case BattleMap.Club:return clubCardBack;
+                default:return normalCardBack;
+            }
+        }
         public Texture2D BackgroundFor(BattleMap map)
         {
             switch(map) {

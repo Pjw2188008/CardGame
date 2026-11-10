@@ -1,0 +1,95 @@
+{
+  "total": 814,
+  "suites": [
+    {
+      "suite": "UNKNOWN-AttackUI-Checks.json",
+      "passed": 312,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T08:12:26.2903163Z"
+    },
+    {
+      "suite": "UNKNOWN-DragUI-Checks.json",
+      "passed": 58,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T08:12:42.3254791Z"
+    },
+    {
+      "suite": "UNKNOWN-PvP-Regressions.json",
+      "passed": 26,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T08:12:52.0717997Z"
+    },
+    {
+      "suite": "UNKNOWN-JokerMap-Checks.json",
+      "passed": 107,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T08:13:35.0912206Z"
+    },
+    {
+      "suite": "UNKNOWN-SuitMap-Checks.json",
+      "passed": 80,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T08:13:46.2502283Z"
+    },
+    {
+      "suite": "UNKNOWN-Poker-Checks.json",
+      "passed": 138,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T08:13:52.5014574Z"
+    },
+    {
+      "suite": "UNKNOWN-HandSettings-Checks.json",
+      "passed": 55,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T08:13:58.8820387Z"
+    },
+    {
+      "suite": "UNKNOWN-Tutorial-Checks.json",
+      "passed": 38,
+      "failed": 0,
+      "errors": 0,
+      "verifiedUtc": "2026-11-10T08:15:51.3129541Z"
+    }
+  ],
+  "sources": [
+    {
+      "file": "Assets/UNKNOWN/Battle/Resources/BattleMapSettings.asset",
+      "sha256": "EA7EDBF4B06D8DFBCA6037ED67727FB15A1102E0CCD7EA8D18C439741A7E7892"
+    },
+    {
+      "file": "Assets/UNKNOWN/Battle/Runtime/BattleMapSettings.cs",
+      "sha256": "80891CC563575F64EBBBF3591B080264C66614C7DFC472263E6AA1AEFC46350A"
+    },
+    {
+      "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.HandActions.cs",
+      "sha256": "8020B3D04DA4BB7816D36DA8D5AE9B33B3CAAEBF54CFAF4572692EBF92E4A5A4"
+    },
+    {
+      "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Hands.cs",
+      "sha256": "0E40C1075DCC1A8153884706B498F2384098F929016C35CE03A19571B902923E"
+    },
+    {
+      "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.HandSettingsChecks.cs",
+      "sha256": "DF676D334C499344FB004AFFCCEAE2049125594EADD93A748AF3A35484715AB9"
+    },
+    {
+      "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Map.cs",
+      "sha256": "E7661A8215B15D34357DEB46EC5286F0C6D5EE7DFCB4D99290718EA88EC7A798"
+    },
+    {
+      "file": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Tutorial.cs",
+      "sha256": "70D9BC5BE1D6D89EB07317D6439C9BEB3E2B8FEC920EF99BB17597F9E86E7814"
+    },
+    {
+      "file": "Assets/UNKNOWN/Multiplayer/Editor/CardArtSetup.cs",
+      "sha256": "A9F51CC99760173C206145A309E9A3F19ACA6B2952B60F79C07A61118D7DCC01"
+    }
+  ]
+}

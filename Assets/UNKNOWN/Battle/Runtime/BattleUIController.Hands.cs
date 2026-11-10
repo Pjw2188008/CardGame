@@ -17,14 +17,30 @@ namespace Unknown.Battle
         int pendingEnemyDraws, handViewer = -1;
         readonly int[] overflowCounts=new int[2];
         readonly RectTransform[] deckMarkers = new RectTransform[2];
+        readonly RawImage[] deckArtwork = new RawImage[2];
         void BuildDeckMarkers()
         {
             for (int row = 0; row < 2; row++)
             {
                 float y = row == 0 ? 0.12f : 0.88f;
                 var rect = Box(battlefield, "Deck " + row, new Vector2(0.94f,y), new Vector2(0.94f,y), new Color(0.13f,0.17f,0.25f));
-                rect.sizeDelta = new Vector2(62,84); Label(rect,"◇",Vector2.zero,Vector2.one,23,new Color(0.62f,0.52f,0.79f));
+                rect.sizeDelta = new Vector2(78,106);
+                var artwork=new GameObject("Deck Artwork",typeof(RectTransform),typeof(RawImage),typeof(AspectRatioFitter));
+                artwork.transform.SetParent(rect,false);
+                deckArtwork[row]=artwork.GetComponent<RawImage>();deckArtwork[row].raycastTarget=false;
+                artwork.GetComponent<AspectRatioFitter>().aspectMode=AspectRatioFitter.AspectMode.FitInParent;
                 deckMarkers[row] = rect;
+            }
+        }
+        void RefreshDeckArtwork(BattleMap map)
+        {
+            var texture=mapBackgroundSettings==null ? null : mapBackgroundSettings.CardBackFor(map);
+            for(int row=0;row<2;row++) {
+                if(deckArtwork[row]==null)continue;
+                deckArtwork[row].texture=texture;
+                deckArtwork[row].gameObject.SetActive(texture!=null);
+                if(texture!=null)deckArtwork[row].GetComponent<AspectRatioFitter>().aspectRatio=(float)texture.width/texture.height;
+                deckMarkers[row].GetComponent<Image>().color=texture!=null ? Color.clear : panel;
             }
         }
         void ResetHandViews()

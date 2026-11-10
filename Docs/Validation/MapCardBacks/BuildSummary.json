@@ -1,0 +1,8 @@
+{
+  "result": "Succeeded",
+  "errors": 0,
+  "warnings": 8,
+  "assemblySHA256": "A5A4F5D3EF40E91E1E77D2E594DCD7488BE7340F9756A0BB86E099BA27454984",
+  "exe": "Builds/UNKNOWN-MapCardBacks/UNKNOWN.exe",
+  "log": "Library/MapCardBacks-Build.log"
+}

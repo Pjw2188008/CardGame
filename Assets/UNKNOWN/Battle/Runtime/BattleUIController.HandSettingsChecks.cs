@@ -31,6 +31,15 @@ namespace Unknown.Battle
             Application.LogCallback listener=(m,s,t)=>{if(t==LogType.Error || t==LogType.Exception || t==LogType.Assert)report.errors.Add(m+"\n"+s);};Application.logMessageReceived+=listener;
             const string key="UNKNOWN.Options.v1";bool hadPrefs=PlayerPrefs.HasKey(key);string oldPrefs=PlayerPrefs.GetString(key);var saved=GamePreferences.Instance.Current.Copy();int oldVsync=QualitySettings.vSyncCount;
             try {
+                foreach(BattleMap map in Enum.GetValues(typeof(BattleMap))) {
+                    checkRecipient=0;CheckFixture();engine=new BattleEngine(4,new BattleConfig{Map=map,StartingHand=1,StartingMana=10,ShuffleDecks=false});engine.DrainEvents();Refresh();yield return null;
+                    string name=map==BattleMap.JokerGame ? "joker" : map==BattleMap.Normal ? "normal" : map.ToString().ToLowerInvariant();
+                    var expectedBack=UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/CARD/CardBack/"+name+"-back.png");
+                    verify(expectedBack!=null && deckArtwork.All(a=>a.texture==expectedBack && a.gameObject.activeSelf),"Both decks use supplied back for "+map);
+                    checkRecipient=1;Refresh();yield return null;
+                    verify(deckArtwork.All(a=>a.texture==expectedBack) && discardButton.transform==deckMarkers[0] && deckMarkers[1].GetComponent<Button>()==null,"Recipient view keeps map back and only local deck can discard: "+map);
+                    if(map==BattleMap.Normal || map==BattleMap.JokerGame)foreach(int width in new[]{1280,1920})verify(File.Exists(CaptureAttackFrame(width,ownBoard,"DeckBack-"+map,false)),"Rendered deck back for "+map+" at "+width);
+                }
                 checkRecipient=0;CheckFixture();for(int i=0;i<7;i++)CheckHand("Heart_2");engine.DrainEvents();engine.Draw(0,3);var entries=engine.DrainEvents();PrepareHandPlayback(entries);Refresh();yield return null;
                 verify(engine.Config.HandLimit==8 && handViews.Count==7,"Eight-card limit hides only pending accepted draw, never burns");
                 verify(entries.Count(e=>e.Kind==BattleEventKind.Discard && e.Secondary==1)==2,"Seven plus three produces two overflow discards");
@@ -39,13 +48,14 @@ namespace Unknown.Battle
                 verify(handViews.Values.All(v=>v.GetComponent<CanvasGroup>().alpha==1) && pendingDraws.Count==0,"All eight cards remain readable after overflow");
                 verify(toastText.Contains("2장 폐기") && graveMarkers[0].GetComponentInChildren<Text>().text=="묘지 2","Batched overflow feedback and grave count");
                 verify(File.Exists(CaptureAttackFrame(1920,ownBoard,"HandEight",false)),"Rendered eight-card hand and small discard tools");
-                var c=engine.State.Players[0].Hand[0];ToggleDiscard();verify(discardMode && discardID<0,"Discard button enters explicit selection mode");
-                ToggleDiscard();verify(!discardMode && !engine.State.Players[0].ManualDiscardUsed,"Second button click cancels mode without using discard");ToggleDiscard();
+                verify(battlefield.Find("카드 버리기")==null && discardButton.transform==deckMarkers[0],"Discard control is integrated into the local deck");
+                var c=engine.State.Players[0].Hand[0];verify(ClickCheckUI(deckMarkers[0]) && discardMode && discardID<0,"Actual deck click enters explicit selection mode");
+                verify(ClickCheckUI(deckMarkers[0]) && !discardMode && !engine.State.Players[0].ManualDiscardUsed,"Second deck click cancels without using discard");ClickCheckUI(deckMarkers[0]);
                 DragBegin(c);verify(dragged==null,"Discard mode blocks summon/Joker dragging");ToggleCombinationMode();verify(!combinationMode,"Discard mode blocks combination selection");
-                verify(discardButton.GetComponentInChildren<Text>().text=="버리기 취소","Discard mode clearly offers cancellation");
+                verify(discardButton.GetComponentInChildren<Text>().text.Contains("덱 클릭 취소"),"Discard mode clearly offers deck-click cancellation");
                 verify(File.Exists(CaptureAttackFrame(1920,ownBoard,"ManualDiscard",false)),"Rendered immediate-click discard mode");
                 HandleBattleEscape();verify(!discardMode && !MenuOpen && engine.State.Players[0].Hand.Count==8,"ESC cancels discard without opening menu or changing hand");
-                ToggleDiscard();handViews[c.InstanceID].GetComponent<Button>().onClick.Invoke();SelectHand(c);yield return DragWait();yield return null;
+                verify(ClickCheckUI(deckMarkers[0]) && ClickCheckUI(handViews[c.InstanceID]),"Actual deck then hand clicks reach the discard command");yield return DragWait();yield return null;
                 verify(engine.State.Players[0].Hand.Count==7 && engine.State.Players[0].DiscardCount==3 && engine.State.Players[0].ManualDiscardUsed,"Single actual hand-button click discards once, animates to grave and reflows hand");
                 ToggleDiscard();verify(!discardMode && toastText.Contains("이미"),"Second discard shows once-per-turn reason");
                 CheckFixture();checkRecipient=0;var last=CheckHand("Joker_1");Refresh();ToggleDiscard();SelectHand(last);yield return DragWait();verify(engine.State.Players[0].Hand.Count==0 && !engine.State.IsOver,"Last discard never refills immediately");

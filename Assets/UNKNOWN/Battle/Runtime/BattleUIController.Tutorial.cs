@@ -88,7 +88,7 @@ namespace Unknown.Battle
                 case 1:return "조작: 강조된 정보를 보고 '다음 설명'을 누르세요.";
                 case 2:return "조작: ♥3을 아래 빈 필드로 드래그하세요.";
                 case 3:return tutorial.UnitAttack ? "조작: 남은 아군 유닛을 상대 HP 영역으로 드래그하세요." : "조작: 아군 유닛을 위쪽 ♠2에게 드래그하세요.";
-                case 4:return !tutorial.OverflowShown ? "조작: 손패 초과 드로우 시연을 확인하세요." : discardMode ? "조작: 버릴 손패 카드를 클릭하세요. 즉시 버려집니다. ESC로 취소." : "조작: 오른쪽 아래 '카드 버리기'를 누르세요.";
+                case 4:return !tutorial.OverflowShown ? "조작: 손패 초과 드로우 시연을 확인하세요." : discardMode ? "조작: 버릴 손패 카드를 클릭하세요. 즉시 버려집니다. 덱을 다시 누르거나 ESC로 취소." : "조작: 오른쪽 아래 내 덱 뒷면을 클릭하세요.";
                 case 5:return engine.NeedsTarget ? "조작: 강조된 아군 카드를 눌러 ♥5 효과를 완료하세요." : "조작: ♥5와 ♠5를 아래 필드에 드래그하세요.";
                 case 6:return "조작: JOKER를 아군 ♥3에게 드래그하세요.";
                 default:if(tutorial.Combinations>=3)return "조작: 손패의 UNKNOWN 3장을 아래 빈 필드로 드래그하세요.";return !combinationMode ? "조작: 중앙 'UNKNOWN 조합'을 누르세요." : aceID<0 ? "조작: 손패의 A 카드를 클릭하세요." : faceID<0 ? "조작: 손패의 "+(tutorial.Combinations==0 ? "J" : tutorial.Combinations==1 ? "Q" : "K")+" 카드를 클릭하세요." : "조작: 중앙 '조합 확정'을 다시 눌러 생성하세요.";

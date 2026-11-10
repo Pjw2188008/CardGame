@@ -25,6 +25,18 @@ namespace Unknown.Multiplayer.Editor
             if(asset==null){asset=ScriptableObject.CreateInstance<CardArtSettings>();AssetDatabase.CreateAsset(asset,path);}
             asset.cards=entries;EditorUtility.SetDirty(asset);AssetDatabase.SaveAssets();
         }
-        public static void RunBatch(){Connect();AttackCheckMenu.RunSuiteBatch();}
+        [MenuItem("UNKNOWN/Cards/Connect Map Card Backs")]
+        public static void ConnectCardBacks()
+        {
+            var settings=AssetDatabase.LoadAssetAtPath<BattleMapSettings>("Assets/UNKNOWN/Battle/Resources/BattleMapSettings.asset");
+            if(settings==null)throw new InvalidOperationException("BattleMapSettings asset is missing.");
+            Texture2D Load(string name) => AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/CARD/CardBack/"+name+"-back.png")
+                ?? throw new InvalidOperationException("Missing deck back: "+name);
+            settings.normalCardBack=Load("normal");settings.jokerCardBack=Load("joker");
+            settings.diamondCardBack=Load("diamond");settings.spadeCardBack=Load("spade");
+            settings.heartCardBack=Load("heart");settings.clubCardBack=Load("club");
+            EditorUtility.SetDirty(settings);AssetDatabase.SaveAssets();
+        }
+        public static void RunBatch(){Connect();ConnectCardBacks();AttackCheckMenu.RunSuiteBatch();}
     }
 }

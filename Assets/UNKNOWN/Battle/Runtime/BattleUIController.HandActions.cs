@@ -16,7 +16,11 @@ namespace Unknown.Battle
         bool MenuOpen => battleMenu!=null && battleMenu.gameObject.activeSelf;
         void BuildHandTools()
         {
-            discardButton=ActionButton(battlefield,"카드 버리기",new Vector2(0.90f,0.055f),new Vector2(0.99f,0.092f),ToggleDiscard);
+            discardButton=deckMarkers[0].gameObject.AddComponent<Button>();
+            discardButton.targetGraphic=deckMarkers[0].GetComponent<Image>();
+            discardButton.transition=Selectable.Transition.None;
+            discardButton.onClick.AddListener(ToggleDiscard);
+            Label(deckMarkers[0],"덱 클릭 · 버리기",new Vector2(-.5f,-.28f),new Vector2(1.5f,-.04f),13,Color.white).raycastTarget=false;
             handCountLabel=Label(battlefield,"",new Vector2(0.90f,0.012f),new Vector2(0.99f,0.05f),18,Color.white);
             for(int row=0;row<2;row++) {float y=row==0 ? 0.20f : 0.82f;graveMarkers[row]=Box(battlefield,"Discard pile "+row,new Vector2(0.94f,y),new Vector2(0.94f,y),panel);graveMarkers[row].sizeDelta=new Vector2(100,40);Label(graveMarkers[row],"",Vector2.zero,Vector2.one,14,Color.white);}
         }
@@ -27,7 +31,7 @@ namespace Unknown.Battle
             var p=engine.State.Players[ViewPlayer];handCountLabel.text=$"HAND {p.Hand.Count}/{engine.Config.HandLimit}";handCountLabel.color=p.Hand.Count>=engine.Config.HandLimit ? gold : Color.white;
             // Recompute every refresh: a previous lesson/animation must not leave this disabled.
             discardButton.interactable=!Blocked() && !engine.NeedsTarget && !p.ManualDiscardUsed && p.Hand.Count>0;
-            discardButton.GetComponentInChildren<Text>().text=discardMode ? "버리기 취소" : p.ManualDiscardUsed ? "버리기 사용됨" : "카드 버리기";
+            discardButton.GetComponentInChildren<Text>().text=discardMode ? "버릴 카드 선택 · 덱 클릭 취소" : p.ManualDiscardUsed ? "버리기 사용됨" : "덱 클릭 · 버리기";
             for(int row=0;row<2;row++)graveMarkers[row].GetComponentInChildren<Text>().text="묘지 "+engine.State.Players[row==0 ? ViewPlayer : 1-ViewPlayer].DiscardCount;
             if(discardMode && handViews.TryGetValue(discardID,out var selected))selected.GetComponent<Outline>().effectColor=new Color(1,0.45f,0.35f);
         }
