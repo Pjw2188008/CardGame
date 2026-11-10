@@ -50,6 +50,23 @@ namespace Unknown.Battle
             foreach (var view in backViews) if (view != null) { view.gameObject.SetActive(false); Destroy(view.gameObject); }
             handViews.Clear(); backViews.Clear(); pendingDraws.Clear(); pendingEnemyDraws = 0; handViewer = ViewPlayer;
         }
+        void ApplyCardBack(RectTransform rect)
+        {
+            if(mapBackgroundSettings==null)mapBackgroundSettings=Resources.Load<BattleMapSettings>("BattleMapSettings");
+            var texture=mapBackgroundSettings==null ? null : mapBackgroundSettings.CardBackFor(engine.Config.Map);
+            var artwork=rect.Find("Card Back Artwork") as RectTransform;
+            if(artwork==null) {
+                var go=new GameObject("Card Back Artwork",typeof(RectTransform),typeof(RawImage),typeof(AspectRatioFitter));
+                go.transform.SetParent(rect,false);artwork=go.GetComponent<RectTransform>();
+                go.GetComponent<RawImage>().raycastTarget=false;
+                go.GetComponent<AspectRatioFitter>().aspectMode=AspectRatioFitter.AspectMode.FitInParent;
+            }
+            artwork.SetAsFirstSibling();
+            artwork.GetComponent<RawImage>().texture=texture;
+            artwork.gameObject.SetActive(texture!=null);
+            if(texture!=null)artwork.GetComponent<AspectRatioFitter>().aspectRatio=(float)texture.width/texture.height;
+            rect.GetComponent<Image>().color=texture!=null ? Color.clear : panel;
+        }
         void PrepareHandPlayback(IReadOnlyList<BattleEvent> entries)
         {
             for(int owner=0;owner<2;owner++)overflowCounts[owner]=entries.Count(e=>e.Kind==BattleEventKind.Discard && e.Secondary==1 && e.Owner==owner);
@@ -98,9 +115,10 @@ namespace Unknown.Battle
                 if(created)
                 {
                     var rect=Box(opponentHand,"Hidden opponent card",Vector2.one*0.5f,Vector2.one*0.5f,new Color(0.13f,0.17f,0.25f));
-                    Label(rect,"◇",Vector2.zero,Vector2.one,23,new Color(0.62f,0.52f,0.79f)); rect.gameObject.AddComponent<HandCardMotion>(); backViews.Add(rect);
+                    rect.gameObject.AddComponent<HandCardMotion>(); backViews.Add(rect);
                 }
                 backViews[i].GetComponent<HandCardMotion>().Layout(new Vector2((i-(enemyCount-1)/2f)*(backWidth+backGap),0),new Vector2(backWidth,64),handReflowDuration,created);
+                ApplyCardBack(backViews[i]);
                 if(i<enemy.Hand.Count && enemy.Hand[i]!=null)cardViews[enemy.Hand[i].InstanceID]=backViews[i];
             }
             RefreshOpponentReveal();
@@ -126,7 +144,7 @@ namespace Unknown.Battle
             Vector2 origin=(Vector2)rect.parent.InverseTransformPoint(deckMarkers[own ? 0 : 1].position);
             rect.anchoredPosition=origin; rect.localScale=Vector3.one*0.55f;
             RectTransform cover=null;
-            if(own) { cover=Box(rect,"Drawing card back",Vector2.zero,Vector2.one,new Color(0.13f,0.17f,0.25f)); Label(cover,"◇",Vector2.zero,Vector2.one,23,new Color(0.62f,0.52f,0.79f)); }
+            if(own) { cover=Box(rect,"Drawing card back",Vector2.zero,Vector2.one,new Color(0.13f,0.17f,0.25f));ApplyCardBack(cover); }
             var group=rect.GetComponent<CanvasGroup>(); if(group==null)group=rect.gameObject.AddComponent<CanvasGroup>(); group.blocksRaycasts=false;
             yield return HandStep(drawMoveDuration,t=> { rect.anchoredPosition=Vector2.Lerp(origin,destination,t)+Vector2.up*Mathf.Sin(t*Mathf.PI)*35; rect.localScale=Vector3.one*Mathf.Lerp(0.55f,1,t); });
             if(own)yield return HandStep(drawFlipDuration,t=> { rect.localScale=new Vector3(Mathf.Abs(1-2*t),1,1); if(t>=0.5f && cover!=null)cover.gameObject.SetActive(false); });

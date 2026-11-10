@@ -70,7 +70,7 @@ namespace Unknown.Battle
             if(own)handViews.TryGetValue(e.TargetID,out original);else original=backViews.LastOrDefault();
             RectTransform ghost;
             if(original!=null) {ghost=Instantiate(original.gameObject,dragLayer).GetComponent<RectTransform>();foreach(var behaviour in ghost.GetComponentsInChildren<MonoBehaviour>())if(!(behaviour is Graphic))behaviour.enabled=false;}
-            else {ghost=Box(dragLayer,"Anonymous discard",Vector2.one*0.5f,Vector2.one*0.5f,new Color(0.13f,0.17f,0.25f));ghost.sizeDelta=new Vector2(70,100);Label(ghost,"◇",Vector2.zero,Vector2.one,24,Color.white);}
+            else {ghost=Box(dragLayer,"Anonymous discard",Vector2.one*0.5f,Vector2.one*0.5f,new Color(0.13f,0.17f,0.25f));ghost.sizeDelta=new Vector2(70,100);ApplyCardBack(ghost);}
             foreach(var g in ghost.GetComponentsInChildren<Graphic>())g.raycastTarget=false;
             ghost.anchorMin=ghost.anchorMax=Vector2.one*0.5f;ghost.position=original!=null ? original.position : opponentHand.position;
             var from=ghost.anchoredPosition;var to=(Vector2)dragLayer.InverseTransformPoint(graveMarkers[own ? 0 : 1].position);var group=ghost.GetComponent<CanvasGroup>();if(group==null)group=ghost.gameObject.AddComponent<CanvasGroup>();group.blocksRaycasts=false;
@@ -79,7 +79,7 @@ namespace Unknown.Battle
         }
         IEnumerator PresentOverflow(BattleEvent e)
         {
-            bool own=e.Owner==ViewPlayer;var ghost=Box(dragLayer,"Overflow draw",Vector2.one*0.5f,Vector2.one*0.5f,new Color(0.13f,0.17f,0.25f));ghost.sizeDelta=new Vector2(72,100);Label(ghost,"◇",Vector2.zero,Vector2.one,25,Color.white);
+            bool own=e.Owner==ViewPlayer;var ghost=Box(dragLayer,"Overflow draw",Vector2.one*0.5f,Vector2.one*0.5f,new Color(0.13f,0.17f,0.25f));ghost.sizeDelta=new Vector2(72,100);ApplyCardBack(ghost);
             foreach(var g in ghost.GetComponentsInChildren<Graphic>())g.raycastTarget=false;
             var from=(Vector2)dragLayer.InverseTransformPoint(deckMarkers[own ? 0 : 1].position);var to=(Vector2)dragLayer.InverseTransformPoint(graveMarkers[own ? 0 : 1].position);var group=ghost.gameObject.AddComponent<CanvasGroup>();group.blocksRaycasts=false;
             yield return HandStep(0.5f,t=>{ghost.anchoredPosition=Vector2.Lerp(from,to,t)+Vector2.left*Mathf.Sin(t*Mathf.PI)*70;ghost.localScale=Vector3.one*Mathf.Lerp(1,0.4f,t);group.alpha=1-t*0.7f;});Destroy(ghost.gameObject);

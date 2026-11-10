@@ -36,8 +36,10 @@ namespace Unknown.Battle
                     string name=map==BattleMap.JokerGame ? "joker" : map==BattleMap.Normal ? "normal" : map.ToString().ToLowerInvariant();
                     var expectedBack=UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/CARD/CardBack/"+name+"-back.png");
                     verify(expectedBack!=null && deckArtwork.All(a=>a.texture==expectedBack && a.gameObject.activeSelf),"Both decks use supplied back for "+map);
+                    verify(backViews.Count>0 && backViews.All(v=>v.Find("Card Back Artwork").GetComponent<RawImage>().texture==expectedBack && v.GetComponentsInChildren<Text>().Length==0),"Hidden opponent hand uses only the map back: "+map);
                     checkRecipient=1;Refresh();yield return null;
                     verify(deckArtwork.All(a=>a.texture==expectedBack) && discardButton.transform==deckMarkers[0] && deckMarkers[1].GetComponent<Button>()==null,"Recipient view keeps map back and only local deck can discard: "+map);
+                    verify(backViews.Count>0 && backViews.All(v=>v.Find("Card Back Artwork").GetComponent<RawImage>().texture==expectedBack),"Other recipient sees matching hidden card backs: "+map);
                     if(map==BattleMap.Normal || map==BattleMap.JokerGame)foreach(int width in new[]{1280,1920})verify(File.Exists(CaptureAttackFrame(width,ownBoard,"DeckBack-"+map,false)),"Rendered deck back for "+map+" at "+width);
                 }
                 checkRecipient=0;CheckFixture();for(int i=0;i<7;i++)CheckHand("Heart_2");engine.DrainEvents();engine.Draw(0,3);var entries=engine.DrainEvents();PrepareHandPlayback(entries);Refresh();yield return null;

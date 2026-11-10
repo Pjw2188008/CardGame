@@ -1,0 +1,61 @@
+﻿{
+    "total":  788,
+    "suites":  [
+                   {
+                       "suite":  "UNKNOWN-AttackUI-Checks.json",
+                       "passed":  312,
+                       "failed":  0,
+                       "errors":  0
+                   },
+                   {
+                       "suite":  "UNKNOWN-DragUI-Checks.json",
+                       "passed":  58,
+                       "failed":  0,
+                       "errors":  0
+                   },
+                   {
+                       "suite":  "UNKNOWN-PvP-Regressions.json",
+                       "passed":  26,
+                       "failed":  0,
+                       "errors":  0
+                   },
+                   {
+                       "suite":  "UNKNOWN-JokerMap-Checks.json",
+                       "passed":  107,
+                       "failed":  0,
+                       "errors":  0
+                   },
+                   {
+                       "suite":  "UNKNOWN-SuitMap-Checks.json",
+                       "passed":  80,
+                       "failed":  0,
+                       "errors":  0
+                   },
+                   {
+                       "suite":  "UNKNOWN-Poker-Checks.json",
+                       "passed":  138,
+                       "failed":  0,
+                       "errors":  0
+                   },
+                   {
+                       "suite":  "UNKNOWN-HandSettings-Checks.json",
+                       "passed":  67,
+                       "failed":  0,
+                       "errors":  0
+                   }
+               ],
+    "sources":  [
+                    {
+                        "file":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.HandActions.cs",
+                        "sha256":  "254F42521BAC52BB9459C28B3EBCD41BDFE82C4A344CC6009413FEECDC6491A2"
+                    },
+                    {
+                        "file":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Hands.cs",
+                        "sha256":  "7791C3A49C6F7CAF631AA67FE42BC88EEF18E875FCE3124FB2B9DA0AFCB52F7E"
+                    },
+                    {
+                        "file":  "Assets/UNKNOWN/Battle/Runtime/BattleUIController.HandSettingsChecks.cs",
+                        "sha256":  "376E3BF3ADEA5DEB426523B753F3B19EEC3AB4D43281E04BD4200B5FB1AB4F98"
+                    }
+                ]
+}
