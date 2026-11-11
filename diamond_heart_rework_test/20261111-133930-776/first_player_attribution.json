@@ -1,0 +1,131 @@
+{
+  "meanTurns": {
+    "commonCompletedLegs": 919,
+    "values": {
+      "Revised": 36.46028291621327,
+      "DiamondReworkOnly": 36.26877040261154,
+      "HeartReworkOnly": 35.369967355821544,
+      "DiamondHeartRework": 33.89771490750816
+    },
+    "contrasts": {
+      "diamondAtOriginalHeart": -0.1915125136017366,
+      "heartAtOriginalDiamond": -1.0903155603917298,
+      "interaction": -1.2807399347116473,
+      "diamondMarginal": -0.8318824809575602,
+      "heartMarginal": -1.7306855277475535,
+      "combinedChange": -2.5625680087051137
+    },
+    "clusterBootstrap95": {
+      "diamondAtOriginalHeart": [
+        -1.3807227414478074,
+        0.9084510851747402
+      ],
+      "heartAtOriginalDiamond": [
+        -2.1282949798226687,
+        -0.007309427006781312
+      ],
+      "interaction": [
+        -2.6836984468651854,
+        0.10877696915804806
+      ],
+      "diamondMarginal": [
+        -1.7157842980130396,
+        -0.022372207411518037
+      ],
+      "heartMarginal": [
+        -2.507678764897074,
+        -0.9088215987988896
+      ],
+      "combinedChange": [
+        -3.7458036994090262,
+        -1.4352909887059202
+      ]
+    }
+  },
+  "firstWinRate": {
+    "commonCompletedLegs": 919,
+    "values": {
+      "Revised": 0.6017410228509249,
+      "DiamondReworkOnly": 0.5908596300326442,
+      "HeartReworkOnly": 0.6039173014145811,
+      "DiamondHeartRework": 0.6311207834602829
+    },
+    "contrasts": {
+      "diamondAtOriginalHeart": -0.01088139281828071,
+      "heartAtOriginalDiamond": 0.0021762785636562088,
+      "interaction": 0.03808487486398249,
+      "diamondMarginal": 0.008161044613710533,
+      "heartMarginal": 0.021218715995647452,
+      "combinedChange": 0.029379760609357986
+    },
+    "clusterBootstrap95": {
+      "diamondAtOriginalHeart": [
+        -0.047788182648337944,
+        0.02928495976032845
+      ],
+      "heartAtOriginalDiamond": [
+        -0.033516239666998876,
+        0.0380455503457422
+      ],
+      "interaction": [
+        -0.010858058348675832,
+        0.08600070258472847
+      ],
+      "diamondMarginal": [
+        -0.019337462127962935,
+        0.03479811922389706
+      ],
+      "heartMarginal": [
+        -0.005405551655551603,
+        0.04594594594594592
+      ],
+      "combinedChange": [
+        -0.00970952591098222,
+        0.06580511831303133
+      ]
+    }
+  },
+  "sameAIFirstWinRate": {
+    "commonCompletedLegs": 283,
+    "values": {
+      "Revised": 0.5971731448763251,
+      "DiamondReworkOnly": 0.5865724381625441,
+      "HeartReworkOnly": 0.5901060070671378,
+      "DiamondHeartRework": 0.6254416961130742
+    },
+    "contrasts": {
+      "diamondAtOriginalHeart": -0.010600706713780994,
+      "heartAtOriginalDiamond": -0.007067137809187329,
+      "interaction": 0.04593639575971742,
+      "diamondMarginal": 0.012367491166077715,
+      "heartMarginal": 0.01590106007067138,
+      "combinedChange": 0.028268551236749095
+    },
+    "clusterBootstrap95": {
+      "diamondAtOriginalHeart": [
+        -0.08474888986177997,
+        0.06024203195761778
+      ],
+      "heartAtOriginalDiamond": [
+        -0.07566413713739799,
+        0.06417388214008773
+      ],
+      "interaction": [
+        -0.050240520656479826,
+        0.1465336134453781
+      ],
+      "diamondMarginal": [
+        -0.03599216733581878,
+        0.06451994504935374
+      ],
+      "heartMarginal": [
+        -0.03516685685861423,
+        0.06667984189723317
+      ],
+      "combinedChange": [
+        -0.04347826086956519,
+        0.09730049832753074
+      ]
+    }
+  }
+}

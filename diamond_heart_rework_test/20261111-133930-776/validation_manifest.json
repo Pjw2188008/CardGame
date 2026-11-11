@@ -1,0 +1,340 @@
+{
+  "compilerErrors": 0,
+  "functionalChecks": 983,
+  "auditChecks": 70633,
+  "versions": [
+    "Revised",
+    "DiamondReworkOnly",
+    "HeartReworkOnly",
+    "DiamondHeartRework"
+  ],
+  "sourceFiles": [
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/CardData.cs",
+      "sha256": "18a767620619c09083a5a9bedc0a18892713832500c987937c858bc198544427"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/DiamondBuffChecks.cs",
+      "sha256": "7de46697be5ee99b9e16214a6f69f5d6e0db0e184fba3a1f1a5402fdc19ee6a1"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/DiamondHeartReworkCatalog.cs",
+      "sha256": "a4c9415180c0a9b4474f2e7688e16205e357fea393eb0026d65ad601d7adf73e"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/DiamondHeartReworkChecks.cs",
+      "sha256": "8fcd3c943417027a948625df38f2605806a764dd0af927237fb09f19bbcf8d18"
+    },
+    {
+      "path": "Assets/UNKNOWN/Multiplayer/Editor/DiamondHeartReworkBatch.cs",
+      "sha256": "89ae1e0e420a18403e10bc9c4c22bafb34be0590a90c03fcd4f60a84918af7a7"
+    }
+  ],
+  "compressedLogs": [
+    {
+      "version": "Revised",
+      "path": "Revised\\20261111-133931-704-f9677374\\effect_events.jsonl.gz",
+      "bytes": 13277018,
+      "originalSHA256": "dd8e6fef95815cb6a16a0d3f795389f5bdfcf73ff299a586d73cdf6ba2ad1344",
+      "gzipSHA256": "b1f2ba2bad466bb509162408adad48a84d7e8e2170a5a88bd68fb77c84173cb9"
+    },
+    {
+      "version": "DiamondReworkOnly",
+      "path": "DiamondReworkOnly\\20261111-134046-011-4bc92dd9\\effect_events.jsonl.gz",
+      "bytes": 13230662,
+      "originalSHA256": "59f0a5fd9fbd82465da45778838e3f1d8ae5c51ae4169cb473da33a80930d2e3",
+      "gzipSHA256": "985dbf9add0bdb16c18932dcbf6b38e817004c92635b64d84e1b0d2d13ff28bd"
+    },
+    {
+      "version": "HeartReworkOnly",
+      "path": "HeartReworkOnly\\20261111-134158-177-9761847c\\effect_events.jsonl.gz",
+      "bytes": 12785623,
+      "originalSHA256": "2870304a5afaa048d8baf1d54f63d5e5828568d7f6bd313597d09cd69347cd6d",
+      "gzipSHA256": "267f7f57dffe199d8c527d82f406ef3d49dde1962ace56a30dcda1264b8324a0"
+    },
+    {
+      "version": "DiamondHeartRework",
+      "path": "DiamondHeartRework\\20261111-134309-508-76bb6fce\\effect_events.jsonl.gz",
+      "bytes": 12298637,
+      "originalSHA256": "5fca6844f660a4d8aa853e13d3cea697492a7244d4b6cc0134f773cc27b3fcc7",
+      "gzipSHA256": "6b5d8947d6ab87cdc01d67c64d293add32c73bfb642ecede161e1756d6f9ecda"
+    }
+  ],
+  "resultFiles": [
+    {
+      "path": "ai_statistics.csv",
+      "sha256": "3b475ac354c299d183138c14a82112ead2fc96f08e62fa8b8bda4050e789bbf7",
+      "bytes": 518734
+    },
+    {
+      "path": "analyze.py",
+      "sha256": "a42d7403fcb0fe4f942c19e182218f1fe5e3187c891864a152c99a93b99eb775",
+      "bytes": 20832
+    },
+    {
+      "path": "audit_checks.json",
+      "sha256": "6a36da403d46cfcae632bcdbed28028786cc82be7ba2ab4a67c2fe118de58044",
+      "bytes": 2947963
+    },
+    {
+      "path": "balance_report.md",
+      "sha256": "657511311dcdcd0f56806d040cd8160110a1bd49cc9e9a7cb5b50a38359756ac",
+      "bytes": 26913
+    },
+    {
+      "path": "balance_summary.json",
+      "sha256": "cf659bd8212d2cb0d75e71c599c0a32b3f58c1a4fb8613521b7499166f6d455c",
+      "bytes": 551930
+    },
+    {
+      "path": "battle_comparison.csv",
+      "sha256": "3d635acea55cb2227ca2ee70c29c21da3e30022384e05c749bfb8a87f8c665b5",
+      "bytes": 5684
+    },
+    {
+      "path": "card_changes.csv",
+      "sha256": "a868c2f3a6553f44537db3844a17796e2eb29bd3a9cb9da6ff06814ece8d5ae5",
+      "bytes": 33553
+    },
+    {
+      "path": "card_effect_statistics.csv",
+      "sha256": "da3755985029d966c316eb9fb8fc23298909221d6ca64a06747bd6b5061a6669",
+      "bytes": 39833
+    },
+    {
+      "path": "card_statistics.csv",
+      "sha256": "e45036ca8c3e2c515eb0c01046715985965cb13768031d4b0b5065a39d6f7f00",
+      "bytes": 138794
+    },
+    {
+      "path": "diamond_vs_heart.csv",
+      "sha256": "ffca7b498c11ccc91af81c6d2bd8e4970bda2e8f43101eec1663eec8b2150bb6",
+      "bytes": 28045
+    },
+    {
+      "path": "experiment.json",
+      "sha256": "329d5dfdb38afcd96ddbcf0fad09a228fb2258917bce54159c0e28aff8652180",
+      "bytes": 651992
+    },
+    {
+      "path": "first_player_attribution.json",
+      "sha256": "03b62cf0e0800a218f554b55ef7b0af9eab04deaf1f16b7ec27ad4baf32641c4",
+      "bytes": 3648
+    },
+    {
+      "path": "heart_effect_statistics.csv",
+      "sha256": "f604db7b539ea0a1dec7a6050cd882d9c869ddab58bd0e55053a7bcc791829d8",
+      "bytes": 7851
+    },
+    {
+      "path": "map_statistics.csv",
+      "sha256": "7338e7b2ada6cbcc0691bd3be4f4ead13e4d067212e14f654e84307173cb1bb4",
+      "bytes": 779884
+    },
+    {
+      "path": "match_results.csv",
+      "sha256": "2e7996f8a40caa95a917ea3ac78dc20ea8df7c143893b5a0f81772ab569fbae4",
+      "bytes": 3926450
+    },
+    {
+      "path": "role_interactions.csv",
+      "sha256": "98696f37dc208472dfb72f0bb6a6e01b835b030c10c470f41d406ec5eaa7da26",
+      "bytes": 3217
+    },
+    {
+      "path": "spade_interactions.csv",
+      "sha256": "8a264b28bd7a3f0c9f2135b2a99df354f7a8eac13b57700fefbc8272e49c6068",
+      "bytes": 3184
+    },
+    {
+      "path": "unknown_timing.csv",
+      "sha256": "24217df74b0e817c21bbb7d0f0fb7285cdeee3f78e7859ad51e6257fc2d11d3e",
+      "bytes": 1568
+    },
+    {
+      "path": "revised_regression\\CardComparison57.md",
+      "sha256": "28be72dcd8e89c3bc776ceef14f7e342f7b8bba95945080539708d01ff2e348a",
+      "bytes": 6370
+    },
+    {
+      "path": "DiamondHeartRework\\20261111-134309-508-76bb6fce\\balance_candidates.json",
+      "sha256": "908eebe432092c7e2c01a82a459715d219caca842c08f343132a9d8073ebd5f8",
+      "bytes": 4527
+    },
+    {
+      "path": "DiamondHeartRework\\20261111-134309-508-76bb6fce\\balance_summary.json",
+      "sha256": "de2e8595d96afd55ae62c6c5318637bfcb6deefe4d8ce8e7d0b50cd4f15b550a",
+      "bytes": 2692411
+    },
+    {
+      "path": "DiamondHeartRework\\20261111-134309-508-76bb6fce\\card_ai_statistics.csv",
+      "sha256": "cedcd8a13aeaeb324042e82ca8f0776e7f291043b6f55107108ded6be7bc0b40",
+      "bytes": 170753
+    },
+    {
+      "path": "DiamondHeartRework\\20261111-134309-508-76bb6fce\\card_effect_statistics.csv",
+      "sha256": "eb2af237d161617df3cb632ce3a3d5ab796be2e5eebbc54cf187eeb24a15f81e",
+      "bytes": 11722
+    },
+    {
+      "path": "DiamondHeartRework\\20261111-134309-508-76bb6fce\\card_map_statistics.csv",
+      "sha256": "01217bd44bedea5db383881309df6ab8614340ede5d281d5485ba2e54675e7bb",
+      "bytes": 255643
+    },
+    {
+      "path": "DiamondHeartRework\\20261111-134309-508-76bb6fce\\card_statistics.csv",
+      "sha256": "da4b427650f23b17fd9a213033d453db8667c3e9cad10864c7222a80b76f668a",
+      "bytes": 45816
+    },
+    {
+      "path": "DiamondHeartRework\\20261111-134309-508-76bb6fce\\effect_events.jsonl.gz",
+      "sha256": "6b5d8947d6ab87cdc01d67c64d293add32c73bfb642ecede161e1756d6f9ecda",
+      "bytes": 12298637
+    },
+    {
+      "path": "DiamondHeartRework\\20261111-134309-508-76bb6fce\\match_results.csv",
+      "sha256": "1ecab97ebad82ca3f51d9873b4e8674942c854ee3a9385b0da57c31a140db335",
+      "bytes": 1044527
+    },
+    {
+      "path": "DiamondHeartRework\\20261111-134309-508-76bb6fce\\test_metadata.json",
+      "sha256": "0d492ba18f8dd30bbb5a53479903f1878b324bf34f08c451169f2697222e4a18",
+      "bytes": 3486229
+    },
+    {
+      "path": "DiamondReworkOnly\\20261111-134046-011-4bc92dd9\\balance_candidates.json",
+      "sha256": "9a8119cb4cc8a1c4fbf0382a13b4863d21901c89a735228db587414ede0d5204",
+      "bytes": 5161
+    },
+    {
+      "path": "DiamondReworkOnly\\20261111-134046-011-4bc92dd9\\balance_summary.json",
+      "sha256": "502de56ce94df69f960c2a0c1b472666fe0b3bd731415ee5b28932aee63c1e87",
+      "bytes": 2704177
+    },
+    {
+      "path": "DiamondReworkOnly\\20261111-134046-011-4bc92dd9\\card_ai_statistics.csv",
+      "sha256": "faa8b267bd95d35236aa2f2537a9f034235bd243f0ff3a18558b12cf17d87a2c",
+      "bytes": 171909
+    },
+    {
+      "path": "DiamondReworkOnly\\20261111-134046-011-4bc92dd9\\card_effect_statistics.csv",
+      "sha256": "e22aa56ae49e1d04a309d753f77ea8d25f7ecba2d818340795659cdd4958b7fa",
+      "bytes": 12155
+    },
+    {
+      "path": "DiamondReworkOnly\\20261111-134046-011-4bc92dd9\\card_map_statistics.csv",
+      "sha256": "7b0f494d72465708f32257a764e7b7ecc532222c02c04c7d31abe60bc030903e",
+      "bytes": 257676
+    },
+    {
+      "path": "DiamondReworkOnly\\20261111-134046-011-4bc92dd9\\card_statistics.csv",
+      "sha256": "bc543638fde055aeb23d6f243abaae102ce4353a8907c5defdd8f40dd2bd7785",
+      "bytes": 46050
+    },
+    {
+      "path": "DiamondReworkOnly\\20261111-134046-011-4bc92dd9\\effect_events.jsonl.gz",
+      "sha256": "985dbf9add0bdb16c18932dcbf6b38e817004c92635b64d84e1b0d2d13ff28bd",
+      "bytes": 13230662
+    },
+    {
+      "path": "DiamondReworkOnly\\20261111-134046-011-4bc92dd9\\match_results.csv",
+      "sha256": "da50076bd3c2a6e1f18c685af71a75b9c449f5c4cb8e0e660b45dee731709a45",
+      "bytes": 1064104
+    },
+    {
+      "path": "DiamondReworkOnly\\20261111-134046-011-4bc92dd9\\test_metadata.json",
+      "sha256": "a66ba85ca734898e69da4e8fe5d3be956f1218aeccfab16fc11730c5fc77ca6f",
+      "bytes": 3556874
+    },
+    {
+      "path": "HeartReworkOnly\\20261111-134158-177-9761847c\\balance_candidates.json",
+      "sha256": "2bfa8eeb26bdc6fa94139221ae84f9a348de3105ee45e1f7ad2bf6c8eae7e434",
+      "bytes": 3274
+    },
+    {
+      "path": "HeartReworkOnly\\20261111-134158-177-9761847c\\balance_summary.json",
+      "sha256": "c4e7db08663092fbcb0888bb690696f33e62ad8f36d42e79f7446ae31c8376ed",
+      "bytes": 2691169
+    },
+    {
+      "path": "HeartReworkOnly\\20261111-134158-177-9761847c\\card_ai_statistics.csv",
+      "sha256": "4dd16bc7582e020f0f8322c290af5030c85fbfcbf6bc9041d1c950ae44d17caf",
+      "bytes": 169818
+    },
+    {
+      "path": "HeartReworkOnly\\20261111-134158-177-9761847c\\card_effect_statistics.csv",
+      "sha256": "4f2f6cce5f2c20b1698e97532eb72be92ed0cea0fe5dbb04fb6d8d79da13e1e2",
+      "bytes": 11756
+    },
+    {
+      "path": "HeartReworkOnly\\20261111-134158-177-9761847c\\card_map_statistics.csv",
+      "sha256": "15409738fdab0b9ffc14ae24df1f56169a5602c3e5f194902301a57621840416",
+      "bytes": 255330
+    },
+    {
+      "path": "HeartReworkOnly\\20261111-134158-177-9761847c\\card_statistics.csv",
+      "sha256": "ab284f48abf518e0989978869d0b45efd4615efd519bb7ba62aff290cf56b6c6",
+      "bytes": 45790
+    },
+    {
+      "path": "HeartReworkOnly\\20261111-134158-177-9761847c\\effect_events.jsonl.gz",
+      "sha256": "267f7f57dffe199d8c527d82f406ef3d49dde1962ace56a30dcda1264b8324a0",
+      "bytes": 12785623
+    },
+    {
+      "path": "HeartReworkOnly\\20261111-134158-177-9761847c\\match_results.csv",
+      "sha256": "694b94ab56645f6ae63036b6bc6bba1fa23d940a5e5a69e136ecfe0892053391",
+      "bytes": 1056702
+    },
+    {
+      "path": "HeartReworkOnly\\20261111-134158-177-9761847c\\test_metadata.json",
+      "sha256": "ed54694c365717bb065f95a9c3e1d2248fc360a01d258f740c8bad660189fd23",
+      "bytes": 3535720
+    },
+    {
+      "path": "Revised\\20261111-133931-704-f9677374\\balance_candidates.json",
+      "sha256": "868c1bf0943d7c9fb754cb1f65634acf4dbb20e3fb6703c55b745a332eb09acd",
+      "bytes": 5164
+    },
+    {
+      "path": "Revised\\20261111-133931-704-f9677374\\balance_summary.json",
+      "sha256": "a8bdd4593a79587c9c7341d30648acede1fca46e7ca55ae9f6c26df5b7f5ccf9",
+      "bytes": 2697462
+    },
+    {
+      "path": "Revised\\20261111-133931-704-f9677374\\card_ai_statistics.csv",
+      "sha256": "d090eb52773e07e81f8597ca67d3d618ed7ab5b1f0f50f7d2cc7e7a04adcbfd5",
+      "bytes": 169558
+    },
+    {
+      "path": "Revised\\20261111-133931-704-f9677374\\card_effect_statistics.csv",
+      "sha256": "e17b159bb031649a8555032e7b65b2ea1109ba0563bbb754e3e561edc038a437",
+      "bytes": 12164
+    },
+    {
+      "path": "Revised\\20261111-133931-704-f9677374\\card_map_statistics.csv",
+      "sha256": "8ba8ab2b4566bfb2ce4fe3f8bc7dcf623ea6d1b479cccef085ecd6f7cab67747",
+      "bytes": 253801
+    },
+    {
+      "path": "Revised\\20261111-133931-704-f9677374\\card_statistics.csv",
+      "sha256": "0f5f423f514124f6af4afbb69a506426d82d951500392a4e5dd2c346da0024fd",
+      "bytes": 45549
+    },
+    {
+      "path": "Revised\\20261111-133931-704-f9677374\\effect_events.jsonl.gz",
+      "sha256": "b1f2ba2bad466bb509162408adad48a84d7e8e2170a5a88bd68fb77c84173cb9",
+      "bytes": 13277018
+    },
+    {
+      "path": "Revised\\20261111-133931-704-f9677374\\match_results.csv",
+      "sha256": "ee2b03e393f6c57e83299cd5c461f64805388a8eb2d619d9b071e55ebb64c7fe",
+      "bytes": 1054106
+    },
+    {
+      "path": "Revised\\20261111-133931-704-f9677374\\test_metadata.json",
+      "sha256": "124d0c0c89ebb247626dc0d6cc7d270cb5655ed02cede87376dd90fc86b52110",
+      "bytes": 3545565
+    }
+  ]
+}

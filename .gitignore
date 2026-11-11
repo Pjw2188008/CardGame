@@ -116,3 +116,6 @@ InitTestScene*.unity*
 
 # Diamond test event logs stay local; share lossless gzip archives.
 /diamond_buff_test/**/effect_events.jsonl
+
+# Rework event logs stay local; commit lossless gzip archives.
+/diamond_heart_rework_test/**/effect_events.jsonl

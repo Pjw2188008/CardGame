@@ -7,7 +7,7 @@ namespace Unknown.Battle
     public enum Suit { Diamond, Spade, Heart, Club, None }
     public enum Rank { Two = 2, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Ace, Jack, Queen, King, Joker }
     public enum CardType { Normal, Joker, Unknown }
-    public enum CardBalanceVersion { Revised=0, Baseline=1, HeartNerf=2, DiamondBuff=3 }
+    public enum CardBalanceVersion { Revised=0, Baseline=1, HeartNerf=2, DiamondBuff=3, DiamondHeartRework=4, DiamondReworkOnly=5, HeartReworkOnly=6 }
     public enum EffectKind { Damage, Heal, ModifyAttack, IncreaseMaxHP, DrawCard, SelfDamage, ChainDamage, RandomDamage, DiscardCard, FirstAttackHeal, GainMana, Exchange, ChainWeaken }
     public enum EffectTarget { Self, Enemy, Ally, AllEnemies, AllAllies, None }
 
@@ -92,7 +92,10 @@ namespace Unknown.Battle
         static readonly Dictionary<string, CardDefinition> cards = BuildRevised(baselineCards);
         static readonly Dictionary<string, CardDefinition> heartNerfCards = BuildHeartNerf(cards);
         static readonly Dictionary<string, CardDefinition> diamondBuffCards = BuildDiamondBuff(cards);
-        public const CardBalanceVersion DefaultVersion = CardBalanceVersion.DiamondBuff;
+        static readonly Dictionary<string, CardDefinition> diamondHeartReworkCards = BuildDiamondHeartRework(cards, CardBalanceVersion.DiamondHeartRework, true, true);
+        static readonly Dictionary<string, CardDefinition> diamondReworkOnlyCards = BuildDiamondHeartRework(cards, CardBalanceVersion.DiamondReworkOnly, true, false);
+        static readonly Dictionary<string, CardDefinition> heartReworkOnlyCards = BuildDiamondHeartRework(cards, CardBalanceVersion.HeartReworkOnly, false, true);
+        public const CardBalanceVersion DefaultVersion = CardBalanceVersion.DiamondHeartRework;
 
         static Dictionary<string, CardDefinition> BuildBaseline()
         {
@@ -109,6 +112,9 @@ namespace Unknown.Battle
                 case CardBalanceVersion.Revised: return cards;
                 case CardBalanceVersion.HeartNerf: return heartNerfCards;
                 case CardBalanceVersion.DiamondBuff: return diamondBuffCards;
+                case CardBalanceVersion.DiamondHeartRework: return diamondHeartReworkCards;
+                case CardBalanceVersion.DiamondReworkOnly: return diamondReworkOnlyCards;
+                case CardBalanceVersion.HeartReworkOnly: return heartReworkOnlyCards;
                 default: throw new ArgumentOutOfRangeException(nameof(version));
             }
         }

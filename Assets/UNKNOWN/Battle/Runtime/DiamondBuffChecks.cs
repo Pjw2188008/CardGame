@@ -46,9 +46,9 @@ namespace Unknown.Battle
             Check(CardDatabase.Get("Heart_Q", CardBalanceVersion.DiamondBuff).EffectList[0].Amount == 3
                 && CardDatabase.Get("Heart_K", CardBalanceVersion.DiamondBuff).EffectList[1].Amount == 5,
                 "DiamondBuff uses original Revised hearts");
-            Check(CardDatabase.Get("Diamond_4").Version == CardBalanceVersion.DiamondBuff
-                && new BattleConfig().CardVersion == CardBalanceVersion.DiamondBuff,
-                "Normal entry points select DiamondBuff");
+            Check(CardDatabase.Get("Diamond_4", CardBalanceVersion.DiamondBuff).Version == CardBalanceVersion.DiamondBuff
+                && CardDatabase.Get("Diamond_7", CardBalanceVersion.DiamondBuff).EffectList[0].Amount == 3,
+                "DiamondBuff remains independently addressable");
             Check(CardDatabase.Get("Diamond_4", CardBalanceVersion.Revised).EffectList[0].Amount == 3
                 && CardDatabase.Get("Diamond_7", CardBalanceVersion.Revised).EffectList[0].Amount == 2
                 && CardDatabase.Get("Diamond_10", CardBalanceVersion.Revised).EffectList[0].Amount == 5,
