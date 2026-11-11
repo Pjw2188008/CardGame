@@ -113,3 +113,6 @@ InitTestScene*.unity*
 
 # Heart comparison raw logs stay local; gzip copies are shareable.
 /heart_nerf_test/**/effect_events.jsonl
+
+# Diamond test event logs stay local; share lossless gzip archives.
+/diamond_buff_test/**/effect_events.jsonl

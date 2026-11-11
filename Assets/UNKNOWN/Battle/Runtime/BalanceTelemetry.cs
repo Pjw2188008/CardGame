@@ -83,6 +83,7 @@ namespace Unknown.Battle
     {
         public int match,turn,source,target,amount;
         public int requested,before,after;
+        public int secondaryAmount;
         public int actor,commandFirst,commandSecond,effectIndex;
         public int beforeAttack,afterAttack,beforeMaxHP,afterMaxHP,spentMana;
         public bool paid;
@@ -157,10 +158,10 @@ namespace Unknown.Battle
             }
             return row;
         }
-        void Log(string kind,int source,int target,int amount,string effect="",string outcome="")
+        void Log(string kind,int source,int target,int amount,string effect="",string outcome="",int secondary=0)
         {
             if(detail==null)return;
-            detail(new BalanceDetail{match=match,turn=engine.State.TurnNumber,kind=kind,source=source,target=target,amount=amount,cardID=Find(source)?.card.Definition.CardID ?? "",effect=effect,outcome=outcome});
+            detail(new BalanceDetail{match=match,turn=engine.State.TurnNumber,kind=kind,source=source,target=target,amount=amount,secondaryAmount=secondary,cardID=Find(source)?.card.Definition.CardID ?? "",targetCardID=Find(target)?.card.Definition.CardID ?? "",targetCardType=Find(target)?.card.Definition.CardType.ToString() ?? "",effect=effect,outcome=outcome});
         }
         public void Opportunities(IEnumerable<AiMove> moves)
         {
@@ -175,7 +176,7 @@ namespace Unknown.Battle
         {
             bool mapMarker=e.Kind==BattleEventKind.MapEvent || e.Kind==BattleEventKind.SuitMapTurn;
             var source=mapMarker ? null : Find(e.SourceID);var target=Find(e.TargetID);
-            Log(e.Kind.ToString(),mapMarker ? -1 : e.SourceID,e.TargetID,e.Amount);
+            Log(e.Kind.ToString(),mapMarker ? -1 : e.SourceID,e.TargetID,e.Amount,secondary:e.Secondary);
             switch(e.Kind) {
                 case BattleEventKind.Draw:
                     if(e.Secondary==1 && target!=null)target.stats.overflowDraws++;

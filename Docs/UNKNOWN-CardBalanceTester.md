@@ -80,7 +80,7 @@ CSV는 UTF-8 BOM으로 저장한다. JSON은 UTF-8이다. 기본 능력치와 �
 
 ## 카드 개편 대응 비교
 
-현재 일반 플레이는 HeartNerf 카드 데이터를 사용한다. 하향 전 Revised와 기존 Baseline을 보존했다. 전후 비교는 Tools > UNKNOWN > Card Redesign Comparison 창에서 Start 1000-Match Comparison으로 실행한다. 시드 기본값은 7312026이다. 주 비교 960판과 Random 스트레스 40판을 실행하고 각 코호트 및 통합 9개 파일을 새 폴더에 저장한다.
+현재 일반 플레이는 DiamondBuff 카드 데이터를 사용한다. Revised, HeartNerf와 기존 Baseline을 별도 보존했다. 전후 비교는 Tools > UNKNOWN > Card Redesign Comparison 창에서 Start 1000-Match Comparison으로 실행한다. 시드 기본값은 7312026이다. 주 비교 960판과 Random 스트레스 40판을 실행하고 각 코호트 및 통합 9개 파일을 새 폴더에 저장한다.
 
 이번 실제 결과는 UNKNOWN-CardBalanceRedesign.md와 UNKNOWN-CardBalanceRedesign-57Cards.md를 참고한다. schemaVersion 2.0에서 카드 버전, 효과 요청량·실제량·전후 상태, 현재 마나 획득·낭비, 교환, 공격 후 회복, 유료·무료 조커, 대응 초기 덱과 AI RNG 기록을 추가했다. 미종료 경기는 완료 통계에서 제외하며 원본 이벤트를 남긴다. 자연 사용 200회와 맵별 30회 미달은 표본 부족이다.
 
@@ -93,8 +93,14 @@ CSV는 UTF-8 BOM으로 저장한다. JSON은 UTF-8이다. 기본 능력치와 �
 
 ## 하트 생존 성능 하향 실험
 
-현재 기본 카드 버전은 HeartNerf다. Revised는 하향 전 비교용으로 보존되어 있다. ♥9 광역 회복 2, ♥Q 최대·현재 HP +2 및 광역 회복 2, ♥K 광역 회복 3 및 최초 능동 공격 후 생존 자기 회복 3을 적용했다.
+하트 하향 실험 버전은 HeartNerf다. Revised는 하향 전 비교용으로 보존되어 있다. ♥9 광역 회복 2, ♥Q 최대·현재 HP +2 및 광역 회복 2, ♥K 광역 회복 3 및 최초 능동 공격 후 생존 자기 회복 3을 적용했다.
 
 `Tools > UNKNOWN > Run Heart Nerf Comparison`을 실행하면 기존 AI를 사용해 Revised 1,000판과 HeartNerf 1,000판을 대응 비교한다. 모두 포커 시너지를 끈다. 실행 결과는 `heart_nerf_test/<UTC 실행 시각>/` 아래 저장한다. 실제 이번 실행의 통계와 해석은 프로젝트 루트의 `heart_nerf_test/HeartNerfReport.md`에서 확인한다.
 
 상세 이벤트 gzip은 원본과 SHA-256이 일치하며 업로드할 수 있다. 새로운 원본 `effect_events.jsonl`은 자동으로 Git에서 제외한다. 기존 Windows EXE에 새 수치를 반영하려면 별도 빌드가 필요하다.
+
+## 다이아 돌파 성능 강화 실험
+
+현재 기본 버전 DiamondBuff는 하향 전 Revised에서 ♦4 피해 4, ♦7 서로 다른 적 최대 2명에게 각각 피해 3, ♦10 피해 6만 적용한다. HeartNerf는 독립적으로 보존한다.
+
+`Tools > UNKNOWN > Run Diamond Buff Comparison`을 누르면 Revised 1,000판과 DiamondBuff 1,000판을 같은 일정으로 비교한다. 결과와 해석은 `diamond_buff_test/DiamondBuffReport.md` 및 날짜별 실행 폴더의 comparison CSV/JSON에 있다. 상세 이벤트는 검증된 gzip으로 보관하며 원본 JSONL은 Git에서 제외한다. 새 수치를 Windows EXE에 넣으려면 별도 빌드가 필요하다.

@@ -1,0 +1,200 @@
+{
+  "compilerErrors": 0,
+  "functionalChecks": 594,
+  "auditChecks": 33572,
+  "originalRevisedReproduced": 1000,
+  "sourceFiles": [
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/CardData.cs",
+      "sha256": "1df71c3e0cb87c057ec02e10f4a89a0dc16fb1eb0aea1260dec93ee9653d45ee"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/HeartNerfChecks.cs",
+      "sha256": "8f9dcd9e14d7f78a13d898b953fefbba8cdabdf4bf1ce5ab2171befa780023a9"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BalanceTelemetry.cs",
+      "sha256": "9adac0f290b41dfdcddcc447f470c8cbc8339cdc41c50f6f6d8640761ad8abe8"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/DiamondBuffCardCatalog.cs",
+      "sha256": "7e537f84694855001d908a18cf2804c57e7f09b4ce463c8adfdb766d755f8b97"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/DiamondBuffChecks.cs",
+      "sha256": "77492c048179b4b33476c3ceee7095af0fc389997d9741604ce0e225bb56ac17"
+    },
+    {
+      "path": "Assets/UNKNOWN/Multiplayer/Editor/DiamondBuffBatch.cs",
+      "sha256": "f6520899c7de5d4ae2db1a704bcef43b2af96318fdcd96f778ec0fc5bf7989b6"
+    }
+  ],
+  "compressedLogs": [
+    {
+      "version": "Revised",
+      "path": "Revised\\20261111-131452-025-d9c004ee\\effect_events.jsonl.gz",
+      "bytes": 13321412,
+      "originalSHA256": "ae593460b9d13155c69b849113a22d665a138c1c9c920bef197401a861626233",
+      "gzipSHA256": "8ec98269006df295e3a67d1454a33897e5cc6f154c3e1f234d572eb54d87421c"
+    },
+    {
+      "version": "DiamondBuff",
+      "path": "DiamondBuff\\20261111-131607-520-13270c8b\\effect_events.jsonl.gz",
+      "bytes": 13354857,
+      "originalSHA256": "36123a874c46b8b7a4e4dca90aa0e6aa19d75e70e04d9950e1f440533f080925",
+      "gzipSHA256": "b8486377b4e2245723dda1f6dd52cfd2c95dba80fdd2de8d5299a1fdbb100c88"
+    }
+  ],
+  "resultFiles": [
+    {
+      "path": "experiment.json",
+      "sha256": "ce0eada679105fa9224868a4ff89b59a4ba055f741b3c85930a2d2306e88680b",
+      "bytes": 469594
+    },
+    {
+      "path": "comparison\\analyze.py",
+      "sha256": "0aa11b5da64f30870e99a918ecdc0fea9245ad1de045b667b92f7bec4de8c41d",
+      "bytes": 17269
+    },
+    {
+      "path": "comparison\\audit_checks.json",
+      "sha256": "32c2e127aa5e2784307c2d55b1a2df2fae4f886dae4c8e470d7ddca3287a2731",
+      "bytes": 1291509
+    },
+    {
+      "path": "comparison\\card_changes.csv",
+      "sha256": "371d84d32ea335d442e76122489dabcd241d0856eeff2d21a326e299d5baab2f",
+      "bytes": 125
+    },
+    {
+      "path": "comparison\\card_performance.csv",
+      "sha256": "fe09586970d93512b7b2b07a7f1eab820781949551b0096336c6403d8de85e5d",
+      "bytes": 8404
+    },
+    {
+      "path": "comparison\\comparison.json",
+      "sha256": "a3ffd5eb3d82e5f0c34ed2fd83e66c219dc12617c54c348fff91457b3d8b5ad9",
+      "bytes": 117984
+    },
+    {
+      "path": "comparison\\DiamondBuffReport.md",
+      "sha256": "65197fe525d12b80143b7890c260734168c8c2893ffc34bb4a003c3741b4508a",
+      "bytes": 13134
+    },
+    {
+      "path": "comparison\\diamond_vs_heart.csv",
+      "sha256": "88ace5ae1b0ad0b1be4fd96ce01a95392a82f5cd4f8a12b6cdf7f2c94a06299d",
+      "bytes": 16298
+    },
+    {
+      "path": "comparison\\match_comparison.csv",
+      "sha256": "224334a3573621b447b43718a65abca213c0477b787665b8e6179d95c4ece52e",
+      "bytes": 2667
+    },
+    {
+      "path": "comparison\\paired_completed_games.csv",
+      "sha256": "a7c4b8b39440d66b17173e3f4761fab35326bf7b4c3b40c0528ac7838b97ca36",
+      "bytes": 34747
+    },
+    {
+      "path": "comparison\\relative_suit_performance.csv",
+      "sha256": "67b3aae3d33abe90cbd66c9c7effc97399de075a0da641d3597f3fa7a60816a8",
+      "bytes": 1515
+    },
+    {
+      "path": "revised_regression\\CardComparison57.md",
+      "sha256": "28be72dcd8e89c3bc776ceef14f7e342f7b8bba95945080539708d01ff2e348a",
+      "bytes": 6370
+    },
+    {
+      "path": "DiamondBuff\\20261111-131607-520-13270c8b\\balance_candidates.json",
+      "sha256": "171ee25d904257c49d41bf5ab4b4b723a211744cc48fcf798fba01e9fe386eae",
+      "bytes": 5159
+    },
+    {
+      "path": "DiamondBuff\\20261111-131607-520-13270c8b\\balance_summary.json",
+      "sha256": "3db38d5b93680d8debac067474879a6d6c9284c298fc16ea5c560b25f10e8712",
+      "bytes": 2700046
+    },
+    {
+      "path": "DiamondBuff\\20261111-131607-520-13270c8b\\card_ai_statistics.csv",
+      "sha256": "16607b0fc3649580de293173b34400bebdd83984b32960ef01c7a592159c1845",
+      "bytes": 170137
+    },
+    {
+      "path": "DiamondBuff\\20261111-131607-520-13270c8b\\card_effect_statistics.csv",
+      "sha256": "c8faa9d2922bd979c85791d6dddd6f8ba9838017def146fee7f7411f4e63a484",
+      "bytes": 12195
+    },
+    {
+      "path": "DiamondBuff\\20261111-131607-520-13270c8b\\card_map_statistics.csv",
+      "sha256": "91fe20ae8b0c6f23b0a40ff8a484f1f40b428eb0c479450ca44c89b411b3fc51",
+      "bytes": 255453
+    },
+    {
+      "path": "DiamondBuff\\20261111-131607-520-13270c8b\\card_statistics.csv",
+      "sha256": "077ffd3818048533e127e8df65a7478899bc82729d1d1c5f3496a2016e17c906",
+      "bytes": 45936
+    },
+    {
+      "path": "DiamondBuff\\20261111-131607-520-13270c8b\\effect_events.jsonl.gz",
+      "sha256": "b8486377b4e2245723dda1f6dd52cfd2c95dba80fdd2de8d5299a1fdbb100c88",
+      "bytes": 13354857
+    },
+    {
+      "path": "DiamondBuff\\20261111-131607-520-13270c8b\\match_results.csv",
+      "sha256": "94d4937a2c3501dc3e84d2e432b837ef9d25741d90ad92df7b7d1aa1541b796b",
+      "bytes": 1059880
+    },
+    {
+      "path": "DiamondBuff\\20261111-131607-520-13270c8b\\test_metadata.json",
+      "sha256": "e56b58e4fbb9b52771e016a28e57c5af386f76a981cba988957e03f6fbc16738",
+      "bytes": 3555880
+    },
+    {
+      "path": "Revised\\20261111-131452-025-d9c004ee\\balance_candidates.json",
+      "sha256": "abec95e71de05619e239577b415bb4dae8140073a94474c00d5b4aac6386f4bf",
+      "bytes": 5157
+    },
+    {
+      "path": "Revised\\20261111-131452-025-d9c004ee\\balance_summary.json",
+      "sha256": "66410b809005caf560724ab2ca4328209b00791a3e121bea19cccb860c5fd727",
+      "bytes": 2697867
+    },
+    {
+      "path": "Revised\\20261111-131452-025-d9c004ee\\card_ai_statistics.csv",
+      "sha256": "d2c833a458efa7557d4ae9b229fe07640ee016f3204eb16969deb02fc4551888",
+      "bytes": 169647
+    },
+    {
+      "path": "Revised\\20261111-131452-025-d9c004ee\\card_effect_statistics.csv",
+      "sha256": "d11b4a8a5dbe1b66a2cd03225fac9c1d45b7f25f371ea549ddcb688e3c42d0f2",
+      "bytes": 12184
+    },
+    {
+      "path": "Revised\\20261111-131452-025-d9c004ee\\card_map_statistics.csv",
+      "sha256": "ee9c5b9d574625d5d5ec8e38cb654038d166f15ace2e2edabdcead43b68cf8f7",
+      "bytes": 254097
+    },
+    {
+      "path": "Revised\\20261111-131452-025-d9c004ee\\card_statistics.csv",
+      "sha256": "3048f8123e79375033eb2546050ae28606cbbf26253e3924b381d06d9a1d5ae5",
+      "bytes": 45637
+    },
+    {
+      "path": "Revised\\20261111-131452-025-d9c004ee\\effect_events.jsonl.gz",
+      "sha256": "8ec98269006df295e3a67d1454a33897e5cc6f154c3e1f234d572eb54d87421c",
+      "bytes": 13321412
+    },
+    {
+      "path": "Revised\\20261111-131452-025-d9c004ee\\match_results.csv",
+      "sha256": "50b097726260003656f925cfe9384aa8212920cf7e846fcb151a5ced51819cb0",
+      "bytes": 1055860
+    },
+    {
+      "path": "Revised\\20261111-131452-025-d9c004ee\\test_metadata.json",
+      "sha256": "0f66dafbdd12b2eaa6c18126467c00583d999b748ef4d8a2dec63f6db68c86b2",
+      "bytes": 3550891
+    }
+  ]
+}

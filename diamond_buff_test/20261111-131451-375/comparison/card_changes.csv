@@ -1,0 +1,4 @@
+﻿cardID,effectIndex,kind,before,after
+Diamond_4,0,RandomDamage,3,4
+Diamond_7,0,ChainDamage,2,3
+Diamond_10,0,Damage,5,6

@@ -7,7 +7,7 @@ namespace Unknown.Battle
     public enum Suit { Diamond, Spade, Heart, Club, None }
     public enum Rank { Two = 2, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Ace, Jack, Queen, King, Joker }
     public enum CardType { Normal, Joker, Unknown }
-    public enum CardBalanceVersion { Revised=0, Baseline=1, HeartNerf=2 }
+    public enum CardBalanceVersion { Revised=0, Baseline=1, HeartNerf=2, DiamondBuff=3 }
     public enum EffectKind { Damage, Heal, ModifyAttack, IncreaseMaxHP, DrawCard, SelfDamage, ChainDamage, RandomDamage, DiscardCard, FirstAttackHeal, GainMana, Exchange, ChainWeaken }
     public enum EffectTarget { Self, Enemy, Ally, AllEnemies, AllAllies, None }
 
@@ -91,7 +91,8 @@ namespace Unknown.Battle
         static readonly Dictionary<string, CardDefinition> baselineCards = BuildBaseline();
         static readonly Dictionary<string, CardDefinition> cards = BuildRevised(baselineCards);
         static readonly Dictionary<string, CardDefinition> heartNerfCards = BuildHeartNerf(cards);
-        public const CardBalanceVersion DefaultVersion = CardBalanceVersion.HeartNerf;
+        static readonly Dictionary<string, CardDefinition> diamondBuffCards = BuildDiamondBuff(cards);
+        public const CardBalanceVersion DefaultVersion = CardBalanceVersion.DiamondBuff;
 
         static Dictionary<string, CardDefinition> BuildBaseline()
         {
@@ -107,6 +108,7 @@ namespace Unknown.Battle
                 case CardBalanceVersion.Baseline: return baselineCards;
                 case CardBalanceVersion.Revised: return cards;
                 case CardBalanceVersion.HeartNerf: return heartNerfCards;
+                case CardBalanceVersion.DiamondBuff: return diamondBuffCards;
                 default: throw new ArgumentOutOfRangeException(nameof(version));
             }
         }

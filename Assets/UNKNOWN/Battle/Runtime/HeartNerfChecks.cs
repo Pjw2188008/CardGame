@@ -43,9 +43,9 @@ namespace Unknown.Battle
                 if (before.CardID != "Heart_9" && before.CardID != "Heart_Q" && before.CardID != "Heart_K")
                     Check(before.Description == after.Description, "Unchanged description " + before.CardID);
             }
-            Check(CardDatabase.Get("Heart_9").Version == CardBalanceVersion.HeartNerf
-                && new BattleConfig().CardVersion == CardBalanceVersion.HeartNerf,
-                "Normal entry points use HeartNerf");
+            Check(CardDatabase.Get("Heart_9", CardBalanceVersion.HeartNerf).Version == CardBalanceVersion.HeartNerf
+                && CardDatabase.Get("Heart_Q", CardBalanceVersion.HeartNerf).EffectList[0].Amount == 2,
+                "HeartNerf remains available independently of the default version");
             Check(CardDatabase.Get("Heart_9", CardBalanceVersion.Revised).EffectList[0].Amount == 3
                 && CardDatabase.Get("Heart_Q", CardBalanceVersion.Revised).EffectList[0].Amount == 3
                 && CardDatabase.Get("Heart_K", CardBalanceVersion.Revised).EffectList[1].Amount == 5,
@@ -74,7 +74,7 @@ namespace Unknown.Battle
                 var engine = Fixture();
                 var ally = Unit(engine, "Heart_A");
                 ally.CurrentHP = 4;
-                var card = engine.NewCard(CardDatabase.Get(id), 0);
+                var card = engine.NewCard(CardDatabase.Get(id, CardBalanceVersion.HeartNerf), 0);
                 engine.State.Players[0].HandCards.Add(card);
                 int oldMax = ally.MaxHP;
                 Check(engine.Summon(0, card.InstanceID, 1), "Summon " + id);
