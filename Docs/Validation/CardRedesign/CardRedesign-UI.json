@@ -1,0 +1,18 @@
+{
+    "completed": true,
+    "passed": [
+        "Exchange prompt exposes skip button after summon animation",
+        "Exchange blocks ordinary summon drag",
+        "Actual hand pointer click chooses exchange discard",
+        "Actual exchange applies draw then mana through shared command",
+        "Actual skip button click reaches exchange command",
+        "Skipping keeps material, commits original summon and follows with mana",
+        "Actual first Spade K target click deals damage",
+        "UI highlights fresh living weakening target after first target dies",
+        "Actual second target click resolves weakening",
+        "Spade K UI finishes without stale target deadlock",
+        "Rendered redesigned card text and field"
+    ],
+    "failed": [],
+    "errors": []
+}

@@ -142,7 +142,7 @@ namespace Unknown.Battle
             animations.DiscardPresentation=PresentDiscard;
             animations.MapPresentation = PresentMapEvent;
             animations.PokerPresentation = PresentPoker;
-            BuildDeckMarkers(); BuildDragLayer();BuildHandTools();
+            BuildDeckMarkers(); BuildDragLayer();BuildHandTools();BuildExchangeTools();
         }
 
         void BuildMana(int row, float bottom, float top)
@@ -321,6 +321,7 @@ namespace Unknown.Battle
         void SelectHand(CardInstance card)
         {
             if (Blocked() || card==null) return;
+            if(engine.NeedsExchange){ExchangeCard(card.InstanceID);return;}
             if(discardMode) {DiscardSelected(card);return;}
             if(combinationMode) { SelectCombinationMaterial(card); return; }
             if (engine.NeedsTarget) { feedback = engine.TargetPrompt; Refresh(); return; }
@@ -367,7 +368,7 @@ namespace Unknown.Battle
         {
             if(tutorial!=null)return;
             if (Blocked()) return;
-            if (engine.NeedsTarget) { feedback = engine.TargetPrompt; Refresh(); return; }
+            if (engine.NeedsTarget && !engine.NeedsExchange) { feedback = engine.TargetPrompt; Refresh(); return; }
             if (online != null) online.Submit(BattleAction.EndTurn); else StartCoroutine(TransitionTurn(false));
         }
         void Combine()
@@ -473,7 +474,7 @@ namespace Unknown.Battle
         {
             RefreshHandTools();
             bool allowed = !Blocked();
-            endTurn.interactable = allowed && !engine.NeedsTarget;
+            endTurn.interactable = allowed && (!engine.NeedsTarget || engine.NeedsExchange);
             RefreshCombinationSlots();
             directAttack.interactable = allowed && !engine.NeedsTarget && attackerID >= 0 && engine.State.Players[1 - ViewPlayer].Board.All(c => c == null);
             revealButton.interactable = allowed;

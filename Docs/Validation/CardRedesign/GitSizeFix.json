@@ -1,0 +1,7 @@
+{
+  "backupBranch": "backup/before-log-compression-20261111-122627",
+  "originalCommit": "8d8e1e5eb13a3b0b80b7501640ecd525cd6c6831",
+  "logs": 6,
+  "originalBytes": 700401030.0,
+  "compressedBytes": 19301233.0
+}

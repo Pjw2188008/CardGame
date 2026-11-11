@@ -1,0 +1,10 @@
+{
+  "results": "D:\\git\\ECHO-\\Echogame\\CardGame\\BalanceResults\\20261111-005432-349-31612b2d",
+  "replay": "D:\\git\\ECHO-\\Echogame\\CardGame\\BalanceResults\\Replay\\20261111-005505-914-64c5b007",
+  "cardMatches": 1000,
+  "completed": 993,
+  "unresolved": 7,
+  "errors": 0,
+  "verificationChecks": 81,
+  "regressionChecks": 869
+}

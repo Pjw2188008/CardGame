@@ -22,7 +22,7 @@ namespace Unknown.Battle
                 var backgroundNames=new[]{"O_MAP","J_MAP","D_MAP","S_MAP","H_MAP","C_MAP"};
                 foreach(BattleMap map in Enum.GetValues(typeof(BattleMap))) {
                     checkRecipient=0;CheckFixture();
-                    var authority=new BattleEngine(4,new BattleConfig{Map=map,MapRules=definitions,StartingHand=0});
+                    var authority=new BattleEngine(4,new BattleConfig {CardVersion=CardBalanceVersion.Baseline,Map=map,MapRules=definitions,StartingHand=0});
                     var expected=UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Map/"+backgroundNames[(int)map]+".png");
                     foreach(int recipient in new[]{0,1}) {
                         checkRecipient=recipient;engine=BattleEngine.CreateView(BattleSnapshot.For(authority,recipient,1,0,false,new BattleEvent[0]));Refresh();
@@ -37,7 +37,7 @@ namespace Unknown.Battle
                 foreach(var map in new[]{BattleMap.Diamond,BattleMap.Spade,BattleMap.Heart,BattleMap.Club})
                 {
                     checkRecipient=0; CheckFixture();
-                    engine=new BattleEngine(4,new BattleConfig{Map=map,MapRules=definitions,StartingHand=0,StartingMana=10,ShuffleDecks=false},new CheckDice(0));
+                    engine=new BattleEngine(4,new BattleConfig {CardVersion=CardBalanceVersion.Baseline,Map=map,MapRules=definitions,StartingHand=0,StartingMana=10,ShuffleDecks=false},new CheckDice(0));
                     foreach(var p in engine.State.Players)p.HandCards.Clear(); engine.DrainEvents(); presentedMapEvents.Clear(); ResetHandViews();
                     var info=MapInfo(map); var card=CheckHand(info.suit+"_2"); var enemy=CheckUnit("Heart_K",1); Refresh();
                     verify(engine.Summon(0,card.InstanceID,0),"Matching suit summon succeeds: "+map);

@@ -60,6 +60,7 @@ namespace Unknown.Battle
         void HandleBattleEscape()
         {
             if(GamePreferences.IsOpen || GamePreferences.ConsumedEscapeFrame==Time.frameCount)return;
+            if(engine!=null && engine.NeedsExchange && !Blocked()){ExchangeCard(-1);return;}
             if(discardMode || combinationMode || AttackDragging || dragged!=null || handID>=0 || attackerID>=0)CancelInteractionSelection();
             else ToggleBattleMenu();
         }

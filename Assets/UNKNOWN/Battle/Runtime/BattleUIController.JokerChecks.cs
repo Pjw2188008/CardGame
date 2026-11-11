@@ -16,7 +16,7 @@ namespace Unknown.Battle
         void JokerFixture()
         {
             checkRecipient=0; CheckFixture();
-            engine=new BattleEngine(42,new BattleConfig{Map=BattleMap.JokerGame,StartingHand=0,StartingMana=10,MapEvents=new JokerEventDefinition[0],ShuffleDecks=false},new CheckDice(0));
+            engine=new BattleEngine(42,new BattleConfig {CardVersion=CardBalanceVersion.Baseline,Map=BattleMap.JokerGame,StartingHand=0,StartingMana=10,MapEvents=new JokerEventDefinition[0],ShuffleDecks=false},new CheckDice(0));
             foreach(var p in engine.State.Players)p.HandCards.Clear(); engine.DrainEvents(); engine.ResetMapEventForDebug();
             presentedMapEvents.Clear(); ResetHandViews();
         }

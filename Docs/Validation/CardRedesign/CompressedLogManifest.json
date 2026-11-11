@@ -1,0 +1,50 @@
+[
+  {
+    "original": "BalanceResults/20261111-005432-349-31612b2d/effect_events.jsonl",
+    "compressed": "BalanceResults/20261111-005432-349-31612b2d/effect_events.jsonl.gz",
+    "originalBytes": 42674708,
+    "compressedBytes": 2182406,
+    "originalSHA256": "736C2E332738772E433C3F44C86E0AB82E79688EB0BFC715FF54994C0896FDF6",
+    "compressedSHA256": "06E33E7C89A01BC2231F2EC02FACF3D62E0E3BF3594AB12C5FC641513447A73E"
+  },
+  {
+    "original": "BalanceResults/redesign-20261111-024515-546-fbb6f0/effect_events.jsonl",
+    "compressed": "BalanceResults/redesign-20261111-024515-546-fbb6f0/effect_events.jsonl.gz",
+    "originalBytes": 339241360,
+    "compressedBytes": 8659435,
+    "originalSHA256": "29A7279FC1DBF647FDB737F6DF7D417DEA1877EDF4D39E1433462F0DA1C32E91",
+    "compressedSHA256": "D026B465A4B70A86D02745D656D645C4B783297B09679EDD11A4D72A4126AF39"
+  },
+  {
+    "original": "BalanceResults/redesign-20261111-024515-546-fbb6f0/baseline_main/20261111-024516-648-e89eff0e/effect_events.jsonl",
+    "compressed": "BalanceResults/redesign-20261111-024515-546-fbb6f0/baseline_main/20261111-024516-648-e89eff0e/effect_events.jsonl.gz",
+    "originalBytes": 110206311,
+    "compressedBytes": 2903312,
+    "originalSHA256": "65468875928CE2B4DA2C033EFAADCF472538CEE8EB85A8E040113A60E4884052",
+    "compressedSHA256": "5477BD7FF1283E15DAC9C914596B19A4A814A1BD0AA103C144B33036CD2C1B1D"
+  },
+  {
+    "original": "BalanceResults/redesign-20261111-024515-546-fbb6f0/baseline_stress/20261111-024622-272-c061337a/effect_events.jsonl",
+    "compressed": "BalanceResults/redesign-20261111-024515-546-fbb6f0/baseline_stress/20261111-024622-272-c061337a/effect_events.jsonl.gz",
+    "originalBytes": 4978828,
+    "compressedBytes": 133443,
+    "originalSHA256": "050ACA1973E246861FAB53954F2B07895DD1794688BF85F57AD014D9388521AC",
+    "compressedSHA256": "8E3713A87E86B4C42CC771CF6D9FFA3DB8949A7A0C0A12995E41A385E15EDE43"
+  },
+  {
+    "original": "BalanceResults/redesign-20261111-024515-546-fbb6f0/revised_main/20261111-024543-029-28751991/effect_events.jsonl",
+    "compressed": "BalanceResults/redesign-20261111-024515-546-fbb6f0/revised_main/20261111-024543-029-28751991/effect_events.jsonl.gz",
+    "originalBytes": 196947594,
+    "compressedBytes": 5252114,
+    "originalSHA256": "36A6C4B7E8B8F84EAC4FDC03002052117F22BFAE70DB9DF1E96F2C27ACD7C236",
+    "compressedSHA256": "14F6A3C293BD60DC1F46B71675729C0553BDC06B8BCE62531CD93124A78D4485"
+  },
+  {
+    "original": "BalanceResults/redesign-20261111-024515-546-fbb6f0/revised_stress/20261111-024623-660-4cf20549/effect_events.jsonl",
+    "compressed": "BalanceResults/redesign-20261111-024515-546-fbb6f0/revised_stress/20261111-024623-660-4cf20549/effect_events.jsonl.gz",
+    "originalBytes": 6352229,
+    "compressedBytes": 170523,
+    "originalSHA256": "9218DCFA754FBFF4989E3554F7E181DF1EA334ACA7D65787C1C05AA332DDD641",
+    "compressedSHA256": "E8F8BF1FB1392205257AB399FEA3A88A669DEC64E9D0DBD71076B6B5319293C2"
+  }
+]

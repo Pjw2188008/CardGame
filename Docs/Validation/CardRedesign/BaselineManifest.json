@@ -1,0 +1,354 @@
+[
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Editor\\BattleSetupMenu.cs",
+    "hash": "E56760ED27A2A9E337FF5F8D0CB2C9429DF9EFD8065ECE76D8F3F9EB11AD84BC"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Resources\\BattleMapSettings.asset",
+    "hash": "EA7EDBF4B06D8DFBCA6037ED67727FB15A1102E0CCD7EA8D18C439741A7E7892"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Resources\\CardArtSettings.asset",
+    "hash": "0B8F3A656812630289FBFA9CCBE2085638161E91E5318A87FB65DB0A5C9FF107"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Resources\\JokerMapSettings.asset",
+    "hash": "BA537BED111C65E8CA4CFA10E9B4B2BA5BD400BB07311AC13638019CC26F8077"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\AiAgent.cs",
+    "hash": "45FD20A002AB9CAEE6F5CA2AD8A5FB8FA8F1AE2CDB132B53CBE61BEB12CDCDB0"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\AiObservation.cs",
+    "hash": "0380488F13D3DD23DD75D56B2DD6AD30BC4BF6E43F290AB7748BB1CF2CA06AF3"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\AttackArrowGraphic.cs",
+    "hash": "857A3E97B044CE0AA0DF4D99F06FEF0C2EF8C913EB291A8BE87D9D4D0AE9FDB3"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\AttackGlowGraphic.cs",
+    "hash": "156EA8C03FAB8356961A97877DE3670C2A4509F90CD1023E9F75844E357F77AB"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BalancePolicy.cs",
+    "hash": "E665D0E49F598DD19E8C750B8E68203ADF59468646110867C0073CF1E70F3ABB"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BalanceReport.cs",
+    "hash": "06282336052AE75C943BF1B440F7592493E467B47441E15680761ACEE8E5910F"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BalanceTelemetry.cs",
+    "hash": "5767418ACE38A829DE966D483FCEC4B4BB99C498F8BEE28B057F40487ACFBF91"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BalanceTestRun.cs",
+    "hash": "68335302C78CCED0FD8BE226BA46A10057BD3BAFE9FFECC4FE05E98583D2209E"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BalanceVerification.cs",
+    "hash": "83B6E5F3166BF18975A60C12B2E3485DA86D88B1D5AB24EDE2587741F99F97A8"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleCommands.cs",
+    "hash": "8E3981250395D0F883CF08A6DD9CB3B3EA7917B327C948F685D1982790B985B9"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleEngine.cs",
+    "hash": "3C7FC5691F313EACA13EBC2FE6F9AD135A9145A55672CCA2EDFDB6B984F5C1F8"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleEvents.cs",
+    "hash": "AC5579AFCC1B6C2ED3EE1BA7E1C1CA6DB8F9C530A74B6D6BFBF8AFB58E6699B4"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleMapSettings.cs",
+    "hash": "80891CC563575F64EBBBF3591B080264C66614C7DFC472263E6AA1AEFC46350A"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleProtocol.cs",
+    "hash": "98027668EB62C9969EFA255E715D4928C17EA17CCCBA8509164209EF49EB20A5"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.AI.cs",
+    "hash": "1EE7A9F4E0EC374DE6013E4E5379B643D493CB1299502107B2C878E5695CE3E5"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.AiChecks.cs",
+    "hash": "5CF0690EA9F6BE0FE4DA8E8B3B941814F60A1007D35B7FD5A947ADECAA2BD3E0"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Attack.cs",
+    "hash": "65B401CCD37A17A189DA65645BD7F5B825F711718DBB83CF8531B1A3C0F7FF73"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.AttackChecks.cs",
+    "hash": "233EBC1198D0D895507ED00D406DE411697BDC1DECE7EFEDA7B0AD0A934293EA"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.CardArt.cs",
+    "hash": "CF38B47F91CBA7C52C5C8382C24A579BCFEDBB1D37C0B72D64D33D964F2DF998"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.CardArtChecks.cs",
+    "hash": "959EB05B42AE6212E88F89F611ECDB7ADEEE8FCDC6BDFC1881F19B61621B5040"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.cs",
+    "hash": "56E407E0E18BAEA65A7EAF56CE5A256769918C128BEBA0A938033FCDF6A9ABE2"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.DragChecks.cs",
+    "hash": "FD16BA863501C06236411C5A67D21F89FF3A932CDFCFEAA11178C0F78057104D"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.HandActions.cs",
+    "hash": "254F42521BAC52BB9459C28B3EBCD41BDFE82C4A344CC6009413FEECDC6491A2"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Hands.cs",
+    "hash": "7791C3A49C6F7CAF631AA67FE42BC88EEF18E875FCE3124FB2B9DA0AFCB52F7E"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.HandSettingsChecks.cs",
+    "hash": "376E3BF3ADEA5DEB426523B753F3B19EEC3AB4D43281E04BD4200B5FB1AB4F98"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.HoverPreview.cs",
+    "hash": "5F1308C050C1F38144FB243453A7B4036093C1E306BC69EDC01DF664302D9914"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.HoverPreviewChecks.cs",
+    "hash": "3765CD6EC832D4721308C5827FD8370DDF531B1EEF43C9B1C427546614ECDB55"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Interaction.cs",
+    "hash": "3AF2459E10C9B87197FF9CDED8CC88DB473EB06E1FB0CEAC6E4A865EF9B4B3D1"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.JokerChecks.cs",
+    "hash": "46F0748873AD9FBE78EF41512A6948FDC2B689C15C4C81F2182D22A2843875DE"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Map.cs",
+    "hash": "E7661A8215B15D34357DEB46EC5286F0C6D5EE7DFCB4D99290718EA88EC7A798"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.MapDebug.cs",
+    "hash": "0A8346495F918657FB62EDCBC0C067F7E17EEB7E7234ED63DC9B0CD0E84FB61B"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Online.cs",
+    "hash": "B628A49F606C14480F2DD3D3B8817B4D78D593AFB28392A9871533449BDBE638"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.PlayModeChecks.cs",
+    "hash": "8A4FB3094A0B639C74D96732EDD4491B24B0DF979770E92DBEA0BF63B3D3D972"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Poker.cs",
+    "hash": "34BADD83BE9C50A535643669C3756F5A942408327D14ECB464ED08D95302648E"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.PokerChecks.cs",
+    "hash": "DFC943F0A0FE840C0D78C9122AE959226E2F5BCFA9461405AE36F042A574B21E"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.PvPChecks.cs",
+    "hash": "921953E1ECCA3106D78CE0F45F67E44304C24CDACE0568531BD7C76F0DAB79C9"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.SuitChecks.cs",
+    "hash": "AE4DB059A7C943F6CDF961CF4CFDEA8B4F98BC16227F40D987083D274587913F"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.Tutorial.cs",
+    "hash": "70D9BC5BE1D6D89EB07317D6439C9BEB3E2B8FEC920EF99BB17597F9E86E7814"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\BattleUIController.TutorialChecks.cs",
+    "hash": "EC2CC8B80BF2EA97D58CDDD5EA0AD61AD84D06C48F797F5FE7238221FB5FE208"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\CardAnimationController.cs",
+    "hash": "EF3AD46D605457BC654D02FCF1A78A79B4AD9B204EFEE5B492B56C59F2364A79"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\CardArtLayout.cs",
+    "hash": "5959CD7BC16ED0A377EE4BECDD1B62457542456A166D9894E8FB3BA82D4F4098"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\CardArtSettings.cs",
+    "hash": "E860D498CCA997178F34D378D30072E5546D61C39FCA2AB0A5E735AF39D7F982"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\CardBadgeCenter.cs",
+    "hash": "A3DC7BC46ECDA569B2B341EC5D24112BC44F838F1140ED7B2890A63467AEED0C"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\CardData.cs",
+    "hash": "9AC2B188F5917095F26665A21AC7218A2C6BD3D100B5FE75E33EE6B33D14D593"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\CardDrag.cs",
+    "hash": "6405ED80DD83328E1A5893828C09E75A3518F80A45594FF1A4941D4D855DA9F6"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\CardHover.cs",
+    "hash": "F8A7FAC1ACFB4A01DD6B5195634FCDE631EA8093465B09412D6E49F3CC33306B"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\GameAudioChannel.cs",
+    "hash": "9FA3C0885DEF73B9776BC364CECDB1A659AC00D04FB594002C57955BA62253AF"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\GamePreferences.cs",
+    "hash": "16A274BAB9B8531D2AAAE761842E503EBAF7CC5BE30EDA8DDFE6B79BFD6E68F4"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\GamePreferences.EditorChecks.cs",
+    "hash": "ABF4D63C0F2D3B625C97EB6D49A7555AECE19654CC1251ACE3DE74B0B4F1C576"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\GamePreferences.Probe.cs",
+    "hash": "FBDB686DD584606F8AB20D30754358E6A363976DED678B607514B55D982AADA7"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\GamePreferences.UI.cs",
+    "hash": "E4995FAAE1BFD1747C8C0434D6312F68453A7CFC07F0FFFF3225B76D9581CBCE"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\HandCardMotion.cs",
+    "hash": "E29741DCEE4A15BCDA4D9320B306C517F7B938121D3ADE8E267AA3AE4F352376"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\JokerMapRules.cs",
+    "hash": "EC0661173EE69E3654C79375BFE4DCDC5B76F87DE93BDF1736779B22265F5C85"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\JokerMapSettings.cs",
+    "hash": "B46E62B3D25759FBBB553D3A4BDF56D5B7777A6D2AC062887A43656F8D9B6B10"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\MapDefinition.cs",
+    "hash": "D1F15EFF5CAE868E2EB318DFE7C9A392A2B80EDBFA50AD8A900006CDBA47D84B"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\MapEventView.cs",
+    "hash": "B316C8D8546872BDB7314086403EFA01123BEFB039B62465EFF8C1A4DCBB2ED8"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\PokerSynergy.cs",
+    "hash": "4FE7A401F71CAFBF3DDE048E10CADE30E37711ECE63C88FD908006C5DAAF7E9D"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\RandomMapSelection.cs",
+    "hash": "75FF910E7A34FC455D14E2FD43F56171B5643A494FDDB395887072A262EC2011"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\SuitMapRules.cs",
+    "hash": "38080982DA70C8577C2EFDE88BDDE6E983C30E0AD3B78C5B04C26C5C7749414F"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\TurnClock.cs",
+    "hash": "0D938F43398980D3772C7158D602FA10C842F3681F1C36688AFA9805B2EC96FC"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\TutorialProgress.cs",
+    "hash": "51792BB7FF70C9EAF4A441A1E7E725D80B7B84CF0DDDA49FC05ADBCE592ABA65"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Runtime\\TutorialSession.cs",
+    "hash": "0CF4372194114349FF8BF55DC6AB5038A99F13B00B6DD4D5837C1D7FF634FE48"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Editor\\AiCheckMenu.cs",
+    "hash": "BFD4D590649C70F27474FDCBE123D52ECB79688D13C48FBEA5846F8117714A05"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Editor\\AttackCheckMenu.cs",
+    "hash": "71F27A18F519CB9A8FB384D16B7FDD674FA9877E274149F26EEF9D1CCF254746"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Editor\\CardArtSetup.cs",
+    "hash": "A9F51CC99760173C206145A309E9A3F19ACA6B2952B60F79C07A61118D7DCC01"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Editor\\CardBalanceBatch.cs",
+    "hash": "99EBE778352B465036E1C432760D776AF27246C210CF9881ED22AEA2E6F19799"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Editor\\CardBalanceTesterWindow.cs",
+    "hash": "9BF0BAE5A84E39C914FACCF214F4FFA73709D5E91C1DFD8B700591E985BF3D24"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Editor\\JokerMapDebugWindow.cs",
+    "hash": "441F7E650F42ABBA6420D31874B11EB55ABDCF3DBD5FDD6699F621A1814BE71E"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Editor\\OfflineModesCheckMenu.cs",
+    "hash": "66D8262128756F1EDC7112FABD726B4257F370A4F880B02EF31272E6CBF3D486"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Editor\\OnlineTestMenu.cs",
+    "hash": "15D3B358B4E788283F4189AF8766A7F67FD91A41C97B5D40E90B41208AD284C5"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Editor\\RoomSetupMenu.cs",
+    "hash": "76A671395D6009D1DA13E12591A3CD4A9886D6D9BE4C2A74255B08418BE819EF"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Editor\\TitleCheckMenu.cs",
+    "hash": "E562857C562B362C72A09182ADB2911010528D401F6D9FBEDAD0A8BACC695E72"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Editor\\TutorialCheckMenu.cs",
+    "hash": "2DEF2FC3618D6A81A3983C58C15465159452798FF1DB293B48252294A066920D"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Resources\\RoomVisualSettings.asset",
+    "hash": "96DA17625B267D80C34C266F63C171807B67E5EDD03714F16697999A9D0DF2DC"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Resources\\UnknownRoomPanel.asset",
+    "hash": "B3B0524DACF202D682B5C2F40DEE29D6FE082376FEB7254234D6C1C816808C1F"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Runtime\\LocalAuthenticationProfile.cs",
+    "hash": "E483D6BA19196931D164CC657B35F3E63008AF37CA00059ED0D527F58CE87331"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Runtime\\NetworkBattleController.cs",
+    "hash": "1F5798CE00F503FD46DFBBF0F5AF264A029FF17539C6A36070D8702063D312C8"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Runtime\\NetworkBattleSmokeRunner.cs",
+    "hash": "B2F6F2A201A9DC469B47C6D685A45480762E72AE23FF4121267FBF82C310B055"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Runtime\\RoomConnectionCheck.cs",
+    "hash": "619C6DE68F376CB292957526371E2D875AC36B6EB7DF3276E45C348DDD87A87C"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Runtime\\RoomController.cs",
+    "hash": "177A3138F8B812D70812FBC3F84B04D76725683B6D7C876A7344FDDF27BC6AF6"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Runtime\\RoomController.Diagnostics.cs",
+    "hash": "45F4B638618912B647E93C42137F49972AC586D34F0C376287444A88F70E212C"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Runtime\\RoomTestUI.cs",
+    "hash": "982D7866FE7EEB0309B9CE235EC05AE6F0F6F5DB00F9ABDC91A31AD6EEB35A8E"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Runtime\\RoomTestUI.TitleChecks.cs",
+    "hash": "BD19026B2F62705EF8235369FF95C2F31999AE113B7EDA173635DBBF7CDDF735"
+  },
+  {
+    "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Runtime\\RoomVisualSettings.cs",
+    "hash": "9F460855B278F2CF3BBEBEA39DE061B289061C93F5E9002134416FAC02617183"
+  }
+]

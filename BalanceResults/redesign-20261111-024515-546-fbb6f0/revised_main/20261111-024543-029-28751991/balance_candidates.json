@@ -1,0 +1,117 @@
+{
+    "candidates": [
+        {
+            "cardID": "Club_2",
+            "category": "possible_underperformance",
+            "metric": "draws_per_use",
+            "group": "same suit/type, supported effect role, mana +/-1",
+            "sample": 456,
+            "value": 0.28289473684210528,
+            "reference": 1.3055667253078665,
+            "evidence": [
+                "At least three AI profiles agree with the direction.",
+                "Compare role-specific units separately. Usage win rate is correlational.",
+                "Review attack, HP, mana, effect amount and trigger conditions manually."
+            ]
+        },
+        {
+            "cardID": "Heart_4",
+            "category": "possible_underperformance",
+            "metric": "healing_per_use",
+            "group": "same suit/type, supported effect role, mana +/-1",
+            "sample": 529,
+            "value": 0.9697542533081286,
+            "reference": 2.350999937474174,
+            "evidence": [
+                "At least three AI profiles agree with the direction.",
+                "Compare role-specific units separately. Usage win rate is correlational.",
+                "Review attack, HP, mana, effect amount and trigger conditions manually."
+            ]
+        },
+        {
+            "cardID": "Heart_J",
+            "category": "possible_underperformance",
+            "metric": "absorbed_hp_per_use",
+            "group": "same suit/type, supported effect role, mana +/-1",
+            "sample": 525,
+            "value": 2.8084514533085964,
+            "reference": 7.224220700051955,
+            "evidence": [
+                "At least three AI profiles agree with the direction.",
+                "Compare role-specific units separately. Usage win rate is correlational.",
+                "Review attack, HP, mana, effect amount and trigger conditions manually."
+            ]
+        },
+        {
+            "cardID": "Heart_J",
+            "category": "possible_underperformance",
+            "metric": "extra_hp_per_use",
+            "group": "same suit/type, supported effect role, mana +/-1",
+            "sample": 525,
+            "value": 3.0,
+            "reference": 8.338881243723734,
+            "evidence": [
+                "At least three AI profiles agree with the direction.",
+                "Compare role-specific units separately. Usage win rate is correlational.",
+                "Review attack, HP, mana, effect amount and trigger conditions manually."
+            ]
+        },
+        {
+            "cardID": "Heart_K",
+            "category": "possible_overperformance",
+            "metric": "healing_per_use",
+            "group": "same suit/type, supported effect role, mana +/-1",
+            "sample": 521,
+            "value": 6.998080614203455,
+            "reference": 3.4918857936301315,
+            "evidence": [
+                "At least three AI profiles agree with the direction.",
+                "Compare role-specific units separately. Usage win rate is correlational.",
+                "Review attack, HP, mana, effect amount and trigger conditions manually."
+            ]
+        },
+        {
+            "cardID": "Heart_Q",
+            "category": "possible_overperformance",
+            "metric": "absorbed_hp_per_use",
+            "group": "same suit/type, supported effect role, mana +/-1",
+            "sample": 501,
+            "value": 8.293414973804194,
+            "reference": 4.481738939804157,
+            "evidence": [
+                "At least three AI profiles agree with the direction.",
+                "Compare role-specific units separately. Usage win rate is correlational.",
+                "Review attack, HP, mana, effect amount and trigger conditions manually."
+            ]
+        },
+        {
+            "cardID": "Heart_Q",
+            "category": "possible_overperformance",
+            "metric": "extra_hp_per_use",
+            "group": "same suit/type, supported effect role, mana +/-1",
+            "sample": 501,
+            "value": 9.646706586826348,
+            "reference": 5.01552795031056,
+            "evidence": [
+                "At least three AI profiles agree with the direction.",
+                "Compare role-specific units separately. Usage win rate is correlational.",
+                "Review attack, HP, mana, effect amount and trigger conditions manually."
+            ]
+        },
+        {
+            "cardID": "Spade_A",
+            "category": "possible_overperformance",
+            "metric": "weakening_per_use",
+            "group": "same suit/type, supported effect role, mana +/-1",
+            "sample": 372,
+            "value": 6.954301075268817,
+            "reference": 2.9890049223347057,
+            "evidence": [
+                "At least three AI profiles agree with the direction.",
+                "Compare role-specific units separately. Usage win rate is correlational.",
+                "Review attack, HP, mana, effect amount and trigger conditions manually."
+            ]
+        }
+    ],
+    "rule": "Exploratory review only. At least 200 natural uses overall and 30 uses per map. No automatic card changes."
+}

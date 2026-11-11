@@ -32,7 +32,7 @@ namespace Unknown.Battle
             const string key="UNKNOWN.Options.v1";bool hadPrefs=PlayerPrefs.HasKey(key);string oldPrefs=PlayerPrefs.GetString(key);var saved=GamePreferences.Instance.Current.Copy();int oldVsync=QualitySettings.vSyncCount;
             try {
                 foreach(BattleMap map in Enum.GetValues(typeof(BattleMap))) {
-                    checkRecipient=0;CheckFixture();engine=new BattleEngine(4,new BattleConfig{Map=map,StartingHand=1,StartingMana=10,ShuffleDecks=false});engine.DrainEvents();Refresh();yield return null;
+                    checkRecipient=0;CheckFixture();engine=new BattleEngine(4,new BattleConfig {CardVersion=CardBalanceVersion.Baseline,Map=map,StartingHand=1,StartingMana=10,ShuffleDecks=false});engine.DrainEvents();Refresh();yield return null;
                     string name=map==BattleMap.JokerGame ? "joker" : map==BattleMap.Normal ? "normal" : map.ToString().ToLowerInvariant();
                     var expectedBack=UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/CARD/CardBack/"+name+"-back.png");
                     verify(expectedBack!=null && deckArtwork.All(a=>a.texture==expectedBack && a.gameObject.activeSelf),"Both decks use supplied back for "+map);
@@ -70,7 +70,7 @@ namespace Unknown.Battle
                 verify(preferences.CaptureOptionsFrame("Library/AttackVisuals/Settings-1920.png"),"Rendered centered settings with audio sliders and screen options");
                 preferences.Close();ToggleBattleMenu();verify(!MenuOpen && !Blocked(),"Closing settings and returning restores battle inputs");
                 yield return null;verify(roomDocument!=null && roomDocument.rootVisualElement.enabledInHierarchy,"Closing settings restores title input routing");
-                CheckFixture();engine=new BattleEngine(4,new BattleConfig{Map=BattleMap.Club,StartingHand=0,StartingMana=10,ShuffleDecks=false});foreach(var player in engine.State.Players)player.HandCards.Clear();engine.DrainEvents();CheckUnit("Heart_5",0);var summoned=CheckHand("Club_5");Refresh();
+                CheckFixture();engine=new BattleEngine(4,new BattleConfig {CardVersion=CardBalanceVersion.Baseline,Map=BattleMap.Club,StartingHand=0,StartingMana=10,ShuffleDecks=false});foreach(var player in engine.State.Players)player.HandCards.Clear();engine.DrainEvents();CheckUnit("Heart_5",0);var summoned=CheckHand("Club_5");Refresh();
                 verify(engine.Summon(0,summoned.InstanceID,1),"Club summon commits with extra draw and a new poker pair");var stacked=engine.DrainEvents();
                 verify(Array.FindIndex(stacked.ToArray(),e=>e.Kind==BattleEventKind.Draw)<Array.FindIndex(stacked.ToArray(),e=>e.Kind==BattleEventKind.PokerChanged),"Reproduction orders draw before poker banner while hand view is removed");
                 PrepareHandPlayback(stacked);StartCoroutine(ActionPresentation(stacked));yield return DragWait();

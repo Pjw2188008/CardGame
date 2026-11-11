@@ -14,7 +14,7 @@ namespace Unknown.Battle
         public void RunPokerChecks() { Invoke(nameof(BeginPokerChecks),0.15f); }
         void BeginPokerChecks() { StopAllCoroutines();StartCoroutine(PokerChecks()); }
         void PokerFixture() {
-            checkRecipient=0;CheckFixture();engine=new BattleEngine(4,new BattleConfig{StartingHand=0,StartingMana=10,ShuffleDecks=false},new CheckDice(0));
+            checkRecipient=0;CheckFixture();engine=new BattleEngine(4,new BattleConfig {CardVersion=CardBalanceVersion.Baseline,StartingHand=0,StartingMana=10,ShuffleDecks=false},new CheckDice(0));
             foreach(var p in engine.State.Players)p.HandCards.Clear();engine.DrainEvents();ResetHandViews();
             if(pokerList!=null)pokerList.gameObject.SetActive(false);
         }

@@ -41,11 +41,15 @@ namespace Unknown.Battle
                 p.HP=v.hp;p.CurrentMana=v.mana;p.MaxMana=v.maxMana;p.TurnsStarted=Math.Max(1,(s.turn+1-owner)/2);p.UnknownCreated=v.unknownCreated;p.JokerSuccesses=v.jokerSuccesses;p.JokerChanceDelta=v.jokerChanceDelta;p.ManualDiscardUsed=v.manualDiscardUsed;p.Poker=v.poker.Copy();
                 for(int slot=0;slot<p.Slots.Length;slot++)p.Slots[slot]=v.board[slot]?.ToCard();
                 if(owner==s.recipient)p.HandCards.AddRange(v.hand.Select(c=>c.ToCard()));
-                else for(int i=0;i<v.handCount;i++)p.HandCards.Add(i==s.revealedIndex && s.revealedCard?.occupied==true ? s.revealedCard.ToCard() : g.NewCard(CardDatabase.Deck[(i*7+3)%54],owner));
+                else for(int i=0;i<v.handCount;i++)p.HandCards.Add(i==s.revealedIndex && s.revealedCard?.occupied==true ? s.revealedCard.ToCard() : g.NewCard(CardDatabase.DeckFor(config.CardVersion)[(i*7+3)%54],owner));
                 // Hypothetical draws use a fixed public prior, never either player's actual deck order.
-                for(int i=0;i<v.deckCount;i++)p.DeckCards.Add(g.NewCard(CardDatabase.Deck[(i*11+owner*3)%54],owner));
-                for(int i=0;i<v.discardCount;i++)p.DiscardCards.Add(g.NewCard(CardDatabase.Deck[i%54],owner));
+                for(int i=0;i<v.deckCount;i++)p.DeckCards.Add(g.NewCard(CardDatabase.DeckFor(config.CardVersion)[(i*11+owner*3)%54],owner));
+                for(int i=0;i<v.discardCount;i++)p.DiscardCards.Add(g.NewCard(CardDatabase.DeckFor(config.CardVersion)[i%54],owner));
             }
+            g.source=g.State.Players.SelectMany(p=>p.Slots).FirstOrDefault(c=>c!=null && c.InstanceID==s.pendingSource);
+            g.effectIndex=s.pendingIndex;g.waitingExchange=s.exchangePending;
+            if(s.pendingTargetKinds!=null)for(int i=0;i<s.pendingTargetKinds.Length;i++)g.selectedTargets[(EffectTarget)s.pendingTargetKinds[i]]=s.pendingTargetIDs[i];
+            if(s.pendingDistinctIDs!=null)foreach(int id in s.pendingDistinctIDs)g.chainHits.Add(id);
             g.DrainEvents();return g;
         }
     }

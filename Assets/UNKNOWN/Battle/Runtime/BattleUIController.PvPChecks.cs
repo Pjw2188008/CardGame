@@ -33,7 +33,7 @@ namespace Unknown.Battle
             {
                 var legacy = JsonUtility.FromJson<LegacyBoard>(JsonUtility.ToJson(new LegacyBoard { board = new LegacySlot[5] }));
                 report.legacyNullMaterialized = legacy.board.Any(c => c != null);
-                var host = new BattleEngine(10, new BattleConfig { StartingHand = 0, StartingMana = 10, ManaCap = 10 });
+                var host = new BattleEngine(10, new BattleConfig {CardVersion=CardBalanceVersion.Baseline, StartingHand = 0, StartingMana = 10, ManaCap = 10 });
                 foreach (var p in host.State.Players) p.HandCards.Clear();
                 foreach (int owner in new[]{0,1})
                 {
@@ -58,7 +58,7 @@ namespace Unknown.Battle
                 for(int i=0;i<3;i++)
                 {
                     host.State.Players[0].HandCards.RemoveAll(c=>c.Definition.CardType!=CardType.Unknown);
-                    var a=host.NewCard(CardDatabase.Get("Heart_A"),0); var f=host.NewCard(CardDatabase.Get(new[]{"Spade_J","Spade_Q","Spade_K"}[i]),0);
+                    var a=host.NewCard(CardDatabase.Get("Heart_A",CardBalanceVersion.Baseline),0); var f=host.NewCard(CardDatabase.Get(new[]{"Spade_J","Spade_Q","Spade_K"}[i]),0);
                     host.State.Players[0].HandCards.Add(a); host.State.Players[0].HandCards.Add(f);
                     verify(host.Combine(0,a.InstanceID,f.InstanceID),"Combination "+(i+1)+" succeeds");
                 }

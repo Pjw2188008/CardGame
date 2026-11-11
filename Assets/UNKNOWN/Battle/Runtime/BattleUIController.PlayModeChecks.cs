@@ -44,17 +44,17 @@ namespace Unknown.Battle
         {
             animations.ResetAll(); actionBusy = transitioning = paused = false;
             passOverlay.SetActive(false); resultOverlay.SetActive(false); ClearSelection();
-            engine = new BattleEngine(10, new BattleConfig { EnablePoker=false,StartingHand = 0, StartingMana = 10, ManaCap = 10, ShuffleDecks = false }, new CheckDice(dice));
+            engine = new BattleEngine(10, new BattleConfig {CardVersion=CardBalanceVersion.Baseline, EnablePoker=false,StartingHand = 0, StartingMana = 10, ManaCap = 10, ShuffleDecks = false }, new CheckDice(dice));
             foreach (var player in engine.State.Players) player.HandCards.Clear();
             ResetHandViews();
             engine.DrainEvents(); clock.Begin(40, Time.realtimeSinceStartupAsDouble);
             feedback = "PLAY MODE INTEGRATION CHECK";
         }
         CardInstance CheckHand(string id, int owner = 0)
-        { var card = engine.NewCard(CardDatabase.Get(id), owner); engine.State.Players[owner].HandCards.Add(card); return card; }
+        { var card = engine.NewCard(CardDatabase.Get(id,engine.Config.CardVersion), owner); engine.State.Players[owner].HandCards.Add(card); return card; }
         CardInstance CheckUnit(string id, int owner, int slot = 0)
         {
-            var card = engine.NewCard(CardDatabase.Get(id), owner); card.SummonedTurn = 0;
+            var card = engine.NewCard(CardDatabase.Get(id,engine.Config.CardVersion), owner); card.SummonedTurn = 0;
             engine.State.Players[owner].Slots[slot] = card; return card;
         }
         IEnumerator CheckIdle()

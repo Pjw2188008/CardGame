@@ -18,6 +18,7 @@ namespace Unknown.Battle
                 case BattleAction.Combine:return engine.Combine(actor,first,second);
                 case BattleAction.Joker:return engine.Gamble(actor,first,second);
                 case BattleAction.Discard:return engine.DiscardHand(actor,first);
+                case BattleAction.Exchange:return engine.ChooseExchange(actor,first);
                 case BattleAction.EndTurn:return engine.EndTurn(actor);
                 default:return false;
             }

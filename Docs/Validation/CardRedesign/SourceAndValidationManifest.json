@@ -1,0 +1,219 @@
+{
+  "verifiedUtc": "2026-11-11T03:06:34.239Z",
+  "project": "D:/git/ECHO-/Echogame/CardGame",
+  "experiment": "D:/git/ECHO-/Echogame/CardGame/Library/UNKNOWN-Systems-BuildProject/BalanceResults/redesign-20261111-024515-546-fbb6f0",
+  "destination": "D:/git/ECHO-/Echogame/CardGame/BalanceResults/redesign-20261111-024515-546-fbb6f0",
+  "sourceFiles": [
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/AiAgent.cs",
+      "kind": "modified",
+      "sha256": "544c7d86f05b751c6ecff6a178aa4e04636de489e0dd337ed694ae5253091752"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/AiObservation.cs",
+      "kind": "modified",
+      "sha256": "08986ce54a0ccbf92b29b1416b548788b2d2e814f400e0ea49e1d6a13d1ed6f0"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BalancePolicy.cs",
+      "kind": "modified",
+      "sha256": "2ff939fb5e5c29a50522c6b29dae80eaa3608bf2dfaf460e2dd792df84dfc5c9"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BalanceReport.cs",
+      "kind": "modified",
+      "sha256": "bb1856177ba591e8d351f38079343a7974887f5d3eb353ab9a641dab703b7252"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BalanceTelemetry.cs",
+      "kind": "modified",
+      "sha256": "3cdc060eddd391ddc715adeaccf5954bc67ce601d975c4f4bf6b28d4c62f3c4b"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BalanceTestRun.cs",
+      "kind": "modified",
+      "sha256": "43643ec87151d2417d546fd66e9a2278ba47f864d42609a60fa4a0c988caf6e6"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BalanceVerification.cs",
+      "kind": "modified",
+      "sha256": "a27deac6e21be8ea6f6ef68481425394ddf50277fc995148d8e17c99f92b3149"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleCommands.cs",
+      "kind": "modified",
+      "sha256": "40a67f3b903e06d888b91a932d2346844881b26ff2f258ee05c0609fe8eff9ee"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleEngine.cs",
+      "kind": "modified",
+      "sha256": "d248039dbfce2502a5bd1a1bd5cf69c05ed53b4c40d2c73f452941f2ab8053e4"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleEngine.NewEffects.cs",
+      "kind": "new",
+      "sha256": "98129ae5e1ce8e6081dd483721bba1db766657c0ae671e315b37f48f5abec11d"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleProtocol.cs",
+      "kind": "modified",
+      "sha256": "92ba98d033e10611acc6739498d6fe08e6fe4a5d98b325c1e9fb400ed79ce7ad"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.AiChecks.cs",
+      "kind": "modified",
+      "sha256": "dc06cf99f7a2460766f8b6216c1bf5d28c8017b82080970442b03d396b0549c0"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.cs",
+      "kind": "modified",
+      "sha256": "d6ddb383bdd4114b47199909911c11430324444916b600a88ab31bbd83b43626"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Exchange.cs",
+      "kind": "new",
+      "sha256": "12595baa3ba6d594cb41538da5921a65fac8e25f819d6344f7600d428c6c18f7"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.HandActions.cs",
+      "kind": "modified",
+      "sha256": "feb2710c1b0f4d14187479c528cea1e4d1be550523fd365bcc2844c6f7ffa1f3"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.HandSettingsChecks.cs",
+      "kind": "modified",
+      "sha256": "3c05dbe0c3c1d2c5e0da167554a83a529153c4df2f08f2c4448fb5f4474ea28a"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.Interaction.cs",
+      "kind": "modified",
+      "sha256": "cb82eddee176a0fde6ad03f9fea7631e82f341c4703872adeae0b439915a1f61"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.JokerChecks.cs",
+      "kind": "modified",
+      "sha256": "cf1f65022e62e86ca701ebd58cbad08f7b065aec4b92f986fae6012be94b5dc9"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.PlayModeChecks.cs",
+      "kind": "modified",
+      "sha256": "e9bf2569615f5d61e685cee0d24fab83fb8bad5fa70eae3d1add259076b51838"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.PokerChecks.cs",
+      "kind": "modified",
+      "sha256": "920cc2d7c50709866321e3d1d8a39838c04a9e450f91e6454cd40a2a8fc631ca"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.PvPChecks.cs",
+      "kind": "modified",
+      "sha256": "bdbcbc54928be07de139d7b65db9024290e9269200d366cefdc21282bef72fe9"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.RedesignChecks.cs",
+      "kind": "new",
+      "sha256": "8c61ebe17dbdd8a95bd0b0b7bf86a48167b9c85a223e39093dc80c538636ecbc"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/BattleUIController.SuitChecks.cs",
+      "kind": "modified",
+      "sha256": "249196cd7dd92a813ae3c4c88cec79d2fba578113894f9e6b6e3736663aef499"
+    },
+    {
+      "path": "Assets/UNKNOWN/Multiplayer/Editor/CardBalanceTesterWindow.cs",
+      "kind": "modified",
+      "sha256": "93b2a2dad20bc839272a06b9ffb94946ecafa623fdbaac5d42cfbff90ae3415c"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/CardData.cs",
+      "kind": "modified",
+      "sha256": "0808d3afad9d12b5b994c0d8d5226755fb72807f803aef33f2fcef28c8b49598"
+    },
+    {
+      "path": "Assets/UNKNOWN/Multiplayer/Editor/CardRedesignBatch.cs",
+      "kind": "new",
+      "sha256": "5e80518b8cdbd4db1179b924836866dd0e6ae9b33f1b0a70e74c0ae1d6f42a20"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/CardRedesignChecks.cs",
+      "kind": "new",
+      "sha256": "90abf509a308c407a6253920e0ca85bcb6b080a07a9879a9caeaf184fbb96603"
+    },
+    {
+      "path": "Assets/UNKNOWN/Multiplayer/Editor/CardRedesignComparisonWindow.cs",
+      "kind": "new",
+      "sha256": "e32721b7e912e7f013df2de6650244b9349d24df7674e7b2f25de043d4cdafed"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/CardRedesignExperiment.cs",
+      "kind": "new",
+      "sha256": "2c6e36b770f2f7a2312c5f265bd5492e4537ae474cd79fa8a20f553d663d0a93"
+    },
+    {
+      "path": "Assets/UNKNOWN/Multiplayer/Editor/CardRedesignUiBatch.cs",
+      "kind": "new",
+      "sha256": "cc297d2f58f311b518ef25917922aba88f6c8e6e240d4cd723cf9eaf14d208dc"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/JokerMapRules.cs",
+      "kind": "modified",
+      "sha256": "9314b3393f2f0df819fcca5d148a115a99c5119ad635eb276f7d00b640bc91a9"
+    },
+    {
+      "path": "Assets/UNKNOWN/Multiplayer/Runtime/NetworkBattleSmokeRunner.cs",
+      "kind": "modified",
+      "sha256": "cd111f632235a8b665c0655a7bdce7b20059d80c670f44180f4b7ad698956010"
+    },
+    {
+      "path": "Assets/UNKNOWN/Battle/Runtime/RevisedCardCatalog.cs",
+      "kind": "new",
+      "sha256": "a757deb176233f0ea18852b6cf600b4b56e34e094b2dbbc5c8daef4b63a60d61"
+    }
+  ],
+  "settingsAssets": [
+    {
+      "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Resources\\BattleMapSettings.asset",
+      "before": "ea7edbf4b06d8dfbca6037ed67727fb15a1102e0ccd7ea8d18c439741a7e7892",
+      "after": "ea7edbf4b06d8dfbca6037ed67727fb15a1102e0ccd7ea8d18c439741a7e7892"
+    },
+    {
+      "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Resources\\CardArtSettings.asset",
+      "before": "0b8f3a656812630289fbfa9ccbe2085638161e91e5318a87fb65db0a5c9ff107",
+      "after": "0b8f3a656812630289fbfa9ccbe2085638161e91e5318a87fb65db0a5c9ff107"
+    },
+    {
+      "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Battle\\Resources\\JokerMapSettings.asset",
+      "before": "ba537bed111c65e8ca4cfa10e9b4b2ba5bd400bb07311ac13638019cc26f8077",
+      "after": "ba537bed111c65e8ca4cfa10e9b4b2ba5bd400bb07311ac13638019cc26f8077"
+    },
+    {
+      "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Resources\\RoomVisualSettings.asset",
+      "before": "96da17625b267d80c34c266f63c171807b67e5edd03714f16697999a9d0df2dc",
+      "after": "96da17625b267d80c34c266f63c171807b67e5edd03714f16697999a9d0df2dc"
+    },
+    {
+      "path": "D:\\git\\ECHO-\\Echogame\\CardGame\\Assets\\UNKNOWN\\Multiplayer\\Resources\\UnknownRoomPanel.asset",
+      "before": "b3b0524dacf202d682b5c2f40dee29d6fe082376feb7254234d6c1c816808c1f",
+      "after": "b3b0524dacf202d682b5c2f40dee29d6fe082376feb7254234d6c1c816808c1f"
+    }
+  ],
+  "baselineHistoricalDefinitionComparison": {
+    "compared": 57,
+    "differences": [],
+    "note": "Schema-only version/freshTarget fields excluded. Historical games are not substituted for the new baseline."
+  },
+  "build": {
+    "result": "Succeeded",
+    "errors": 0,
+    "warnings": 8,
+    "executable": "D:/git/ECHO-/Echogame/CardGame/Builds/UNKNOWN-CardRedesign/UNKNOWN.exe",
+    "assemblySHA256": "3e86ebfc9e3dbddb0ade5de22529d627bc6e7098c344ea99c3fe87d865b7228d",
+    "cloneAssemblySHA256": "3e86ebfc9e3dbddb0ade5de22529d627bc6e7098c344ea99c3fe87d865b7228d"
+  },
+  "checks": {
+    "revisedFunctional": 153,
+    "revisedUIClick": 11,
+    "existingRegression": 869,
+    "dataAuditAssertions": 50259
+  }
+}

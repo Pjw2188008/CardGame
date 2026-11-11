@@ -1,0 +1,5 @@
+﻿"cohort","uses","cardID","kind","target","unit","effectIndex","activations","conditionsMet","applications","successes","failures","invalidated","zeroResults","requestedAmount","actualAmount","extraDamage","preventedDamage","absorbedDamage"
+"baseline_main","298","Spade_K","ModifyAttack","Enemy","stat_points","1","298","51","298","51","247","244","247","-1192","-203","0","121.13333333333334","0"
+"revised_main","522","Spade_K","ModifyAttack","Enemy","stat_points","1","522","508","522","508","14","0","14","-2088","-1981","0","3333.072150072151","0"
+"baseline_stress","7","Spade_K","ModifyAttack","Enemy","stat_points","1","7","2","7","2","5","5","5","-28","-8","0","6","0"
+"revised_stress","8","Spade_K","ModifyAttack","Enemy","stat_points","1","8","5","8","5","3","0","3","-32","-13","0","12.5","0"

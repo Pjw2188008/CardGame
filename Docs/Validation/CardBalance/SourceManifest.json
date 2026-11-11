@@ -1,0 +1,34 @@
+[
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BalancePolicy.cs",
+    "sha256": "E665D0E49F598DD19E8C750B8E68203ADF59468646110867C0073CF1E70F3ABB"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BalanceReport.cs",
+    "sha256": "06282336052AE75C943BF1B440F7592493E467B47441E15680761ACEE8E5910F"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BalanceTelemetry.cs",
+    "sha256": "5767418ACE38A829DE966D483FCEC4B4BB99C498F8BEE28B057F40487ACFBF91"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BalanceTestRun.cs",
+    "sha256": "68335302C78CCED0FD8BE226BA46A10057BD3BAFE9FFECC4FE05E98583D2209E"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BalanceVerification.cs",
+    "sha256": "83B6E5F3166BF18975A60C12B2E3485DA86D88B1D5AB24EDE2587741F99F97A8"
+  },
+  {
+    "file": "Assets/UNKNOWN/Battle/Runtime/BattleEngine.cs",
+    "sha256": "3C7FC5691F313EACA13EBC2FE6F9AD135A9145A55672CCA2EDFDB6B984F5C1F8"
+  },
+  {
+    "file": "Assets/UNKNOWN/Multiplayer/Editor/CardBalanceBatch.cs",
+    "sha256": "99EBE778352B465036E1C432760D776AF27246C210CF9881ED22AEA2E6F19799"
+  },
+  {
+    "file": "Assets/UNKNOWN/Multiplayer/Editor/CardBalanceTesterWindow.cs",
+    "sha256": "9BF0BAE5A84E39C914FACCF214F4FFA73709D5E91C1DFD8B700591E985BF3D24"
+  }
+]

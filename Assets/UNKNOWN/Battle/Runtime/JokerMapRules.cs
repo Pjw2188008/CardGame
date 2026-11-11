@@ -139,7 +139,7 @@ namespace Unknown.Battle
         internal void GiveMapJoker(int owner)
         {
             var p=State.Players[owner]; if(p.Hand.Count>=rules.HandLimit || viewOnly || State.IsOver)return;
-            var c=NewCard(CardDatabase.Get("Joker_1"),owner); p.HandCards.Add(c);
+            var c=NewCard(CardDatabase.Get("Joker_1",rules.CardVersion),owner); p.HandCards.Add(c);
             Emit(new BattleEvent(BattleEventKind.CardGranted,owner,target:c.InstanceID,definition:c.Definition));
         }
         void ChangeMapStats(CardInstance c,int attack,int max)

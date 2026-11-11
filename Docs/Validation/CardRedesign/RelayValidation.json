@@ -1,0 +1,28 @@
+{
+  "runDirectory": "D:/git/ECHO-/Echogame/CardGame/Library/CardRedesignRelay/monitor-2643a372ad104afc8417fcfe89eb76b1",
+  "executable": "D:/git/ECHO-/Echogame/CardGame/Builds/UNKNOWN-CardRedesign/UNKNOWN.exe",
+  "transport": "Unity Multiplayer Services Session + Relay + Netcode for GameObjects",
+  "separateAuthenticationProfiles": true,
+  "separatePlayerIDs": true,
+  "matchingProjectAndEnvironment": true,
+  "observedSynchronizedTurn": 45,
+  "observedSynchronizedRevision": 500,
+  "hostPrivacy": true,
+  "guestPrivacy": true,
+  "hostViewMatches": true,
+  "guestViewMatches": true,
+  "hostErrors": [],
+  "guestErrors": [],
+  "fullMatchCompleted": false,
+  "endedReason": "Test monitor reached its 360-second limit and closed only the two tracked helper processes. Guest disconnect after host closure is retained in RelayGuest.json.",
+  "resultScreenVerified": false,
+  "rematchVerified": false,
+  "twoPhysicalPCsVerified": false,
+  "priorAttempt": "An earlier launch ended before battle. Its external process-lifetime cause was not established. This monitored retry reached live battle.",
+  "monitorSummary": {
+    "completed": false,
+    "directory": "D:/git/ECHO-/Echogame/CardGame/Library/CardRedesignRelay/monitor-2643a372ad104afc8417fcfe89eb76b1",
+    "status": "host=battle/turn45/rev500 guest=battle/turn45/rev500",
+    "endedUtc": "2026-11-11T03:04:28.6326041Z"
+  }
+}

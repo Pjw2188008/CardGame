@@ -1,0 +1,12 @@
+{
+  "completed": true,
+  "passed": [
+    "57 card damage/use partitions and distinct game counts match raw records",
+    "Actual unit damage conserves enemy, self and map damage",
+    "Card, rule and code version hashes match replay",
+    "57 cards, 342 map rows and 228 AI rows are present"
+  ],
+  "results": "D:\\git\\ECHO-\\Echogame\\CardGame\\Library\\UNKNOWN-Systems-BuildProject\\BalanceResults\\20261111-005432-349-31612b2d",
+  "damageReceived": 174571.0,
+  "damageExpected": 174571.0
+}

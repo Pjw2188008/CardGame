@@ -239,14 +239,15 @@ namespace Unknown.Multiplayer
                 if (e.kind == BattleEventKind.JokerSuccess || e.kind == BattleEventKind.JokerFailure) report.jokers++;
                 if (e.kind == BattleEventKind.TimeOut) report.timeouts++;
             }
-            report.publicState = s.turn + ":" + s.active + ":" + s.winner + ":" + string.Join("|", s.players.Select(p =>
+            report.publicState = s.turn + ":" + s.active + ":" + s.exchangePending + ":" + s.winner + ":" + string.Join("|", s.players.Select(p =>
                 p.hp + "," + p.mana + "," + p.maxMana + "," + p.handCount + "," + p.deckCount + ","+p.discardCount+","+p.manualDiscardUsed+","+p.poker.kind+":"+string.Join(",",p.poker.members)+":"+string.Join(",",p.poker.targets)+":" +
-                string.Join(";",p.board.Select(c => c == null || !c.occupied ? "-" : c.id + "," + c.definition + "," + c.attack + "," + c.hp + "," + c.maxHP + "," + c.attacked + "," + c.jokerUsed+","+c.pokerAttack+","+c.pokerHP+","+c.rawAttack+","+c.rawHP+","+c.mapAttack+","+c.mapHP+","+c.jokerAttack+","+c.jokerHP+","+c.abilityAttack+","+c.abilityHP))));
+                string.Join(";",p.board.Select(c => c == null || !c.occupied ? "-" : c.id + "," + c.definition + "," + c.attack + "," + c.hp + "," + c.maxHP + "," + c.attacked + "," + c.firstAttackHealSpent + "," + c.jokerUsed+","+c.pokerAttack+","+c.pokerHP+","+c.rawAttack+","+c.rawHP+","+c.mapAttack+","+c.mapHP+","+c.jokerAttack+","+c.jokerHP+","+c.abilityAttack+","+c.abilityHP))));
             Save();
         }
         void Choose(BattleSnapshot s)
         {
             int me = s.recipient, enemy = 1-me; var p = s.players[me];
+            if(s.exchangePending){battle.Submit(BattleAction.Exchange,-1);return;}
             if (s.targets.Length > 0) { int t = s.targets[0]; battle.Submit(BattleAction.Target,t / 5,t % 5); return; }
             if(Environment.GetCommandLineArgs().Contains("-unknownSmokeHand")) {
                 // Natural stockpiling reaches capacity using real turn draws; no cards or decks are injected.

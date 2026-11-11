@@ -16,18 +16,31 @@ namespace Unknown.Battle
         public int UnknownLimit { get; set; } = 3;
         public bool ShuffleDecks { get; set; } = true;
         public bool EnablePoker { get; set; } = true;
+        public CardBalanceVersion CardVersion {get;set;}=CardBalanceVersion.Revised;
+        public int[] InitialDeckSeeds {get;set;}
         public BattleMap Map { get; set; }
         public JokerEventDefinition[] MapEvents { get; set; } = JokerEventDefinition.Defaults();
         public MapDefinition[] MapRules { get; set; } = MapDefinition.Defaults();
-        internal BattleConfig Copy() { var c=(BattleConfig)MemberwiseClone(); c.MapEvents=MapEvents.Select(e=>e.Copy()).ToArray(); c.MapRules=MapRules.Select(d=>d.Copy()).ToArray(); return c; }
+        internal BattleConfig Copy() { var c=(BattleConfig)MemberwiseClone();c.InitialDeckSeeds=InitialDeckSeeds==null ? null : (int[])InitialDeckSeeds.Clone(); c.MapEvents=MapEvents.Select(e=>e.Copy()).ToArray(); c.MapRules=MapRules.Select(d=>d.Copy()).ToArray(); return c; }
     }
 
     public interface IRandomSource { int Next(int exclusiveMax); }
     public sealed class SeededRandom : IRandomSource
     {
         readonly Random random;
+        public int Calls {get;private set;}
+        public long Fingerprint {get;private set;}
+#if UNITY_EDITOR
+        public Action<int,int,int> Trace {get;set;}
+#endif
         public SeededRandom(int seed) { random = new Random(seed); }
-        public int Next(int exclusiveMax) => random.Next(exclusiveMax);
+        public int Next(int exclusiveMax) {
+            int value=random.Next(exclusiveMax);Calls++;Fingerprint=unchecked(Fingerprint*397^exclusiveMax*31L^value);
+#if UNITY_EDITOR
+            Trace?.Invoke(Calls,exclusiveMax,value);
+#endif
+            return value;
+        }
     }
 
     public sealed class PlayerState
@@ -87,18 +100,24 @@ namespace Unknown.Battle
         readonly List<BattleEvent> events = new List<BattleEvent>();
         public IReadOnlyList<BattleEvent> DrainEvents()
         { var result = events.ToArray(); events.Clear(); return result; }
-        void Emit(BattleEvent entry) => events.Add(entry);
+        void Emit(BattleEvent entry) { events.Add(entry); ObserveBalanceEvent(entry); }
+        partial void ObserveBalanceEvent(BattleEvent entry);
+        partial void MeasureBalanceEffect(CardEffect effect, CardInstance target, int actual, string outcome);
         public BattleState State { get; }
         public BattleConfig Config => rules.Copy();
-        public bool NeedsTarget => viewOnly ? viewTargets.Length > 0 : source != null;
+        public int RandomCalls=>(random as SeededRandom)?.Calls ?? -1;
+        public long RandomFingerprint=>(random as SeededRandom)?.Fingerprint ?? 0;
+        public bool NeedsTarget => viewOnly ? viewExchange || viewTargets.Length > 0 : source != null;
         public string TargetPrompt
         {
             get
             {
                 if (viewOnly) return viewPrompt;
                 if (source == null) return "";
+                if(NeedsExchange)return "남은 손패에서 버릴 카드 1장을 선택하거나 교환을 건너뛰세요";
                 var effect = source.Definition.EffectList[effectIndex];
-                return effect.Kind == EffectKind.ChainDamage ? $"연쇄 피해: 서로 다른 적 선택 ({chainHits.Count + 1}/2)"
+                if(effect.FreshTarget)return "피해 처리 후 살아 있는 적 1명을 새로 선택해 약화하세요";
+                return IsDistinctEffect(effect) ? $"서로 다른 적 선택 ({chainHits.Count + 1}/2)"
                     : effect.Target == EffectTarget.Ally ? "소환 효과: 아군 유닛을 선택하세요 (소환한 자신도 가능)" : "소환 효과: 적 유닛을 선택하세요";
             }
         }
@@ -107,17 +126,18 @@ namespace Unknown.Battle
         {
             rules = (config ?? new BattleConfig()).Copy();
             if (rules.FieldSlots < 1 || rules.HandLimit < 1 || rules.StartingHP < 1 || rules.StartingHand < 0 || rules.StartingHand > rules.HandLimit
-                || rules.UnknownLimit < 0 || rules.StartingMana < 0 || rules.ManaCap < rules.StartingMana || rules.ManaCap > 10) throw new ArgumentOutOfRangeException(nameof(config));
+                || rules.UnknownLimit < 0 || rules.StartingMana < 0 || rules.ManaCap < rules.StartingMana || rules.ManaCap > 10 || rules.InitialDeckSeeds!=null && rules.InitialDeckSeeds.Length!=2) throw new ArgumentOutOfRangeException(nameof(config));
             random = randomSource ?? new SeededRandom(seed);
             State = new BattleState(rules);
             foreach (var player in State.Players) { player.MaxMana = rules.StartingMana; player.CurrentMana = rules.StartingMana; }
             for (int p = 0; p < 2; p++)
             {
-                foreach (var definition in CardDatabase.Deck) State.Players[p].DeckCards.Add(NewCard(definition, p));
+                foreach (var definition in CardDatabase.DeckFor(rules.CardVersion)) State.Players[p].DeckCards.Add(NewCard(definition, p));
                 if (rules.ShuffleDecks)
                 {
                     var deck = State.Players[p].DeckCards;
-                    for (int i = deck.Count - 1; i > 0; i--) { int j = random.Next(i + 1); var card = deck[i]; deck[i] = deck[j]; deck[j] = card; }
+                    IRandomSource shuffler=rules.InitialDeckSeeds==null ? random : new SeededRandom(rules.InitialDeckSeeds[p]);
+                    for (int i = deck.Count - 1; i > 0; i--) { int j = shuffler.Next(i + 1); var card = deck[i]; deck[i] = deck[j]; deck[j] = card; }
                 }
                 Draw(p, rules.StartingHand);
             }
@@ -190,6 +210,7 @@ namespace Unknown.Battle
             // Finish an already committed summon without accepting another player command.
             while (NeedsTarget)
             {
+                if(NeedsExchange){CompleteExchange(-1);continue;}
                 bool chosen = false;
                 for (int owner = 0; owner < 2 && !chosen; owner++)
                     for (int slot = 0; slot < rules.FieldSlots && !chosen; slot++)
@@ -222,6 +243,7 @@ namespace Unknown.Battle
         }
         public bool EndTurn(int actor)
         {
+            if(NeedsExchange && actor==State.ActivePlayer && !viewOnly && !State.TurnExpired)CompleteExchange(-1);
             if (!Guard(actor)) return false;
             BeginTurn(1 - actor); return true;
         }
@@ -257,14 +279,17 @@ namespace Unknown.Battle
             {
                 if (opponent.Slots.Any(c => c != null)) return Fail("상대 필드에 유닛이 있어 직접 공격할 수 없습니다.");
                 int damage = Math.Min(opponent.HP, attacker.Attack);
+                bool first=!attacker.FirstAttackHealSpent;attacker.FirstAttackHealSpent=true;
                 attacker.HasAttacked = true; opponent.HP = Math.Max(0, opponent.HP - attacker.Attack);
                 Emit(new BattleEvent(BattleEventKind.Attack, actor, source: attacker.InstanceID, amount: damage, targetOwner: 1 - actor));
                 Log($"{attacker.Definition.CardName} → P{2 - actor} 직접 피해 {damage}");
                 if (opponent.HP <= 0) FinishGame(actor, VictoryReason.OpponentHPZero);
+                if(first)ApplyAttackRecovery(attacker);
                 return true;
             }
             if (enemySlot < 0 || enemySlot >= rules.FieldSlots || opponent.Slots[enemySlot] == null) return Fail("유효한 적 유닛을 선택하세요.");
             var defender = opponent.Slots[enemySlot];
+            bool firstAttack=!attacker.FirstAttackHealSpent;attacker.FirstAttackHealSpent=true;
             attacker.HasAttacked = true;
             // Both attacks use the pre-combat stats, even if one of the hits is lethal.
             int outgoing = attacker.Attack, incoming = defender.Attack;
@@ -273,7 +298,7 @@ namespace Unknown.Battle
                 actualOutgoing, actualIncoming, targetOwner: 1 - actor));
             attacker.CurrentHP -= incoming; defender.CurrentHP -= outgoing;
             Log($"{attacker.Definition.CardName} ↔ {defender.Definition.CardName}: 피해 {actualOutgoing} / 반격 {actualIncoming}");
-            RemoveDead(); return true;
+            RemoveDead();if(firstAttack)ApplyAttackRecovery(attacker);return true;
         }
         public CardDefinition CombinationPreview(int actor, int aceID, int faceID)
         {
@@ -282,7 +307,7 @@ namespace Unknown.Battle
             var ace = hand.Find(c => c.InstanceID == aceID); var face = hand.Find(c => c.InstanceID == faceID);
             if (ace == null || face == null || ace.Definition.CardType != CardType.Normal || face.Definition.CardType != CardType.Normal
                 || ace.Definition.Rank != Rank.Ace || face.Definition.Rank < Rank.Jack || face.Definition.Rank > Rank.King) return null;
-            return CardDatabase.Get("Unknown_" + CardDatabase.RankText(face.Definition.Rank));
+            return CardDatabase.Get("Unknown_" + CardDatabase.RankText(face.Definition.Rank),rules.CardVersion);
         }
         public bool Combine(int actor, int aceID, int faceID)
         {
@@ -321,7 +346,7 @@ namespace Unknown.Battle
             var player=State.Players[actor];
             if(chargeMana)SpendMana(actor, joker.Definition.ManaCost);
             player.HandCards.Remove(joker); player.DiscardCards.Add(joker); unit.JokerUsed = true;
-            Emit(new BattleEvent(BattleEventKind.JokerTravel, actor, joker.InstanceID, unit.InstanceID));
+            Emit(new BattleEvent(BattleEventKind.JokerTravel, actor, joker.InstanceID, unit.InstanceID,secondary:chargeMana ? 1 : 0));
             bool success;
 #if UNITY_EDITOR
             if(DebugNextGamble.HasValue) { success=DebugNextGamble.Value; DebugNextGamble=null; }
@@ -350,11 +375,12 @@ namespace Unknown.Battle
             .Slots.Where(c => c != null && c.CurrentHP > 0).ToList();
         public bool IsValidEffectTarget(int owner, int slot)
         {
+            if(NeedsExchange)return false;
             if (viewOnly) return Array.IndexOf(viewTargets, owner * rules.FieldSlots + slot) >= 0;
             if (!NeedsTarget || owner < 0 || owner > 1 || slot < 0 || slot >= rules.FieldSlots) return false;
             var card = State.Players[owner].Slots[slot];
             var effect = source.Definition.EffectList[effectIndex];
-            return card != null && Targets(effect.Target).Contains(card) && (effect.Kind != EffectKind.ChainDamage || !chainHits.Contains(card.InstanceID));
+            return card != null && Targets(effect.Target).Contains(card) && (!IsDistinctEffect(effect) || !chainHits.Contains(card.InstanceID));
         }
         public bool SelectEffectTarget(int actor, int owner, int slot)
         {
@@ -365,41 +391,63 @@ namespace Unknown.Battle
         void ApplySelectedTarget(int owner, int slot)
         {
             var effect = source.Definition.EffectList[effectIndex]; var card = State.Players[owner].Slots[slot];
-            if (effect.Kind == EffectKind.ChainDamage) chainHits.Add(card.InstanceID);
+            if (IsDistinctEffect(effect)) chainHits.Add(card.InstanceID);
             else selectedTargets[effect.Target] = card.InstanceID;
             Apply(effect, card);
-            if (effect.Kind != EffectKind.ChainDamage) effectIndex++;
+            if (!IsDistinctEffect(effect)) effectIndex++;
             ResolveEffects();
         }
         void ResolveEffects()
         {
             while (source != null && effectIndex < source.Definition.EffectList.Count)
             {
-                if (!IsOnBoard(source)) { Log("소환 유닛 파괴: 남은 소환 효과 취소"); break; }
+                if (!IsOnBoard(source)) {
+                    for(int skipped=effectIndex;skipped<source.Definition.EffectList.Count;skipped++)
+                        MeasureBalanceEffect(source.Definition.EffectList[skipped],null,0,"source_destroyed");
+                    Log("소환 유닛 파괴: 남은 소환 효과 취소"); break;
+                }
                 var effect = source.Definition.EffectList[effectIndex];
-                if (effect.Kind == EffectKind.DrawCard) { Draw(source.Owner, effect.Amount); effectIndex++; continue; }
+                if(effect.Kind==EffectKind.FirstAttackHeal){effectIndex++;continue;}
+                if(effect.Kind==EffectKind.Exchange) {
+                    if(State.Players[source.Owner].HandCards.Count==0){MeasureBalanceEffect(effect,null,0,"no_hand");effectIndex++;continue;}
+                    waitingExchange=true;return;
+                }
+                if(effect.Kind==EffectKind.GainMana) {
+                    var player=State.Players[source.Owner];int before=player.CurrentMana;
+                    player.CurrentMana=Math.Min(10,player.CurrentMana+effect.Amount);
+                    Emit(new BattleEvent(BattleEventKind.ManaGained,source.Owner,source:source.InstanceID,amount:player.CurrentMana-before,secondary:before));
+                    MeasureBalanceEffect(effect,null,player.CurrentMana-before,"resolved");effectIndex++;continue;
+                }
+                if(effect.FreshTarget)selectedTargets.Remove(effect.Target);
+                if (effect.Kind == EffectKind.DrawCard) {
+                    int before=State.Players[source.Owner].HandCards.Count;
+                    Draw(source.Owner, effect.Amount);
+                    MeasureBalanceEffect(effect,null,State.Players[source.Owner].HandCards.Count-before,"resolved");
+                    effectIndex++; continue;
+                }
                 if (effect.Kind == EffectKind.DiscardCard)
                 {
                     var enemy = State.Players[1 - source.Owner];
+                    int before=enemy.HandCards.Count;
                     for (int i = 0; i < effect.Amount && enemy.HandCards.Count > 0; i++)
                     { int index = random.Next(enemy.HandCards.Count); Emit(new BattleEvent(BattleEventKind.Discard, 1 - source.Owner, source.InstanceID, enemy.HandCards[index].InstanceID, suit: source.Definition.Suit));
                         enemy.DiscardCards.Add(enemy.HandCards[index]); enemy.HandCards.RemoveAt(index); Log("상대 패 무작위 1장 버림"); }
-                    effectIndex++; continue;
+                    MeasureBalanceEffect(effect,null,before-enemy.HandCards.Count,"resolved");effectIndex++; continue;
                 }
                 if (effect.Target == EffectTarget.Self) { Apply(effect, source); effectIndex++; continue; }
                 var targets = Targets(effect.Target);
                 if (effect.Target == EffectTarget.AllAllies || effect.Target == EffectTarget.AllEnemies)
-                { foreach (var target in targets) Apply(effect, target); effectIndex++; continue; }
+                { if(targets.Count==0)MeasureBalanceEffect(effect,null,0,"no_target");foreach (var target in targets) Apply(effect, target); effectIndex++; continue; }
                 if (effect.Kind == EffectKind.RandomDamage)
-                { if (targets.Count > 0) Apply(effect, targets[random.Next(targets.Count)]); effectIndex++; continue; }
-                if (effect.Kind == EffectKind.ChainDamage)
+                { if (targets.Count > 0) Apply(effect, targets[random.Next(targets.Count)]);else MeasureBalanceEffect(effect,null,0,"no_target");effectIndex++; continue; }
+                if (IsDistinctEffect(effect))
                 {
                     if (chainHits.Count < 2 && targets.Any(c => !chainHits.Contains(c.InstanceID))) return;
-                    chainHits.Clear(); effectIndex++; continue;
+                    if(chainHits.Count==0)MeasureBalanceEffect(effect,null,0,"no_target");chainHits.Clear(); effectIndex++; continue;
                 }
                 if (selectedTargets.TryGetValue(effect.Target, out int id))
-                { var target = targets.Find(c => c.InstanceID == id); if (target != null) Apply(effect, target); effectIndex++; continue; }
-                if (targets.Count == 0) { Log("대상 없음: 해당 소환 효과 생략"); effectIndex++; continue; }
+                { var target = targets.Find(c => c.InstanceID == id); if (target != null) Apply(effect, target);else MeasureBalanceEffect(effect,null,0,"invalidated");effectIndex++; continue; }
+                if (targets.Count == 0) { MeasureBalanceEffect(effect,null,0,"no_target");Log("대상 없음: 해당 소환 효과 생략"); effectIndex++; continue; }
                 return;
             }
             source = null; selectedTargets.Clear(); chainHits.Clear();
@@ -408,7 +456,8 @@ namespace Unknown.Battle
         }
         void Apply(CardEffect effect, CardInstance target)
         {
-            if (!IsOnBoard(target)) return;
+            if (!IsOnBoard(target)) { MeasureBalanceEffect(effect,target,0,"invalidated");return; }
+            int beforeHP=target.CurrentHP,beforeAttack=target.Attack,beforeMax=target.MaxHP;
             switch (effect.Kind)
             {
                 case EffectKind.Damage: case EffectKind.SelfDamage: case EffectKind.ChainDamage: case EffectKind.RandomDamage:
@@ -417,8 +466,8 @@ namespace Unknown.Battle
                     int healed = Math.Min(target.MaxHP - target.CurrentHP, effect.Amount); target.CurrentHP += healed;
                     Emit(new BattleEvent(BattleEventKind.Heal, target.Owner, source.InstanceID, target.InstanceID, healed, suit: source.Definition.Suit));
                     Log($"{target.Definition.CardName}: 체력 +{healed}"); break;
-                case EffectKind.ModifyAttack:
-                    int attackBefore = target.Attack; target.Attack = Math.Max(0, target.Attack + effect.Amount);
+                case EffectKind.ModifyAttack:case EffectKind.ChainWeaken:
+                    int attackBefore = target.Attack; target.Attack = Math.Max(0, target.Attack + (effect.Kind==EffectKind.ChainWeaken ? -effect.Amount : effect.Amount));
                     target.AbilityAttack+=target.Attack-attackBefore;
                     Emit(new BattleEvent(BattleEventKind.AttackChanged, target.Owner, source.InstanceID, target.InstanceID, target.Attack - attackBefore, suit: source.Definition.Suit));
                     Log($"{target.Definition.CardName}: 공격력 {target.Attack - attackBefore:+0;-0;0}"); break;
@@ -428,6 +477,10 @@ namespace Unknown.Battle
                     Emit(new BattleEvent(BattleEventKind.MaxHPChanged, target.Owner, source.InstanceID, target.InstanceID, effect.Amount, suit: source.Definition.Suit));
                     Log($"{target.Definition.CardName}: 최대·현재 체력 +{effect.Amount}"); break;
             }
+            int measured=effect.Kind==EffectKind.ModifyAttack || effect.Kind==EffectKind.ChainWeaken ? target.Attack-beforeAttack
+                : effect.Kind==EffectKind.IncreaseMaxHP ? target.MaxHP-beforeMax
+                : effect.Kind==EffectKind.Heal ? target.CurrentHP-beforeHP : Math.Min(beforeHP,Math.Max(0,effect.Amount));
+            MeasureBalanceEffect(effect,target,measured,"resolved");
             RemoveDead();
         }
         void RemoveDead()

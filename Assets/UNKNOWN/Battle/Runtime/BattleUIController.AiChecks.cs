@@ -37,13 +37,13 @@ namespace Unknown.Battle
                     yield return AiWait(()=>engine.State.ActivePlayer==0 && !transitioning && !actionBusy || engine.State.IsOver,50);yield return null;
                     verify(aiActionCount>1 && (engine.State.Players[1].Board.Any(c=>c!=null) || engine.State.Players[1].UnknownCreated>0),difficulty+" executes actions then ends turn through common rules");
                     verify(ViewPlayer==0 && !passOverlay.activeSelf,difficulty+" returns to human without hotseat privacy screen");
-                    var hidden=HumanAiEvents(new[]{new BattleEvent(BattleEventKind.Combine,1,source:123,target:124,definition:CardDatabase.Get("Unknown_K")),new BattleEvent(BattleEventKind.Draw,1,target:125,definition:CardDatabase.Get("Heart_A"))});
+                    var hidden=HumanAiEvents(new[]{new BattleEvent(BattleEventKind.Combine,1,source:123,target:124,definition:CardDatabase.Get("Unknown_K",CardBalanceVersion.Baseline)),new BattleEvent(BattleEventKind.Draw,1,target:125,definition:CardDatabase.Get("Heart_A",CardBalanceVersion.Baseline))});
                     verify(hidden.Count==1 && hidden[0].TargetID==-1 && hidden[0].Definition==null,difficulty+" filters private AI combination and draw identities before animation");
                     // Deterministic terminal fixture still requires the live AI and actual attack/victory command.
                     StopAllCoroutines();animations.ResetAll();ClearSelection();actionBusy=transitioning=false;clock.Begin(40,Time.realtimeSinceStartupAsDouble);
-                    engine=new BattleEngine(71,new BattleConfig{StartingHand=0,Map=BattleMap.Normal});foreach(var p in engine.State.Players){p.HandCards.Clear();for(int i=0;i<5;i++)p.Slots[i]=null;}
+                    engine=new BattleEngine(71,new BattleConfig {CardVersion=CardBalanceVersion.Baseline,StartingHand=0,Map=BattleMap.Normal});foreach(var p in engine.State.Players){p.HandCards.Clear();for(int i=0;i<5;i++)p.Slots[i]=null;}
                     engine.State.ActivePlayer=1;engine.State.TurnNumber=4;engine.State.Players[0].HP=1;
-                    var unit=engine.NewCard(CardDatabase.Get("Heart_3"),1);unit.SummonedTurn=2;engine.State.Players[1].Slots[0]=unit;engine.DrainEvents();ResetHandViews();Refresh();aiNextAction=Time.unscaledTime+.1f;
+                    var unit=engine.NewCard(CardDatabase.Get("Heart_3",CardBalanceVersion.Baseline),1);unit.SummonedTurn=2;engine.State.Players[1].Slots[0]=unit;engine.DrainEvents();ResetHandViews();Refresh();aiNextAction=Time.unscaledTime+.1f;
                     yield return AiWait(()=>resultOverlay.activeSelf && !actionBusy);yield return null;
                     verify(engine.State.Winner==1 && winnerText.text=="DEFEAT" && aiResultInfo.text.Contains(difficulty.ToString().ToUpperInvariant()),difficulty+" real AI lethal attack displays difficulty and result");
                     verify(aiResultInfo.text.Contains("UNKNOWN 0/3") && aiResultInfo.text.Contains("총 4턴"),difficulty+" result displays only own victory counters and total turns");

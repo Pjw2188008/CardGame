@@ -1,0 +1,227 @@
+[
+  {
+    "path": "balance_candidates.json",
+    "sha256": "899750C94F453813CC93B936E89328D4CAF326728B0BFBE192CE186E8AF71E3C",
+    "bytes": 16512
+  },
+  {
+    "path": "balance_summary.json",
+    "sha256": "23AE0C67F378CC5BD449CCA872AABFE1762E0268A512EA025749E800965148A1",
+    "bytes": 3927346
+  },
+  {
+    "path": "card_ai_statistics.csv",
+    "sha256": "82F2F77889420F44BC39BF4184255BB508E1F073BBE0CCE73C284B9E55D2D9CE",
+    "bytes": 599266
+  },
+  {
+    "path": "card_effect_statistics.csv",
+    "sha256": "C8657C415D2F0B9AAB0DEF0CB7DE5803E7BDCADCDF55C509CAD1C4C9DF0F29F2",
+    "bytes": 49393
+  },
+  {
+    "path": "card_map_statistics.csv",
+    "sha256": "C7DBC4B4CF644B84F78A3E8A6CFDE0B8D2BD64EF13B82BD021A69FD4D2FAE3ED",
+    "bytes": 920079
+  },
+  {
+    "path": "card_statistics.csv",
+    "sha256": "38FB08641023B29C45D10A4E89B3EF54A7BFDDED1E2C3127A625C8855C68BA20",
+    "bytes": 165565
+  },
+  {
+    "path": "effect_events.jsonl",
+    "sha256": "29A7279FC1DBF647FDB737F6DF7D417DEA1877EDF4D39E1433462F0DA1C32E91",
+    "bytes": 339241360
+  },
+  {
+    "path": "match_results.csv",
+    "sha256": "307A52805B1671387EDB2DCB84E6169DFA72098D9CD48CEE7DFD85F8184E393C",
+    "bytes": 962572
+  },
+  {
+    "path": "test_metadata.json",
+    "sha256": "E4CA73698DBD78E76DEC68B916F8B454D4EBDB2BB0BD1484433AE55CFC5F16CE",
+    "bytes": 4105533
+  },
+  {
+    "path": "baseline_main\\20261111-024516-648-e89eff0e\\balance_candidates.json",
+    "sha256": "32F58EC17D458D76D26F44E42D87BB993EA15E2474B0F2537414D908554D633B",
+    "bytes": 10880
+  },
+  {
+    "path": "baseline_main\\20261111-024516-648-e89eff0e\\balance_summary.json",
+    "sha256": "8623FB55CDCB23DF38EDDC947BB1A589F2297850409F07D9816616558342578E",
+    "bytes": 2670083
+  },
+  {
+    "path": "baseline_main\\20261111-024516-648-e89eff0e\\card_ai_statistics.csv",
+    "sha256": "218F445E1C7570D2C5F0E655C49E6DB3A0EBBD7F8E501C658D21C3A9946688CA",
+    "bytes": 155344
+  },
+  {
+    "path": "baseline_main\\20261111-024516-648-e89eff0e\\card_effect_statistics.csv",
+    "sha256": "9AD05BE99388FA0EAA0B39198074127BD1FA8337D43457E0418467D7A5461CB4",
+    "bytes": 11833
+  },
+  {
+    "path": "baseline_main\\20261111-024516-648-e89eff0e\\card_map_statistics.csv",
+    "sha256": "55EE7093C8FBC99CCC91C0E4019B5C0A654D658E7AD07006D0CB9429C708AC36",
+    "bytes": 242177
+  },
+  {
+    "path": "baseline_main\\20261111-024516-648-e89eff0e\\card_statistics.csv",
+    "sha256": "F27E8845B3D6C8DECDF027FC56EA6784D2804020FBEB6F87879CB3E08236E950",
+    "bytes": 43856
+  },
+  {
+    "path": "baseline_main\\20261111-024516-648-e89eff0e\\effect_events.jsonl",
+    "sha256": "65468875928CE2B4DA2C033EFAADCF472538CEE8EB85A8E040113A60E4884052",
+    "bytes": 110206311
+  },
+  {
+    "path": "baseline_main\\20261111-024516-648-e89eff0e\\match_results.csv",
+    "sha256": "12FBEBDD08A42FE21AA7AE4A01EFC61BE111D9288E26AB97D0BED113A4F9717C",
+    "bytes": 403179
+  },
+  {
+    "path": "baseline_main\\20261111-024516-648-e89eff0e\\test_metadata.json",
+    "sha256": "9DA645847B3F04AAD4CED436BCFE2597BBF06DCA3865A28934A9A886AC58855F",
+    "bytes": 1390529
+  },
+  {
+    "path": "baseline_stress\\20261111-024622-272-c061337a\\balance_candidates.json",
+    "sha256": "9F17C13C8E53061831C0FC6B201B851DBFB6C9F8A34FEB04FEF2AFF0A6E8632D",
+    "bytes": 146
+  },
+  {
+    "path": "baseline_stress\\20261111-024622-272-c061337a\\balance_summary.json",
+    "sha256": "36215C3A3884D1A207AABDC0D48E6BC684FB18C4B7F1166946A813EF7F405BD1",
+    "bytes": 2606440
+  },
+  {
+    "path": "baseline_stress\\20261111-024622-272-c061337a\\card_ai_statistics.csv",
+    "sha256": "5455008F0C173B7A19E0FF32D6F385A9D4D560BA0A89AF806482261283D51F79",
+    "bytes": 135824
+  },
+  {
+    "path": "baseline_stress\\20261111-024622-272-c061337a\\card_effect_statistics.csv",
+    "sha256": "39C06A1C3D70624FBC43B4B135978E6FCE575831C874F622CF0FFE4C3F0C1928",
+    "bytes": 10317
+  },
+  {
+    "path": "baseline_stress\\20261111-024622-272-c061337a\\card_map_statistics.csv",
+    "sha256": "9250828F91950859976FC160E6BDD441935D69D9DA5AA383CDCC9FECDD24B04B",
+    "bytes": 203624
+  },
+  {
+    "path": "baseline_stress\\20261111-024622-272-c061337a\\card_statistics.csv",
+    "sha256": "88FC3BDB765827121E89C3CD48A24FD731A9AE75FB80673CCEBA13FECAE128A6",
+    "bytes": 38808
+  },
+  {
+    "path": "baseline_stress\\20261111-024622-272-c061337a\\effect_events.jsonl",
+    "sha256": "050ACA1973E246861FAB53954F2B07895DD1794688BF85F57AD014D9388521AC",
+    "bytes": 4978828
+  },
+  {
+    "path": "baseline_stress\\20261111-024622-272-c061337a\\match_results.csv",
+    "sha256": "BF1311BB3F3AADE4706806349DA76EAF271977B63EF61971F53BAEA7746E8D80",
+    "bytes": 17095
+  },
+  {
+    "path": "baseline_stress\\20261111-024622-272-c061337a\\test_metadata.json",
+    "sha256": "5FBD50854AD268E61EE481231C9F9FAA97A3E6D624466499A69CADE60236C288",
+    "bytes": 102184
+  },
+  {
+    "path": "revised_main\\20261111-024543-029-28751991\\balance_candidates.json",
+    "sha256": "DBEBA1FC10006D9372AC26A088F0ED77A63D9EB48AB80E9023DCE6A1FB026BFA",
+    "bytes": 5155
+  },
+  {
+    "path": "revised_main\\20261111-024543-029-28751991\\balance_summary.json",
+    "sha256": "98E337B8612A8C9E310595B1D24C071FC231B243E803713E92FC177B0CDA55FC",
+    "bytes": 2681737
+  },
+  {
+    "path": "revised_main\\20261111-024543-029-28751991\\card_ai_statistics.csv",
+    "sha256": "5C56B365FB2E5BE53087CA98AE8D98C0B4D15E42EEBDB35758A9A2D4AD672BEA",
+    "bytes": 159224
+  },
+  {
+    "path": "revised_main\\20261111-024543-029-28751991\\card_effect_statistics.csv",
+    "sha256": "051AC2FC2F19383C06DBED432C219CBACE0005247163F0F6E4B8F228A584AA35",
+    "bytes": 11798
+  },
+  {
+    "path": "revised_main\\20261111-024543-029-28751991\\card_map_statistics.csv",
+    "sha256": "497064D4E740863DFCF23226D53E265AC9833295E0CA1E2F27BB240CDDD08EEF",
+    "bytes": 249113
+  },
+  {
+    "path": "revised_main\\20261111-024543-029-28751991\\card_statistics.csv",
+    "sha256": "4E048B534E2A6C4A5698AF0024C65ECBC6CA4CD501F7E3D5870A7A56AC53EA95",
+    "bytes": 44603
+  },
+  {
+    "path": "revised_main\\20261111-024543-029-28751991\\effect_events.jsonl",
+    "sha256": "36A6C4B7E8B8F84EAC4FDC03002052117F22BFAE70DB9DF1E96F2C27ACD7C236",
+    "bytes": 196947594
+  },
+  {
+    "path": "revised_main\\20261111-024543-029-28751991\\match_results.csv",
+    "sha256": "F2D5E934DC4C563CAE2F4065A7774C5FAC3DA55D0080E7B33EB304912B7C1551",
+    "bytes": 509931
+  },
+  {
+    "path": "revised_main\\20261111-024543-029-28751991\\test_metadata.json",
+    "sha256": "FE852DCCF36CE1818350209E9309A7266DC14217B85CCF4923046B86E96D3CFC",
+    "bytes": 1739279
+  },
+  {
+    "path": "revised_stress\\20261111-024623-660-4cf20549\\balance_candidates.json",
+    "sha256": "9F17C13C8E53061831C0FC6B201B851DBFB6C9F8A34FEB04FEF2AFF0A6E8632D",
+    "bytes": 146
+  },
+  {
+    "path": "revised_stress\\20261111-024623-660-4cf20549\\balance_summary.json",
+    "sha256": "155E85CE431AAEF503187101DF5FCA856920B0FD54F4767A01D4C9B78A4989DD",
+    "bytes": 2611916
+  },
+  {
+    "path": "revised_stress\\20261111-024623-660-4cf20549\\card_ai_statistics.csv",
+    "sha256": "FEFAA44E6C7FDD9C63AA6EAB1DB27310891D2A99A0BBED5A9B3A99D5B46757A7",
+    "bytes": 138422
+  },
+  {
+    "path": "revised_stress\\20261111-024623-660-4cf20549\\card_effect_statistics.csv",
+    "sha256": "63FA83872D0B54D0538A619E07BC564FD846052CD20B080D7029327D43880D6F",
+    "bytes": 10378
+  },
+  {
+    "path": "revised_stress\\20261111-024623-660-4cf20549\\card_map_statistics.csv",
+    "sha256": "CF7AC85F89822882A6F1CE00083C06BF2B22D63B1024E423D2F7FA38C4DDCE67",
+    "bytes": 207189
+  },
+  {
+    "path": "revised_stress\\20261111-024623-660-4cf20549\\card_statistics.csv",
+    "sha256": "17DB624855A05804A8636179C37BBDB0A6704907C98C7D10B10DC50760CB4AF9",
+    "bytes": 39132
+  },
+  {
+    "path": "revised_stress\\20261111-024623-660-4cf20549\\effect_events.jsonl",
+    "sha256": "9218DCFA754FBFF4989E3554F7E181DF1EA334ACA7D65787C1C05AA332DDD641",
+    "bytes": 6352229
+  },
+  {
+    "path": "revised_stress\\20261111-024623-660-4cf20549\\match_results.csv",
+    "sha256": "D392CC270523507DDE3A7AE1F5852FE834CD9F17C7365507A8EED10EEB4B805F",
+    "bytes": 18860
+  },
+  {
+    "path": "revised_stress\\20261111-024623-660-4cf20549\\test_metadata.json",
+    "sha256": "2437B5EE04A5F1A0412E15175F010F84885092A47310CF344956885FED4E2791",
+    "bytes": 108263
+  }
+]

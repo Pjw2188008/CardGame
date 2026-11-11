@@ -7,7 +7,8 @@ namespace Unknown.Battle
     public enum Suit { Diamond, Spade, Heart, Club, None }
     public enum Rank { Two = 2, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Ace, Jack, Queen, King, Joker }
     public enum CardType { Normal, Joker, Unknown }
-    public enum EffectKind { Damage, Heal, ModifyAttack, IncreaseMaxHP, DrawCard, SelfDamage, ChainDamage, RandomDamage, DiscardCard }
+    public enum CardBalanceVersion { Revised=0, Baseline=1 }
+    public enum EffectKind { Damage, Heal, ModifyAttack, IncreaseMaxHP, DrawCard, SelfDamage, ChainDamage, RandomDamage, DiscardCard, FirstAttackHeal, GainMana, Exchange, ChainWeaken }
     public enum EffectTarget { Self, Enemy, Ally, AllEnemies, AllAllies, None }
 
     public sealed class CardEffect
@@ -15,8 +16,9 @@ namespace Unknown.Battle
         public EffectKind Kind { get; }
         public EffectTarget Target { get; }
         public int Amount { get; }
-        public CardEffect(EffectKind kind, int amount, EffectTarget target = EffectTarget.None)
-        { Kind = kind; Amount = amount; Target = target; }
+        public bool FreshTarget { get; }
+        public CardEffect(EffectKind kind, int amount, EffectTarget target = EffectTarget.None, bool freshTarget=false)
+        { Kind = kind; Amount = amount; Target = target; FreshTarget=freshTarget; }
     }
 
     public sealed class CardDefinition
@@ -28,7 +30,9 @@ namespace Unknown.Battle
         public int Attack { get; }
         public int MaxHP { get; }
         public CardType CardType { get; }
-        public int ManaCost => CardType == CardType.Joker ? 2 : CardType == CardType.Unknown
+        readonly int explicitMana=-1;
+        public CardBalanceVersion Version {get;internal set;}
+        public int ManaCost => explicitMana>=0 ? explicitMana : CardType == CardType.Joker ? 2 : CardType == CardType.Unknown
             ? (Rank == Rank.Jack ? 7 : Rank == Rank.Queen ? 8 : 9)
             : Rank == Rank.Ace ? 7 : Rank == Rank.Jack ? 6 : Rank == Rank.Queen ? 7 : Rank == Rank.King ? 8 : (int)Rank / 2;
         public string Description { get; }
@@ -38,6 +42,8 @@ namespace Unknown.Battle
             CardID = id; CardName = name; Suit = suit; Rank = rank; Attack = attack; MaxHP = hp;
             CardType = type; Description = description; EffectList = Array.AsReadOnly((CardEffect[])effects.Clone());
         }
+        public CardDefinition(string id,string name,Suit suit,Rank rank,int attack,int hp,CardType type,string description,int mana,CardBalanceVersion version,params CardEffect[] effects)
+            :this(id,name,suit,rank,attack,hp,type,description,effects) {explicitMana=mana;Version=version;}
     }
 
     public sealed class CardInstance
@@ -67,6 +73,7 @@ namespace Unknown.Battle
         public int SummonedTurn { get; internal set; } = -1;
         public bool HasAttacked { get; internal set; }
         public bool JokerUsed { get; internal set; }
+        public bool FirstAttackHealSpent {get;internal set;}
         internal CardInstance(int id, CardDefinition definition, int owner)
         {
             InstanceID = id; Definition = definition; Owner = owner;
@@ -74,17 +81,22 @@ namespace Unknown.Battle
         }
     }
 
-    public static class CardDatabase
+    public static partial class CardDatabase
     {
         static CardEffect E(EffectKind kind, int amount, EffectTarget target = EffectTarget.None) => new CardEffect(kind, amount, target);
         static CardEffect Damage(int n) => E(EffectKind.Damage, n, EffectTarget.Enemy);
         static CardEffect Heal(int n, EffectTarget target) => E(EffectKind.Heal, n, target);
         static CardEffect Attack(int n, EffectTarget target) => E(EffectKind.ModifyAttack, n, target);
         static CardEffect HP(int n, EffectTarget target) => E(EffectKind.IncreaseMaxHP, n, target);
-        static readonly Dictionary<string, CardDefinition> cards = Build();
+        static readonly Dictionary<string, CardDefinition> baselineCards = BuildBaseline();
+        static readonly Dictionary<string, CardDefinition> cards = BuildRevised(baselineCards);
+        static Dictionary<string,CardDefinition> BuildBaseline() {var result=Build();foreach(var card in result.Values)card.Version=CardBalanceVersion.Baseline;return result;}
+        public static IReadOnlyCollection<CardDefinition> AllFor(CardBalanceVersion version) => version==CardBalanceVersion.Baseline ? Array.AsReadOnly(baselineCards.Values.ToArray()) : All;
+        public static IReadOnlyList<CardDefinition> DeckFor(CardBalanceVersion version) => version==CardBalanceVersion.Baseline ? Array.AsReadOnly(baselineCards.Values.Where(c=>c.CardType!=CardType.Unknown).ToArray()) : Deck;
         public static IReadOnlyList<CardDefinition> Deck { get; } = Array.AsReadOnly(cards.Values.Where(c => c.CardType != CardType.Unknown).ToArray());
         public static IReadOnlyCollection<CardDefinition> All => Array.AsReadOnly(cards.Values.ToArray());
         public static CardDefinition Get(string id) => cards.TryGetValue(id, out var definition) ? definition : throw new ArgumentException("Unknown card ID: " + id);
+        public static CardDefinition Get(string id,CardBalanceVersion version) => version==CardBalanceVersion.Baseline ? baselineCards[id] : Get(id);
         public static string Symbol(Suit suit) => suit == Suit.Diamond ? "♦" : suit == Suit.Spade ? "♠" : suit == Suit.Heart ? "♥" : suit == Suit.Club ? "♣" : "◇";
         public static string RankText(Rank rank) => rank == Rank.Ace ? "A" : rank == Rank.Jack ? "J" : rank == Rank.Queen ? "Q" : rank == Rank.King ? "K" : rank == Rank.Joker ? "JOKER" : ((int)rank).ToString();
 

@@ -197,6 +197,7 @@ namespace Unknown.Battle
         }
         void UpdateInteractionUI()
         {
+            RefreshExchangeTools();
             if(Keyboard.current?.escapeKey.wasPressedThisFrame==true)
                 HandleBattleEscape();
             if(discardMode && (engine.State.TurnNumber!=discardTurn || engine.State.ActivePlayer!=ViewPlayer || engine.State.IsOver || engine.NeedsTarget))CancelInteractionSelection();

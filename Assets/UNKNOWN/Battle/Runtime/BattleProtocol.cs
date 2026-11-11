@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Unknown.Battle
 {
-    public enum BattleAction { Summon, Attack, Target, Combine, Joker, EndTurn, Discard }
+    public enum BattleAction { Summon, Attack, Target, Combine, Joker, EndTurn, Discard, Exchange }
     [Serializable] public sealed class BattleIntent
     {
         public int sequence, revision, turn, first, second;
@@ -14,19 +14,24 @@ namespace Unknown.Battle
     {
         public int id, owner, attack, hp, maxHP, summonedTurn;
         public bool occupied, attacked, jokerUsed;
+        public bool firstAttackHealSpent;
+        public CardBalanceVersion cardVersion;
+        public CardDefinition Definition=>CardDatabase.Get(definition,cardVersion);
         public string definition;
         public int pokerAttack,pokerHP,mapAttack,mapHP,jokerAttack,jokerHP,abilityAttack,abilityHP;
         public int rawAttack,rawHP;
         public bool hasStatLayers;
         public static CardViewData From(CardInstance c) => c == null ? new CardViewData() : new CardViewData {
             occupied = true,
+            firstAttackHealSpent=c.FirstAttackHealSpent,cardVersion=c.Definition.Version,
             id = c.InstanceID, owner = c.Owner, definition = c.Definition.CardID, attack = c.Attack,
             hp = c.CurrentHP, maxHP = c.MaxHP, summonedTurn = c.SummonedTurn, attacked = c.HasAttacked, jokerUsed = c.JokerUsed,
             hasStatLayers=true,rawAttack=c.RawAttack,rawHP=c.RawHP,
             pokerAttack=c.PokerAttack,pokerHP=c.PokerHP,mapAttack=c.MapAttack,mapHP=c.MapHP,jokerAttack=c.JokerAttack,jokerHP=c.JokerHP,abilityAttack=c.AbilityAttack,abilityHP=c.AbilityHP };
         public CardInstance ToCard() {
             if(!occupied)return null;
-            var c=new CardInstance(id, CardDatabase.Get(definition), owner) {
+            var c=new CardInstance(id, CardDatabase.Get(definition,cardVersion), owner) {
+            FirstAttackHealSpent=firstAttackHealSpent,
             PokerAttack=pokerAttack,PokerHP=pokerHP,Attack = attack, CurrentHP = hp, MaxHP = maxHP, SummonedTurn = summonedTurn, HasAttacked = attacked, JokerUsed = jokerUsed,
             MapAttack=mapAttack,MapHP=mapHP,JokerAttack=jokerAttack,JokerHP=jokerHP,AbilityAttack=abilityAttack,AbilityHP=abilityHP };
             if(hasStatLayers)c.ImportCore(rawAttack,rawHP);
@@ -48,13 +53,15 @@ namespace Unknown.Battle
         public Suit suit;
         public bool chain;
         public string definition;
+        public CardBalanceVersion cardVersion;
         public BattleEvent ToEvent() => new BattleEvent(kind, owner, source, target, amount, secondary, slot,
-            targetOwner, suit, chain, string.IsNullOrEmpty(definition) ? null : CardDatabase.Get(definition));
+            targetOwner, suit, chain, string.IsNullOrEmpty(definition) ? null : CardDatabase.Get(definition,cardVersion));
         public static EventViewData For(BattleEvent e, int recipient)
         {
             // Hand operations reveal only their occurrence/count to the other player.
             bool hidden = e.Owner != recipient && (e.Kind == BattleEventKind.Draw || e.Kind == BattleEventKind.Discard || e.Kind == BattleEventKind.Combine || e.Kind==BattleEventKind.CardGranted || e.Kind==BattleEventKind.HandReturn);
             return new EventViewData { kind = hidden && e.Kind==BattleEventKind.CardGranted ? BattleEventKind.Draw : e.Kind, owner = e.Owner, targetOwner = e.TargetOwner,
+                cardVersion=e.Definition?.Version ?? CardBalanceVersion.Revised,
                 source = hidden || (e.Owner!=recipient && e.Kind==BattleEventKind.JokerTravel) ? -1 : e.SourceID, target = hidden ? -1 : e.TargetID,
                 amount = e.Amount, secondary = hidden && e.Kind!=BattleEventKind.Draw && e.Kind!=BattleEventKind.Discard ? 0 : e.Secondary, slot = e.Slot,
                 suit = hidden ? Suit.None : e.Suit, chain = e.Chain, definition = hidden ? null : e.Definition?.CardID };
@@ -69,6 +76,10 @@ namespace Unknown.Battle
         public double turnDuration = 40;
         public bool clockRunning = true;
         public bool expired, busy;
+        public bool exchangePending;
+        public CardBalanceVersion cardVersion;
+        public int pendingSource=-1,pendingIndex;
+        public int[] pendingTargetKinds,pendingTargetIDs,pendingDistinctIDs;
         public PlayerViewData[] players;
         public int[] targets;
         public string prompt;
@@ -86,6 +97,8 @@ namespace Unknown.Battle
             var s = engine.State;
             return new BattleSnapshot { revision = revision, recipient = recipient, active = s.ActivePlayer,
                 handLimit=engine.Config.HandLimit,
+                cardVersion=engine.Config.CardVersion,exchangePending=engine.NeedsExchange,pendingSource=engine.PendingSourceID,pendingIndex=engine.PendingIndex,
+                pendingTargetKinds=engine.PendingKinds,pendingTargetIDs=engine.PendingIDs,pendingDistinctIDs=engine.PendingDistinct,
                 turn = s.TurnNumber, winner = s.Winner, victoryReason = s.VictoryReason, expired = s.TurnExpired, deadline = deadline, busy = busy, turnDuration = turnDuration, clockRunning = clockRunning,
                 map=engine.Config.Map, mapEvent=MapEventView.For(engine.MapEvent,recipient),
                 suitEffect=engine.SuitEffect?.Copy(),mapRules=engine.Config.MapRules,
@@ -105,11 +118,12 @@ namespace Unknown.Battle
     {
         bool viewOnly;
         int[] viewTargets = new int[0];
+        bool viewExchange;
         string viewPrompt = "";
         // A view does not shuffle, draw, create a hidden deck, or execute commands.
         BattleEngine(BattleSnapshot s)
         {
-            rules = new BattleConfig { FieldSlots = s.players[0].board.Length, Map=s.map,HandLimit=s.handLimit };
+            rules = new BattleConfig { FieldSlots = s.players[0].board.Length, Map=s.map,HandLimit=s.handLimit,CardVersion=s.cardVersion };
             State = new BattleState(rules); viewOnly = true; ApplyView(s);
         }
         public static BattleEngine CreateView(BattleSnapshot s) => new BattleEngine(s);
@@ -122,7 +136,7 @@ namespace Unknown.Battle
             viewRevealed=s.revealedCard?.ToCard(); viewRevealedIndex=s.revealedIndex;
             State.Entries.Clear(); State.Entries.AddRange(s.log); State.LogVersion = s.revision;
             State.EntryOwners.Clear();
-            viewTargets = s.targets; viewPrompt = s.prompt;
+            viewTargets = s.targets; viewPrompt = s.prompt;viewExchange=s.exchangePending;rules.CardVersion=s.cardVersion;
             for (int owner = 0; owner < 2; owner++)
             {
                 var p = State.Players[owner]; var v = s.players[owner];
