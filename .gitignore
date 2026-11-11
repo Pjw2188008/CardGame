@@ -110,3 +110,6 @@ InitTestScene*.unity*
 
 # Balance test event logs are retained locally; commit their verified gzip copies.
 /BalanceResults/**/effect_events.jsonl
+
+# Heart comparison raw logs stay local; gzip copies are shareable.
+/heart_nerf_test/**/effect_events.jsonl

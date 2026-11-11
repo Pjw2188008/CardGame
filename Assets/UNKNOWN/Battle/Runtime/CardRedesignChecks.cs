@@ -33,14 +33,14 @@ namespace Unknown.Battle
                 new[]{"Exchange:1:None","GainMana:1:None","DrawCard:1:None","Exchange:2:None","DrawCard:1:None|GainMana:1:None","DrawCard:2:None","DrawCard:1:None|GainMana:1:None","DrawCard:2:None|GainMana:1:None","DrawCard:2:None|GainMana:1:None","DrawCard:2:None|GainMana:2:None","Exchange:2:None|GainMana:2:None","DrawCard:3:None|GainMana:1:None","DrawCard:3:None|GainMana:2:None"}};
             var table=new List<string>{"# 카드 57종 적용 대조표","","첫 개편 수치이며 최적값으로 검증된 수치가 아니다.","","|카드|기준 마나/공격/HP|개편 마나/공격/HP|기준 효과|개편 효과|","|---|---|---|---|---|"};
             for(int suit=0;suit<4;suit++)for(int rank=0;rank<13;rank++) {
-                string id=((Suit)suit)+"_"+ranks[rank];var c=CardDatabase.Get(id);
+                string id=((Suit)suit)+"_"+ranks[rank];var c=CardDatabase.Get(id,CardBalanceVersion.Revised);
                 Check(c.ManaCost+"/"+c.Attack+"/"+c.MaxHP==stats[suit][rank] && string.Join("|",c.EffectList.Select(Key))==effects[suit][rank],"Specification data and effect order "+id);
             }
             foreach(string id in new[]{"Unknown_J","Unknown_Q","Unknown_K","Joker_1","Joker_2"}) {
-                var before=CardDatabase.Get(id,CardBalanceVersion.Baseline);var after=CardDatabase.Get(id);
+                var before=CardDatabase.Get(id,CardBalanceVersion.Baseline);var after=CardDatabase.Get(id,CardBalanceVersion.Revised);
                 Check(before.ManaCost==after.ManaCost && before.Attack==after.Attack && before.MaxHP==after.MaxHP && string.Join("|",before.EffectList.Select(Key))==string.Join("|",after.EffectList.Select(Key)),"Preserved UNKNOWN/Joker "+id);
             }
-            foreach(var c in CardDatabase.All.OrderBy(c=>c.Suit).ThenBy(c=>c.Rank).ThenBy(c=>c.CardID)) {
+            foreach(var c in CardDatabase.AllFor(CardBalanceVersion.Revised).OrderBy(c=>c.Suit).ThenBy(c=>c.Rank).ThenBy(c=>c.CardID)) {
                 var old=CardDatabase.Get(c.CardID,CardBalanceVersion.Baseline);
                 table.Add("|"+c.CardID+"|"+old.ManaCost+"/"+old.Attack+"/"+old.MaxHP+"|"+c.ManaCost+"/"+c.Attack+"/"+c.MaxHP+"|"+old.Description.Replace("|","/")+"|"+c.Description.Replace("|","/")+"|");
             }

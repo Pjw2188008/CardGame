@@ -16,7 +16,7 @@ namespace Unknown.Battle
         public int UnknownLimit { get; set; } = 3;
         public bool ShuffleDecks { get; set; } = true;
         public bool EnablePoker { get; set; } = true;
-        public CardBalanceVersion CardVersion {get;set;}=CardBalanceVersion.Revised;
+        public CardBalanceVersion CardVersion {get;set;}=CardDatabase.DefaultVersion;
         public int[] InitialDeckSeeds {get;set;}
         public BattleMap Map { get; set; }
         public JokerEventDefinition[] MapEvents { get; set; } = JokerEventDefinition.Defaults();

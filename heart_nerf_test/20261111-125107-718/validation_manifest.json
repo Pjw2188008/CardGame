@@ -1,0 +1,197 @@
+﻿{
+    "validatedUtc":  "2026-11-11T12:59:34.5381481Z",
+    "sourceProject":  "D:\\git\\ECHO-\\Echogame\\CardGame",
+    "runDirectory":  "D:\\git\\ECHO-\\Echogame\\CardGame\\heart_nerf_test\\20261111-125107-718",
+    "compilerErrors":  0,
+    "functionalChecks":  367,
+    "sourceHashes":  [
+                         {
+                             "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\CardData.cs",
+                             "sha256":  "3B8008B8C780D0BF6258D2DBBEA6C52C11F49DAFE62A6DBAB9D6C5764DED2E56"
+                         },
+                         {
+                             "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\BattleEngine.cs",
+                             "sha256":  "5D8CDF06753984EF8B4DCAC56EDC12E62B66CE537A6D0F938AF3E6C7F05C0541"
+                         },
+                         {
+                             "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\CardRedesignChecks.cs",
+                             "sha256":  "7B29EB4D7D272EC97CB648BD1E62462830159985CD314329F90F4C0264C3F997"
+                         },
+                         {
+                             "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\HeartNerfCardCatalog.cs",
+                             "sha256":  "5E62BE88503A623AA3A11B2FEFFFE5C7C2DF2A61B0F454F211642427B133B03F"
+                         },
+                         {
+                             "path":  "Assets\\UNKNOWN\\Battle\\Runtime\\HeartNerfChecks.cs",
+                             "sha256":  "7BF375F79CB1A61DD913178D687A66B612C5F47BFEF059FEDF865A7E19996C73"
+                         },
+                         {
+                             "path":  "Assets\\UNKNOWN\\Multiplayer\\Editor\\HeartNerfBatch.cs",
+                             "sha256":  "DC909594E5EEFC7BD106903794DA73496A956F7D928253676EFB2A7BF5125F52"
+                         }
+                     ],
+    "compressedLogs":  [
+                           {
+                               "path":  "Revised\\20261111-125108-734-589ba4c2\\effect_events.jsonl.gz",
+                               "rawBytes":  405921427,
+                               "gzipBytes":  11572990,
+                               "rawSHA256":  "5C57CFA39E15F73ED3757BBE261A10363385116A1A2852ED8D4B3100E53D459C",
+                               "gzipSHA256":  "11A3AE6F1D9CFD7C8C15D9173BD93A7D9F411FEB4918B2E7A27A188778FD5C26"
+                           },
+                           {
+                               "path":  "HeartNerf\\20261111-125239-721-2096f4c6\\effect_events.jsonl.gz",
+                               "rawBytes":  409670656,
+                               "gzipBytes":  11611236,
+                               "rawSHA256":  "4AC28DC0D422B9A38CF574B03134CE0C8CA8FBAF16AA0FA89DA8F7476CD6567A",
+                               "gzipSHA256":  "46E64D7D5C2880A2A5B31CFC4588FADCD344E0803E218BDFBFABB8BC0E0BC2B5"
+                           }
+                       ],
+    "resultFiles":  [
+                        {
+                            "path":  "experiment.json",
+                            "bytes":  457060,
+                            "sha256":  "39455D559E7D1B8A5C2EB00283263477A1E0067C5F36CB8AA513EF69FECA41D1"
+                        },
+                        {
+                            "path":  "comparison\\card_changes.csv",
+                            "bytes":  221,
+                            "sha256":  "A47134B8BCD1C5CDA34ACAB71C643485C441263D77D6817623DDDCC73C6F11DE"
+                        },
+                        {
+                            "path":  "comparison\\comparison.json",
+                            "bytes":  39227,
+                            "sha256":  "B066A3FF48FDB1D828536B45636383C8506D7CA9C2E6FA7E0E01D92DE0D42EB8"
+                        },
+                        {
+                            "path":  "comparison\\HeartNerfReport.md",
+                            "bytes":  12098,
+                            "sha256":  "C3938CD82019559FA7A53F9F764BFEA325F5766D3A1AACA693F97E488F369CBB"
+                        },
+                        {
+                            "path":  "comparison\\heart_effect_comparison.csv",
+                            "bytes":  1174,
+                            "sha256":  "F06C065369520F1EAA3D955D69B9C64610A66A7123B58EB7D8B147C4C5BCDA34"
+                        },
+                        {
+                            "path":  "comparison\\heart_usage_comparison.csv",
+                            "bytes":  2683,
+                            "sha256":  "EDCA83BCBA8658192C2272C228DDE491ADD8B960DE474578C5812CD4D5076BB1"
+                        },
+                        {
+                            "path":  "comparison\\match_comparison.csv",
+                            "bytes":  1975,
+                            "sha256":  "ADC86313BE6EFD7968F3D4B63B1969F144D2A91657E100B021C9CDDCA9956B51"
+                        },
+                        {
+                            "path":  "comparison\\paired_completed_games.csv",
+                            "bytes":  48180,
+                            "sha256":  "89C37A3ACF4BA74C3CB091ED6828A12D804E9C991BCD8B9F37537EB9E803F741"
+                        },
+                        {
+                            "path":  "comparison\\suit_damage_comparison.csv",
+                            "bytes":  676,
+                            "sha256":  "28D58331580413CDB5B9D6A9FCD8F3B4091CBE6C66BF6E150CB4CF1386B9DAF1"
+                        },
+                        {
+                            "path":  "comparison\\unknown_comparison.csv",
+                            "bytes":  812,
+                            "sha256":  "9AC0AA505CFBE5DA385718F59E0AD8BD38FA35428F69120ED3BD10D194B71273"
+                        },
+                        {
+                            "path":  "HeartNerf\\20261111-125239-721-2096f4c6\\balance_candidates.json",
+                            "bytes":  3277,
+                            "sha256":  "63989C62D30100B13D2F9D96D9B8A0E13C0477751EC1E120B6D7D13933397279"
+                        },
+                        {
+                            "path":  "HeartNerf\\20261111-125239-721-2096f4c6\\balance_summary.json",
+                            "bytes":  2698952,
+                            "sha256":  "5D9B547FF26D5FD49E1BD0F1A9C21D957E2E64AF1E14794318669887F1502C66"
+                        },
+                        {
+                            "path":  "HeartNerf\\20261111-125239-721-2096f4c6\\card_ai_statistics.csv",
+                            "bytes":  169897,
+                            "sha256":  "8D04B2E700C4F53007F819B3F145BC3F731583027D2D75E29B85519DDE1B1EF3"
+                        },
+                        {
+                            "path":  "HeartNerf\\20261111-125239-721-2096f4c6\\card_effect_statistics.csv",
+                            "bytes":  12163,
+                            "sha256":  "86F3EFD9FFF6315806BAD31B928A4594221E872B19E8EC0A003A32F0DA4EBE57"
+                        },
+                        {
+                            "path":  "HeartNerf\\20261111-125239-721-2096f4c6\\card_map_statistics.csv",
+                            "bytes":  254648,
+                            "sha256":  "B3D97E22EF96BAB6FA7A6731CBDF40178F7E5B1CF75D1039B1E422DEC75E3A97"
+                        },
+                        {
+                            "path":  "HeartNerf\\20261111-125239-721-2096f4c6\\card_statistics.csv",
+                            "bytes":  45755,
+                            "sha256":  "E692EEF431AC4A9FA1E743432F81E27E3293D85638FD8B2E76B792C916A452DD"
+                        },
+                        {
+                            "path":  "HeartNerf\\20261111-125239-721-2096f4c6\\effect_events.jsonl.gz",
+                            "bytes":  11611236,
+                            "sha256":  "46E64D7D5C2880A2A5B31CFC4588FADCD344E0803E218BDFBFABB8BC0E0BC2B5"
+                        },
+                        {
+                            "path":  "HeartNerf\\20261111-125239-721-2096f4c6\\match_results.csv",
+                            "bytes":  1059042,
+                            "sha256":  "3FEFE20430F617EAE405AD01E4657C44FDEC4F3B9F25B9382F9BD4F4D3ECB105"
+                        },
+                        {
+                            "path":  "HeartNerf\\20261111-125239-721-2096f4c6\\test_metadata.json",
+                            "bytes":  3557474,
+                            "sha256":  "FD77E1CCFB4D54575C30E7630E50DF8407EC69FD7303F0A27EA9FF36C2DDD3DD"
+                        },
+                        {
+                            "path":  "Revised\\20261111-125108-734-589ba4c2\\balance_candidates.json",
+                            "bytes":  5157,
+                            "sha256":  "ABEC95E71DE05619E239577B415BB4DAE8140073A94474C00D5B4AAC6386F4BF"
+                        },
+                        {
+                            "path":  "Revised\\20261111-125108-734-589ba4c2\\balance_summary.json",
+                            "bytes":  2697867,
+                            "sha256":  "66410B809005CAF560724AB2CA4328209B00791A3E121BEA19CCCB860C5FD727"
+                        },
+                        {
+                            "path":  "Revised\\20261111-125108-734-589ba4c2\\card_ai_statistics.csv",
+                            "bytes":  169647,
+                            "sha256":  "D2C833A458EFA7557D4AE9B229FE07640EE016F3204EB16969DEB02FC4551888"
+                        },
+                        {
+                            "path":  "Revised\\20261111-125108-734-589ba4c2\\card_effect_statistics.csv",
+                            "bytes":  12184,
+                            "sha256":  "D11B4A8A5DBE1B66A2CD03225FAC9C1D45B7F25F371EA549DDCB688E3C42D0F2"
+                        },
+                        {
+                            "path":  "Revised\\20261111-125108-734-589ba4c2\\card_map_statistics.csv",
+                            "bytes":  254097,
+                            "sha256":  "EE9C5B9D574625D5D5EC8E38CB654038D166F15ACE2E2EDABDCEAD43B68CF8F7"
+                        },
+                        {
+                            "path":  "Revised\\20261111-125108-734-589ba4c2\\card_statistics.csv",
+                            "bytes":  45637,
+                            "sha256":  "3048F8123E79375033EB2546050AE28606CBBF26253E3924B381D06D9A1D5AE5"
+                        },
+                        {
+                            "path":  "Revised\\20261111-125108-734-589ba4c2\\effect_events.jsonl.gz",
+                            "bytes":  11572990,
+                            "sha256":  "11A3AE6F1D9CFD7C8C15D9173BD93A7D9F411FEB4918B2E7A27A188778FD5C26"
+                        },
+                        {
+                            "path":  "Revised\\20261111-125108-734-589ba4c2\\match_results.csv",
+                            "bytes":  1055860,
+                            "sha256":  "50B097726260003656F925CFE9384AA8212920CF7E846FCB151A5CED51819CB0"
+                        },
+                        {
+                            "path":  "Revised\\20261111-125108-734-589ba4c2\\test_metadata.json",
+                            "bytes":  3550891,
+                            "sha256":  "145B2B70810A0F6056DB5B9919E72CB30C855CE83B535824E76712F703ACDE2E"
+                        },
+                        {
+                            "path":  "revised_regression\\CardComparison57.md",
+                            "bytes":  6370,
+                            "sha256":  "28BE72DCD8E89C3BC776CEEF14F7E342F7B8BBA95945080539708D01FF2E348A"
+                        }
+                    ],
+    "note":  "Original metadata preserves execution-time clone paths. The delivered relative folder tree is identical. Raw logs stay in the ignored Library validation project and gzip files restore the exact originals."
+}

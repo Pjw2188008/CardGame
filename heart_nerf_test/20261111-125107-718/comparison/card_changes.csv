@@ -1,0 +1,6 @@
+﻿"cardID","effectIndex","kind","before","after"
+"Heart_9","0","Heal","3","2"
+"Heart_Q","0","IncreaseMaxHP","3","2"
+"Heart_Q","1","Heal","3","2"
+"Heart_K","0","Heal","4","3"
+"Heart_K","1","FirstAttackHeal","5","3"

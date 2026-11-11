@@ -7,7 +7,7 @@ namespace Unknown.Battle
     public enum Suit { Diamond, Spade, Heart, Club, None }
     public enum Rank { Two = 2, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Ace, Jack, Queen, King, Joker }
     public enum CardType { Normal, Joker, Unknown }
-    public enum CardBalanceVersion { Revised=0, Baseline=1 }
+    public enum CardBalanceVersion { Revised=0, Baseline=1, HeartNerf=2 }
     public enum EffectKind { Damage, Heal, ModifyAttack, IncreaseMaxHP, DrawCard, SelfDamage, ChainDamage, RandomDamage, DiscardCard, FirstAttackHeal, GainMana, Exchange, ChainWeaken }
     public enum EffectTarget { Self, Enemy, Ally, AllEnemies, AllAllies, None }
 
@@ -90,13 +90,37 @@ namespace Unknown.Battle
         static CardEffect HP(int n, EffectTarget target) => E(EffectKind.IncreaseMaxHP, n, target);
         static readonly Dictionary<string, CardDefinition> baselineCards = BuildBaseline();
         static readonly Dictionary<string, CardDefinition> cards = BuildRevised(baselineCards);
-        static Dictionary<string,CardDefinition> BuildBaseline() {var result=Build();foreach(var card in result.Values)card.Version=CardBalanceVersion.Baseline;return result;}
-        public static IReadOnlyCollection<CardDefinition> AllFor(CardBalanceVersion version) => version==CardBalanceVersion.Baseline ? Array.AsReadOnly(baselineCards.Values.ToArray()) : All;
-        public static IReadOnlyList<CardDefinition> DeckFor(CardBalanceVersion version) => version==CardBalanceVersion.Baseline ? Array.AsReadOnly(baselineCards.Values.Where(c=>c.CardType!=CardType.Unknown).ToArray()) : Deck;
-        public static IReadOnlyList<CardDefinition> Deck { get; } = Array.AsReadOnly(cards.Values.Where(c => c.CardType != CardType.Unknown).ToArray());
-        public static IReadOnlyCollection<CardDefinition> All => Array.AsReadOnly(cards.Values.ToArray());
-        public static CardDefinition Get(string id) => cards.TryGetValue(id, out var definition) ? definition : throw new ArgumentException("Unknown card ID: " + id);
-        public static CardDefinition Get(string id,CardBalanceVersion version) => version==CardBalanceVersion.Baseline ? baselineCards[id] : Get(id);
+        static readonly Dictionary<string, CardDefinition> heartNerfCards = BuildHeartNerf(cards);
+        public const CardBalanceVersion DefaultVersion = CardBalanceVersion.HeartNerf;
+
+        static Dictionary<string, CardDefinition> BuildBaseline()
+        {
+            var result = Build();
+            foreach (var card in result.Values) card.Version = CardBalanceVersion.Baseline;
+            return result;
+        }
+
+        static Dictionary<string, CardDefinition> CardsFor(CardBalanceVersion version)
+        {
+            switch (version)
+            {
+                case CardBalanceVersion.Baseline: return baselineCards;
+                case CardBalanceVersion.Revised: return cards;
+                case CardBalanceVersion.HeartNerf: return heartNerfCards;
+                default: throw new ArgumentOutOfRangeException(nameof(version));
+            }
+        }
+
+        public static IReadOnlyCollection<CardDefinition> AllFor(CardBalanceVersion version)
+            => Array.AsReadOnly(CardsFor(version).Values.ToArray());
+        public static IReadOnlyList<CardDefinition> DeckFor(CardBalanceVersion version)
+            => Array.AsReadOnly(CardsFor(version).Values.Where(card => card.CardType != CardType.Unknown).ToArray());
+        public static IReadOnlyList<CardDefinition> Deck { get; } = DeckFor(DefaultVersion);
+        public static IReadOnlyCollection<CardDefinition> All { get; } = AllFor(DefaultVersion);
+        public static CardDefinition Get(string id) => Get(id, DefaultVersion);
+        public static CardDefinition Get(string id, CardBalanceVersion version)
+            => CardsFor(version).TryGetValue(id, out var definition)
+                ? definition : throw new ArgumentException("Unknown card ID: " + id);
         public static string Symbol(Suit suit) => suit == Suit.Diamond ? "♦" : suit == Suit.Spade ? "♠" : suit == Suit.Heart ? "♥" : suit == Suit.Club ? "♣" : "◇";
         public static string RankText(Rank rank) => rank == Rank.Ace ? "A" : rank == Rank.Jack ? "J" : rank == Rank.Queen ? "Q" : rank == Rank.King ? "K" : rank == Rank.Joker ? "JOKER" : ((int)rank).ToString();
 

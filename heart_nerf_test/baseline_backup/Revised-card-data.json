@@ -1,0 +1,1318 @@
+[
+    {
+        "cardID":  "Diamond_2",
+        "name":  "♦2",
+        "suit":  "Diamond",
+        "rank":  "Two",
+        "type":  "Normal",
+        "description":  "적 1명 피해 1",
+        "version":  "Revised",
+        "mana":  1,
+        "attack":  2,
+        "hp":  2,
+        "effects":  [
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Diamond_3",
+        "name":  "♦3",
+        "suit":  "Diamond",
+        "rank":  "Three",
+        "type":  "Normal",
+        "description":  "자신 피해 1, 적 1명 피해 2",
+        "version":  "Revised",
+        "mana":  1,
+        "attack":  3,
+        "hp":  2,
+        "effects":  [
+                        {
+                            "kind":  "SelfDamage",
+                            "target":  "Self",
+                            "amount":  1,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Diamond_4",
+        "name":  "♦4",
+        "suit":  "Diamond",
+        "rank":  "Four",
+        "type":  "Normal",
+        "description":  "무작위 적 1명 피해 3",
+        "version":  "Revised",
+        "mana":  2,
+        "attack":  3,
+        "hp":  3,
+        "effects":  [
+                        {
+                            "kind":  "RandomDamage",
+                            "target":  "Enemy",
+                            "amount":  3,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Diamond_5",
+        "name":  "♦5",
+        "suit":  "Diamond",
+        "rank":  "Five",
+        "type":  "Normal",
+        "description":  "적 1명 피해 2",
+        "version":  "Revised",
+        "mana":  2,
+        "attack":  4,
+        "hp":  3,
+        "effects":  [
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Diamond_6",
+        "name":  "♦6",
+        "suit":  "Diamond",
+        "rank":  "Six",
+        "type":  "Normal",
+        "description":  "자신 피해 1, 적 1명 피해 4",
+        "version":  "Revised",
+        "mana":  3,
+        "attack":  4,
+        "hp":  4,
+        "effects":  [
+                        {
+                            "kind":  "SelfDamage",
+                            "target":  "Self",
+                            "amount":  1,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  4,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Diamond_7",
+        "name":  "♦7",
+        "suit":  "Diamond",
+        "rank":  "Seven",
+        "type":  "Normal",
+        "description":  "서로 다른 적 최대 2명에게 각각 피해 2",
+        "version":  "Revised",
+        "mana":  3,
+        "attack":  5,
+        "hp":  4,
+        "effects":  [
+                        {
+                            "kind":  "ChainDamage",
+                            "target":  "Enemy",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Diamond_8",
+        "name":  "♦8",
+        "suit":  "Diamond",
+        "rank":  "Eight",
+        "type":  "Normal",
+        "description":  "무작위 적 1명 피해 4",
+        "version":  "Revised",
+        "mana":  4,
+        "attack":  5,
+        "hp":  5,
+        "effects":  [
+                        {
+                            "kind":  "RandomDamage",
+                            "target":  "Enemy",
+                            "amount":  4,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Diamond_9",
+        "name":  "♦9",
+        "suit":  "Diamond",
+        "rank":  "Nine",
+        "type":  "Normal",
+        "description":  "적 1명 피해 4, 자신 공격력 +1",
+        "version":  "Revised",
+        "mana":  4,
+        "attack":  6,
+        "hp":  5,
+        "effects":  [
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  4,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "Self",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Diamond_10",
+        "name":  "♦10",
+        "suit":  "Diamond",
+        "rank":  "Ten",
+        "type":  "Normal",
+        "description":  "적 1명 피해 5",
+        "version":  "Revised",
+        "mana":  5,
+        "attack":  7,
+        "hp":  5,
+        "effects":  [
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  5,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Diamond_A",
+        "name":  "♦A",
+        "suit":  "Diamond",
+        "rank":  "Ace",
+        "type":  "Normal",
+        "description":  "아군 전체 공격력 +2, 적 1명 피해 2",
+        "version":  "Revised",
+        "mana":  7,
+        "attack":  6,
+        "hp":  7,
+        "effects":  [
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "AllAllies",
+                            "amount":  2,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Diamond_J",
+        "name":  "♦J",
+        "suit":  "Diamond",
+        "rank":  "Jack",
+        "type":  "Normal",
+        "description":  "자신 피해 2, 적 1명 피해 7",
+        "version":  "Revised",
+        "mana":  6,
+        "attack":  7,
+        "hp":  6,
+        "effects":  [
+                        {
+                            "kind":  "SelfDamage",
+                            "target":  "Self",
+                            "amount":  2,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  7,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Diamond_Q",
+        "name":  "♦Q",
+        "suit":  "Diamond",
+        "rank":  "Queen",
+        "type":  "Normal",
+        "description":  "서로 다른 적 최대 2명에게 각각 피해 4",
+        "version":  "Revised",
+        "mana":  7,
+        "attack":  7,
+        "hp":  8,
+        "effects":  [
+                        {
+                            "kind":  "ChainDamage",
+                            "target":  "Enemy",
+                            "amount":  4,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Diamond_K",
+        "name":  "♦K",
+        "suit":  "Diamond",
+        "rank":  "King",
+        "type":  "Normal",
+        "description":  "적 1명 피해 7, 자신 공격력 +2",
+        "version":  "Revised",
+        "mana":  8,
+        "attack":  9,
+        "hp":  9,
+        "effects":  [
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  7,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "Self",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_2",
+        "name":  "♠2",
+        "suit":  "Spade",
+        "rank":  "Two",
+        "type":  "Normal",
+        "description":  "적 1명 공격력 -1",
+        "version":  "Revised",
+        "mana":  1,
+        "attack":  2,
+        "hp":  2,
+        "effects":  [
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "Enemy",
+                            "amount":  -1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_3",
+        "name":  "♠3",
+        "suit":  "Spade",
+        "rank":  "Three",
+        "type":  "Normal",
+        "description":  "적 1명 공격력 -1, 같은 대상 피해 1",
+        "version":  "Revised",
+        "mana":  1,
+        "attack":  2,
+        "hp":  3,
+        "effects":  [
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "Enemy",
+                            "amount":  -1,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_4",
+        "name":  "♠4",
+        "suit":  "Spade",
+        "rank":  "Four",
+        "type":  "Normal",
+        "description":  "서로 다른 적 최대 2명 공격력 각각 -1",
+        "version":  "Revised",
+        "mana":  2,
+        "attack":  3,
+        "hp":  3,
+        "effects":  [
+                        {
+                            "kind":  "ChainWeaken",
+                            "target":  "Enemy",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_5",
+        "name":  "♠5",
+        "suit":  "Spade",
+        "rank":  "Five",
+        "type":  "Normal",
+        "description":  "적 1명 공격력 -2",
+        "version":  "Revised",
+        "mana":  2,
+        "attack":  3,
+        "hp":  4,
+        "effects":  [
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "Enemy",
+                            "amount":  -2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_6",
+        "name":  "♠6",
+        "suit":  "Spade",
+        "rank":  "Six",
+        "type":  "Normal",
+        "description":  "적 1명 공격력 -2, 같은 대상 피해 1",
+        "version":  "Revised",
+        "mana":  3,
+        "attack":  4,
+        "hp":  4,
+        "effects":  [
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "Enemy",
+                            "amount":  -2,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_7",
+        "name":  "♠7",
+        "suit":  "Spade",
+        "rank":  "Seven",
+        "type":  "Normal",
+        "description":  "상대 손패 무작위 1장 버리기",
+        "version":  "Revised",
+        "mana":  3,
+        "attack":  4,
+        "hp":  5,
+        "effects":  [
+                        {
+                            "kind":  "DiscardCard",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_8",
+        "name":  "♠8",
+        "suit":  "Spade",
+        "rank":  "Eight",
+        "type":  "Normal",
+        "description":  "적 1명 공격력 -3",
+        "version":  "Revised",
+        "mana":  4,
+        "attack":  5,
+        "hp":  5,
+        "effects":  [
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "Enemy",
+                            "amount":  -3,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_9",
+        "name":  "♠9",
+        "suit":  "Spade",
+        "rank":  "Nine",
+        "type":  "Normal",
+        "description":  "적 1명 공격력 -2, 같은 대상 피해 2",
+        "version":  "Revised",
+        "mana":  4,
+        "attack":  5,
+        "hp":  5,
+        "effects":  [
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "Enemy",
+                            "amount":  -2,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_10",
+        "name":  "♠10",
+        "suit":  "Spade",
+        "rank":  "Ten",
+        "type":  "Normal",
+        "description":  "상대 손패 무작위 1장 버리기, 적 1명 공격력 -2",
+        "version":  "Revised",
+        "mana":  5,
+        "attack":  6,
+        "hp":  6,
+        "effects":  [
+                        {
+                            "kind":  "DiscardCard",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "Enemy",
+                            "amount":  -2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_A",
+        "name":  "♠A",
+        "suit":  "Spade",
+        "rank":  "Ace",
+        "type":  "Normal",
+        "description":  "적 전체 공격력 -2, 상대 손패 무작위 1장 버리기",
+        "version":  "Revised",
+        "mana":  6,
+        "attack":  5,
+        "hp":  8,
+        "effects":  [
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "AllEnemies",
+                            "amount":  -2,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "DiscardCard",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_J",
+        "name":  "♠J",
+        "suit":  "Spade",
+        "rank":  "Jack",
+        "type":  "Normal",
+        "description":  "적 1명 공격력 -4, 같은 대상 피해 3",
+        "version":  "Revised",
+        "mana":  6,
+        "attack":  6,
+        "hp":  7,
+        "effects":  [
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "Enemy",
+                            "amount":  -4,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  3,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_Q",
+        "name":  "♠Q",
+        "suit":  "Spade",
+        "rank":  "Queen",
+        "type":  "Normal",
+        "description":  "상대 손패 무작위 최대 2장 버리기, 적 전체 공격력 -1",
+        "version":  "Revised",
+        "mana":  6,
+        "attack":  5,
+        "hp":  9,
+        "effects":  [
+                        {
+                            "kind":  "DiscardCard",
+                            "target":  "None",
+                            "amount":  2,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "AllEnemies",
+                            "amount":  -1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Spade_K",
+        "name":  "♠K",
+        "suit":  "Spade",
+        "rank":  "King",
+        "type":  "Normal",
+        "description":  "적 1명 피해 4. 사망 처리 후 살아 있는 적 1명을 새로 선택해 공격력 -4",
+        "version":  "Revised",
+        "mana":  8,
+        "attack":  7,
+        "hp":  10,
+        "effects":  [
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  4,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "Enemy",
+                            "amount":  -4,
+                            "freshTarget":  true
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_2",
+        "name":  "♥2",
+        "suit":  "Heart",
+        "rank":  "Two",
+        "type":  "Normal",
+        "description":  "아군 1명 체력 2 회복",
+        "version":  "Revised",
+        "mana":  1,
+        "attack":  1,
+        "hp":  4,
+        "effects":  [
+                        {
+                            "kind":  "Heal",
+                            "target":  "Ally",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_3",
+        "name":  "♥3",
+        "suit":  "Heart",
+        "rank":  "Three",
+        "type":  "Normal",
+        "description":  "자신 최대·현재 체력 +2",
+        "version":  "Revised",
+        "mana":  1,
+        "attack":  1,
+        "hp":  4,
+        "effects":  [
+                        {
+                            "kind":  "IncreaseMaxHP",
+                            "target":  "Self",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_4",
+        "name":  "♥4",
+        "suit":  "Heart",
+        "rank":  "Four",
+        "type":  "Normal",
+        "description":  "자신의 첫 공격 후 생존하면 자신 체력 3 회복",
+        "version":  "Revised",
+        "mana":  2,
+        "attack":  2,
+        "hp":  5,
+        "effects":  [
+                        {
+                            "kind":  "FirstAttackHeal",
+                            "target":  "Self",
+                            "amount":  3,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_5",
+        "name":  "♥5",
+        "suit":  "Heart",
+        "rank":  "Five",
+        "type":  "Normal",
+        "description":  "아군 1명 최대·현재 체력 +3",
+        "version":  "Revised",
+        "mana":  2,
+        "attack":  2,
+        "hp":  5,
+        "effects":  [
+                        {
+                            "kind":  "IncreaseMaxHP",
+                            "target":  "Ally",
+                            "amount":  3,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_6",
+        "name":  "♥6",
+        "suit":  "Heart",
+        "rank":  "Six",
+        "type":  "Normal",
+        "description":  "아군 전체 체력 2 회복",
+        "version":  "Revised",
+        "mana":  3,
+        "attack":  2,
+        "hp":  6,
+        "effects":  [
+                        {
+                            "kind":  "Heal",
+                            "target":  "AllAllies",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_7",
+        "name":  "♥7",
+        "suit":  "Heart",
+        "rank":  "Seven",
+        "type":  "Normal",
+        "description":  "아군 1명 체력 3 회복. 자신의 첫 공격 후 생존하면 자신 체력 2 회복",
+        "version":  "Revised",
+        "mana":  3,
+        "attack":  3,
+        "hp":  6,
+        "effects":  [
+                        {
+                            "kind":  "Heal",
+                            "target":  "Ally",
+                            "amount":  3,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "FirstAttackHeal",
+                            "target":  "Self",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_8",
+        "name":  "♥8",
+        "suit":  "Heart",
+        "rank":  "Eight",
+        "type":  "Normal",
+        "description":  "아군 1명 최대·현재 체력 +4",
+        "version":  "Revised",
+        "mana":  4,
+        "attack":  3,
+        "hp":  7,
+        "effects":  [
+                        {
+                            "kind":  "IncreaseMaxHP",
+                            "target":  "Ally",
+                            "amount":  4,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_9",
+        "name":  "♥9",
+        "suit":  "Heart",
+        "rank":  "Nine",
+        "type":  "Normal",
+        "description":  "아군 전체 체력 3 회복",
+        "version":  "Revised",
+        "mana":  4,
+        "attack":  3,
+        "hp":  7,
+        "effects":  [
+                        {
+                            "kind":  "Heal",
+                            "target":  "AllAllies",
+                            "amount":  3,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_10",
+        "name":  "♥10",
+        "suit":  "Heart",
+        "rank":  "Ten",
+        "type":  "Normal",
+        "description":  "아군 전체 체력 2 회복. 자신의 첫 공격 후 생존하면 자신 체력 3 회복",
+        "version":  "Revised",
+        "mana":  5,
+        "attack":  4,
+        "hp":  8,
+        "effects":  [
+                        {
+                            "kind":  "Heal",
+                            "target":  "AllAllies",
+                            "amount":  2,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "FirstAttackHeal",
+                            "target":  "Self",
+                            "amount":  3,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_A",
+        "name":  "♥A",
+        "suit":  "Heart",
+        "rank":  "Ace",
+        "type":  "Normal",
+        "description":  "아군 전체 최대·현재 체력 +2, 이어 체력 3 회복",
+        "version":  "Revised",
+        "mana":  7,
+        "attack":  4,
+        "hp":  10,
+        "effects":  [
+                        {
+                            "kind":  "IncreaseMaxHP",
+                            "target":  "AllAllies",
+                            "amount":  2,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "Heal",
+                            "target":  "AllAllies",
+                            "amount":  3,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_J",
+        "name":  "♥J",
+        "suit":  "Heart",
+        "rank":  "Jack",
+        "type":  "Normal",
+        "description":  "아군 1명 최대·현재 체력 +3. 자신의 첫 공격 후 생존하면 자신 체력 4 회복",
+        "version":  "Revised",
+        "mana":  6,
+        "attack":  4,
+        "hp":  9,
+        "effects":  [
+                        {
+                            "kind":  "IncreaseMaxHP",
+                            "target":  "Ally",
+                            "amount":  3,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "FirstAttackHeal",
+                            "target":  "Self",
+                            "amount":  4,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_Q",
+        "name":  "♥Q",
+        "suit":  "Heart",
+        "rank":  "Queen",
+        "type":  "Normal",
+        "description":  "아군 전체 최대·현재 체력 +3, 이어 체력 3 회복",
+        "version":  "Revised",
+        "mana":  7,
+        "attack":  5,
+        "hp":  10,
+        "effects":  [
+                        {
+                            "kind":  "IncreaseMaxHP",
+                            "target":  "AllAllies",
+                            "amount":  3,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "Heal",
+                            "target":  "AllAllies",
+                            "amount":  3,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Heart_K",
+        "name":  "♥K",
+        "suit":  "Heart",
+        "rank":  "King",
+        "type":  "Normal",
+        "description":  "아군 전체 체력 4 회복. 자신의 첫 공격 후 생존하면 자신 체력 5 회복",
+        "version":  "Revised",
+        "mana":  8,
+        "attack":  6,
+        "hp":  11,
+        "effects":  [
+                        {
+                            "kind":  "Heal",
+                            "target":  "AllAllies",
+                            "amount":  4,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "FirstAttackHeal",
+                            "target":  "Self",
+                            "amount":  5,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_2",
+        "name":  "♣2",
+        "suit":  "Club",
+        "rank":  "Two",
+        "type":  "Normal",
+        "description":  "남은 손패 1장을 버리면 카드 1장 뽑기 (건너뛰기 가능)",
+        "version":  "Revised",
+        "mana":  1,
+        "attack":  1,
+        "hp":  3,
+        "effects":  [
+                        {
+                            "kind":  "Exchange",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_3",
+        "name":  "♣3",
+        "suit":  "Club",
+        "rank":  "Three",
+        "type":  "Normal",
+        "description":  "현재 마나 +1 (상한 10)",
+        "version":  "Revised",
+        "mana":  1,
+        "attack":  2,
+        "hp":  3,
+        "effects":  [
+                        {
+                            "kind":  "GainMana",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_4",
+        "name":  "♣4",
+        "suit":  "Club",
+        "rank":  "Four",
+        "type":  "Normal",
+        "description":  "카드 1장 뽑기",
+        "version":  "Revised",
+        "mana":  2,
+        "attack":  2,
+        "hp":  4,
+        "effects":  [
+                        {
+                            "kind":  "DrawCard",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_5",
+        "name":  "♣5",
+        "suit":  "Club",
+        "rank":  "Five",
+        "type":  "Normal",
+        "description":  "남은 손패 1장을 버리면 카드 2장 뽑기 (건너뛰기 가능)",
+        "version":  "Revised",
+        "mana":  2,
+        "attack":  3,
+        "hp":  4,
+        "effects":  [
+                        {
+                            "kind":  "Exchange",
+                            "target":  "None",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_6",
+        "name":  "♣6",
+        "suit":  "Club",
+        "rank":  "Six",
+        "type":  "Normal",
+        "description":  "카드 1장 뽑기, 현재 마나 +1",
+        "version":  "Revised",
+        "mana":  3,
+        "attack":  3,
+        "hp":  5,
+        "effects":  [
+                        {
+                            "kind":  "DrawCard",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "GainMana",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_7",
+        "name":  "♣7",
+        "suit":  "Club",
+        "rank":  "Seven",
+        "type":  "Normal",
+        "description":  "카드 2장 뽑기",
+        "version":  "Revised",
+        "mana":  3,
+        "attack":  3,
+        "hp":  5,
+        "effects":  [
+                        {
+                            "kind":  "DrawCard",
+                            "target":  "None",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_8",
+        "name":  "♣8",
+        "suit":  "Club",
+        "rank":  "Eight",
+        "type":  "Normal",
+        "description":  "카드 1장 뽑기, 현재 마나 +1",
+        "version":  "Revised",
+        "mana":  4,
+        "attack":  4,
+        "hp":  6,
+        "effects":  [
+                        {
+                            "kind":  "DrawCard",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "GainMana",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_9",
+        "name":  "♣9",
+        "suit":  "Club",
+        "rank":  "Nine",
+        "type":  "Normal",
+        "description":  "카드 2장 뽑기, 현재 마나 +1",
+        "version":  "Revised",
+        "mana":  4,
+        "attack":  4,
+        "hp":  6,
+        "effects":  [
+                        {
+                            "kind":  "DrawCard",
+                            "target":  "None",
+                            "amount":  2,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "GainMana",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_10",
+        "name":  "♣10",
+        "suit":  "Club",
+        "rank":  "Ten",
+        "type":  "Normal",
+        "description":  "카드 2장 뽑기, 현재 마나 +1",
+        "version":  "Revised",
+        "mana":  5,
+        "attack":  5,
+        "hp":  7,
+        "effects":  [
+                        {
+                            "kind":  "DrawCard",
+                            "target":  "None",
+                            "amount":  2,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "GainMana",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_A",
+        "name":  "♣A",
+        "suit":  "Club",
+        "rank":  "Ace",
+        "type":  "Normal",
+        "description":  "카드 2장 뽑기, 현재 마나 +2",
+        "version":  "Revised",
+        "mana":  7,
+        "attack":  4,
+        "hp":  8,
+        "effects":  [
+                        {
+                            "kind":  "DrawCard",
+                            "target":  "None",
+                            "amount":  2,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "GainMana",
+                            "target":  "None",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_J",
+        "name":  "♣J",
+        "suit":  "Club",
+        "rank":  "Jack",
+        "type":  "Normal",
+        "description":  "남은 손패 1장을 버리면 카드 2장 뽑기, 현재 마나 +2 (교환 건너뛰기 가능)",
+        "version":  "Revised",
+        "mana":  6,
+        "attack":  5,
+        "hp":  7,
+        "effects":  [
+                        {
+                            "kind":  "Exchange",
+                            "target":  "None",
+                            "amount":  2,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "GainMana",
+                            "target":  "None",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_Q",
+        "name":  "♣Q",
+        "suit":  "Club",
+        "rank":  "Queen",
+        "type":  "Normal",
+        "description":  "카드 3장 뽑기, 현재 마나 +1",
+        "version":  "Revised",
+        "mana":  7,
+        "attack":  5,
+        "hp":  9,
+        "effects":  [
+                        {
+                            "kind":  "DrawCard",
+                            "target":  "None",
+                            "amount":  3,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "GainMana",
+                            "target":  "None",
+                            "amount":  1,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Club_K",
+        "name":  "♣K",
+        "suit":  "Club",
+        "rank":  "King",
+        "type":  "Normal",
+        "description":  "카드 3장 뽑기, 현재 마나 +2",
+        "version":  "Revised",
+        "mana":  8,
+        "attack":  6,
+        "hp":  10,
+        "effects":  [
+                        {
+                            "kind":  "DrawCard",
+                            "target":  "None",
+                            "amount":  3,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "GainMana",
+                            "target":  "None",
+                            "amount":  2,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Joker_1",
+        "name":  "JOKER",
+        "suit":  "None",
+        "rank":  "Joker",
+        "type":  "Joker",
+        "description":  "성공 50%: 공격·최대 체력 1.5배(올림). 실패: 대상 파괴. 유닛당 한 번.",
+        "version":  "Revised",
+        "mana":  2,
+        "attack":  0,
+        "hp":  0,
+        "effects":  [
+
+                    ]
+    },
+    {
+        "cardID":  "Joker_2",
+        "name":  "JOKER",
+        "suit":  "None",
+        "rank":  "Joker",
+        "type":  "Joker",
+        "description":  "성공 50%: 공격·최대 체력 1.5배(올림). 실패: 대상 파괴. 유닛당 한 번.",
+        "version":  "Revised",
+        "mana":  2,
+        "attack":  0,
+        "hp":  0,
+        "effects":  [
+
+                    ]
+    },
+    {
+        "cardID":  "Unknown_J",
+        "name":  "UNKNOWN JACK",
+        "suit":  "None",
+        "rank":  "Jack",
+        "type":  "Unknown",
+        "description":  "적 1명 피해 7, 자신 공격력 +3",
+        "version":  "Revised",
+        "mana":  7,
+        "attack":  11,
+        "hp":  10,
+        "effects":  [
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  7,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "Self",
+                            "amount":  3,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Unknown_Q",
+        "name":  "UNKNOWN QUEEN",
+        "suit":  "None",
+        "rank":  "Queen",
+        "type":  "Unknown",
+        "description":  "아군 전체 공격력 +3, 최대 체력 +4",
+        "version":  "Revised",
+        "mana":  8,
+        "attack":  9,
+        "hp":  14,
+        "effects":  [
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "AllAllies",
+                            "amount":  3,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "IncreaseMaxHP",
+                            "target":  "AllAllies",
+                            "amount":  4,
+                            "freshTarget":  false
+                        }
+                    ]
+    },
+    {
+        "cardID":  "Unknown_K",
+        "name":  "UNKNOWN KING",
+        "suit":  "None",
+        "rank":  "King",
+        "type":  "Unknown",
+        "description":  "적 1명 피해 10, 적 전체 공격력 -2",
+        "version":  "Revised",
+        "mana":  9,
+        "attack":  14,
+        "hp":  14,
+        "effects":  [
+                        {
+                            "kind":  "Damage",
+                            "target":  "Enemy",
+                            "amount":  10,
+                            "freshTarget":  false
+                        },
+                        {
+                            "kind":  "ModifyAttack",
+                            "target":  "AllEnemies",
+                            "amount":  -2,
+                            "freshTarget":  false
+                        }
+                    ]
+    }
+]
