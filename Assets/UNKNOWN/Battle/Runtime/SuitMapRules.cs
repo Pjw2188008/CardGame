@@ -7,6 +7,9 @@ namespace Unknown.Battle
         public SuitMapEffect SuitEffect { get; private set; }
         void ApplyMapSummon(CardInstance c)
         {
+            if(UsesNewHeartMap && rules.Map==BattleMap.Heart) {
+                ChangeMapStats(c,c.Attack,c.MaxHP+1); return;
+            }
             if(!MapDefinition.IsSuit(rules.Map) || c.Definition.CardType!=CardType.Normal)return;
             var d=MapDefinition.For(rules.Map,rules.MapRules);
             if(c.Definition.Suit!=d.suit)return;
@@ -45,9 +48,13 @@ namespace Unknown.Battle
         }
         void DamageUnit(CardInstance target,int amount,int sourceID,Suit suit,bool chain=false)
         {
-            int actual=Math.Min(target.CurrentHP,amount); target.CurrentHP-=amount;
+            int actual=Math.Min(target.CurrentHP,amount);
+            var dealer=State.Players.SelectMany(p=>p.Slots).FirstOrDefault(c=>c!=null && c.InstanceID==sourceID);
+            MeasureDamageAttempt(dealer,target,amount,actual);
+            target.CurrentHP-=amount;
             Emit(new BattleEvent(BattleEventKind.Damage,target.Owner,sourceID,target.InstanceID,actual,suit:suit,chain:chain));
             Log($"{target.Definition.CardName}: 피해 {actual}");
+            ApplyHeartMapRecovery(target,actual);
         }
 #if UNITY_EDITOR
         internal void ResetSuitEffectForDebug() { SuitEffect=null; }

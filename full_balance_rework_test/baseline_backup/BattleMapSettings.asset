@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76a95e539369472b9e0e5a74b14eafc7, type: 3}
+  m_Name: BattleMapSettings
+  m_EditorClassIdentifier: 
+  maps:
+  - map: 0
+    name: "\uC77C\uBC18 \uC804\uC7A5"
+    title: NORMAL BATTLEFIELD
+    symbol: "\u25C7"
+    tint: '#8797AD'
+    weight: 0
+    summonAttack: 0
+    summonHP: 0
+    summonDraw: 0
+    turnDamage: 0
+    turnWeaken: 0
+    turnHeal: 0
+    turnMana: 0
+    suit: 4
+  - map: 2
+    name: "\uACF5\uACA9\uC758 \uC804\uC7A5"
+    title: DIAMOND
+    symbol: "\u2666"
+    tint: '#ED5757'
+    weight: 2250
+    summonAttack: 1
+    summonHP: 0
+    summonDraw: 0
+    turnDamage: 1
+    turnWeaken: 0
+    turnHeal: 0
+    turnMana: 0
+    suit: 0
+  - map: 3
+    name: "\uC81C\uC555\uC758 \uC804\uC7A5"
+    title: SPADE
+    symbol: "\u2660"
+    tint: '#AE78EA'
+    weight: 2250
+    summonAttack: 0
+    summonHP: 1
+    summonDraw: 0
+    turnDamage: 0
+    turnWeaken: 1
+    turnHeal: 0
+    turnMana: 0
+    suit: 1
+  - map: 4
+    name: "\uC0DD\uBA85\uC758 \uC804\uC7A5"
+    title: HEART
+    symbol: "\u2665"
+    tint: '#EE79AB'
+    weight: 2250
+    summonAttack: 0
+    summonHP: 2
+    summonDraw: 0
+    turnDamage: 0
+    turnWeaken: 0
+    turnHeal: 2
+    turnMana: 0
+    suit: 2
+  - map: 5
+    name: "\uBC88\uC601\uC758 \uC804\uC7A5"
+    title: CLUB
+    symbol: "\u2663"
+    tint: '#68CB92'
+    weight: 2250
+    summonAttack: 0
+    summonHP: 0
+    summonDraw: 1
+    turnDamage: 0
+    turnWeaken: 0
+    turnHeal: 0
+    turnMana: 1
+    suit: 3
+  - map: 1
+    name: "\uC870\uCEE4\uC758 \uC720\uD76C"
+    title: JOKER'S GAME
+    symbol: "\u2605"
+    tint: '#BB83E4'
+    weight: 1000
+    summonAttack: 0
+    summonHP: 0
+    summonDraw: 0
+    turnDamage: 0
+    turnWeaken: 0
+    turnHeal: 0
+    turnMana: 0
+    suit: 4
+  normalBackground: {fileID: 2800000, guid: ef244dab9cc05ed44a0c7ca74a9e9e14, type: 3}
+  jokerBackground: {fileID: 2800000, guid: 9d2bf4dd17ac0004daee96ee529f6ad9, type: 3}
+  diamondBackground: {fileID: 2800000, guid: 74d962badc22ee24a902f221b54ce4ca, type: 3}
+  spadeBackground: {fileID: 2800000, guid: 8baf9fe83d9771141a65cc046c343583, type: 3}
+  heartBackground: {fileID: 2800000, guid: 09545ec484ab5074bb35aef0c353947a, type: 3}
+  clubBackground: {fileID: 2800000, guid: efa11e2e22c2ea14aba83e07cd5ac0db, type: 3}
+  normalCardBack: {fileID: 2800000, guid: 7e4b29356396f7b4c93c9800b237be1d, type: 3}
+  jokerCardBack: {fileID: 2800000, guid: 3c3dab3872b957442ac2dbc828de8920, type: 3}
+  diamondCardBack: {fileID: 2800000, guid: c63c8b3cd3f77f44e9a33f5434994406, type: 3}
+  spadeCardBack: {fileID: 2800000, guid: 71288c05835c9eb4f84ca48f279c9c46, type: 3}
+  heartCardBack: {fileID: 2800000, guid: 7f8f1478a47f98743bdab6b0407b1f12, type: 3}
+  clubCardBack: {fileID: 2800000, guid: 924bdea9684f3e041a5c930989dd8a20, type: 3}

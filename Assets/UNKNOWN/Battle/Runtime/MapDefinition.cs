@@ -7,6 +7,7 @@ namespace Unknown.Battle
         public BattleMap map;
         public string name,title,symbol,tint;
         public int weight,summonAttack,summonHP,summonDraw,turnDamage,turnWeaken,turnHeal,turnMana;
+        public bool firstDamageRecovery;
         public Suit suit=Suit.None;
         public MapDefinition Copy() => (MapDefinition)MemberwiseClone();
         public static MapDefinition[] Defaults() => new[] {
@@ -19,7 +20,7 @@ namespace Unknown.Battle
         };
         public static MapDefinition For(BattleMap map,MapDefinition[] definitions=null) => (definitions ?? Defaults()).Single(d=>d.map==map);
         public static bool IsSuit(BattleMap map) => map>=BattleMap.Diamond && map<=BattleMap.Club;
-        public string Effects => map==BattleMap.Normal ? "필드에 UNKNOWN 3장 배치 또는 상대 HP 0 시 승리" : map==BattleMap.JokerGame ? "매 턴 무작위 사건 발생\nJOKER 도박 3회 성공 또는 상대 HP 0 시 승리"
+        public string Effects => firstDamageRecovery ? "모든 유닛 소환 시 최대·현재 HP +1\n첫 피해 후 생존 시 HP 1 회복 (유닛당 1회)" : map==BattleMap.Normal ? "필드에 UNKNOWN 3장 배치 또는 상대 HP 0 시 승리" : map==BattleMap.JokerGame ? "매 턴 무작위 사건 발생\nJOKER 도박 3회 성공 또는 상대 HP 0 시 승리"
             : "고정: "+(summonAttack>0 ? "같은 문양 소환 시 ATK +"+summonAttack : summonHP>0 ? "같은 문양 소환 시 최대·현재 HP +"+summonHP : "같은 문양 소환 시 "+summonDraw+"장 드로우")
                 +"\n턴: "+(turnDamage>0 ? "무작위 적 유닛 피해 "+turnDamage : turnWeaken>0 ? "무작위 적 ATK -"+turnWeaken : turnHeal>0 ? "자신 HP +"+turnHeal+" (최대 HP까지)" : "현재 마나 +"+turnMana+" (상한 10)");
     }

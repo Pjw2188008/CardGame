@@ -102,6 +102,7 @@ namespace Unknown.Battle
         { var result = events.ToArray(); events.Clear(); return result; }
         void Emit(BattleEvent entry) { events.Add(entry); ObserveBalanceEvent(entry); }
         partial void ObserveBalanceEvent(BattleEvent entry);
+        partial void MeasureDamageAttempt(CardInstance dealer, CardInstance target, int requested, int actual);
         partial void MeasureBalanceEffect(CardEffect effect, CardInstance target, int actual, string outcome);
         public BattleState State { get; }
         public BattleConfig Config => rules.Copy();
@@ -125,6 +126,7 @@ namespace Unknown.Battle
         public BattleEngine(int seed, BattleConfig config = null, IRandomSource randomSource = null)
         {
             rules = (config ?? new BattleConfig()).Copy();
+            ConfigureFullReworkMap();
             if (rules.FieldSlots < 1 || rules.HandLimit < 1 || rules.StartingHP < 1 || rules.StartingHand < 0 || rules.StartingHand > rules.HandLimit
                 || rules.UnknownLimit < 0 || rules.StartingMana < 0 || rules.ManaCap < rules.StartingMana || rules.ManaCap > 10 || rules.InitialDeckSeeds!=null && rules.InitialDeckSeeds.Length!=2) throw new ArgumentOutOfRangeException(nameof(config));
             random = randomSource ?? new SeededRandom(seed);
@@ -281,6 +283,7 @@ namespace Unknown.Battle
                 int damage = Math.Min(opponent.HP, attacker.Attack);
                 bool first=!attacker.FirstAttackHealSpent;attacker.FirstAttackHealSpent=true;
                 attacker.HasAttacked = true; opponent.HP = Math.Max(0, opponent.HP - attacker.Attack);
+                MeasureDamageAttempt(attacker, null, attacker.Attack, damage);
                 Emit(new BattleEvent(BattleEventKind.Attack, actor, source: attacker.InstanceID, amount: damage, targetOwner: 1 - actor));
                 Log($"{attacker.Definition.CardName} → P{2 - actor} 직접 피해 {damage}");
                 if (opponent.HP <= 0) FinishGame(actor, VictoryReason.OpponentHPZero);
@@ -294,9 +297,12 @@ namespace Unknown.Battle
             // Both attacks use the pre-combat stats, even if one of the hits is lethal.
             int outgoing = attacker.Attack, incoming = defender.Attack;
             int actualOutgoing = Math.Min(defender.CurrentHP, outgoing), actualIncoming = Math.Min(attacker.CurrentHP, incoming);
+            MeasureDamageAttempt(attacker, defender, outgoing, actualOutgoing);
+            MeasureDamageAttempt(defender, attacker, incoming, actualIncoming);
             Emit(new BattleEvent(BattleEventKind.Attack, actor, attacker.InstanceID, defender.InstanceID,
                 actualOutgoing, actualIncoming, targetOwner: 1 - actor));
             attacker.CurrentHP -= incoming; defender.CurrentHP -= outgoing;
+            ApplyHeartMapRecovery(attacker, actualIncoming); ApplyHeartMapRecovery(defender, actualOutgoing);
             Log($"{attacker.Definition.CardName} ↔ {defender.Definition.CardName}: 피해 {actualOutgoing} / 반격 {actualIncoming}");
             RemoveDead();if(firstAttack)ApplyAttackRecovery(attacker);return true;
         }

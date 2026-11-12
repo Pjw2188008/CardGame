@@ -13,6 +13,8 @@ namespace Unknown.Battle
     public sealed partial class BattleEngine
     {
         public IBalanceObserver BalanceObserver { get; set; }
+        partial void MeasureDamageAttempt(CardInstance dealer,CardInstance target,int requested,int actual)
+            => (BalanceObserver as BalanceMatchCollector)?.DamageAttempt(dealer,target,requested,actual);
         partial void ObserveBalanceEvent(BattleEvent entry) => BalanceObserver?.Event(this,entry);
         partial void MeasureBalanceEffect(CardEffect effect,CardInstance target,int actual,string outcome)
             => BalanceObserver?.Effect(this,source,effect,target,actual,outcome);
@@ -83,6 +85,8 @@ namespace Unknown.Battle
     {
         public int match,turn,source,target,amount;
         public int requested,before,after;
+        public int firstUnits,secondUnits,firstHeroHP,secondHeroHP,firstMana,secondMana,firstMaxMana,secondMaxMana;
+        public string unitStates;
         public int secondaryAmount;
         public int actor,commandFirst,commandSecond,effectIndex;
         public int beforeAttack,afterAttack,beforeMaxHP,afterMaxHP,spentMana;
@@ -171,7 +175,20 @@ namespace Unknown.Battle
         {
             card.stats.uses++;card.stats.useTurnSum+=engine.State.TurnNumber;used.Add(card.card.InstanceID);
         }
-        public void EndCommand(){Command=null;joker=-1;summoner=-1;engine.DrainEvents();}
+        public void DamageAttempt(CardInstance dealer,CardInstance target,int requested,int actual) {
+            detail?.Invoke(new BalanceDetail{match=match,turn=engine.State.TurnNumber,kind="DamageAttempt",source=dealer?.InstanceID ?? -1,target=target?.InstanceID ?? -1,
+                actor=dealer?.Owner ?? -1,cardID=dealer?.Definition.CardID ?? "",targetCardID=target?.Definition.CardID ?? "",requested=requested,amount=actual,
+                effect=command?.Action==BattleAction.Attack ? "Attack" : "Effect"});
+        }
+        public void EndCommand(){
+            if(detail!=null) {
+                var a=engine.State.Players[0];var b=engine.State.Players[1];
+                detail(new BalanceDetail{match=match,turn=engine.State.TurnNumber,kind="StateSample",actor=engine.State.ActivePlayer,
+                    firstUnits=a.Board.Count(c=>c!=null),secondUnits=b.Board.Count(c=>c!=null),firstHeroHP=a.HP,secondHeroHP=b.HP,
+                    firstMana=a.CurrentMana,secondMana=b.CurrentMana,firstMaxMana=a.MaxMana,secondMaxMana=b.MaxMana,
+                    unitStates=string.Join("|",a.Board.Concat(b.Board).Where(c=>c!=null).Select(c=>c.InstanceID+":"+c.Owner+":"+c.Attack+":"+c.CurrentHP))});
+            }
+            Command=null;joker=-1;summoner=-1;engine.DrainEvents();}
         public void Event(BattleEngine g,BattleEvent e)
         {
             bool mapMarker=e.Kind==BattleEventKind.MapEvent || e.Kind==BattleEventKind.SuitMapTurn;

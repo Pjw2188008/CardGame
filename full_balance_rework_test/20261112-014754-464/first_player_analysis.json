@@ -1,0 +1,278 @@
+{
+  "summary": [
+    {
+      "version": "DiamondHeartRework",
+      "completed": 982,
+      "firstPlacementMatches": 965,
+      "firstUnitReplySurvivalRate": 0.8124352331606217,
+      "replyFirstUnitRemovalRate": 0.17616580310880828,
+      "secondFirstKillTurnMean": 4.064417177914111,
+      "secondFirstKillTurnObserved": 978,
+      "firstDirectDamageTurnMean": 11.305854241338112,
+      "firstDirectDamageTurnObserved": 837,
+      "secondDirectDamageTurnMean": 24.806324110671937,
+      "secondDirectDamageTurnObserved": 506,
+      "firstManaUseRatioMean": 0.7699582608737087,
+      "firstManaUseRatioObserved": 982,
+      "secondManaUseRatioMean": 0.7945231517934562,
+      "secondManaUseRatioObserved": 982,
+      "endTurn5UnitDifferenceMean": 2.0672097759674135,
+      "endTurn5UnitDifferenceObserved": 982,
+      "first10DamageDifferenceMean": 4.562118126272912,
+      "first10DamageDifferenceObserved": 982,
+      "zeroAttackUnitTurnsMean": 14.262729124236252,
+      "zeroAttackUnitTurnsObserved": 982,
+      "meanTurnsWeakenToDeathMean": 2.452334643614832,
+      "meanTurnsWeakenToDeathObserved": 961,
+      "cloverAttackOpportunitiesUsedMean": 11.24236252545825,
+      "cloverAttackOpportunitiesUsedObserved": 982,
+      "manaSpentAfterCloverGainMean": 188.61812627291243,
+      "manaSpentAfterCloverGainObserved": 982
+    },
+    {
+      "version": "FullStatsOnly",
+      "completed": 983,
+      "firstPlacementMatches": 965,
+      "firstUnitReplySurvivalRate": 0.8062176165803109,
+      "replyFirstUnitRemovalRate": 0.18134715025906736,
+      "secondFirstKillTurnMean": 3.9877300613496933,
+      "secondFirstKillTurnObserved": 978,
+      "firstDirectDamageTurnMean": 10.04327485380117,
+      "firstDirectDamageTurnObserved": 855,
+      "secondDirectDamageTurnMean": 23.169977924944813,
+      "secondDirectDamageTurnObserved": 453,
+      "firstManaUseRatioMean": 0.7908819493771788,
+      "firstManaUseRatioObserved": 983,
+      "secondManaUseRatioMean": 0.8140349178286996,
+      "secondManaUseRatioObserved": 983,
+      "endTurn5UnitDifferenceMean": 2.077314343845371,
+      "endTurn5UnitDifferenceObserved": 983,
+      "first10DamageDifferenceMean": 5.701932858596134,
+      "first10DamageDifferenceObserved": 983,
+      "zeroAttackUnitTurnsMean": 10.014242115971516,
+      "zeroAttackUnitTurnsObserved": 983,
+      "meanTurnsWeakenToDeathMean": 2.191622454840973,
+      "meanTurnsWeakenToDeathObserved": 955,
+      "cloverAttackOpportunitiesUsedMean": 9.674465920651068,
+      "cloverAttackOpportunitiesUsedObserved": 983,
+      "manaSpentAfterCloverGainMean": 166.40386571719228,
+      "manaSpentAfterCloverGainObserved": 983
+    },
+    {
+      "version": "FullDiamondOnly",
+      "completed": 978,
+      "firstPlacementMatches": 962,
+      "firstUnitReplySurvivalRate": 0.7723492723492723,
+      "replyFirstUnitRemovalRate": 0.2151767151767152,
+      "secondFirstKillTurnMean": 4.001026694045175,
+      "secondFirstKillTurnObserved": 974,
+      "firstDirectDamageTurnMean": 10.703349282296651,
+      "firstDirectDamageTurnObserved": 836,
+      "secondDirectDamageTurnMean": 23.291497975708502,
+      "secondDirectDamageTurnObserved": 494,
+      "firstManaUseRatioMean": 0.7701252070824204,
+      "firstManaUseRatioObserved": 978,
+      "secondManaUseRatioMean": 0.7935863171331748,
+      "secondManaUseRatioObserved": 978,
+      "endTurn5UnitDifferenceMean": 2.0337423312883436,
+      "endTurn5UnitDifferenceObserved": 978,
+      "first10DamageDifferenceMean": 4.578732106339468,
+      "first10DamageDifferenceObserved": 978,
+      "zeroAttackUnitTurnsMean": 14.248466257668712,
+      "zeroAttackUnitTurnsObserved": 978,
+      "meanTurnsWeakenToDeathMean": 2.4802837712974513,
+      "meanTurnsWeakenToDeathObserved": 953,
+      "cloverAttackOpportunitiesUsedMean": 10.920245398773005,
+      "cloverAttackOpportunitiesUsedObserved": 978,
+      "manaSpentAfterCloverGainMean": 184.03885480572598,
+      "manaSpentAfterCloverGainObserved": 978
+    },
+    {
+      "version": "FullHeartMapOnly",
+      "completed": 985,
+      "firstPlacementMatches": 968,
+      "firstUnitReplySurvivalRate": 0.8243801652892562,
+      "replyFirstUnitRemovalRate": 0.16425619834710745,
+      "secondFirstKillTurnMean": 4.120285423037717,
+      "secondFirstKillTurnObserved": 981,
+      "firstDirectDamageTurnMean": 11.35688622754491,
+      "firstDirectDamageTurnObserved": 835,
+      "secondDirectDamageTurnMean": 25.51919191919192,
+      "secondDirectDamageTurnObserved": 495,
+      "firstManaUseRatioMean": 0.7748691655647865,
+      "firstManaUseRatioObserved": 985,
+      "secondManaUseRatioMean": 0.7997423411191573,
+      "secondManaUseRatioObserved": 985,
+      "endTurn5UnitDifferenceMean": 2.087309644670051,
+      "endTurn5UnitDifferenceObserved": 985,
+      "first10DamageDifferenceMean": 4.547208121827411,
+      "first10DamageDifferenceObserved": 985,
+      "zeroAttackUnitTurnsMean": 13.577664974619289,
+      "zeroAttackUnitTurnsObserved": 985,
+      "meanTurnsWeakenToDeathMean": 2.4266508746318327,
+      "meanTurnsWeakenToDeathObserved": 963,
+      "cloverAttackOpportunitiesUsedMean": 11.233502538071066,
+      "cloverAttackOpportunitiesUsedObserved": 985,
+      "manaSpentAfterCloverGainMean": 184.22741116751268,
+      "manaSpentAfterCloverGainObserved": 985
+    },
+    {
+      "version": "FullBalanceRework",
+      "completed": 985,
+      "firstPlacementMatches": 968,
+      "firstUnitReplySurvivalRate": 0.7758264462809917,
+      "replyFirstUnitRemovalRate": 0.21177685950413222,
+      "secondFirstKillTurnMean": 3.9989795918367346,
+      "secondFirstKillTurnObserved": 980,
+      "firstDirectDamageTurnMean": 10.008187134502924,
+      "firstDirectDamageTurnObserved": 855,
+      "secondDirectDamageTurnMean": 21.099787685774945,
+      "secondDirectDamageTurnObserved": 471,
+      "firstManaUseRatioMean": 0.7957772518077145,
+      "firstManaUseRatioObserved": 985,
+      "secondManaUseRatioMean": 0.8167994426998653,
+      "secondManaUseRatioObserved": 985,
+      "endTurn5UnitDifferenceMean": 2.048730964467005,
+      "endTurn5UnitDifferenceObserved": 985,
+      "first10DamageDifferenceMean": 5.7269035532994925,
+      "first10DamageDifferenceObserved": 985,
+      "zeroAttackUnitTurnsMean": 9.386802030456852,
+      "zeroAttackUnitTurnsObserved": 985,
+      "meanTurnsWeakenToDeathMean": 2.2188109680777184,
+      "meanTurnsWeakenToDeathObserved": 953,
+      "cloverAttackOpportunitiesUsedMean": 9.120812182741117,
+      "cloverAttackOpportunitiesUsedObserved": 985,
+      "manaSpentAfterCloverGainMean": 160.11979695431472,
+      "manaSpentAfterCloverGainObserved": 985
+    }
+  ],
+  "pairedContrasts": {
+    "turns": {
+      "commonCompleted": 935,
+      "values": {
+        "DiamondHeartRework": 33.98609625668449,
+        "FullStatsOnly": 30.106951871657753,
+        "FullDiamondOnly": 33.654545454545456,
+        "FullHeartMapOnly": 33.066310160427804,
+        "FullBalanceRework": 29.129411764705882
+      },
+      "deltasFromReference": {
+        "FullStatsOnly": {
+          "delta": -3.8791443850267378,
+          "clusterBootstrap95": [
+            -4.90848453365565,
+            -2.8286343170167387
+          ]
+        },
+        "FullDiamondOnly": {
+          "delta": -0.3315508021390343,
+          "clusterBootstrap95": [
+            -1.1879237696825082,
+            0.5016974333831206
+          ]
+        },
+        "FullHeartMapOnly": {
+          "delta": -0.9197860962566864,
+          "clusterBootstrap95": [
+            -1.4932861865748344,
+            -0.3488491295938116
+          ]
+        },
+        "FullBalanceRework": {
+          "delta": -4.8566844919786085,
+          "clusterBootstrap95": [
+            -5.899620806566736,
+            -3.849829769974018
+          ]
+        }
+      }
+    },
+    "firstWin": {
+      "commonCompleted": 935,
+      "values": {
+        "DiamondHeartRework": 0.6342245989304813,
+        "FullStatsOnly": 0.6481283422459893,
+        "FullDiamondOnly": 0.6256684491978609,
+        "FullHeartMapOnly": 0.6256684491978609,
+        "FullBalanceRework": 0.6545454545454545
+      },
+      "deltasFromReference": {
+        "FullStatsOnly": {
+          "delta": 0.013903743315507922,
+          "clusterBootstrap95": [
+            -0.02136809269162214,
+            0.04850380196283644
+          ]
+        },
+        "FullDiamondOnly": {
+          "delta": -0.008556149732620422,
+          "clusterBootstrap95": [
+            -0.03775722214067531,
+            0.022318468761400295
+          ]
+        },
+        "FullHeartMapOnly": {
+          "delta": -0.008556149732620422,
+          "clusterBootstrap95": [
+            -0.02547770700636942,
+            0.0074706510138740105
+          ]
+        },
+        "FullBalanceRework": {
+          "delta": 0.02032085561497321,
+          "clusterBootstrap95": [
+            -0.0140598497072413,
+            0.05711891123712847
+          ]
+        }
+      }
+    },
+    "sameAIFirstWin": {
+      "commonCompleted": 280,
+      "values": {
+        "DiamondHeartRework": 0.6357142857142857,
+        "FullStatsOnly": 0.6464285714285715,
+        "FullDiamondOnly": 0.6642857142857143,
+        "FullHeartMapOnly": 0.625,
+        "FullBalanceRework": 0.6678571428571428
+      },
+      "deltasFromReference": {
+        "FullStatsOnly": {
+          "delta": 0.010714285714285787,
+          "clusterBootstrap95": [
+            -0.056738707295791745,
+            0.08065605928509141
+          ]
+        },
+        "FullDiamondOnly": {
+          "delta": 0.02857142857142858,
+          "clusterBootstrap95": [
+            -0.028472292831723457,
+            0.08518866135760328
+          ]
+        },
+        "FullHeartMapOnly": {
+          "delta": -0.010714285714285676,
+          "clusterBootstrap95": [
+            -0.0459374111530807,
+            0.022146417359695983
+          ]
+        },
+        "FullBalanceRework": {
+          "delta": 0.03214285714285714,
+          "clusterBootstrap95": [
+            -0.03273326673326672,
+            0.09722612359550559
+          ]
+        }
+      }
+    }
+  },
+  "definitions": [
+    "First unit survival: alive through global turn 2; reply removal means destroyed on turn 2, regardless of attribution.",
+    "First five turns: board difference at the last sampled state in global turn 5, conditional on reaching it.",
+    "Mana efficiency: paid / (turn-start max mana plus actual gained mana), includes capacity remaining at game end.",
+    "Zero attack exposure counts unit/global-turn observations; weakened-death lag is conditional on observed death.",
+    "Clover follow-up spend is descriptive after any clover gain, not causal attribution."
+  ]
+}

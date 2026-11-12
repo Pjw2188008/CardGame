@@ -7,7 +7,7 @@ namespace Unknown.Battle
     public enum Suit { Diamond, Spade, Heart, Club, None }
     public enum Rank { Two = 2, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Ace, Jack, Queen, King, Joker }
     public enum CardType { Normal, Joker, Unknown }
-    public enum CardBalanceVersion { Revised=0, Baseline=1, HeartNerf=2, DiamondBuff=3, DiamondHeartRework=4, DiamondReworkOnly=5, HeartReworkOnly=6 }
+    public enum CardBalanceVersion { Revised=0, Baseline=1, HeartNerf=2, DiamondBuff=3, DiamondHeartRework=4, DiamondReworkOnly=5, HeartReworkOnly=6, FullStatsOnly=7, FullDiamondOnly=8, FullHeartMapOnly=9, FullBalanceRework=10 }
     public enum EffectKind { Damage, Heal, ModifyAttack, IncreaseMaxHP, DrawCard, SelfDamage, ChainDamage, RandomDamage, DiscardCard, FirstAttackHeal, GainMana, Exchange, ChainWeaken }
     public enum EffectTarget { Self, Enemy, Ally, AllEnemies, AllAllies, None }
 
@@ -74,6 +74,7 @@ namespace Unknown.Battle
         public bool HasAttacked { get; internal set; }
         public bool JokerUsed { get; internal set; }
         public bool FirstAttackHealSpent {get;internal set;}
+        public bool HeartMapHealSpent {get;internal set;}
         internal CardInstance(int id, CardDefinition definition, int owner)
         {
             InstanceID = id; Definition = definition; Owner = owner;
@@ -95,6 +96,10 @@ namespace Unknown.Battle
         static readonly Dictionary<string, CardDefinition> diamondHeartReworkCards = BuildDiamondHeartRework(cards, CardBalanceVersion.DiamondHeartRework, true, true);
         static readonly Dictionary<string, CardDefinition> diamondReworkOnlyCards = BuildDiamondHeartRework(cards, CardBalanceVersion.DiamondReworkOnly, true, false);
         static readonly Dictionary<string, CardDefinition> heartReworkOnlyCards = BuildDiamondHeartRework(cards, CardBalanceVersion.HeartReworkOnly, false, true);
+        static readonly Dictionary<string, CardDefinition> fullStatsCards = BuildFullRework(diamondHeartReworkCards, CardBalanceVersion.FullStatsOnly, true, false);
+        static readonly Dictionary<string, CardDefinition> fullDiamondCards = BuildFullRework(diamondHeartReworkCards, CardBalanceVersion.FullDiamondOnly, false, true);
+        static readonly Dictionary<string, CardDefinition> fullMapCards = BuildFullRework(diamondHeartReworkCards, CardBalanceVersion.FullHeartMapOnly, false, false);
+        static readonly Dictionary<string, CardDefinition> fullCards = BuildFullRework(diamondHeartReworkCards, CardBalanceVersion.FullBalanceRework, true, true);
         public const CardBalanceVersion DefaultVersion = CardBalanceVersion.DiamondHeartRework;
 
         static Dictionary<string, CardDefinition> BuildBaseline()
@@ -115,6 +120,10 @@ namespace Unknown.Battle
                 case CardBalanceVersion.DiamondHeartRework: return diamondHeartReworkCards;
                 case CardBalanceVersion.DiamondReworkOnly: return diamondReworkOnlyCards;
                 case CardBalanceVersion.HeartReworkOnly: return heartReworkOnlyCards;
+                case CardBalanceVersion.FullStatsOnly: return fullStatsCards;
+                case CardBalanceVersion.FullDiamondOnly: return fullDiamondCards;
+                case CardBalanceVersion.FullHeartMapOnly: return fullMapCards;
+                case CardBalanceVersion.FullBalanceRework: return fullCards;
                 default: throw new ArgumentOutOfRangeException(nameof(version));
             }
         }

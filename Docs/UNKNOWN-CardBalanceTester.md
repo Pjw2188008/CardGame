@@ -111,3 +111,12 @@ CSV는 UTF-8 BOM으로 저장한다. JSON은 UTF-8이다. 기본 능력치와 �
 현재 기본 소스는 DiamondHeartRework다. 이전 실제 버전 DiamondBuff와 비교 기준 Revised를 보존했다. `Tools > UNKNOWN > Run Diamond Heart Rework Comparison`은 Revised, DiamondReworkOnly, HeartReworkOnly, DiamondHeartRework를 각각 1,000판씩 실행한다. 네 버전의 동일 초기 조건으로 다이아와 하트 변화의 기여를 분리한다. Random 스트레스도 AB/BA를 교환한다.
 
 실제 이번 실행의 수치와 채택 권장 여부는 `diamond_heart_rework_test/balance_report.md`에 있다. 날짜별 폴더에 필수 CSV/JSON과 추가 상호작용·원인 분리 자료를 저장한다. JSONL 원본은 Git에서 제외하고 gzip을 공유한다. 기존 EXE에 새 수치를 넣으려면 별도 빌드가 필요하다.
+
+
+## 52종 기본 능력치 및 하트 맵 분리 실험 (2026-11-12)
+
+실제 게임 기본값은 `DiamondHeartRework`로 유지한다. 신규 `FullStatsOnly`(7), `FullDiamondOnly`(8), `FullHeartMapOnly`(9), `FullBalanceRework`(10)는 실험용이며 기본 플레이에 자동 적용되지 않는다.
+
+`Tools > UNKNOWN > Run Full Balance Rework Comparison`으로 기존 기준을 포함한 다섯 버전 각 1,000판, 총 5,000판을 실행한다. Stop 메뉴는 진행 결과를 stopped로 보존한다. 결과는 `full_balance_rework_test/<실행시각>/`, 보고서는 `full_balance_rework_test/balance_report.md`이다. 포커는 끄고 네 AI/여섯 맵/동일 초기조건과 AB/BA를 사용한다. 원본 JSONL은 Git에서 제외하고 gzip만 공유한다.
+
+신규 하트 맵은 해당 두 실험 버전에서만 모든 소환 유닛 HP +1 및 첫 양의 피해 후 생존 시 HP 1 일회 회복이다. 기존 실제 하트 맵은 하트 일반 유닛 HP +2 및 플레이어 턴 HP +2였으며 나머지 버전에서 보존한다. UNKNOWN 필드 3장 승리 규칙은 이번에 변경하지 않았다. 신규 수치를 실제 게임에 채택하려면 결과 검토 후 별도로 기본 버전을 전환해야 한다.

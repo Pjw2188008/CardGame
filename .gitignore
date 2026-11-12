@@ -119,3 +119,6 @@ InitTestScene*.unity*
 
 # Rework event logs stay local; commit lossless gzip archives.
 /diamond_heart_rework_test/**/effect_events.jsonl
+
+# Full balance experiment: raw logs remain local; share gzip.
+/full_balance_rework_test/**/effect_events.jsonl
