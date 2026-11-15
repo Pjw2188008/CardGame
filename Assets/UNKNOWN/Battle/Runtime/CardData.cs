@@ -100,7 +100,7 @@ namespace Unknown.Battle
         static readonly Dictionary<string, CardDefinition> fullDiamondCards = BuildFullRework(diamondHeartReworkCards, CardBalanceVersion.FullDiamondOnly, false, true);
         static readonly Dictionary<string, CardDefinition> fullMapCards = BuildFullRework(diamondHeartReworkCards, CardBalanceVersion.FullHeartMapOnly, false, false);
         static readonly Dictionary<string, CardDefinition> fullCards = BuildFullRework(diamondHeartReworkCards, CardBalanceVersion.FullBalanceRework, true, true);
-        public const CardBalanceVersion DefaultVersion = CardBalanceVersion.DiamondHeartRework;
+        public const CardBalanceVersion DefaultVersion = CardBalanceVersion.FullBalanceRework;
 
         static Dictionary<string, CardDefinition> BuildBaseline()
         {

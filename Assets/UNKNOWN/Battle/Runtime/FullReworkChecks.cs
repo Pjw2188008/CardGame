@@ -18,7 +18,7 @@ namespace Unknown.Battle
             Check(g.Summon(0,c.InstanceID,slot),"Summon "+id);return c;
         }
         public static string[] Run() {
-            passed.Clear();Check(CardDatabase.DefaultVersion==CardBalanceVersion.DiamondHeartRework && new BattleConfig().CardVersion==CardBalanceVersion.DiamondHeartRework,"Live default unchanged");
+            passed.Clear();Check(CardDatabase.DefaultVersion==CardBalanceVersion.FullBalanceRework && new BattleConfig().CardVersion==CardBalanceVersion.FullBalanceRework,"Live default uses full cards and new Heart map");
             var vv=new[]{CardBalanceVersion.FullStatsOnly,CardBalanceVersion.FullDiamondOnly,CardBalanceVersion.FullHeartMapOnly,CardBalanceVersion.FullBalanceRework};
             // Independent rank/suit specification, not read back from the factory.
             string[] ranks={"2","3","4","5","6","7","8","9","10","J","Q","K","A"};
