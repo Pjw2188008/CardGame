@@ -52,7 +52,11 @@ namespace Unknown.Multiplayer
         string connectionLoss;
         float refreshAt;
         bool refreshing;
-        Task initialization;
+        Task initialization, enterTask, leaveTask, cleanupTask;
+        CancellationTokenSource entering;
+        bool cleanupFailed;
+        internal bool IsClosing => closing;
+
 
         void Awake()
         {
@@ -64,21 +68,38 @@ namespace Unknown.Multiplayer
         void Update()
         {
             // SDK/NGO callbacks can run during shutdown. Defer teardown outside their call stacks.
-            if (connectionLoss != null && !Busy && !closing)
+            if (connectionLoss != null && !Busy && !closing && !cleanupFailed)
             {
                 string reason = connectionLoss;
                 connectionLoss = null;
                 _ = CloseAfterLossAsync(reason);
             }
-            if (Session != null && !Busy && !closing && !refreshing && Time.unscaledTime >= refreshAt)
+            if (Session != null && !Busy && !closing && !cleanupFailed && !refreshing && Time.unscaledTime >= refreshAt)
             {
                 refreshAt = Time.unscaledTime + 5f;
                 _ = RefreshAsync();
             }
         }
 
-        public Task CreateRoomAsync() => EnterAsync(null);
-        public Task JoinRoomAsync(string code) => EnterAsync(code ?? "");
+        public Task CreateRoomAsync() => BeginEnterAsync(null);
+        public Task JoinRoomAsync(string code) => BeginEnterAsync(code ?? "");
+
+        async Task BeginEnterAsync(string code)
+        {
+            // Join the current teardown; never start another transport while it is stopping.
+            if (enterTask != null && !enterTask.IsCompleted) return;
+            if (leaveTask != null && !leaveTask.IsCompleted) await leaveTask;
+            else if (cleanupTask != null && !cleanupTask.IsCompleted) await cleanupTask;
+            if (cleanupFailed)
+            {
+                try { await CleanupAsync(); }
+                catch (Exception e) { SetError("이전 방 종료 실패: " + SafeMessage(e.Message)); return; }
+            }
+            if (Busy || Session != null) return;
+            entering = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
+            try { enterTask = EnterAsync(code); await enterTask; }
+            finally { entering.Dispose(); entering = null; }
+        }
 
         async Task EnterAsync(string code)
         {
@@ -105,13 +126,13 @@ namespace Unknown.Multiplayer
                 initialization ??= InitializeAsync();
                 try { await initialization; }
                 catch { initialization = null; throw; }
-                lifetime.Token.ThrowIfCancellationRequested();
+                entering.Token.ThrowIfCancellationRequested();
                 InstallCallbacks();
                 pendingApprovals.Clear();
                 establishedClients.Clear();
                 HasStarted = false;
                 connectionLoss = null;
-                using var timeout = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
+                using var timeout = CancellationTokenSource.CreateLinkedTokenSource(entering.Token);
                 timeout.CancelAfter(TimeSpan.FromSeconds(45));
                 ISession session;
                 if (code == null)
@@ -132,7 +153,7 @@ namespace Unknown.Multiplayer
                 Session = session;
                 Trace(code == null ? "SessionCreated" : "SessionJoined", $"SessionId={session.Id} SessionCode={session.Code} Host={session.IsHost} members={session.PlayerCount}/{session.MaxPlayers}");
                 Subscribe(session);
-                lifetime.Token.ThrowIfCancellationRequested();
+                entering.Token.ThrowIfCancellationRequested();
                 if (!networkManager.IsConnectedClient) throw new InvalidOperationException("Relay 연결을 완료하지 못했습니다.");
                 if (session.MaxPlayers != 2) throw new InvalidOperationException("UNKNOWN 1vs1 방 코드가 아닙니다.");
                 ConnectionStage = "Connected";
@@ -148,8 +169,9 @@ namespace Unknown.Multiplayer
             {
                 LastConnectionFailure = DescribeFailure(e);
                 Trace("ConnectionFailed", $"stage={ConnectionStage} {LastConnectionFailure} {NetworkState()}", true);
-                await CleanupAsync();
-                if (!destroyed) SetError(Explain(e));
+                try { await CleanupAsync(); }
+                catch (Exception cleanupError) { Trace("CleanupFailed", DescribeFailure(cleanupError), true); }
+                if (!destroyed) SetError(Explain(e) + (cleanupFailed ? "\n이전 방 종료가 완료되지 않았습니다." : ""));
             }
             finally
             {
@@ -358,12 +380,25 @@ namespace Unknown.Multiplayer
             Status = "대기실로 돌아왔습니다. 다시 준비해 주세요."; Notify();
         }
 
-        public async Task LeaveRoomAsync()
+        public Task LeaveRoomAsync()
         {
-            if (Busy || closing) return;
+            if (leaveTask != null && !leaveTask.IsCompleted) return leaveTask;
+            return leaveTask = LeaveCoreAsync();
+        }
+        async Task LeaveCoreAsync()
+        {
+            if (Busy && (enterTask == null || enterTask.IsCompleted) && !closing) return;
             Busy = true;
             Notify();
-            try { await CleanupAsync(); Status = "방에서 나왔습니다."; Error = ""; }
+            try
+            {
+                entering?.Cancel();
+                if (enterTask != null && !enterTask.IsCompleted) await enterTask;
+                Busy = true;
+                await CleanupAsync();
+                Status = "방에서 나왔습니다."; Error = "";
+            }
+            catch (Exception e) { SetError("방 종료 실패: " + SafeMessage(e.Message)); }
             finally { Busy = false; Notify(); }
         }
         async Task CloseAfterLossAsync(string reason)
@@ -371,55 +406,80 @@ namespace Unknown.Multiplayer
             Busy = true;
             Notify();
             try { await CleanupAsync(); SetError(reason); }
+            catch (Exception e) { SetError(reason + "\n방 종료 실패: " + SafeMessage(e.Message)); }
             finally { Busy = false; Notify(); }
         }
 
-        async Task CleanupAsync()
+        Task CleanupAsync()
+        {
+            if (cleanupTask != null && !cleanupTask.IsCompleted) return cleanupTask;
+            return cleanupTask = CleanupCoreAsync();
+        }
+        async Task CleanupCoreAsync()
         {
             closing = true;
+            cleanupFailed = false;
             var session = Session;
-            Session = null;
             HasStarted = false;
             connectionLoss = null;
             pendingApprovals.Clear();
             establishedClients.Clear();
+            GetComponent<NetworkBattleController>().DetachRoom();
             if (networkManager != null && networkManager.CustomMessagingManager != null)
             {
                 networkManager.CustomMessagingManager.UnregisterNamedMessageHandler(StartMessage);
                 networkManager.CustomMessagingManager.UnregisterNamedMessageHandler(ReturnRequest);
                 networkManager.CustomMessagingManager.UnregisterNamedMessageHandler(ReturnMessage);
             }
+            Notify();
             try
             {
+                // Preserve the session reference on failure so a deliberate retry can finish it.
+                if (session == null && UnityServices.State == ServicesInitializationState.Initialized)
+                    MultiplayerService.Instance.Sessions.TryGetValue(SessionType, out session);
                 if (session != null)
                 {
                     Unsubscribe(session);
-                    // Delete rather than migrate a host's private two-player room.
-                    try
-                    {
-                        Task leave = session.IsHost ? session.AsHost().DeleteAsync() : session.LeaveAsync();
-                        await AwaitCleanupAsync(leave);
-                    }
-                    catch (Exception e) { Debug.LogWarning($"[UNKNOWN] Session cleanup: {e.Message}"); }
+                    Trace("SessionClosing", $"session={session.Id} host={session.IsHost} state={session.State}");
+                    if (session.IsHost) await session.AsHost().DeleteAsync();
+                    else await session.LeaveAsync();
                 }
+                // RemovedFromSession schedules asynchronous SDK-local cleanup after LeaveAsync.
+                double until = Time.realtimeSinceStartupAsDouble + 45;
+                while (UnityServices.State == ServicesInitializationState.Initialized &&
+                    MultiplayerService.Instance.Sessions.ContainsKey(SessionType))
+                {
+                    lifetime.Token.ThrowIfCancellationRequested();
+                    if (Time.realtimeSinceStartupAsDouble >= until)
+                        throw new TimeoutException("SDK session registration is still closing.");
+                    await Task.Yield();
+                }
+                if (networkManager != null)
+                {
+                    if (!networkManager.ShutdownInProgress && (networkManager.IsListening || networkManager.IsClient))
+                        networkManager.Shutdown();
+                    until = Time.realtimeSinceStartupAsDouble + 45;
+                    while (networkManager.ShutdownInProgress || networkManager.IsListening || networkManager.IsClient)
+                    {
+                        lifetime.Token.ThrowIfCancellationRequested();
+                        if (Time.realtimeSinceStartupAsDouble >= until)
+                            throw new TimeoutException("Netcode shutdown has not completed.");
+                        await Task.Yield();
+                    }
+                }
+                Session = null;
+                ConnectionStage = "Idle";
+                Trace("CleanupComplete", NetworkState());
             }
-            finally
+            catch (Exception e)
             {
-                if (networkManager != null && (networkManager.IsListening || networkManager.IsClient)) networkManager.Shutdown();
-                closing = false;
+                cleanupFailed = true;
+                Session = session;
+                LastConnectionFailure = DescribeFailure(e);
+                Trace("CleanupFailed", LastConnectionFailure, true);
+                throw;
             }
-        }
-
-        static async Task AwaitCleanupAsync(Task cleanup)
-        {
-            if (await Task.WhenAny(cleanup, Task.Delay(8000)) == cleanup) { await cleanup; return; }
-            // Observe late failures instead of allowing unobserved task exceptions.
-            _ = ObserveCleanupAsync(cleanup);
-            Debug.LogWarning("[UNKNOWN] Session cleanup timed out; local transport will shut down.");
-        }
-        static async Task ObserveCleanupAsync(Task task)
-        {
-            try { await task; } catch (Exception e) { Debug.LogWarning($"[UNKNOWN] Late cleanup: {e.Message}"); }
+            finally { connectionLoss = null; closing = false; }
         }
         async Task RefreshAsync()
         {

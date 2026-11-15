@@ -44,13 +44,14 @@ namespace Unknown.Multiplayer
         void Awake() { room = GetComponent<RoomController>(); }
         void Update()
         {
+            if (room.IsClosing) return;
             var nm = Manager;
             if (!nm.IsListening)
             {
                 if (messages != null)
                 {
                     if (Snapshot != null && Snapshot.winner < 0) Failure = "상대방과 연결이 종료되었습니다.";
-                    Unregister(); HostReady = GuestReady = false; authority = null; Sending = false; SelectedMap=null; mapSelection?.ResetMatch(); Changed?.Invoke();
+                    DetachRoom();
                 }
                 return;
             }
@@ -136,6 +137,7 @@ namespace Unknown.Multiplayer
         }
         public void PresentationFinished(int revision)
         {
+            if (room.IsClosing || !room.HasStarted || messages == null || !Manager.IsListening || Manager.ShutdownInProgress) return;
             if (!Manager.IsHost)
             {
                 if (Snapshot!=null && revision==Snapshot.revision && Snapshot.busy && !Snapshot.clockRunning)
@@ -208,6 +210,7 @@ namespace Unknown.Multiplayer
         }
         void Send(string name, ulong id, string text)
         {
+            if (room.IsClosing || messages == null || !Manager.IsListening || Manager.ShutdownInProgress) return;
             using var writer = new FastBufferWriter(System.Text.Encoding.UTF8.GetByteCount(text) * 2 + 16, Allocator.Temp, 131072);
             writer.WriteValueSafe(text);
             messages.SendNamedMessage(name, id, writer, NetworkDelivery.ReliableFragmentedSequenced);
@@ -225,6 +228,10 @@ namespace Unknown.Multiplayer
             messages.UnregisterNamedMessageHandler(Request); messages.UnregisterNamedMessageHandler(State);
             messages.UnregisterNamedMessageHandler(Ready); messages.UnregisterNamedMessageHandler(Lobby);
             messages.UnregisterNamedMessageHandler(Presented); messages = null;
+        }
+        internal void DetachRoom()
+        {
+            Unregister(); ResetMatch(); previousCount = 0; nextLobby = 0; ActionError = "";
         }
         void OnDestroy() { Unregister(); }
         public void ResetMatch()

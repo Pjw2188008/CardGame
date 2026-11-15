@@ -273,7 +273,7 @@ namespace Unknown.Multiplayer
         void Render()
         {
             if (document == null) return;
-            if (battleOnline && battleUI != null && room.Session != null && !room.HasStarted)
+            if (battleOnline && battleUI != null && (room.Session == null || !room.HasStarted))
             { Destroy(battleUI.gameObject); battleUI = null; battleOnline = false; }
             var session = room.Session;
             if (session != null) ShowPage(room.HasStarted ? Page.Game : Page.Lobby, true);
