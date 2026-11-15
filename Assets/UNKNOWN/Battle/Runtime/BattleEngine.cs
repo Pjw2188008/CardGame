@@ -8,7 +8,7 @@ namespace Unknown.Battle
     public sealed class BattleConfig
     {
         public int StartingHP { get; set; } = 30;
-        public int StartingHand { get; set; } = 5;
+        public int StartingHand { get; set; } = 3;
         public int HandLimit { get; set; } = 8;
         public int FieldSlots { get; set; } = 5;
         public int StartingMana { get; set; } = 3;
@@ -143,6 +143,8 @@ namespace Unknown.Battle
                 }
                 Draw(p, rules.StartingHand);
             }
+            // Engine slot 0 starts the match; slot 1 is second, independent of network host identity.
+            if (rules.StartingHand > 0) DrawSecondOpeningCard();
             BeginTurn(0);
         }
 
@@ -182,6 +184,19 @@ namespace Unknown.Battle
                 else { player.HandCards.Add(card); Log($"P{owner + 1}: 카드 1장 드로우"); }
             }
         }
+        void DrawSecondOpeningCard()
+        {
+            var player = State.Players[1];
+            if (player.HandCards.Count >= rules.HandLimit) return;
+            var deck = player.DeckCards;
+            var candidates = deck.Where(c => c.Definition.CardType == CardType.Normal && c.Definition.ManaCost <= 2).ToArray();
+            if (candidates.Length == 0) candidates = deck.Where(c => c.Definition.CardType == CardType.Normal).ToArray();
+            if (candidates.Length == 0) return;
+            var card = candidates[random.Next(candidates.Length)];
+            // Move this existing instance to the draw end; Draw handles removal, events and the hand limit.
+            deck.Remove(card); deck.Add(card);
+            Draw(1, 1);
+        }
         void BeginTurn(int player)
         {
             State.ActivePlayer = player; State.TurnNumber++; State.SummonsThisTurn = 0;
@@ -193,14 +208,24 @@ namespace Unknown.Battle
             current.CurrentMana = current.MaxMana;
             Log($"── 턴 {State.TurnNumber} · P{player + 1} ──");
             Emit(new BattleEvent(BattleEventKind.TurnStart, player));
-            if (current.HandCards.Count == 0)
+            if (player == 1 && current.TurnsStarted == 1 && current.CurrentMana < rules.ManaCap)
             {
-                int count = Math.Min(Math.Min(5, rules.HandLimit), current.DeckCount);
-                Emit(new BattleEvent(BattleEventKind.HandRefill, player, amount: count));
-                // The refill replaces the ordinary draw. Empty decks retain their existing no-fatigue behavior.
-                Draw(player, count > 0 ? count : 1);
+                int before = current.CurrentMana;
+                current.CurrentMana = Math.Min(rules.ManaCap, current.CurrentMana + 1);
+                Emit(new BattleEvent(BattleEventKind.ManaGained, player, amount: current.CurrentMana - before, secondary: before));
             }
-            else Draw(player, 1);
+            // The opening deal already supplies the first player's three cards. Later draws are unchanged.
+            if (State.TurnNumber != 1 || rules.StartingHand == 0)
+            {
+                if (current.HandCards.Count == 0)
+                {
+                    int count = Math.Min(Math.Min(5, rules.HandLimit), current.DeckCount);
+                    Emit(new BattleEvent(BattleEventKind.HandRefill, player, amount: count));
+                    // The refill replaces the ordinary draw. Empty decks retain their existing no-fatigue behavior.
+                    Draw(player, count > 0 ? count : 1);
+                }
+                else Draw(player, 1);
+            }
             foreach (var unit in current.Slots) if (unit != null) unit.HasAttacked = false;
             StartMapTurn(player);
         }

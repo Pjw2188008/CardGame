@@ -77,7 +77,7 @@ namespace Unknown.Multiplayer
                 SelectedMap=mapSelection.BeginMatch();
                 Debug.Log($"[UNKNOWN Map] match={MapDrawCount} map={SelectedMap} hostDraws={MapDrawCount}");
                 authority = new BattleAuthority(NetworkBattleSmokeRunner.SeedOverride ?? Environment.TickCount,
-                    new BattleConfig { Map=SelectedMap.Value,MapRules=mapRules, StartingHand=NetworkBattleSmokeRunner.SystemsCheck ? 0 : 5, MapEvents=SelectedMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() }); PrepareTurnClock();
+                    new BattleConfig { Map=SelectedMap.Value,MapRules=mapRules, StartingHand=NetworkBattleSmokeRunner.SystemsCheck ? 0 : 3, MapEvents=SelectedMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() }); PrepareTurnClock();
                 busy = true; Publish(authority.Engine.DrainEvents());
             }
             if (clockRunning && !authority.Engine.State.IsOver && nm.ServerTime.Time >= deadline && !authority.Engine.State.TurnExpired)
