@@ -19,12 +19,11 @@ namespace Unknown.Battle
         public static int HP(PokerKind k) => new[]{0,0,2,0,0,6,4,0,4,5}[(int)k];
         public static string Name(PokerKind k) => new[]{"NONE","ONE PAIR","TWO PAIR","THREE OF A KIND","STRAIGHT","FLUSH","FULL HOUSE","FOUR OF A KIND","STRAIGHT FLUSH","ROYAL FLUSH"}[(int)k];
         public static string Condition(PokerKind k) => new[]{"족보 없음","같은 계급 2장","서로 다른 페어 2쌍","같은 계급 3장","연속 계급 5장 (A2345 / TJQKA)","같은 문양 5장","트리플 + 페어","같은 계급 4장","같은 문양의 연속 계급 5장","같은 문양 10·J·Q·K·A"}[(int)k];
-        public static bool All(PokerKind k) => k!=PokerKind.None;
         public static string Effect(PokerKind k)
         {
             if(k==PokerKind.None)return "활성 시너지 없음";
-            string stats="아군 전체 "+(Attack(k)>0 ? "ATK +"+Attack(k) : "")+(HP(k)>0 ? (Attack(k)>0 ? " / " : "")+"MAX HP +"+HP(k) : "");
-            string extra=k==PokerKind.Straight ? "유닛별 첫 공격 피해 +2" : k==PokerKind.Flush ? "내 턴 시작: 아군 각각 HP 2 회복" :
+            string stats="족보 구성 카드 "+(Attack(k)>0 ? "ATK +"+Attack(k) : "")+(HP(k)>0 ? (Attack(k)>0 ? " / " : "")+"MAX HP +"+HP(k) : "");
+            string extra=k==PokerKind.Straight ? "구성 카드별 첫 공격 피해 +2" : k==PokerKind.Flush ? "내 턴 시작: 구성 카드 각각 HP 2 회복" :
                 k==PokerKind.FullHouse ? "최초 완성: 드로우 2 · 내 HP 4 회복" : k==PokerKind.FourKind ? "최초 완성: 적 필드 전체 피해 2" :
                 k==PokerKind.StraightFlush ? "최초 완성: 적 필드 전체 피해 3" : k==PokerKind.RoyalFlush ? "최초 완성: 적 전체 피해 5 · 적 HP 피해 5" : "";
             return stats+(extra.Length>0 ? "\n"+extra : "");
@@ -47,7 +46,7 @@ namespace Unknown.Battle
             else if(groups.Count(g=>g.Count()==2)>=2) {kind=PokerKind.TwoPair;members=groups.Where(g=>g.Count()==2).Take(2).SelectMany(g=>g).ToArray();}
             else if(groups.Any(g=>g.Count()==2)) {kind=PokerKind.OnePair;members=groups.First(g=>g.Count()==2).ToArray();}
             if(kind!=PokerKind.None && members.Length==0)members=cards;
-            return new PokerState{kind=kind,members=members.Select(c=>c.InstanceID).OrderBy(i=>i).ToArray(),targets=(All(kind) ? alive : members).Select(c=>c.InstanceID).OrderBy(i=>i).ToArray()};
+            return new PokerState{kind=kind,members=members.Select(c=>c.InstanceID).OrderBy(i=>i).ToArray(),targets=members.Select(c=>c.InstanceID).OrderBy(i=>i).ToArray()};
         }
     }
     public sealed partial class BattleEngine
@@ -70,10 +69,11 @@ namespace Unknown.Battle
                             next.rewardsUsed=old.rewardsUsed;next.flushHealTurn=old.flushHealTurn;p.Poker=next;
                             foreach(var c in p.Slots.Where(c=>c!=null)) {
                                 int attack=c.Attack,max=c.MaxHP;
-                                c.PokerAttack=next.kind!=PokerKind.None && (Single==null || Single.PokerEligible(c)) ? PokerSynergy.Attack(next.kind) : 0;
-                                c.PokerHP=next.kind!=PokerKind.None && (Single==null || Single.PokerEligible(c)) ? PokerSynergy.HP(next.kind) : 0;
+                                bool eligible=PokerRecipient(c);
+                                c.PokerAttack=eligible ? PokerSynergy.Attack(next.kind) : 0;
+                                c.PokerHP=eligible ? PokerSynergy.HP(next.kind) : 0;
                                 c.CurrentHP=Math.Min(c.MaxHP,c.CurrentHP+c.MaxHP-max);
-                                if(next.kind!=PokerKind.Straight)c.PokerStraightAttackSpent=false;
+                                if(!eligible || next.kind!=PokerKind.Straight)c.PokerStraightAttackSpent=false;
                                 if(attack!=c.Attack)Emit(new BattleEvent(BattleEventKind.AttackChanged,playerIndex,target:c.InstanceID,amount:c.Attack-attack));
                                 if(max!=c.MaxHP)Emit(new BattleEvent(BattleEventKind.MaxHPChanged,playerIndex,target:c.InstanceID,amount:c.MaxHP-max));
                             }
@@ -111,9 +111,15 @@ namespace Unknown.Battle
                 }
             }
         }
+        bool PokerRecipient(CardInstance unit)
+        {
+            var poker=State.Players[unit.Owner].Poker;
+            return rules.EnablePoker && poker.kind!=PokerKind.None && poker.targets.Contains(unit.InstanceID)
+                && (Single==null || Single.PokerEligible(unit));
+        }
         int PokerAttackDamage(CardInstance unit)
         {
-            if(rules.EnablePoker && State.Players[unit.Owner].Poker.kind==PokerKind.Straight && !unit.PokerStraightAttackSpent) {
+            if(PokerRecipient(unit) && State.Players[unit.Owner].Poker.kind==PokerKind.Straight && !unit.PokerStraightAttackSpent) {
                 unit.PokerStraightAttackSpent=true;return unit.Attack+2;
             }
             return unit.Attack;
@@ -124,7 +130,7 @@ namespace Unknown.Battle
             var p=State.Players[owner];
             if(p.Poker.kind!=PokerKind.Flush || p.Poker.flushHealTurn==State.TurnNumber)return;
             p.Poker.flushHealTurn=State.TurnNumber;
-            foreach(var c in p.Slots.Where(c=>c!=null && c.CurrentHP>0)) {
+            foreach(var c in p.Slots.Where(c=>c!=null && c.CurrentHP>0 && PokerRecipient(c))) {
                 int before=c.CurrentHP;c.CurrentHP=Math.Min(c.MaxHP,c.CurrentHP+2);
                 Emit(new BattleEvent(BattleEventKind.Heal,owner,target:c.InstanceID,amount:c.CurrentHP-before));
             }
