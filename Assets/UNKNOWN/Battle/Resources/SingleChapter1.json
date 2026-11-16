@@ -1,0 +1,1481 @@
+{
+  "startingTokens": 10,
+  "maxHP": 30,
+  "healing": 8,
+  "firstClearBonus": 20,
+  "runRewards": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "permanentRewards": [
+    10,
+    15,
+    20,
+    25,
+    30
+  ],
+  "stages": [
+    {
+      "id": "start",
+      "name": "첫 번째 도박",
+      "kind": 0,
+      "cost": 0,
+      "map": 0,
+      "enemyHP": 18,
+      "turnLimit": 9,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 36,
+      "restrictions": [],
+      "units": [],
+      "patterns": [],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "battle0",
+      "name": "문지기",
+      "kind": 1,
+      "cost": 2,
+      "map": 0,
+      "enemyHP": 10,
+      "turnLimit": 10,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 40,
+      "restrictions": [
+        1
+      ],
+      "units": [
+        {
+          "card": "Diamond_2",
+          "slot": 1
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 3,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 5,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Heart_3",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "battle1",
+      "name": "붉은 길",
+      "kind": 1,
+      "cost": 2,
+      "map": 2,
+      "enemyHP": 11,
+      "turnLimit": 10,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 40,
+      "restrictions": [
+        1
+      ],
+      "units": [
+        {
+          "card": "Spade_3",
+          "slot": 1
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 3,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 5,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Club_3",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "battle2",
+      "name": "그림자의 짝",
+      "kind": 1,
+      "cost": 2,
+      "map": 3,
+      "enemyHP": 12,
+      "turnLimit": 10,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 40,
+      "restrictions": [
+        4
+      ],
+      "units": [
+        {
+          "card": "Heart_4",
+          "slot": 1
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 3,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 5,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Diamond_3",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "battle3",
+      "name": "회복의 대가",
+      "kind": 1,
+      "cost": 2,
+      "map": 4,
+      "enemyHP": 13,
+      "turnLimit": 10,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 40,
+      "restrictions": [
+        7
+      ],
+      "units": [
+        {
+          "card": "Club_5",
+          "slot": 1
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 3,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 5,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Spade_3",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "battle4",
+      "name": "행운의 뒷면",
+      "kind": 1,
+      "cost": 2,
+      "map": 5,
+      "enemyHP": 14,
+      "turnLimit": 10,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 40,
+      "restrictions": [
+        10
+      ],
+      "units": [
+        {
+          "card": "Diamond_2",
+          "slot": 1
+        },
+        {
+          "card": "Spade_3",
+          "slot": 3
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 3,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 5,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Heart_3",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "battle5",
+      "name": "변칙의 탁자",
+      "kind": 1,
+      "cost": 2,
+      "map": 1,
+      "enemyHP": 15,
+      "turnLimit": 10,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 40,
+      "restrictions": [
+        13
+      ],
+      "units": [
+        {
+          "card": "Spade_3",
+          "slot": 1
+        },
+        {
+          "card": "Heart_4",
+          "slot": 3
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 3,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 5,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Club_3",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "battle6",
+      "name": "세 갈래 칼날",
+      "kind": 1,
+      "cost": 2,
+      "map": 0,
+      "enemyHP": 16,
+      "turnLimit": 10,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 40,
+      "restrictions": [
+        2
+      ],
+      "units": [
+        {
+          "card": "Heart_4",
+          "slot": 1
+        },
+        {
+          "card": "Club_2",
+          "slot": 3
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 3,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 5,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Diamond_3",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "battle7",
+      "name": "봉인된 손",
+      "kind": 1,
+      "cost": 2,
+      "map": 2,
+      "enemyHP": 17,
+      "turnLimit": 10,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 40,
+      "restrictions": [
+        5
+      ],
+      "units": [
+        {
+          "card": "Club_5",
+          "slot": 1
+        },
+        {
+          "card": "Diamond_3",
+          "slot": 3
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 3,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 5,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Spade_3",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "battle8",
+      "name": "피의 서약",
+      "kind": 1,
+      "cost": 2,
+      "map": 3,
+      "enemyHP": 18,
+      "turnLimit": 10,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 40,
+      "restrictions": [
+        9
+      ],
+      "units": [
+        {
+          "card": "Diamond_2",
+          "slot": 1
+        },
+        {
+          "card": "Spade_4",
+          "slot": 3
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 3,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 5,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Heart_3",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "battle9",
+      "name": "잠긴 금고",
+      "kind": 1,
+      "cost": 2,
+      "map": 4,
+      "enemyHP": 19,
+      "turnLimit": 10,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 40,
+      "restrictions": [
+        12
+      ],
+      "units": [
+        {
+          "card": "Spade_3",
+          "slot": 1
+        },
+        {
+          "card": "Heart_2",
+          "slot": 3
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 3,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 5,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Club_3",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "battle10",
+      "name": "마지막 경계",
+      "kind": 1,
+      "cost": 2,
+      "map": 5,
+      "enemyHP": 20,
+      "turnLimit": 10,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 40,
+      "restrictions": [
+        3
+      ],
+      "units": [
+        {
+          "card": "Heart_4",
+          "slot": 1
+        },
+        {
+          "card": "Club_3",
+          "slot": 3
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 3,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 5,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Diamond_3",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "elite0",
+      "name": "다이아 집행자",
+      "kind": 2,
+      "cost": 4,
+      "map": 2,
+      "enemyHP": 24,
+      "turnLimit": 11,
+      "startMana": 4,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 48,
+      "restrictions": [
+        1,
+        2
+      ],
+      "units": [
+        {
+          "card": "Diamond_7",
+          "slot": 1
+        },
+        {
+          "card": "Spade_4",
+          "slot": 3
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 2,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 4,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Diamond_9",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 0,
+          "kind": 3,
+          "amount": 1,
+          "condition": "half",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "elite1",
+      "name": "스페이드 감시자",
+      "kind": 2,
+      "cost": 4,
+      "map": 3,
+      "enemyHP": 26,
+      "turnLimit": 11,
+      "startMana": 4,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 48,
+      "restrictions": [
+        4,
+        6
+      ],
+      "units": [
+        {
+          "card": "Spade_7",
+          "slot": 1
+        },
+        {
+          "card": "Heart_4",
+          "slot": 3
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 2,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 4,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Spade_9",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 0,
+          "kind": 3,
+          "amount": 1,
+          "condition": "half",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "elite2",
+      "name": "하트 수호자",
+      "kind": 2,
+      "cost": 4,
+      "map": 4,
+      "enemyHP": 28,
+      "turnLimit": 11,
+      "startMana": 4,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 48,
+      "restrictions": [
+        7,
+        8
+      ],
+      "units": [
+        {
+          "card": "Heart_7",
+          "slot": 1
+        },
+        {
+          "card": "Club_4",
+          "slot": 3
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 2,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 4,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Heart_9",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 0,
+          "kind": 3,
+          "amount": 1,
+          "condition": "half",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "elite3",
+      "name": "클로버 수집가",
+      "kind": 2,
+      "cost": 4,
+      "map": 5,
+      "enemyHP": 30,
+      "turnLimit": 11,
+      "startMana": 4,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 48,
+      "restrictions": [
+        10,
+        11
+      ],
+      "units": [
+        {
+          "card": "Club_7",
+          "slot": 1
+        },
+        {
+          "card": "Diamond_4",
+          "slot": 3
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 2,
+          "kind": 0,
+          "amount": 1,
+          "condition": "turn",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 4,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Club_9",
+          "slot": 2,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 0,
+          "kind": 3,
+          "amount": 1,
+          "condition": "half",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "augment0",
+      "name": "증강의 제단 1",
+      "kind": 3,
+      "cost": 3,
+      "map": 0,
+      "enemyHP": 18,
+      "turnLimit": 9,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 36,
+      "restrictions": [],
+      "units": [],
+      "patterns": [],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "augment1",
+      "name": "증강의 제단 2",
+      "kind": 3,
+      "cost": 3,
+      "map": 0,
+      "enemyHP": 18,
+      "turnLimit": 9,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 36,
+      "restrictions": [],
+      "units": [],
+      "patterns": [],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "augment2",
+      "name": "증강의 제단 3",
+      "kind": 3,
+      "cost": 3,
+      "map": 0,
+      "enemyHP": 18,
+      "turnLimit": 9,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 36,
+      "restrictions": [],
+      "units": [],
+      "patterns": [],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "heal0",
+      "name": "고요한 샘 1",
+      "kind": 4,
+      "cost": 3,
+      "map": 0,
+      "enemyHP": 18,
+      "turnLimit": 9,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 36,
+      "restrictions": [],
+      "units": [],
+      "patterns": [],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "heal1",
+      "name": "고요한 샘 2",
+      "kind": 4,
+      "cost": 3,
+      "map": 0,
+      "enemyHP": 18,
+      "turnLimit": 9,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 36,
+      "restrictions": [],
+      "units": [],
+      "patterns": [],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "purge0",
+      "name": "기억 지우기 1",
+      "kind": 5,
+      "cost": 2,
+      "map": 0,
+      "enemyHP": 18,
+      "turnLimit": 9,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 36,
+      "restrictions": [],
+      "units": [],
+      "patterns": [],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "purge1",
+      "name": "기억 지우기 2",
+      "kind": 5,
+      "cost": 2,
+      "map": 0,
+      "enemyHP": 18,
+      "turnLimit": 9,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 36,
+      "restrictions": [],
+      "units": [],
+      "patterns": [],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "event",
+      "name": "희생의 거래",
+      "kind": 6,
+      "cost": 3,
+      "map": 0,
+      "enemyHP": 18,
+      "turnLimit": 9,
+      "startMana": 3,
+      "manaRecovery": 3,
+      "turnSpendLimit": 8,
+      "manaBudget": 36,
+      "restrictions": [],
+      "units": [],
+      "patterns": [],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    },
+    {
+      "id": "boss",
+      "name": "THE UNKNOWN DEALER",
+      "kind": 7,
+      "cost": 5,
+      "map": 1,
+      "enemyHP": 35,
+      "turnLimit": 14,
+      "startMana": 5,
+      "manaRecovery": 4,
+      "turnSpendLimit": 10,
+      "manaBudget": 65,
+      "restrictions": [
+        14,
+        15
+      ],
+      "units": [
+        {
+          "card": "Unknown_J",
+          "slot": 2
+        },
+        {
+          "card": "Heart_6",
+          "slot": 4
+        }
+      ],
+      "patterns": [
+        {
+          "turn": 3,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Diamond_8",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 5,
+          "kind": 1,
+          "amount": 1,
+          "condition": "turn",
+          "card": "Unknown_K",
+          "slot": 1,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 0,
+          "kind": 1,
+          "amount": 1,
+          "condition": "half",
+          "card": "Unknown_Q",
+          "slot": 3,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 0,
+          "kind": 2,
+          "amount": 1,
+          "condition": "unknown",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": ""
+        },
+        {
+          "turn": 0,
+          "kind": 0,
+          "amount": 1,
+          "condition": "death",
+          "card": "",
+          "slot": 0,
+          "hpPercent": 50,
+          "watchCard": "Unknown_J"
+        }
+      ],
+      "attackLimit": 2,
+      "strongestPenalty": 2,
+      "directLimit": 1,
+      "healingPercent": 50,
+      "summonBlood": 1,
+      "firstCost": 1,
+      "manaReduction": 1,
+      "sealedSlot": 2
+    }
+  ],
+  "difficulties": [
+    {
+      "name": "일반",
+      "cost": 0,
+      "requiredClear": -1,
+      "attackBonus": 0,
+      "hpBonus": 0,
+      "turnPenalty": 0,
+      "budgetPenalty": 0,
+      "extraRestrictions": 0,
+      "rewardPercent": 100,
+      "patternBonus": 0
+    },
+    {
+      "name": "어려움",
+      "cost": 30,
+      "requiredClear": 0,
+      "attackBonus": 1,
+      "hpBonus": 1,
+      "turnPenalty": 0,
+      "budgetPenalty": 0,
+      "extraRestrictions": 1,
+      "rewardPercent": 150,
+      "patternBonus": 1
+    },
+    {
+      "name": "악몽",
+      "cost": 70,
+      "requiredClear": 1,
+      "attackBonus": 1,
+      "hpBonus": 3,
+      "turnPenalty": 1,
+      "budgetPenalty": 3,
+      "extraRestrictions": 2,
+      "rewardPercent": 200,
+      "patternBonus": 1
+    },
+    {
+      "name": "UNKNOWN",
+      "cost": 150,
+      "requiredClear": 2,
+      "attackBonus": 2,
+      "hpBonus": 4,
+      "turnPenalty": 1,
+      "budgetPenalty": 5,
+      "extraRestrictions": 3,
+      "rewardPercent": 300,
+      "patternBonus": 2
+    }
+  ],
+  "augments": [
+    {
+      "id": "0",
+      "name": "다이아의 의지",
+      "description": "다이아 처치 시 마나 1 회복, 턴당 1회",
+      "amount": 1,
+      "duration": 1
+    },
+    {
+      "id": "1",
+      "name": "관통의 시작",
+      "description": "매 턴 첫 다이아 공격 피해 +2",
+      "amount": 2,
+      "duration": 1
+    },
+    {
+      "id": "2",
+      "name": "스페이드의 저주",
+      "description": "첫 스페이드 약화 지속시간 1턴 추가 (싱글 기본 1턴 → 2턴)",
+      "amount": 1,
+      "duration": 1
+    },
+    {
+      "id": "3",
+      "name": "약점 추적",
+      "description": "약화된 적 공격 피해 +2, 턴당 1회",
+      "amount": 2,
+      "duration": 1
+    },
+    {
+      "id": "4",
+      "name": "하트의 보호",
+      "description": "전투 시작 보호막 4",
+      "amount": 4,
+      "duration": 1
+    },
+    {
+      "id": "5",
+      "name": "회복 순환",
+      "description": "전투 첫 실제 회복 시 드로우 1",
+      "amount": 1,
+      "duration": 1
+    },
+    {
+      "id": "6",
+      "name": "클로버의 행운",
+      "description": "매 턴 첫 클로버 사용 시 마나 1 반환",
+      "amount": 1,
+      "duration": 1
+    },
+    {
+      "id": "7",
+      "name": "카드 순환",
+      "description": "매 턴 첫 수동 버리기 후 드로우 1",
+      "amount": 1,
+      "duration": 1
+    },
+    {
+      "id": "8",
+      "name": "조합 연구",
+      "description": "첫 UNKNOWN 조합 시 덱의 A 또는 J/Q/K 1장 탐색",
+      "amount": 1,
+      "duration": 1
+    },
+    {
+      "id": "9",
+      "name": "미지의 힘",
+      "description": "UNKNOWN 소환 시 드로우 1",
+      "amount": 1,
+      "duration": 1
+    },
+    {
+      "id": "10",
+      "name": "도박사의 선택",
+      "description": "조커 성공 시 드로우 1",
+      "amount": 1,
+      "duration": 1
+    },
+    {
+      "id": "11",
+      "name": "최후의 공격",
+      "description": "마지막 허용 턴 첫 공격 피해 +3",
+      "amount": 3,
+      "duration": 1
+    }
+  ],
+  "starters": [
+    {
+      "id": "balanced",
+      "name": "균형 덱",
+      "unlock": "",
+      "cards": [
+        "Diamond_2",
+        "Diamond_3",
+        "Diamond_4",
+        "Spade_2",
+        "Spade_3",
+        "Spade_4",
+        "Heart_2",
+        "Heart_3",
+        "Heart_4",
+        "Club_2",
+        "Club_3",
+        "Club_4"
+      ]
+    },
+    {
+      "id": "assault",
+      "name": "돌파 덱",
+      "unlock": "assault",
+      "cards": [
+        "Diamond_2",
+        "Diamond_3",
+        "Diamond_4",
+        "Diamond_5",
+        "Diamond_6",
+        "Diamond_7",
+        "Spade_2",
+        "Spade_3",
+        "Spade_4",
+        "Heart_2",
+        "Heart_3",
+        "Heart_4"
+      ]
+    },
+    {
+      "id": "survival",
+      "name": "생존 덱",
+      "unlock": "survival",
+      "cards": [
+        "Heart_2",
+        "Heart_3",
+        "Heart_4",
+        "Heart_5",
+        "Heart_6",
+        "Heart_7",
+        "Club_2",
+        "Club_3",
+        "Club_4",
+        "Club_5",
+        "Club_6",
+        "Club_7"
+      ]
+    }
+  ],
+  "unlocks": [
+    {
+      "id": "numbers",
+      "name": "숫자 5~10 카드 풀",
+      "cost": 10,
+      "clear": -1,
+      "cards": [
+        "Diamond_5",
+        "Diamond_6",
+        "Diamond_7",
+        "Diamond_8",
+        "Diamond_9",
+        "Diamond_10",
+        "Spade_5",
+        "Spade_6",
+        "Spade_7",
+        "Spade_8",
+        "Spade_9",
+        "Spade_10",
+        "Heart_5",
+        "Heart_6",
+        "Heart_7",
+        "Heart_8",
+        "Heart_9",
+        "Heart_10",
+        "Club_5",
+        "Club_6",
+        "Club_7",
+        "Club_8",
+        "Club_9",
+        "Club_10"
+      ]
+    },
+    {
+      "id": "faces",
+      "name": "J/Q/K 카드 풀",
+      "cost": 15,
+      "clear": -1,
+      "cards": [
+        "Diamond_J",
+        "Diamond_Q",
+        "Diamond_K",
+        "Spade_J",
+        "Spade_Q",
+        "Spade_K",
+        "Heart_J",
+        "Heart_Q",
+        "Heart_K",
+        "Club_J",
+        "Club_Q",
+        "Club_K"
+      ]
+    },
+    {
+      "id": "aces",
+      "name": "A 카드 풀",
+      "cost": 15,
+      "clear": -1,
+      "cards": [
+        "Diamond_A",
+        "Spade_A",
+        "Heart_A",
+        "Club_A"
+      ]
+    },
+    {
+      "id": "joker",
+      "name": "JOKER 카드 풀",
+      "cost": 20,
+      "clear": 0,
+      "cards": [
+        "Joker_1",
+        "Joker_2"
+      ]
+    },
+    {
+      "id": "assault",
+      "name": "돌파 시작 덱",
+      "cost": 20,
+      "clear": 0,
+      "cards": []
+    },
+    {
+      "id": "survival",
+      "name": "생존 시작 덱",
+      "cost": 20,
+      "clear": 0,
+      "cards": []
+    }
+  ],
+  "eventDamage": 5,
+  "eventTokens": 4,
+  "eventHealing": 4
+}

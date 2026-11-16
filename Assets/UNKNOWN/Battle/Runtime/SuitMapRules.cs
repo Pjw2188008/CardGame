@@ -7,6 +7,7 @@ namespace Unknown.Battle
         public SuitMapEffect SuitEffect { get; private set; }
         void ApplyMapSummon(CardInstance c)
         {
+            if(Single!=null)return;
             if(UsesNewHeartMap && rules.Map==BattleMap.Heart) {
                 ChangeMapStats(c,c.Attack,c.MaxHP+1); return;
             }

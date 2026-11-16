@@ -12,7 +12,7 @@ namespace Unknown.Battle
         }
         void ApplyHeartMapRecovery(CardInstance unit,int actualDamage)
         {
-            if(!UsesNewHeartMap || rules.Map!=BattleMap.Heart || actualDamage<=0 || unit.HeartMapHealSpent)return;
+            if(Single!=null || !UsesNewHeartMap || rules.Map!=BattleMap.Heart || actualDamage<=0 || unit.HeartMapHealSpent)return;
             // A lethal first hit can never be rescued. Mark the first hit before emitting any event.
             unit.HeartMapHealSpent=true;
             if(unit.CurrentHP<=0)return;

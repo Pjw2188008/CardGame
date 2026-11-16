@@ -67,6 +67,7 @@ namespace Unknown.Battle
         }
         void StartMapTurn(int owner)
         {
+            if(Single!=null){Single.Turn(owner);return;}
             revealViewer=revealID=revealTurn=-1; viewRevealed=null;
             SuitEffect=null;
             foreach(var p in State.Players)p.JokerChanceDelta=0;

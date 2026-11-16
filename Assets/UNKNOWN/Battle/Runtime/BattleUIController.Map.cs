@@ -18,7 +18,7 @@ namespace Unknown.Battle
         internal bool IsMapIntroActive => mapIntro!=null && mapIntro.gameObject.activeSelf;
         MapDefinition MapInfo(BattleMap map) => MapDefinition.For(map,engine?.Config.MapRules);
         string MapTitle(BattleMap map) { var d=MapInfo(map); return d.symbol+" "+d.title; }
-        string MapDescription(BattleMap map) => MapInfo(map).Effects+(MapDefinition.IsSuit(map) ? "\n필드에 UNKNOWN 3장 배치 또는 상대 HP 0 시 승리" : "");
+        string MapDescription(BattleMap map) => singleCampaign!=null ? SingleRestrictionText() : MapInfo(map).Effects+(MapDefinition.IsSuit(map) ? "\n필드에 UNKNOWN 3장 배치 또는 상대 HP 0 시 승리" : "");
         Color MapTint(BattleMap map) { ColorUtility.TryParseHtmlString(MapInfo(map).tint,out var color); return color; }
         void ShowMapTooltip(UnityEngine.EventSystems.PointerEventData data)
         {
@@ -28,6 +28,7 @@ namespace Unknown.Battle
         }
         IEnumerator PresentRandomMap(BattleMap result)
         {
+            if(singleCampaign!=null){mapIntroPresented=true;yield break;}
             if(mapIntroPresented)yield break;
             mapIntroPresented=true; MapIntroCount++;
             mapIntro=Box(canvas.transform,"Random Map Reveal",Vector2.zero,Vector2.one,new Color(0.025f,0.015f,0.045f,1));

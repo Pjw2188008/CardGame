@@ -49,6 +49,7 @@ namespace Unknown.Battle
         {
             if(!aiMode || engine.State.ActivePlayer!=1 || engine.State.IsOver || engine.State.TurnExpired || IsPaused || actionBusy || transitioning || passOverlay.activeSelf || Time.unscaledTime<aiNextAction)return;
             if(aiActionTurn!=engine.State.TurnNumber){aiActionTurn=engine.State.TurnNumber;aiActionCount=0;}
+            if(singleCampaign!=null){TickSingleEnemy();return;}
             AiMove move;
             if(aiActionCount>=AiActionLimit && !engine.NeedsTarget)move=new AiMove(BattleAction.EndTurn){Reason="행동 안전 상한"};
             else move=aiAgent.Decide(AiObservation.Capture(engine,1));

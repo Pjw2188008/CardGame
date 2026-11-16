@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -19,6 +19,7 @@ namespace Unknown.Multiplayer
         RoomController room;
         NetworkBattleController networkBattle;
         Unknown.Battle.BattleUIController battleUI;
+        Unknown.Battle.SingleChapterUI chapterUI;
         bool battleOnline;
         UIDocument document;
         PanelSettings panelSettings;
@@ -100,6 +101,7 @@ namespace Unknown.Multiplayer
             content.AddToClassList("page-content");
             shell.Add(content);
             var home = MakePage(Page.Home);
+            MenuButton(home,"싱글플레이",()=>{LaunchChapter();return Task.CompletedTask;});
             MenuButton(home, "온라인 대전", () => { ShowPage(Page.Online, true); return Task.CompletedTask; });
             MenuButton(home,"튜토리얼",()=>{ShowTutorialChoices();return Task.CompletedTask;});
             MenuButton(home,"AI 대전",()=>{ShowAiSelection();return Task.CompletedTask;});
@@ -288,7 +290,7 @@ namespace Unknown.Multiplayer
                 ? DisplayStyle.Flex : DisplayStyle.None;
             error.text = room.Error;
             errorBox.style.display = string.IsNullOrEmpty(room.Error) ? DisplayStyle.None : DisplayStyle.Flex;
-            document.rootVisualElement.style.display = battleUI != null ? DisplayStyle.None : DisplayStyle.Flex;
+            document.rootVisualElement.style.display = battleUI != null || chapterUI != null ? DisplayStyle.None : DisplayStyle.Flex;
             if (session == null) return;
             code.text = session.Code;
             players.text = $"접속 인원   {session.PlayerCount} / 2";
@@ -333,6 +335,12 @@ namespace Unknown.Multiplayer
             for(int i=0;i<3;i++)aiDifficultyButtons[i].Q<Label>(className:"action-text").text=(i==(int)selectedAi ? "✓ " : "")+((Unknown.Battle.AiDifficulty)i).ToString().ToUpperInvariant();
         }
         void ShowAiSelection(){UpdateAiChoices();ShowPage(Page.AiSelect,true);}
+        void LaunchChapter()
+        {
+            if(battleUI!=null || chapterUI!=null || room.Session!=null)return;
+            document.rootVisualElement.style.display=DisplayStyle.None;
+            chapterUI=Unknown.Battle.SingleChapterUI.Open(()=>{chapterUI=null;ShowPage(Page.Home,true);Render();});
+        }
         void LaunchAI()
         {
             if(battleUI!=null || room.Session!=null)return;

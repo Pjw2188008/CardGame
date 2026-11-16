@@ -57,18 +57,21 @@ namespace Unknown.Battle
         }
         void NewMatch()
         {
-            if(aiMode)ResetAiMatch();
+            if(singleCampaign!=null && engine!=null)return;
+            if(aiMode && singleCampaign==null)ResetAiMatch();
             if(pokerList!=null)pokerList.gameObject.SetActive(false);
             lastDropID=-1;toastUntil=0;
             StopAllCoroutines(); if (animations != null) animations.ResetAll();
             actionBusy = transitioning = paused = false; clock.Stop();
             pauseButton.GetComponentInChildren<Text>().text = "일시정지";
-            engine = new BattleEngine(seed == 0 ? Environment.TickCount : seed, new BattleConfig { FieldSlots = Math.Max(1, fieldSlots), Map=localMap,MapRules=BattleMapSettings.LoadRules(), MapEvents=localMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() });
+            engine = singleCampaign!=null ? MakeSingleEngine() : new BattleEngine(seed == 0 ? Environment.TickCount : seed, new BattleConfig { FieldSlots = Math.Max(1, fieldSlots), Map=localMap,MapRules=BattleMapSettings.LoadRules(), MapEvents=localMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() });
+            SingleCheckpoint();
             presentedMapEvents.Clear();
             queuedTurnEvents=null; var initialDraws = HumanAiEvents(engine.DrainEvents());
             ResetHandViews(); PrepareHandPlayback(initialDraws);
             ClearSelection(); feedback = "패의 카드 → 빈 아군 슬롯: 소환 / 아군 유닛 → 적 유닛: 공격";
             passOverlay.SetActive(false); resultOverlay.SetActive(false); Refresh();
+            if(singleCampaign!=null && engine.State.IsOver){SingleBattleFinished();return;}
             StartCoroutine(InitialHandPresentation(initialDraws));
         }
         void BuildCanvas()
@@ -135,7 +138,7 @@ namespace Unknown.Battle
             ActionButton(result, "메인 메뉴", new Vector2(0.33f, 0.36f), new Vector2(0.67f, 0.44f), ReturnToMenu);
             returnLobby = ActionButton(result, "대기실로 돌아가기", new Vector2(0.33f, 0.26f), new Vector2(0.67f, 0.33f), ReturnToLobby);
             returnLobby.gameObject.SetActive(online != null);
-            if(aiMode)BuildAiResult(result);
+            if(aiMode && singleCampaign==null)BuildAiResult(result);
             animations = gameObject.AddComponent<CardAnimationController>(); animations.Initialize(root, font, () => IsPaused);
             animations.DrawPresentation = PresentDraw;
             animations.CardFacePresentation=DrawAnimationCard;
@@ -242,6 +245,7 @@ namespace Unknown.Battle
             try { success = command(); }
             catch { actionBusy = false; throw; }
             if (!success) { actionBusy = false; Result(false); return; }
+            SingleCheckpoint();
             feedback = message; ClearSelection(); RefreshMana();RefreshPokerUI();
             StartCoroutine(ActionPresentation(engine.DrainEvents()));
         }
@@ -295,6 +299,8 @@ namespace Unknown.Battle
             int actor = engine.State.ActivePlayer;
             bool success = timedOut ? engine.FinishExpiredTurn(actor) : engine.EndTurn(actor);
             if (!success) { transitioning = false; Result(false); yield break; }
+            SingleCheckpoint();
+            if(engine.State.IsOver){transitioning=false;ShowWinner();yield break;}
             queuedTurnEvents=HumanAiEvents(engine.DrainEvents()); PrepareHandPlayback(queuedTurnEvents);
             yield return animations.Banner("TURN END", gold, 0.5f);
             ClearSelection(); feedback = "패에서 카드를 선택하거나 아군 유닛으로 공격하세요.";
@@ -309,6 +315,7 @@ namespace Unknown.Battle
         void ShowWinner()
         {
             if(tutorial!=null)return;
+            if(singleCampaign!=null){SingleBattleFinished();return;}
             EndAttackDrag(); EndCardDrag();
             clock.Stop();
             bool won = engine.State.Winner == ViewPlayer;
@@ -407,7 +414,7 @@ namespace Unknown.Battle
             if (lastLogCount != state.LogVersion) { pulse = 0.5f; lastLogCount = state.LogVersion; }
             RefreshBoard(ownBoard, active); RefreshBoard(enemyBoard, other);
             RefreshHands(me, enemy);
-            RefreshMana(); RefreshUnknownProgress(); RefreshPokerUI(); BindAnimations(); RefreshControls();
+            RefreshMana(); RefreshUnknownProgress(); RefreshPokerUI(); BindAnimations(); RefreshControls();RefreshSingleUI();
         }
         void RefreshBoard(RectTransform board, int owner)
         {
@@ -489,8 +496,8 @@ namespace Unknown.Battle
             if(tutorial!=null){TickTutorial();return;}
             bool held = IsPaused || transitioning || passOverlay.activeSelf;
             if (engine.State.IsOver) clock.Stop();
-            else clock.Tick(Time.realtimeSinceStartupAsDouble, held);
-            if (clock.Expired && !engine.State.IsOver && !engine.State.TurnExpired && clock.Duration > 0 && !transitioning && !passOverlay.activeSelf)
+            else if(singleCampaign==null)clock.Tick(Time.realtimeSinceStartupAsDouble, held);
+            if (singleCampaign==null && clock.Expired && !engine.State.IsOver && !engine.State.TurnExpired && clock.Duration > 0 && !transitioning && !passOverlay.activeSelf)
             {
                 engine.ExpireTurn(engine.State.ActivePlayer);
                 if (!actionBusy) StartCoroutine(ActionPresentation(engine.DrainEvents()));
@@ -504,8 +511,9 @@ namespace Unknown.Battle
             pulse = Mathf.Max(0, pulse - Time.unscaledDeltaTime);
             divider.color = Color.Lerp(new Color(0.3f, 0.4f, 0.48f), gold, pulse * 2);
             TickAi();
+            if(singleCampaign!=null){timerText.text="남은 "+Math.Max(0,engine.Single.Limit-engine.Single.Round+1)+"턴";RefreshSingleUI();}
         }
-        void OnApplicationPause(bool value) { applicationPaused = value; if(value)EndAttackDrag(); }
+        void OnApplicationPause(bool value) { if(value)SingleCheckpoint();applicationPaused = value; if(value)EndAttackDrag(); }
         static Color TimerColor(double seconds) => seconds<=5 ? new Color(1,0.24f,0.24f) : seconds<=10 ? new Color(1,0.62f,0.18f) : Color.white;
         void OnApplicationFocus(bool focused) { if(!focused)EndAttackDrag(); }
         void OnDestroy() { EndAttackDrag(); EndCardDrag(); StopOnline(); if(tutorialTone!=null)Destroy(tutorialTone); if (font != null) Destroy(font); }

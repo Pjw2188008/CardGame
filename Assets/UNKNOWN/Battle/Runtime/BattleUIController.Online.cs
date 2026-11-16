@@ -97,6 +97,7 @@ namespace Unknown.Battle
         }
         async void ReturnToMenu()
         {
+            SingleCheckpoint();
             if (online != null) await online.GetComponent<RoomController>().LeaveRoomAsync();
             returned?.Invoke(); Destroy(gameObject);
         }

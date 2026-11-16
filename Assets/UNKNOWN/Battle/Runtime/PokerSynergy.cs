@@ -70,8 +70,8 @@ namespace Unknown.Battle
                             next.rewardsUsed=old.rewardsUsed;next.flushHealTurn=old.flushHealTurn;p.Poker=next;
                             foreach(var c in p.Slots.Where(c=>c!=null)) {
                                 int attack=c.Attack,max=c.MaxHP;
-                                c.PokerAttack=next.kind!=PokerKind.None ? PokerSynergy.Attack(next.kind) : 0;
-                                c.PokerHP=next.kind!=PokerKind.None ? PokerSynergy.HP(next.kind) : 0;
+                                c.PokerAttack=next.kind!=PokerKind.None && (Single==null || Single.PokerEligible(c)) ? PokerSynergy.Attack(next.kind) : 0;
+                                c.PokerHP=next.kind!=PokerKind.None && (Single==null || Single.PokerEligible(c)) ? PokerSynergy.HP(next.kind) : 0;
                                 c.CurrentHP=Math.Min(c.MaxHP,c.CurrentHP+c.MaxHP-max);
                                 if(next.kind!=PokerKind.Straight)c.PokerStraightAttackSpent=false;
                                 if(attack!=c.Attack)Emit(new BattleEvent(BattleEventKind.AttackChanged,playerIndex,target:c.InstanceID,amount:c.Attack-attack));
@@ -96,7 +96,7 @@ namespace Unknown.Battle
         {
             var player=State.Players[owner];
             if(kind==PokerKind.FullHouse) {
-                Draw(owner,2);int before=player.HP;player.HP=Math.Min(rules.StartingHP,player.HP+4);
+                Draw(owner,2);int before=player.HP;int maximum=Single!=null && owner==1 ? Single.Options.stage.enemyHP : rules.StartingHP;player.HP=Math.Min(maximum,player.HP+4);
                 Emit(new BattleEvent(BattleEventKind.HeroChanged,owner,amount:player.HP-before));
             } else {
                 int damage=kind==PokerKind.FourKind ? 2 : kind==PokerKind.StraightFlush ? 3 : 5;

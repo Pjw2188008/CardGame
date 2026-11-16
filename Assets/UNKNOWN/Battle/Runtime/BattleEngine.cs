@@ -10,6 +10,7 @@ namespace Unknown.Battle
         public int StartingHP { get; set; } = 30;
         public int StartingHand { get; set; } = 3;
         public int FirstPlayer { get; set; } = 0;
+        public SingleBattleOptions Single {get;set;}
         public int HandLimit { get; set; } = 8;
         public int FieldSlots { get; set; } = 5;
         public int StartingMana { get; set; } = 3;
@@ -101,7 +102,7 @@ namespace Unknown.Battle
         readonly List<BattleEvent> events = new List<BattleEvent>();
         public IReadOnlyList<BattleEvent> DrainEvents()
         { var result = events.ToArray(); events.Clear(); return result; }
-        void Emit(BattleEvent entry) { events.Add(entry); ObserveBalanceEvent(entry); }
+        void Emit(BattleEvent entry) { if(Single!=null)entry=Single.Event(entry);events.Add(entry); ObserveBalanceEvent(entry); }
         partial void ObserveBalanceEvent(BattleEvent entry);
         partial void MeasureDamageAttempt(CardInstance dealer, CardInstance target, int requested, int actual);
         partial void MeasureBalanceEffect(CardEffect effect, CardInstance target, int actual, string outcome);
@@ -132,20 +133,26 @@ namespace Unknown.Battle
                 || rules.UnknownLimit < 0 || rules.StartingMana < 0 || rules.ManaCap < rules.StartingMana || rules.ManaCap > 10 || rules.InitialDeckSeeds!=null && rules.InitialDeckSeeds.Length!=2) throw new ArgumentOutOfRangeException(nameof(config));
             random = randomSource ?? new SeededRandom(seed);
             State = new BattleState(rules);
+            if(rules.Single!=null){Single=new SingleBattleSession(this,rules.Single);State.Players[0].HP=rules.Single.hp;State.Players[1].HP=rules.Single.stage.enemyHP;}
             foreach (var player in State.Players) { player.MaxMana = rules.StartingMana; player.CurrentMana = rules.StartingMana; }
             for (int p = 0; p < 2; p++)
             {
-                foreach (var definition in CardDatabase.DeckFor(rules.CardVersion)) State.Players[p].DeckCards.Add(NewCard(definition, p));
+                foreach (var definition in (Single==null ? CardDatabase.DeckFor(rules.CardVersion).AsEnumerable() : SingleDeck(p))) State.Players[p].DeckCards.Add(NewCard(definition, p));
                 if (rules.ShuffleDecks)
                 {
                     var deck = State.Players[p].DeckCards;
                     IRandomSource shuffler=rules.InitialDeckSeeds==null ? random : new SeededRandom(rules.InitialDeckSeeds[p]);
                     for (int i = deck.Count - 1; i > 0; i--) { int j = shuffler.Next(i + 1); var card = deck[i]; deck[i] = deck[j]; deck[j] = card; }
                 }
-                Draw(p, rules.StartingHand);
+                if(Single!=null && p==0 && rules.Single.tutorial)SinglePrepareTeachingHand();
+                Draw(p, Single!=null && p==1 ? 0 : rules.StartingHand);
             }
             // Network identity stays fixed; opening compensation follows the selected turn order.
-            if (rules.StartingHand > 0) DrawSecondOpeningCard();
+            if (Single==null && rules.StartingHand > 0) DrawSecondOpeningCard();
+            if(Single!=null) {
+                foreach(var unit in rules.Single.stage.units)SinglePlace(unit.card,unit.slot,true);
+
+            }
             BeginTurn(rules.FirstPlayer);
         }
 
@@ -175,6 +182,8 @@ namespace Unknown.Battle
             var player = State.Players[owner];
             for (int i = 0; i < count; i++)
             {
+                if(player.DeckCards.Count==0 && Single!=null)Single.Recycle(owner);
+                if(Single!=null && Single.CancelDraw(owner))continue;
                 if (player.DeckCards.Count == 0) { Log($"P{owner + 1}: 덱이 비어 드로우 생략"); continue; }
                 int last = player.DeckCards.Count - 1;
                 var card = player.DeckCards[last]; player.DeckCards.RemoveAt(last);
@@ -206,16 +215,25 @@ namespace Unknown.Battle
             var current = State.Players[player];
             current.ManualDiscardUsed=false;
             current.TurnsStarted++;
-            if (current.TurnsStarted > 1) current.MaxMana = Math.Min(rules.ManaCap, current.MaxMana + 1);
-            current.CurrentMana = current.MaxMana;
+            if(Single==null) {
+                if (current.TurnsStarted > 1) current.MaxMana = Math.Min(rules.ManaCap, current.MaxMana + 1);
+                current.CurrentMana = current.MaxMana;
+            } else {
+                current.MaxMana=Math.Min(rules.ManaCap,Single.Options.stage.turnSpendLimit);
+                int recovery=Single.Options.stage.manaRecovery-(Single.Has(SingleRestriction.LessMana)?Single.Options.stage.manaReduction:0);
+                current.CurrentMana=current.TurnsStarted==1 ? Single.Options.stage.startMana : Math.Min(rules.ManaCap,current.CurrentMana+Math.Max(0,recovery));
+            }
             Log($"── 턴 {State.TurnNumber} · P{player + 1} ──");
             Emit(new BattleEvent(BattleEventKind.TurnStart, player));
-            if (player == 1 - rules.FirstPlayer && current.TurnsStarted == 1 && current.CurrentMana < rules.ManaCap)
+            if (Single==null && player == 1 - rules.FirstPlayer && current.TurnsStarted == 1 && current.CurrentMana < rules.ManaCap)
             {
                 int before = current.CurrentMana;
                 current.CurrentMana = Math.Min(rules.ManaCap, current.CurrentMana + 1);
                 Emit(new BattleEvent(BattleEventKind.ManaGained, player, amount: current.CurrentMana - before, secondary: before));
             }
+            if(Single!=null) {
+                if(player==0 && State.TurnNumber>1) {SingleTurnDrawing=true;try{Draw(0,current.HandCards.Count==0 ? 5 : 2);}finally{SingleTurnDrawing=false;}}
+            } else {
             // The opening deal already supplies the first player's three cards. Later draws are unchanged.
             if (State.TurnNumber != 1 || rules.StartingHand == 0)
             {
@@ -227,6 +245,7 @@ namespace Unknown.Battle
                     Draw(player, count > 0 ? count : 1);
                 }
                 else Draw(player, 1);
+            }
             }
             foreach (var unit in current.Slots) if (unit != null) unit.HasAttacked = false;
             StartPokerTurn(player);
@@ -285,8 +304,9 @@ namespace Unknown.Battle
             if (card == null) return Fail("패에 있는 카드를 선택하세요.");
             if (card.Definition.CardType == CardType.Joker) return Fail("조커는 유닛으로 소환할 수 없습니다.");
             if (slot < 0 || slot >= rules.FieldSlots || player.Slots[slot] != null) return Fail("비어 있는 아군 필드 칸을 선택하세요.");
-            if (player.CurrentMana < card.Definition.ManaCost) return Fail($"마나가 부족합니다.\n필요 마나: {card.Definition.ManaCost} / 현재 마나: {player.CurrentMana}");
-            SpendMana(actor, card.Definition.ManaCost);
+            if(Single!=null){string error=Single.SummonError(card,slot);if(error.Length>0)return Fail(error);}
+            if (player.CurrentMana < (Single?.Cost(card) ?? card.Definition.ManaCost)) return Fail($"마나가 부족합니다.\n필요 마나: {card.Definition.ManaCost} / 현재 마나: {player.CurrentMana}");
+            SpendMana(actor, Single?.Cost(card) ?? card.Definition.ManaCost);
             player.HandCards.Remove(card); player.Slots[slot] = card;
             card.SummonedTurn = State.TurnNumber; card.HasAttacked = false; State.SummonsThisTurn++;
             Log($"P{actor + 1}: {card.Definition.CardName} 소환");
@@ -294,6 +314,9 @@ namespace Unknown.Battle
             ApplyMapSummon(card);
             ReconcilePoker();
             if(State.IsOver)return true;
+            bool sealedEffect=Single!=null && Single.Seal(card);
+            if(Single!=null)Single.Progress.firstSummon=true;
+            if(sealedEffect)return true;
             source = card; effectIndex = 0; selectedTargets.Clear(); chainHits.Clear();
             ResolveEffects(); return true;
         }
@@ -305,11 +328,12 @@ namespace Unknown.Battle
             if (!Guard(actor)) return false;
             var attacker = State.Players[actor].Slots.FirstOrDefault(c => c != null && c.InstanceID == attackerID);
             if (!CanAttack(actor, attacker)) return Fail("소환한 턴이거나 이미 공격한 유닛입니다.");
+            if(Single!=null){string error=Single.AttackError(attacker,enemySlot);if(error.Length>0)return Fail(error);}
             var opponent = State.Players[1 - actor];
             if (enemySlot == -1)
             {
                 if (opponent.Slots.Any(c => c != null)) return Fail("상대 필드에 유닛이 있어 직접 공격할 수 없습니다.");
-                int outgoingDamage = PokerAttackDamage(attacker);
+                int outgoingDamage = Single!=null ? Single.Damage(attacker,null,PokerAttackDamage(attacker)) : PokerAttackDamage(attacker);
                 int damage = Math.Min(opponent.HP, outgoingDamage);
                 bool first=!attacker.FirstAttackHealSpent;attacker.FirstAttackHealSpent=true;
                 attacker.HasAttacked = true; opponent.HP = Math.Max(0, opponent.HP - outgoingDamage);
@@ -325,7 +349,7 @@ namespace Unknown.Battle
             bool firstAttack=!attacker.FirstAttackHealSpent;attacker.FirstAttackHealSpent=true;
             attacker.HasAttacked = true;
             // Both attacks use the pre-combat stats, even if one of the hits is lethal.
-            int outgoing = PokerAttackDamage(attacker), incoming = defender.Attack;
+            int outgoing = Single!=null ? Single.Damage(attacker,defender,PokerAttackDamage(attacker)) : PokerAttackDamage(attacker), incoming = defender.Attack;
             int actualOutgoing = Math.Min(defender.CurrentHP, outgoing), actualIncoming = Math.Min(attacker.CurrentHP, incoming);
             MeasureDamageAttempt(attacker, defender, outgoing, actualOutgoing);
             MeasureDamageAttempt(defender, attacker, incoming, actualIncoming);
@@ -374,6 +398,7 @@ namespace Unknown.Battle
             var unit = player.Slots.FirstOrDefault(c => c != null && c.InstanceID == targetID);
             if (joker == null || unit == null) return Fail("패의 조커와 아군 필드 유닛을 선택하세요.");
             if (unit.JokerUsed) return Fail("이 유닛은 이미 조커를 사용했습니다.");
+            if(Single!=null && actor==0 && !Single.Payable(joker.Definition.ManaCost))return Fail("턴당 마나 상한 또는 총 예산이 부족합니다.");
             if (player.CurrentMana < joker.Definition.ManaCost) return Fail($"마나가 부족합니다.\n필요 마나: {joker.Definition.ManaCost} / 현재 마나: {player.CurrentMana}");
             return GambleResolved(actor,joker,unit,true);
         }
@@ -400,7 +425,7 @@ namespace Unknown.Battle
                 Emit(new BattleEvent(BattleEventKind.AttackChanged, actor, target: unit.InstanceID, amount: unit.Attack - oldAttack));
                 Emit(new BattleEvent(BattleEventKind.MaxHPChanged, actor, target: unit.InstanceID, amount: max - oldMax));
                 Log($"조커 성공! {unit.Definition.CardName} 공격·최대 체력 1.5배");
-                if(rules.Map==BattleMap.JokerGame && ++player.JokerSuccesses>=3)FinishGame(actor,VictoryReason.JokerJackpot);
+                if(Single==null && rules.Map==BattleMap.JokerGame && ++player.JokerSuccesses>=3)FinishGame(actor,VictoryReason.JokerJackpot);
             }
             else { Emit(new BattleEvent(BattleEventKind.JokerFailure, actor, target: unit.InstanceID)); unit.CurrentHP = 0; Log($"조커 실패! {unit.Definition.CardName} 파괴"); RemoveDead(); }
             return true;
@@ -487,7 +512,7 @@ namespace Unknown.Battle
                 return;
             }
             source = null; selectedTargets.Clear(); chainHits.Clear();
-            if(rules.Map!=BattleMap.JokerGame && State.Players[State.ActivePlayer].UnknownProgress>=3)
+            if(Single==null && rules.Map!=BattleMap.JokerGame && State.Players[State.ActivePlayer].UnknownProgress>=3)
                 FinishGame(State.ActivePlayer,VictoryReason.UnknownComplete);
         }
         void Apply(CardEffect effect, CardInstance target)
