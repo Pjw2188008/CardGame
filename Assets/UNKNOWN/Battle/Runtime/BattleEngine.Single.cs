@@ -36,7 +36,7 @@ namespace Unknown.Battle
         readonly Dictionary<int,int> dealers=new Dictionary<int,int>();bool inEvent;public string Failure=>Progress.failure;
         public int Round=>(g.State.TurnNumber+1)/2;
         public int Limit=>Options.stage.ResolveTurnLimit(Options.difficulty,Options.layer);
-        public int Budget=>Math.Max(0,Options.stage.manaBudget-Options.difficulty.budgetPenalty);
+        public int Budget=>Options.stage.ResolveManaBudget(Options.difficulty);
         public int RemainingBudget=>Math.Max(0,Budget-Progress.spent);
         public IEnumerable<SingleRestriction> Restrictions {
             get {

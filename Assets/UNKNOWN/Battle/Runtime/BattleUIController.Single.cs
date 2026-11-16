@@ -46,7 +46,7 @@ namespace Unknown.Battle
                 singleDetails.gameObject.SetActive(singleExpanded);
             }
             var s=engine.Single;
-            singleIntent.text=$"마나 예산 {s.RemainingBudget}/{s.Budget} · 턴 사용 {s.Progress.turnSpent}/{s.Options.stage.turnSpendLimit}\n덱 {engine.State.Players[0].DeckCount}장\n"+s.Intent()+"\n\n제한: "+SingleRestrictionText()+"\n\n증강: "+string.Join(" / ",singleCampaign.Run.augments.Select(id=>singleCampaign.Data.augments.First(a=>a.id==id).name))+"\n보호막 "+s.Progress.shield;
+            singleIntent.text=$"난이도: {s.Options.difficulty.name} · 제한 {s.Limit}턴\n마나 예산 {s.RemainingBudget}/{s.Budget} · 턴 사용 {s.Progress.turnSpent}/{s.Options.stage.turnSpendLimit}\n덱 {engine.State.Players[0].DeckCount}장\n"+s.Intent()+"\n\n제한: "+SingleRestrictionText()+"\n\n증강: "+string.Join(" / ",singleCampaign.Run.augments.Select(id=>singleCampaign.Data.augments.First(a=>a.id==id).name))+"\n보호막 "+s.Progress.shield;
             singleIntent.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,Math.Max(singleDetails.rect.height,singleIntent.preferredHeight+16));
             if(mapStatus!=null)mapStatus.text="";
             if(mapHeader!=null)mapHeader.text=singleCampaign.Stage.name;

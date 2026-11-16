@@ -1,4 +1,4 @@
-﻿{
+{
   "startingTokens": 10,
   "maxHP": 30,
   "healing": 8,
@@ -2294,7 +2294,8 @@
       "extraRestrictions": 0,
       "rewardPercent": 100,
       "patternBonus": 0,
-      "turnAdjustments": []
+      "turnAdjustments": [],
+      "additionalTurns": 0
     },
     {
       "name": "어려움",
@@ -2307,18 +2308,8 @@
       "extraRestrictions": 1,
       "rewardPercent": 150,
       "patternBonus": 1,
-      "turnAdjustments": [
-        {
-          "minLayer": 4,
-          "maxLayer": 9,
-          "reduction": 1,
-          "types": [
-            0,
-            1,
-            3
-          ]
-        }
-      ]
+      "turnAdjustments": [],
+      "additionalTurns": 2
     },
     {
       "name": "악몽",
@@ -2327,31 +2318,12 @@
       "attackBonus": 1,
       "hpBonus": 3,
       "turnPenalty": 0,
-      "budgetPenalty": 3,
+      "budgetPenalty": 0,
       "extraRestrictions": 2,
       "rewardPercent": 200,
       "patternBonus": 1,
-      "turnAdjustments": [
-        {
-          "minLayer": 4,
-          "maxLayer": 9,
-          "reduction": 1,
-          "types": [
-            0,
-            1,
-            3
-          ]
-        },
-        {
-          "minLayer": 7,
-          "maxLayer": 9,
-          "reduction": 1,
-          "types": [
-            4,
-            5
-          ]
-        }
-      ]
+      "turnAdjustments": [],
+      "additionalTurns": 4
     },
     {
       "name": "UNKNOWN",
@@ -2360,49 +2332,12 @@
       "attackBonus": 2,
       "hpBonus": 4,
       "turnPenalty": 0,
-      "budgetPenalty": 5,
+      "budgetPenalty": 0,
       "extraRestrictions": 3,
       "rewardPercent": 300,
       "patternBonus": 2,
-      "turnAdjustments": [
-        {
-          "minLayer": 4,
-          "maxLayer": 6,
-          "reduction": 1,
-          "types": [
-            0,
-            1,
-            3
-          ]
-        },
-        {
-          "minLayer": 7,
-          "maxLayer": 9,
-          "reduction": 2,
-          "types": [
-            0,
-            1,
-            3
-          ]
-        },
-        {
-          "minLayer": 7,
-          "maxLayer": 9,
-          "reduction": 1,
-          "types": [
-            4,
-            5
-          ]
-        },
-        {
-          "minLayer": 10,
-          "maxLayer": 10,
-          "reduction": 1,
-          "types": [
-            6
-          ]
-        }
-      ]
+      "turnAdjustments": [],
+      "additionalTurns": 6
     }
   ],
   "augments": [

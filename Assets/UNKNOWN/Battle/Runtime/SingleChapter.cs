@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -29,12 +29,13 @@ namespace Unknown.Battle
         public int ResolveTurnLimit(SingleDifficulty difficulty,int layer=-1) {
             if(!IsCombat)return 0;
             int turns=layer>=0 && kind!=SingleNodeKind.Boss && layerTurnLimits!=null && layerTurnLimits.Length==3?layerTurnLimits[layer<=2?0:layer<=5?1:2]:turnLimit;
-            int level=Math.Max(1,layer+1);
-            int reduction=(difficulty.turnAdjustments??new SingleTurnAdjustment[0]).Where(r=>level>=r.minLayer && level<=r.maxLayer && r.types.Contains(battleType)).Select(r=>r.reduction).DefaultIfEmpty(0).Max();
-            return Math.Max(Math.Max(3,minimumTurns),turns-reduction);
+            return Math.Max(Math.Max(3,minimumTurns),turns)+Math.Max(0,difficulty.additionalTurns);
+        }
+        public int ResolveManaBudget(SingleDifficulty difficulty) {
+            return IsCombat ? checked(manaBudget+Math.Max(0,difficulty.additionalTurns)*manaRecovery) : 0;
         }
     }
-    [Serializable] public sealed class SingleDifficulty { public SingleTurnAdjustment[] turnAdjustments=new SingleTurnAdjustment[0];public string name;public int cost,requiredClear=-1,attackBonus,hpBonus,turnPenalty,budgetPenalty,extraRestrictions,rewardPercent=100,patternBonus; }
+    [Serializable] public sealed class SingleDifficulty { public SingleTurnAdjustment[] turnAdjustments=new SingleTurnAdjustment[0];public string name;public int additionalTurns;public int cost,requiredClear=-1,attackBonus,hpBonus,turnPenalty,budgetPenalty,extraRestrictions,rewardPercent=100,patternBonus; }
     [Serializable] public sealed class SingleAugment { public string id,name,description;public int amount=1,duration=1; }
     [Serializable] public sealed class SingleUnlock { public string id,name;public int cost,clear=-1;public string[] cards=new string[0]; }
     [Serializable] public sealed class SingleStarter { public string id,name,unlock;public string[] cards; }
@@ -52,6 +53,7 @@ namespace Unknown.Battle
             if(stages==null || stages.Length!=25 || stages.Select(s=>s.id).Distinct().Count()!=25)throw new InvalidDataException("Chapter requires 25 unique stages");
             int[] counts={1,11,4,3,2,2,1,1};for(int i=0;i<counts.Length;i++)if(stages.Count(s=>(int)s.kind==i)!=counts[i])throw new InvalidDataException("Invalid node composition");
             if(difficulties.Length!=4 || augments.Length!=12 || starters.Any(s=>s.cards.Length!=12))throw new InvalidDataException("Invalid chapter content");
+            if(difficulties.Any(d=>d.additionalTurns<0))throw new InvalidDataException("Invalid difficulty turn bonus");
             foreach(var difficulty in difficulties)foreach(var rule in difficulty.turnAdjustments??new SingleTurnAdjustment[0])if(rule.minLayer<1 || rule.maxLayer>10 || rule.minLayer>rule.maxLayer || rule.reduction<0 || rule.types==null || rule.types.Length==0)throw new InvalidDataException("Invalid turn adjustment");
             foreach(var starter in starters)foreach(string card in starter.cards)CardDatabase.Get(card);
             foreach(var unlock in unlocks)foreach(string card in unlock.cards)CardDatabase.Get(card);
@@ -88,10 +90,46 @@ namespace Unknown.Battle
                     var source=from.FirstOrDefault(n=>n.next.Length<3);if(source==null)throw new InvalidDataException("Unreachable layer");source.next=source.next.Concat(new[]{missing.id}).OrderBy(x=>x).ToArray();
                 }
             }
-            nodes.Last().next=new int[0];var result=nodes.ToArray();Validate(data,result);return result;
+            nodes.Last().next=new int[0];var result=nodes.ToArray();AssignGrowthSafeStages(data,result,order.Skip(6).ToArray(),r);Validate(data,result);return result;
         }
-        public static void Validate(SingleChapterData data,SingleNode[] nodes) {
+        // Keep the low-HP first six battles, 25 unique stages and the existing random edges.
+        // Assign remaining stage kinds against all incoming path histories, not one sampled route.
+        static void AssignGrowthSafeStages(SingleChapterData data,SingleNode[] nodes,SingleStage[] remaining,System.Random random) {
+            var pools=remaining.GroupBy(s=>s.kind).ToDictionary(g=>g.Key,g=>g.ToList());
+            var incoming=nodes.Select(n=>nodes.Where(p=>p.next.Contains(n.id)).Select(p=>p.id).ToArray()).ToArray();
+            var pending=new bool[25];var streak=new int[25];int attempts=0;
+            Func<int,bool> assign=null;
+            assign=index=> {
+                if(index==24)return true;
+                if(++attempts>10000)return false;
+                bool waiting=incoming[index].Any(p=>pending[p]);int consecutive=incoming[index].Select(p=>streak[p]).DefaultIfEmpty(0).Max()+1;
+                foreach(var kind in pools.Keys.Where(k=>pools[k].Count>0).OrderBy(k=>random.Next()).ToArray()) {
+                    bool combat=kind==SingleNodeKind.Battle || kind==SingleNodeKind.Elite;
+                    if(nodes[index].layer==8 && !combat || !combat && consecutive>2 || kind==SingleNodeKind.Augment && waiting)continue;
+                    int combats=pools.Where(p=>p.Key==SingleNodeKind.Battle || p.Key==SingleNodeKind.Elite).Sum(p=>p.Value.Count);
+                    if(nodes[index].layer<8 && combat && combats<=2)continue;
+                    var pool=pools[kind];var stage=pool[pool.Count-1];pool.RemoveAt(pool.Count-1);nodes[index].stage=stage.id;
+                    pending[index]=!combat && (waiting || kind==SingleNodeKind.Augment);streak[index]=combat?0:consecutive;
+                    if(assign(index+1))return true;
+                    pool.Add(stage);
+                }
+                return false;
+            };
+            if(assign(7))return;
+            // Bounded fallback guarantees generation even for an unlucky search order.
+            // Each support layer is separated by a full combat layer, so every edge remains safe.
+            var support=remaining.Where(s=>!s.IsCombat).OrderBy(s=>random.Next()).ToList();
+            var battles=remaining.Where(s=>s.IsCombat).OrderBy(s=>random.Next()).ToList();
+            var supportSlots=nodes.Where(n=>n.layer==3 || n.layer==5 || n.layer==7).OrderBy(n=>random.Next()).ToArray();
+            for(int i=0;i<supportSlots.Length;i++) {
+                var stage=i<support.Count?support[i]:battles[battles.Count-1];supportSlots[i].stage=stage.id;
+                if(i>=support.Count)battles.RemoveAt(battles.Count-1);
+            }
+            foreach(var node in nodes.Where(n=>n.layer==4 || n.layer==6 || n.layer==8)){node.stage=battles[battles.Count-1].id;battles.RemoveAt(battles.Count-1);}
+        }
+        public static void Validate(SingleChapterData data,SingleNode[] nodes,bool growthRules=true) {
             if(nodes.Length!=25 || nodes.Select(n=>n.stage).Distinct().Count()!=25 || nodes.Where((n,i)=>n.id!=i).Any() || nodes[0].layer!=0 || nodes[24].layer!=9)throw new InvalidDataException("Invalid graph size");
+            if(data.stages.First(s=>s.id==nodes[0].stage).kind!=SingleNodeKind.Start || data.stages.First(s=>s.id==nodes[24].stage).kind!=SingleNodeKind.Boss)throw new InvalidDataException("Invalid start/boss stages");
             var seen=new HashSet<int>{0};var economy=new Dictionary<int,int>{{0,data.startingTokens}};
             foreach(var n in nodes) {
                 if(!seen.Contains(n.id))throw new InvalidDataException("Isolated node");
@@ -106,6 +144,17 @@ namespace Unknown.Battle
                     }
                 }
             }
+            if(growthRules) {
+                var pending=new bool[25];var streak=new int[25];
+                foreach(var node in nodes.Skip(1)) {
+                    var stage=data.stages.First(s=>s.id==node.stage);var parents=nodes.Where(p=>p.next.Contains(node.id)).ToArray();
+                    bool waiting=parents.Any(p=>pending[p.id]);int consecutive=parents.Select(p=>streak[p.id]).DefaultIfEmpty(0).Max()+1;
+                    if((parents.Any(p=>p.id==0) || node.next.Contains(24)) && !stage.IsCombat)throw new InvalidDataException("Start/boss must border combat");
+                    if(stage.kind==SingleNodeKind.Augment && waiting)throw new InvalidDataException("Augments require an intervening combat");
+                    if(!stage.IsCombat && consecutive>2)throw new InvalidDataException("Three consecutive noncombat nodes");
+                    pending[node.id]=!stage.IsCombat && (waiting || stage.kind==SingleNodeKind.Augment);streak[node.id]=stage.IsCombat?0:consecutive;
+                }
+            }
             var reachesBoss=new HashSet<int>{24};
             for(int i=nodes.Length-2;i>=0;i--)if(nodes[i].next.Any(reachesBoss.Contains))reachesBoss.Add(i);
             if(reachesBoss.Count!=nodes.Length)throw new InvalidDataException("Node cannot reach boss");
@@ -114,7 +163,7 @@ namespace Unknown.Battle
     }
     [Serializable] public sealed class SingleRun
     {
-        public string id,phase="map",failure="",starter;public int seed,difficulty,current,tokens,hp,maxHP,permanentAward,lastRunAward,firstClearAward;
+        public string id,phase="map",failure="",starter;public int graphVersion;public int seed,difficulty,current,tokens,hp,maxHP,permanentAward,lastRunAward,firstClearAward;
         public SingleNode[] nodes;public List<int> visited=new List<int>{0};public List<string> deck=new List<string>(),augments=new List<string>(),offers=new List<string>();
         public SingleBattleSave battle;public bool settled;public List<string> usedCards=new List<string>();
     }
@@ -133,7 +182,7 @@ namespace Unknown.Battle
             Data=data;SavePath=savePath??Path.Combine(Application.persistentDataPath,"unknown-chapter1-v1.json");
             Profile=File.Exists(SavePath) ? JsonUtility.FromJson<SingleProfile>(File.ReadAllText(SavePath)) : new SingleProfile();
             if(Profile==null || Profile.version!=1)throw new InvalidDataException("Unsupported chapter save version");
-            if(Run!=null)SingleGraph.Validate(Data,Run.nodes);
+            if(Run!=null)SingleGraph.Validate(Data,Run.nodes,Run.graphVersion>=1);
         }
         public void Save() {
             string dir=Path.GetDirectoryName(SavePath);Directory.CreateDirectory(dir);string temp=SavePath+".tmp";
@@ -155,11 +204,13 @@ namespace Unknown.Battle
             if(Run!=null && Run.phase!="done")Finish(false,"ABANDONED");
             SingleNode[] graph=null;for(int attempt=0;attempt<100;attempt++)try{graph=SingleGraph.Generate(Data,unchecked(seed+attempt));seed=unchecked(seed+attempt);break;}catch(InvalidDataException){ }
             if(graph==null)throw new InvalidDataException("Unable to generate affordable graph");
-            Profile.run=new SingleRun{id=Guid.NewGuid().ToString("N"),seed=seed,difficulty=difficulty,starter=starter,nodes=graph,tokens=Data.startingTokens,hp=Data.maxHP,maxHP=Data.maxHP,deck=d.cards.ToList()};Save();
+            Profile.run=new SingleRun{graphVersion=1,id=Guid.NewGuid().ToString("N"),seed=seed,difficulty=difficulty,starter=starter,nodes=graph,tokens=Data.startingTokens,hp=Data.maxHP,maxHP=Data.maxHP,deck=d.cards.ToList()};Save();
         }
         public bool IsTeachingBattle=>Stage.kind==SingleNodeKind.Battle && Run.visited.Count(id=>{var k=Data.stages.First(s=>s.id==Run.nodes[id].stage).kind;return k==SingleNodeKind.Battle || k==SingleNodeKind.Elite;})==1;
         public int TurnLimitFor(SingleStage stage,int node)=>stage.ResolveTurnLimit(Data.difficulties[Run.difficulty],Run.nodes[node].layer);
         public int CurrentTurnLimit=>TurnLimitFor(Stage,Run.current);
+        public int ManaBudgetFor(SingleStage stage)=>stage.ResolveManaBudget(Data.difficulties[Run.difficulty]);
+        public int CurrentManaBudget=>ManaBudgetFor(Stage);
         public SingleStage Stage=>Data.stages.First(s=>s.id==Run.nodes[Run.current].stage);
         public IEnumerable<SingleNode> Next=>Run.nodes[Run.current].next.Select(id=>Run.nodes[id]);
         public SingleNodeState NodeState(int node) {
