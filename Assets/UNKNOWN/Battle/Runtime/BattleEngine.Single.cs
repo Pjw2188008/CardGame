@@ -5,7 +5,7 @@ namespace Unknown.Battle
 {
     public sealed class SingleBattleOptions
     {
-        public SingleStage stage;public SingleDifficulty difficulty;public SingleAugment[] augmentData;public string[] deck,augments;public int hp,maxHP,seed;public bool tutorial;
+        public SingleStage stage;public SingleDifficulty difficulty;public SingleAugment[] augmentData;public string[] deck,augments;public int layer=-1;public int hp,maxHP,seed;public bool tutorial;
     }
     [Serializable] public sealed class SingleEnemyUse { public string card;public int count; }
     [Serializable] public sealed class SingleWeakening { public int id,amount,expires; }
@@ -35,7 +35,7 @@ namespace Unknown.Battle
         readonly BattleEngine g;public readonly SingleBattleOptions Options;public SingleBattleProgress Progress=new SingleBattleProgress();
         readonly Dictionary<int,int> dealers=new Dictionary<int,int>();bool inEvent;public string Failure=>Progress.failure;
         public int Round=>(g.State.TurnNumber+1)/2;
-        public int Limit=>Math.Max(1,Options.stage.turnLimit-Options.difficulty.turnPenalty);
+        public int Limit=>Options.stage.ResolveTurnLimit(Options.difficulty,Options.layer);
         public int Budget=>Math.Max(0,Options.stage.manaBudget-Options.difficulty.budgetPenalty);
         public int RemainingBudget=>Math.Max(0,Budget-Progress.spent);
         public IEnumerable<SingleRestriction> Restrictions {
@@ -73,13 +73,17 @@ namespace Unknown.Battle
             if(Aug(11) && !Progress.once[11] && Round==Limit){amount+=Amount(11,3);Progress.once[11]=true;}
             return amount;
         }
+        public bool ExpireBeforeTurnEffects() {
+            if(g.State.IsOver || Round<=Limit)return false;
+            Progress.failure="TURN LIMIT";g.SingleFinish(1);return true;
+        }
         public void Turn(int owner) {
                 foreach(var weak in Progress.weakening.Where(w=>w.expires<=g.State.TurnNumber).ToArray()) {
                     var c=g.SingleFind(weak.id);if(c!=null && g.State.Players[c.Owner].Board.Contains(c)){c.Attack+=weak.amount;c.AbilityAttack+=weak.amount;g.SingleEmit(new BattleEvent(BattleEventKind.AttackChanged,c.Owner,target:c.InstanceID,amount:weak.amount));}Progress.weakening.Remove(weak);
                 }
 
             if(owner==0) {
-                if(Round>Limit){Progress.failure="TURN LIMIT";g.SingleFinish(1);return;}
+                if(ExpireBeforeTurnEffects())return;
                 Progress.turnSpent=Progress.attacks=Progress.directAttacks=0;Progress.firstSummon=false;Progress.firstExtraDraw=false;Progress.strongestSpent=false;
                 foreach(int i in new[]{0,1,3,6,7,11})Progress.once[i]=false;
                 if(Has(SingleRestriction.Changing))g.ReconcilePoker();
@@ -292,7 +296,7 @@ namespace Unknown.Battle
             source=SingleFind(s.pendingSource);effectIndex=s.pendingIndex;waitingExchange=s.exchangePending;selectedTargets.Clear();chainHits.Clear();
             if(s.pendingTargetKinds!=null)for(int i=0;i<s.pendingTargetKinds.Length;i++)selectedTargets[(EffectTarget)s.pendingTargetKinds[i]]=s.pendingTargetIDs[i];
             if(s.pendingDistinctIDs!=null)foreach(int id in s.pendingDistinctIDs)chainHits.Add(id);
-            Single.Progress=save.progress;((SingleRandom)random).Restore(save.randomBounds);State.Entries.Clear();State.Entries.AddRange(s.log);State.EntryOwners.Clear();events.Clear();
+            Single.Progress=save.progress;((SingleRandom)random).Restore(save.randomBounds);State.Entries.Clear();State.Entries.AddRange(s.log);State.EntryOwners.Clear();events.Clear();Single.ExpireBeforeTurnEffects();
         }
     }
 }

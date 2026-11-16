@@ -87,7 +87,7 @@ namespace Unknown.Battle
             }
             foreach(var n in r.nodes) {
                 var stage=Campaign.Data.stages.First(s=>s.id==n.stage);var pos=Position(n);int id=n.id;var state=Campaign.NodeState(id);
-                string turns=Combat(stage)?"◷ 제한 턴 "+EffectiveTurns(stage):"";
+                string turns=Combat(stage)?"◷ 제한 턴 "+EffectiveTurns(stage,n.id):"";
                 var button=Button(NodeIcon(stage.kind)+" "+ShortKind(stage.kind)+"\n"+turns+"\n◆ 진입 토큰 "+stage.cost+"\n"+StateName(state),pos.x-.035f,pos.y-.105f,.07f,.21f,()=>{selected=id;Map();},true,plot);
                 button.name="Node "+id;button.GetComponent<Image>().color=NodeColor(state);
                 var edge=button.GetComponent<Outline>();edge.effectDistance=Vector2.one*(selected==id?3:1);edge.effectColor=selected==id?new Color(1,.8f,.32f):new Color(.48f,.35f,.2f);
@@ -104,18 +104,19 @@ namespace Unknown.Battle
             var stage=Campaign.Data.stages.First(s=>s.id==Campaign.Run.nodes[selected].stage);var maps=Resources.Load<BattleMapSettings>("BattleMapSettings");
             if(maps!=null && Combat(stage))Artwork(panel,"Stage map artwork",maps.BackgroundFor(stage.map),.04f,.73f,.92f,.23f);
             Text(stage.name,.04f,.65f,.92f,.065f,25,panel);
-            Text(NodeIcon(stage.kind)+" "+Kind(stage.kind),.04f,.59f,.92f,.05f,18,panel);
-            string details=Combat(stage)?$"적 HP {stage.enemyHP}\n◷ 제한 턴 {EffectiveTurns(stage)}\n총 마나 예산 {Math.Max(0,stage.manaBudget-Campaign.Data.difficulties[Campaign.Run.difficulty].budgetPenalty)}":"";
+            Text(NodeIcon(stage.kind)+" "+BattleTypeName(stage),.04f,.59f,.92f,.05f,18,panel);
+            string details=Combat(stage)?$"적 HP {stage.enemyHP}\n◷ 제한 턴 {EffectiveTurns(stage,selected)}\n총 마나 예산 {Math.Max(0,stage.manaBudget-Campaign.Data.difficulties[Campaign.Run.difficulty].budgetPenalty)}":"";
             Text(details+"\n◆ 진입 토큰 "+stage.cost+"\n방해 효과: "+Restrictions(stage)+"\n보상: "+RewardName(stage),.06f,.24f,.88f,.34f,19,panel);
             string reason=Campaign.EntryError(selected);Text(reason,.06f,.13f,.88f,.10f,18,panel).color=new Color(1,.64f,.57f);
             Button("진입",.10f,.035f,.80f,.075f,()=>{Campaign.Enter(selected);Prepare();},reason.Length==0,panel);
         }
         Vector2 Position(SingleNode n)=>new Vector2(.045f+n.layer*.10f,n.layer==0 || n.layer==9?.5f:.80f-n.lane*.30f);
         bool Combat(SingleStage stage)=>stage.kind==SingleNodeKind.Battle || stage.kind==SingleNodeKind.Elite || stage.kind==SingleNodeKind.Boss;
-        int EffectiveTurns(SingleStage stage)=>Math.Max(1,stage.turnLimit-Campaign.Data.difficulties[Campaign.Run.difficulty].turnPenalty);
+        int EffectiveTurns(SingleStage stage,int node)=>Campaign.TurnLimitFor(stage,node);
         string Restrictions(SingleStage stage)=>string.Join(" / ",stage.restrictions.Concat(new[]{SingleRestriction.FirstCost,SingleRestriction.AttackLimit,SingleRestriction.HalfHealing}.Take(Combat(stage)?Campaign.Data.difficulties[Campaign.Run.difficulty].extraRestrictions:0)).Distinct().Select(RestrictionName).DefaultIfEmpty("없음"));
         static string StateName(SingleNodeState state)=>new[]{"현재 위치","이동 가능","토큰 부족","미도달","완료","이전 분기"}[(int)state];
         static Color NodeColor(SingleNodeState state)=>new[]{new Color(.42f,.29f,.10f),new Color(.08f,.29f,.25f),new Color(.36f,.09f,.11f),new Color(.08f,.065f,.09f),new Color(.18f,.22f,.27f),new Color(.07f,.06f,.065f)}[(int)state];
+        static string BattleTypeName(SingleStage s)=>s.IsCombat?new[]{"일반전","속공전","방어 돌파전","마나 제한전","카드 제한전","엘리트전","보스전"}[(int)s.battleType]:Kind(s.kind);
         static string ShortKind(SingleNodeKind kind)=>new[]{"시작","일반 전투","엘리트","증강","회복","덱 정리","이벤트","BOSS"}[(int)kind];
         void Augments() {
             Clear("증강");var r=Campaign.Run;
@@ -128,7 +129,7 @@ namespace Unknown.Battle
             bool combat=s.kind==SingleNodeKind.Battle || s.kind==SingleNodeKind.Elite || s.kind==SingleNodeKind.Boss;
             if(combat) {
                 var d=Campaign.Data.difficulties[Campaign.Run.difficulty];
-                Text($"{s.enemyType} · 적 HP {s.enemyHP} · ◷ 제한 턴 {Math.Max(1,s.turnLimit-d.turnPenalty)}\n매 턴 소환 {s.enemySummonsPerTurn}장"+(s.kind==SingleNodeKind.Battle?"":" · 조건 충족 시 최대 2장")+"\n\n"+string.Join(" / ",s.restrictions.Concat(new[]{SingleRestriction.FirstCost,SingleRestriction.AttackLimit,SingleRestriction.HalfHealing}.Take(d.extraRestrictions)).Distinct().Select(RestrictionName))+"\n\n"+RewardName(s),.15f,.36f,.7f,.35f,24);
+                Text($"{BattleTypeName(s)} · {s.enemyType} · 적 HP {s.enemyHP} · ◷ 제한 턴 {Campaign.CurrentTurnLimit}\n매 턴 소환 {s.enemySummonsPerTurn}장"+(s.kind==SingleNodeKind.Battle?"":" · 조건 충족 시 최대 2장")+"\n\n"+string.Join(" / ",s.restrictions.Concat(new[]{SingleRestriction.FirstCost,SingleRestriction.AttackLimit,SingleRestriction.HalfHealing}.Take(d.extraRestrictions)).Distinct().Select(RestrictionName))+"\n\n"+RewardName(s),.15f,.36f,.7f,.35f,24);
                 var info=Button("전투 상세",.37f,.27f,.26f,.05f,()=>{});
                 Hint(info.gameObject,$"시작 마나 {s.startMana} · 회복 {s.manaRecovery} · 턴 상한 {s.turnSpendLimit}\n총 마나 예산 {Math.Max(0,s.manaBudget-d.budgetPenalty)}\n초기 적: "+string.Join(" / ",s.units.Select(u=>CardDatabase.Get(u.card).CardName))+(Campaign.IsTeachingBattle?"\n첫 전투 손패에 A·J 보장":""));
                 Button("전투 시작",.34f,.16f,.32f,.08f,LaunchBattle);

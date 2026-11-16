@@ -13,7 +13,7 @@ namespace Unknown.Battle
         }
         BattleEngine MakeSingleEngine() {
             var run=singleCampaign.Run;
-            var options=new SingleBattleOptions{stage=singleCampaign.Stage,augmentData=singleCampaign.Data.augments,difficulty=singleCampaign.Data.difficulties[run.difficulty],deck=run.deck.ToArray(),augments=run.augments.ToArray(),hp=run.hp,maxHP=run.maxHP,seed=unchecked(run.seed+run.current*104729),tutorial=singleCampaign.IsTeachingBattle};
+            var options=new SingleBattleOptions{layer=run.nodes[run.current].layer,stage=singleCampaign.Stage,augmentData=singleCampaign.Data.augments,difficulty=singleCampaign.Data.difficulties[run.difficulty],deck=run.deck.ToArray(),augments=run.augments.ToArray(),hp=run.hp,maxHP=run.maxHP,seed=unchecked(run.seed+run.current*104729),tutorial=singleCampaign.IsTeachingBattle};
             var g=BattleEngine.CreateSingle(options,run.battle);localMap=options.stage.map;run.phase="battle";singleFinished=false;return g;
         }
         void SingleCheckpoint() {

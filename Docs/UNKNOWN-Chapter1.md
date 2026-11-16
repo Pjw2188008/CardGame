@@ -121,3 +121,36 @@ seed 42의 전체 경로 896개를 열거했다. 경로별 총 진입 비용은 
 현재 결과는 Git 무시 경로 `Library/UNKNOWN-Systems-BuildProject/Library/RouteUIChecks/`의 `routes.json`, `logic.json`, `feedback.json`, `play.json`, `full-run.json` 및 PNG 캡처에 있다. 보상 화면 캡처는 UI 전용 테스트 데이터로 표시와 선택 동작을 검사한 것이며, 실제 전투 종료/보상 지급은 별도 전체 런 검사로 확인했다. 온라인 두 EXE 접속/재접속과 모든 난이도의 사람 플레이는 이번 작업에서 재검증하지 않았다.
 
 최종 Windows Development Build 성공: 오류 0, 경고 8(검증 복제 프로젝트 Cloud 미연결/기존 URP 경고 포함). `RouteUIChecks/player-build.txt`, `Library/RouteUI-build.log`에 기록했다. 검증 빌드는 기존 `Library/Chapter1Build/UNKNOWN.exe`를 갱신했으며 온라인 2클라이언트 검증 결과를 뜻하지 않는다.
+
+
+## 스테이지 제한 턴·전투 난이도 개편 — 2026-11-16
+
+원인: 일반전 11개가 모두 `turnLimit=10`, 엘리트 11, 보스 14였으며 UI와 엔진에서 기본값으로 덮어쓰지는 않았다. 이번에는 실제 생성된 노드 레이어와 전투 유형으로 제한을 계산한다. 지도/준비 화면의 `SingleCampaign.TurnLimitFor`와 실제 전투의 `SingleBattleSession.Limit`이 모두 `SingleStage.ResolveTurnLimit`을 사용한다. 전투 진입 시 노드의 `layer`를 전달하며, 저장한 노드 레이어도 재사용한다.
+
+일반 난이도의 적용 범위(사용자 표기 Layer 1~10, 내부 인덱스 0~9):
+
+| 배치 | 일반 전투 | 엘리트 | 보스 |
+| --- | --- | --- | --- |
+| Layer 1~3 | 5~6 | 6 | — |
+| Layer 4~6 | 4~6 | 5~6 | — |
+| Layer 7~9 | 3~5 | 4~5 | — |
+| Layer 10 | — | — | 8 |
+
+비전투 노드는 제한 0이며 전투 제한을 표시하거나 적용하지 않는다. 1턴은 플레이어와 적의 턴을 묶은 기존 라운드 단위를 유지한다. 마지막 허용 라운드 승리는 유효하다. 초과 라운드는 드로우/마나/포커 턴 시작 효과 **이전**에 패배 처리하며 저장 복원 시에도 확인한다. 진행 중 저장을 새 버전으로 재개할 때 이미 새 제한을 넘겼다면 TURN LIMIT로 종료한다. 저장 데이터 초기화나 카드 규칙 변경은 없다.
+
+편집 항목은 `SingleChapter1.json`에 있다:
+
+- `battleType`: Normal=0, Rush=1, Bulwark=2, ManaLimited=3, CardLimited=4, Elite=5, Boss=6.
+- `turnLimit`: 전투 유형의 기본값. 속공 3, 일반/마나 제한 5, 방어 돌파 6, 카드 제한 5~6, 엘리트 6, 보스 8. 실제 노드가 전달되면 일반/엘리트는 `layerTurnLimits=[초반,중반,후반]`을 사용한다. 보스는 `turnLimit`을 사용한다.
+- `minimumTurns`: 난이도 보정 후에도 보장할 최솟값. 모든 전투 3 이상, 방어/복합 카드 제한은 주로 5, 보스는 7로 보호한다.
+- 난이도의 `turnAdjustments`: `{minLayer,maxLayer,reduction,types}`. Layer 번호는 1부터 시작하며 중복 규칙은 최댓값만 적용한다. 어려움은 일부 일반/속공/마나 제한 중후반에 1 감소, 악몽은 중후반 및 후기 카드 제한/엘리트에 1 감소 규칙, UNKNOWN은 일부 후기 2 감소와 보스 1 감소 규칙이다. 최솟값에 걸리면 줄이지 않는다. 기존 `turnPenalty`는 호환 필드로 0을 보존하며 새 계산에서 사용하지 않는다.
+
+짧은 제한에 맞춰 싱글 스테이지의 적 HP·초기 배치·마나 제한전 예산을 조정했다. 초반/속공에 낮은 적 HP와 1유닛 배치를 두고, 방어 돌파는 하트 유닛과 5턴 이상의 하한을 유지했다. 마나 제한전 총 예산은 18이다. 엘리트0/1과 보스의 추가 2장 소환은 늦은 턴/적 HP 25% 이하로 조정했다. 엘리트0은 반복 광역 피해로 필드를 봉쇄하지 않도록 풀의 Diamond_4/7을 각각 1회로 제한했다. 적의 기본 매 턴 1장 소환과 기존 소환 턴 공격 제한은 유지한다. 보스는 UNKNOWN 초기 유닛과 조건별 패턴을 유지하며 초기 회복 유닛을 제거했다. 고정 턴 패턴도 짧은 기본 제한 안에 오도록 앞당겼다.
+
+카드 52종/UNKNOWN/JOKER 효과·비용, 맵 방해 효과 종류·수치, 증강, 포커, 런/영구 토큰, AI 로직, 온라인 코드는 수정하지 않았다. 공통 `BattleEngine.BeginTurn`에는 싱글일 때만 실행되는 초과 턴 검사 1줄을 추가했다. UI는 유형명과 실제 제한 표시만 연결하고 디자인을 유지했다.
+
+최종 검증은 `Library/UNKNOWN-Systems-BuildProject/Library/TurnLimitChecks/`에 있다. `turn-limits.json`에 100개 시드의 실제 레이어 분포/최소 턴/난이도/경계 판정 4,399항목과 일반 난이도 31개 전투 결과를 기록했다. 31건 모두 정상 종료, 28승/3패였다. 최종 진행 덱(기본 12장 + A/J/다이아7/스페이드Q) 9표본은 `audit.json`에 최신 데이터끼리 합쳤고, 조정한 엘리트0/1 및 보스 모두 제한 내 승리 사례가 있었다. 모든 시드에서 승리한 것은 아니다. 과거 튜닝 표본 파일은 이전 수치의 결과도 포함하므로 최종 비교에는 `audit.json`을 사용한다.
+
+기존 기능 389항목, 실제 Play Mode에서 지도/준비/전투의 제한 일치와 카드 소환·적 턴·저장 검사가 통과했다. 개발 중 반복 검증을 포함해 AI 전투 95건을 종료까지 실행했으며, 별도로 UI 조작 PlayMode 2회를 수행했다. 신규 테스트 씬·UI·통계 수집 시스템은 만들지 않았고 기존 격리 검증 프로젝트를 재사용했다. 멀티 엔진의 양쪽 선공 슬롯에서 30개 글로벌 턴을 진행해 싱글 제한이 적용되지 않음을 검사했다. 온라인 두 EXE 회귀와 전 난이도의 자연 플레이 균형은 미검증이다.
+
+최종 Windows Development Build 성공: 오류 0 / 경고 8. 경고에는 격리 검증 프로젝트 Cloud 미연결 및 기존 URP 경고가 포함된다. 결과물은 기존 Git 무시 경로 `Library/Chapter1Build/UNKNOWN.exe`이며 `TurnLimitChecks/player-build.txt`에 결과를 기록했다. 이번 수정 파일은 SingleChapter.cs, SingleChapter1.json, BattleEngine.Single.cs, BattleEngine.cs(싱글 전용 검사 1줄), BattleUIController.Single.cs, SingleChapterUI.cs 및 이 안내서다.

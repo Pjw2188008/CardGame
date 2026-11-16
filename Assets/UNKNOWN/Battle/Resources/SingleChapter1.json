@@ -25,7 +25,7 @@
       "cost": 0,
       "map": 0,
       "enemyHP": 18,
-      "turnLimit": 9,
+      "turnLimit": 0,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -49,7 +49,7 @@
       "cost": 2,
       "map": 0,
       "enemyHP": 10,
-      "turnLimit": 10,
+      "turnLimit": 5,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -75,7 +75,7 @@
           "watchCard": ""
         },
         {
-          "turn": 5,
+          "turn": 4,
           "kind": 1,
           "amount": 1,
           "condition": "turn",
@@ -145,14 +145,21 @@
         {
           "card": "Heart_3",
           "priority": -1,
-          "minTurn": 5,
+          "minTurn": 4,
           "maxTurn": 0,
           "weight": 1,
           "preferredSlot": 2,
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 0,
+      "layerTurnLimits": [
+        5,
+        5,
+        4
+      ],
+      "minimumTurns": 3
     },
     {
       "id": "battle1",
@@ -160,8 +167,8 @@
       "kind": 1,
       "cost": 2,
       "map": 2,
-      "enemyHP": 11,
-      "turnLimit": 10,
+      "enemyHP": 8,
+      "turnLimit": 3,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -177,7 +184,7 @@
       ],
       "patterns": [
         {
-          "turn": 3,
+          "turn": 2,
           "kind": 0,
           "amount": 1,
           "condition": "turn",
@@ -187,7 +194,7 @@
           "watchCard": ""
         },
         {
-          "turn": 5,
+          "turn": 2,
           "kind": 1,
           "amount": 1,
           "condition": "turn",
@@ -206,8 +213,8 @@
       "manaReduction": 1,
       "sealedSlot": 2,
       "enemyType": "공격형",
-      "enemyStartMana": 4,
-      "enemyManaRecovery": 3,
+      "enemyStartMana": 2,
+      "enemyManaRecovery": 2,
       "enemyManaCap": 10,
       "enemyBudget": 30,
       "enemySummonsPerTurn": 1,
@@ -257,14 +264,21 @@
         {
           "card": "Club_3",
           "priority": -1,
-          "minTurn": 5,
+          "minTurn": 2,
           "maxTurn": 0,
           "weight": 1,
           "preferredSlot": 2,
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 1,
+      "layerTurnLimits": [
+        5,
+        4,
+        3
+      ],
+      "minimumTurns": 3
     },
     {
       "id": "battle2",
@@ -272,8 +286,8 @@
       "kind": 1,
       "cost": 2,
       "map": 3,
-      "enemyHP": 12,
-      "turnLimit": 10,
+      "enemyHP": 14,
+      "turnLimit": 6,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -376,7 +390,14 @@
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 2,
+      "layerTurnLimits": [
+        6,
+        6,
+        5
+      ],
+      "minimumTurns": 5
     },
     {
       "id": "battle3",
@@ -384,8 +405,8 @@
       "kind": 1,
       "cost": 2,
       "map": 4,
-      "enemyHP": 13,
-      "turnLimit": 10,
+      "enemyHP": 12,
+      "turnLimit": 5,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -411,7 +432,7 @@
           "watchCard": ""
         },
         {
-          "turn": 5,
+          "turn": 4,
           "kind": 1,
           "amount": 1,
           "condition": "turn",
@@ -481,14 +502,21 @@
         {
           "card": "Spade_3",
           "priority": -1,
-          "minTurn": 5,
+          "minTurn": 4,
           "maxTurn": 0,
           "weight": 1,
           "preferredSlot": 2,
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 0,
+      "layerTurnLimits": [
+        5,
+        5,
+        4
+      ],
+      "minimumTurns": 3
     },
     {
       "id": "battle4",
@@ -496,8 +524,8 @@
       "kind": 1,
       "cost": 2,
       "map": 5,
-      "enemyHP": 14,
-      "turnLimit": 10,
+      "enemyHP": 12,
+      "turnLimit": 5,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -509,10 +537,6 @@
         {
           "card": "Diamond_2",
           "slot": 1
-        },
-        {
-          "card": "Spade_3",
-          "slot": 3
         }
       ],
       "patterns": [
@@ -527,7 +551,7 @@
           "watchCard": ""
         },
         {
-          "turn": 5,
+          "turn": 4,
           "kind": 1,
           "amount": 1,
           "condition": "turn",
@@ -597,14 +621,21 @@
         {
           "card": "Heart_3",
           "priority": -1,
-          "minTurn": 5,
+          "minTurn": 4,
           "maxTurn": 0,
           "weight": 1,
           "preferredSlot": 2,
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 4,
+      "layerTurnLimits": [
+        6,
+        5,
+        5
+      ],
+      "minimumTurns": 5
     },
     {
       "id": "battle5",
@@ -612,8 +643,8 @@
       "kind": 1,
       "cost": 2,
       "map": 1,
-      "enemyHP": 15,
-      "turnLimit": 10,
+      "enemyHP": 12,
+      "turnLimit": 6,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -625,10 +656,6 @@
         {
           "card": "Spade_3",
           "slot": 1
-        },
-        {
-          "card": "Heart_4",
-          "slot": 3
         }
       ],
       "patterns": [
@@ -730,7 +757,14 @@
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 4,
+      "layerTurnLimits": [
+        6,
+        6,
+        5
+      ],
+      "minimumTurns": 5
     },
     {
       "id": "battle6",
@@ -738,8 +772,8 @@
       "kind": 1,
       "cost": 2,
       "map": 0,
-      "enemyHP": 16,
-      "turnLimit": 10,
+      "enemyHP": 14,
+      "turnLimit": 6,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -751,10 +785,6 @@
         {
           "card": "Heart_4",
           "slot": 1
-        },
-        {
-          "card": "Club_2",
-          "slot": 3
         }
       ],
       "patterns": [
@@ -846,7 +876,14 @@
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 2,
+      "layerTurnLimits": [
+        6,
+        6,
+        5
+      ],
+      "minimumTurns": 5
     },
     {
       "id": "battle7",
@@ -854,8 +891,8 @@
       "kind": 1,
       "cost": 2,
       "map": 2,
-      "enemyHP": 17,
-      "turnLimit": 10,
+      "enemyHP": 13,
+      "turnLimit": 5,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -867,10 +904,6 @@
         {
           "card": "Club_5",
           "slot": 1
-        },
-        {
-          "card": "Diamond_3",
-          "slot": 3
         }
       ],
       "patterns": [
@@ -885,7 +918,7 @@
           "watchCard": ""
         },
         {
-          "turn": 5,
+          "turn": 4,
           "kind": 1,
           "amount": 1,
           "condition": "turn",
@@ -955,14 +988,21 @@
         {
           "card": "Spade_3",
           "priority": -1,
-          "minTurn": 5,
+          "minTurn": 4,
           "maxTurn": 0,
           "weight": 1,
           "preferredSlot": 2,
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 4,
+      "layerTurnLimits": [
+        6,
+        5,
+        4
+      ],
+      "minimumTurns": 4
     },
     {
       "id": "battle8",
@@ -970,8 +1010,8 @@
       "kind": 1,
       "cost": 2,
       "map": 3,
-      "enemyHP": 18,
-      "turnLimit": 10,
+      "enemyHP": 9,
+      "turnLimit": 3,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -983,15 +1023,11 @@
         {
           "card": "Diamond_2",
           "slot": 1
-        },
-        {
-          "card": "Spade_4",
-          "slot": 3
         }
       ],
       "patterns": [
         {
-          "turn": 3,
+          "turn": 2,
           "kind": 0,
           "amount": 1,
           "condition": "turn",
@@ -1001,7 +1037,7 @@
           "watchCard": ""
         },
         {
-          "turn": 5,
+          "turn": 2,
           "kind": 1,
           "amount": 1,
           "condition": "turn",
@@ -1020,8 +1056,8 @@
       "manaReduction": 1,
       "sealedSlot": 2,
       "enemyType": "방해형",
-      "enemyStartMana": 4,
-      "enemyManaRecovery": 3,
+      "enemyStartMana": 2,
+      "enemyManaRecovery": 2,
       "enemyManaCap": 10,
       "enemyBudget": 30,
       "enemySummonsPerTurn": 1,
@@ -1071,14 +1107,21 @@
         {
           "card": "Heart_3",
           "priority": -1,
-          "minTurn": 5,
+          "minTurn": 2,
           "maxTurn": 0,
           "weight": 1,
           "preferredSlot": 2,
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 1,
+      "layerTurnLimits": [
+        5,
+        4,
+        3
+      ],
+      "minimumTurns": 3
     },
     {
       "id": "battle9",
@@ -1086,12 +1129,12 @@
       "kind": 1,
       "cost": 2,
       "map": 4,
-      "enemyHP": 19,
-      "turnLimit": 10,
+      "enemyHP": 12,
+      "turnLimit": 5,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
-      "manaBudget": 40,
+      "manaBudget": 18,
       "restrictions": [
         12
       ],
@@ -1099,10 +1142,6 @@
         {
           "card": "Spade_3",
           "slot": 1
-        },
-        {
-          "card": "Heart_2",
-          "slot": 3
         }
       ],
       "patterns": [
@@ -1117,7 +1156,7 @@
           "watchCard": ""
         },
         {
-          "turn": 5,
+          "turn": 4,
           "kind": 1,
           "amount": 1,
           "condition": "turn",
@@ -1187,14 +1226,21 @@
         {
           "card": "Club_3",
           "priority": -1,
-          "minTurn": 5,
+          "minTurn": 4,
           "maxTurn": 0,
           "weight": 1,
           "preferredSlot": 2,
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 3,
+      "layerTurnLimits": [
+        5,
+        5,
+        4
+      ],
+      "minimumTurns": 4
     },
     {
       "id": "battle10",
@@ -1202,8 +1248,8 @@
       "kind": 1,
       "cost": 2,
       "map": 5,
-      "enemyHP": 20,
-      "turnLimit": 10,
+      "enemyHP": 14,
+      "turnLimit": 5,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -1215,10 +1261,6 @@
         {
           "card": "Heart_4",
           "slot": 1
-        },
-        {
-          "card": "Club_3",
-          "slot": 3
         }
       ],
       "patterns": [
@@ -1233,7 +1275,7 @@
           "watchCard": ""
         },
         {
-          "turn": 5,
+          "turn": 4,
           "kind": 1,
           "amount": 1,
           "condition": "turn",
@@ -1303,14 +1345,21 @@
         {
           "card": "Diamond_3",
           "priority": -1,
-          "minTurn": 5,
+          "minTurn": 4,
           "maxTurn": 0,
           "weight": 1,
           "preferredSlot": 2,
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 0,
+      "layerTurnLimits": [
+        5,
+        5,
+        5
+      ],
+      "minimumTurns": 5
     },
     {
       "id": "elite0",
@@ -1318,8 +1367,8 @@
       "kind": 2,
       "cost": 4,
       "map": 2,
-      "enemyHP": 24,
-      "turnLimit": 11,
+      "enemyHP": 12,
+      "turnLimit": 6,
       "startMana": 4,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -1330,12 +1379,8 @@
       ],
       "units": [
         {
-          "card": "Diamond_7",
+          "card": "Diamond_3",
           "slot": 1
-        },
-        {
-          "card": "Spade_4",
-          "slot": 3
         }
       ],
       "patterns": [
@@ -1384,8 +1429,8 @@
       "enemyManaCap": 10,
       "enemyBudget": 45,
       "enemySummonsPerTurn": 1,
-      "enemyExtraTurn": 3,
-      "enemyExtraHP": 50,
+      "enemyExtraTurn": 5,
+      "enemyExtraHP": 25,
       "enemyPool": [
         {
           "card": "Diamond_2",
@@ -1404,7 +1449,7 @@
           "maxTurn": 0,
           "weight": 1,
           "preferredSlot": -1,
-          "maxUses": 0,
+          "maxUses": 1,
           "condition": ""
         },
         {
@@ -1414,7 +1459,7 @@
           "maxTurn": 0,
           "weight": 1,
           "preferredSlot": -1,
-          "maxUses": 0,
+          "maxUses": 1,
           "condition": ""
         },
         {
@@ -1437,7 +1482,14 @@
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 5,
+      "layerTurnLimits": [
+        6,
+        6,
+        5
+      ],
+      "minimumTurns": 5
     },
     {
       "id": "elite1",
@@ -1445,8 +1497,8 @@
       "kind": 2,
       "cost": 4,
       "map": 3,
-      "enemyHP": 26,
-      "turnLimit": 11,
+      "enemyHP": 10,
+      "turnLimit": 6,
       "startMana": 4,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -1457,12 +1509,8 @@
       ],
       "units": [
         {
-          "card": "Spade_7",
+          "card": "Spade_4",
           "slot": 1
-        },
-        {
-          "card": "Heart_4",
-          "slot": 3
         }
       ],
       "patterns": [
@@ -1511,8 +1559,8 @@
       "enemyManaCap": 10,
       "enemyBudget": 45,
       "enemySummonsPerTurn": 1,
-      "enemyExtraTurn": 3,
-      "enemyExtraHP": 50,
+      "enemyExtraTurn": 5,
+      "enemyExtraHP": 25,
       "enemyPool": [
         {
           "card": "Spade_2",
@@ -1564,7 +1612,14 @@
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 5,
+      "layerTurnLimits": [
+        6,
+        5,
+        4
+      ],
+      "minimumTurns": 4
     },
     {
       "id": "elite2",
@@ -1572,8 +1627,8 @@
       "kind": 2,
       "cost": 4,
       "map": 4,
-      "enemyHP": 28,
-      "turnLimit": 11,
+      "enemyHP": 18,
+      "turnLimit": 6,
       "startMana": 4,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -1691,7 +1746,14 @@
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 5,
+      "layerTurnLimits": [
+        6,
+        6,
+        5
+      ],
+      "minimumTurns": 5
     },
     {
       "id": "elite3",
@@ -1699,8 +1761,8 @@
       "kind": 2,
       "cost": 4,
       "map": 5,
-      "enemyHP": 30,
-      "turnLimit": 11,
+      "enemyHP": 16,
+      "turnLimit": 6,
       "startMana": 4,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -1818,7 +1880,14 @@
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 5,
+      "layerTurnLimits": [
+        6,
+        6,
+        5
+      ],
+      "minimumTurns": 5
     },
     {
       "id": "augment0",
@@ -1827,7 +1896,7 @@
       "cost": 3,
       "map": 0,
       "enemyHP": 18,
-      "turnLimit": 9,
+      "turnLimit": 0,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -1851,7 +1920,7 @@
       "cost": 3,
       "map": 0,
       "enemyHP": 18,
-      "turnLimit": 9,
+      "turnLimit": 0,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -1875,7 +1944,7 @@
       "cost": 3,
       "map": 0,
       "enemyHP": 18,
-      "turnLimit": 9,
+      "turnLimit": 0,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -1899,7 +1968,7 @@
       "cost": 3,
       "map": 0,
       "enemyHP": 18,
-      "turnLimit": 9,
+      "turnLimit": 0,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -1923,7 +1992,7 @@
       "cost": 3,
       "map": 0,
       "enemyHP": 18,
-      "turnLimit": 9,
+      "turnLimit": 0,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -1947,7 +2016,7 @@
       "cost": 2,
       "map": 0,
       "enemyHP": 18,
-      "turnLimit": 9,
+      "turnLimit": 0,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -1971,7 +2040,7 @@
       "cost": 2,
       "map": 0,
       "enemyHP": 18,
-      "turnLimit": 9,
+      "turnLimit": 0,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -1995,7 +2064,7 @@
       "cost": 3,
       "map": 0,
       "enemyHP": 18,
-      "turnLimit": 9,
+      "turnLimit": 0,
       "startMana": 3,
       "manaRecovery": 3,
       "turnSpendLimit": 8,
@@ -2018,8 +2087,8 @@
       "kind": 7,
       "cost": 5,
       "map": 1,
-      "enemyHP": 35,
-      "turnLimit": 14,
+      "enemyHP": 28,
+      "turnLimit": 8,
       "startMana": 5,
       "manaRecovery": 4,
       "turnSpendLimit": 10,
@@ -2032,10 +2101,6 @@
         {
           "card": "Unknown_J",
           "slot": 2
-        },
-        {
-          "card": "Heart_6",
-          "slot": 4
         }
       ],
       "patterns": [
@@ -2102,10 +2167,10 @@
       "enemyStartMana": 6,
       "enemyManaRecovery": 5,
       "enemyManaCap": 10,
-      "enemyBudget": 65,
+      "enemyBudget": 45,
       "enemySummonsPerTurn": 1,
-      "enemyExtraTurn": 3,
-      "enemyExtraHP": 50,
+      "enemyExtraTurn": 6,
+      "enemyExtraHP": 25,
       "enemyPool": [
         {
           "card": "Diamond_2",
@@ -2207,7 +2272,14 @@
           "maxUses": 0,
           "condition": "pattern"
         }
-      ]
+      ],
+      "battleType": 6,
+      "layerTurnLimits": [
+        8,
+        8,
+        8
+      ],
+      "minimumTurns": 7
     }
   ],
   "difficulties": [
@@ -2221,7 +2293,8 @@
       "budgetPenalty": 0,
       "extraRestrictions": 0,
       "rewardPercent": 100,
-      "patternBonus": 0
+      "patternBonus": 0,
+      "turnAdjustments": []
     },
     {
       "name": "어려움",
@@ -2233,7 +2306,19 @@
       "budgetPenalty": 0,
       "extraRestrictions": 1,
       "rewardPercent": 150,
-      "patternBonus": 1
+      "patternBonus": 1,
+      "turnAdjustments": [
+        {
+          "minLayer": 4,
+          "maxLayer": 9,
+          "reduction": 1,
+          "types": [
+            0,
+            1,
+            3
+          ]
+        }
+      ]
     },
     {
       "name": "악몽",
@@ -2241,11 +2326,32 @@
       "requiredClear": 1,
       "attackBonus": 1,
       "hpBonus": 3,
-      "turnPenalty": 1,
+      "turnPenalty": 0,
       "budgetPenalty": 3,
       "extraRestrictions": 2,
       "rewardPercent": 200,
-      "patternBonus": 1
+      "patternBonus": 1,
+      "turnAdjustments": [
+        {
+          "minLayer": 4,
+          "maxLayer": 9,
+          "reduction": 1,
+          "types": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "minLayer": 7,
+          "maxLayer": 9,
+          "reduction": 1,
+          "types": [
+            4,
+            5
+          ]
+        }
+      ]
     },
     {
       "name": "UNKNOWN",
@@ -2253,11 +2359,50 @@
       "requiredClear": 2,
       "attackBonus": 2,
       "hpBonus": 4,
-      "turnPenalty": 1,
+      "turnPenalty": 0,
       "budgetPenalty": 5,
       "extraRestrictions": 3,
       "rewardPercent": 300,
-      "patternBonus": 2
+      "patternBonus": 2,
+      "turnAdjustments": [
+        {
+          "minLayer": 4,
+          "maxLayer": 6,
+          "reduction": 1,
+          "types": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "minLayer": 7,
+          "maxLayer": 9,
+          "reduction": 2,
+          "types": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "minLayer": 7,
+          "maxLayer": 9,
+          "reduction": 1,
+          "types": [
+            4,
+            5
+          ]
+        },
+        {
+          "minLayer": 10,
+          "maxLayer": 10,
+          "reduction": 1,
+          "types": [
+            6
+          ]
+        }
+      ]
     }
   ],
   "augments": [

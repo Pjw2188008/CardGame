@@ -212,6 +212,7 @@ namespace Unknown.Battle
         {
             State.ActivePlayer = player; State.TurnNumber++; State.SummonsThisTurn = 0;
             State.TurnExpired = false;
+            if(Single!=null && Single.ExpireBeforeTurnEffects())return;
             var current = State.Players[player];
             current.ManualDiscardUsed=false;
             current.TurnsStarted++;

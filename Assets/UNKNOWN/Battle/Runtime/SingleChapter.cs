@@ -12,8 +12,11 @@ namespace Unknown.Battle
     [Serializable] public sealed class SingleUnit { public string card; public int slot; }
     [Serializable] public sealed class SinglePattern { public int turn,amount=1; public string condition="turn",card,watchCard;public int hpPercent=50; public SinglePatternKind kind; public int slot; }
     [Serializable] public sealed class SingleEnemyCard { public string card,condition=""; public int priority,minTurn=1,maxTurn,weight=1,preferredSlot=-1,maxUses; }
+    public enum SingleBattleType { Normal, Rush, Bulwark, ManaLimited, CardLimited, Elite, Boss }
+    [Serializable] public sealed class SingleTurnAdjustment { public int minLayer=1,maxLayer=10,reduction;public SingleBattleType[] types=new SingleBattleType[0]; }
     [Serializable] public sealed class SingleStage
     {
+        public SingleBattleType battleType;public int minimumTurns=3;public int[] layerTurnLimits=new int[0];
         public string id,name,enemyType="";public SingleNodeKind kind;public BattleMap map;
         public int cost,enemyHP=20,turnLimit=8,startMana=3,manaRecovery=3,turnSpendLimit=7,manaBudget=30;
         public int attackLimit=2,strongestPenalty=2,directLimit=1,healingPercent=50,summonBlood=1,firstCost=1,manaReduction=1,sealedSlot=2;
@@ -21,8 +24,17 @@ namespace Unknown.Battle
         public int enemyStartMana=5,enemyManaRecovery=4,enemyManaCap=10,enemyBudget=40,enemySummonsPerTurn=1,enemyExtraTurn=3,enemyExtraHP=50;
         public SingleEnemyCard[] enemyPool=new SingleEnemyCard[0];
         public SingleUnit[] units=new SingleUnit[0];public SinglePattern[] patterns=new SinglePattern[0];
+        public bool IsCombat=>kind==SingleNodeKind.Battle || kind==SingleNodeKind.Elite || kind==SingleNodeKind.Boss;
+        // Layer is the actual generated node's zero-based layer, not the stage's ID/order.
+        public int ResolveTurnLimit(SingleDifficulty difficulty,int layer=-1) {
+            if(!IsCombat)return 0;
+            int turns=layer>=0 && kind!=SingleNodeKind.Boss && layerTurnLimits!=null && layerTurnLimits.Length==3?layerTurnLimits[layer<=2?0:layer<=5?1:2]:turnLimit;
+            int level=Math.Max(1,layer+1);
+            int reduction=(difficulty.turnAdjustments??new SingleTurnAdjustment[0]).Where(r=>level>=r.minLayer && level<=r.maxLayer && r.types.Contains(battleType)).Select(r=>r.reduction).DefaultIfEmpty(0).Max();
+            return Math.Max(Math.Max(3,minimumTurns),turns-reduction);
+        }
     }
-    [Serializable] public sealed class SingleDifficulty { public string name;public int cost,requiredClear=-1,attackBonus,hpBonus,turnPenalty,budgetPenalty,extraRestrictions,rewardPercent=100,patternBonus; }
+    [Serializable] public sealed class SingleDifficulty { public SingleTurnAdjustment[] turnAdjustments=new SingleTurnAdjustment[0];public string name;public int cost,requiredClear=-1,attackBonus,hpBonus,turnPenalty,budgetPenalty,extraRestrictions,rewardPercent=100,patternBonus; }
     [Serializable] public sealed class SingleAugment { public string id,name,description;public int amount=1,duration=1; }
     [Serializable] public sealed class SingleUnlock { public string id,name;public int cost,clear=-1;public string[] cards=new string[0]; }
     [Serializable] public sealed class SingleStarter { public string id,name,unlock;public string[] cards; }
@@ -40,10 +52,12 @@ namespace Unknown.Battle
             if(stages==null || stages.Length!=25 || stages.Select(s=>s.id).Distinct().Count()!=25)throw new InvalidDataException("Chapter requires 25 unique stages");
             int[] counts={1,11,4,3,2,2,1,1};for(int i=0;i<counts.Length;i++)if(stages.Count(s=>(int)s.kind==i)!=counts[i])throw new InvalidDataException("Invalid node composition");
             if(difficulties.Length!=4 || augments.Length!=12 || starters.Any(s=>s.cards.Length!=12))throw new InvalidDataException("Invalid chapter content");
+            foreach(var difficulty in difficulties)foreach(var rule in difficulty.turnAdjustments??new SingleTurnAdjustment[0])if(rule.minLayer<1 || rule.maxLayer>10 || rule.minLayer>rule.maxLayer || rule.reduction<0 || rule.types==null || rule.types.Length==0)throw new InvalidDataException("Invalid turn adjustment");
             foreach(var starter in starters)foreach(string card in starter.cards)CardDatabase.Get(card);
             foreach(var unlock in unlocks)foreach(string card in unlock.cards)CardDatabase.Get(card);
             foreach(var s in stages) {
-                if(s.cost<0 || s.turnLimit<1 || s.manaBudget<0 || s.units.Select(u=>u.slot).Distinct().Count()!=s.units.Length || s.units.Any(u=>u.slot<0 || u.slot>4))throw new InvalidDataException("Invalid stage "+s.id);
+                if(s.cost<0 || s.IsCombat && s.turnLimit<3 || !s.IsCombat && s.turnLimit<0 || s.manaBudget<0 || s.units.Select(u=>u.slot).Distinct().Count()!=s.units.Length || s.units.Any(u=>u.slot<0 || u.slot>4))throw new InvalidDataException("Invalid stage "+s.id);
+                if(s.IsCombat && (s.minimumTurns<3 || s.minimumTurns>s.turnLimit || s.layerTurnLimits==null || s.layerTurnLimits.Length!=3 || s.layerTurnLimits.Any(t=>t<s.minimumTurns)))throw new InvalidDataException("Invalid stage turns: "+s.id);
                 if(s.sealedSlot<0 || s.sealedSlot>4 || s.startMana<0 || s.startMana>10 || s.turnSpendLimit<1 || s.healingPercent<0 || s.healingPercent>100)throw new InvalidDataException("Invalid stage limits: "+s.id);
                 if(s.enemyPool==null)s.enemyPool=new SingleEnemyCard[0];
                 if(s.enemyStartMana<0 || s.enemyManaRecovery<0 || s.enemyManaCap<1 || s.enemyBudget<0 || s.enemySummonsPerTurn<1 || s.enemySummonsPerTurn>2)throw new InvalidDataException("Invalid enemy budget: "+s.id);
@@ -138,6 +152,8 @@ namespace Unknown.Battle
             Profile.run=new SingleRun{id=Guid.NewGuid().ToString("N"),seed=seed,difficulty=difficulty,starter=starter,nodes=graph,tokens=Data.startingTokens,hp=Data.maxHP,maxHP=Data.maxHP,deck=d.cards.ToList()};Save();
         }
         public bool IsTeachingBattle=>Stage.kind==SingleNodeKind.Battle && Run.visited.Count(id=>{var k=Data.stages.First(s=>s.id==Run.nodes[id].stage).kind;return k==SingleNodeKind.Battle || k==SingleNodeKind.Elite;})==1;
+        public int TurnLimitFor(SingleStage stage,int node)=>stage.ResolveTurnLimit(Data.difficulties[Run.difficulty],Run.nodes[node].layer);
+        public int CurrentTurnLimit=>TurnLimitFor(Stage,Run.current);
         public SingleStage Stage=>Data.stages.First(s=>s.id==Run.nodes[Run.current].stage);
         public IEnumerable<SingleNode> Next=>Run.nodes[Run.current].next.Select(id=>Run.nodes[id]);
         public SingleNodeState NodeState(int node) {
