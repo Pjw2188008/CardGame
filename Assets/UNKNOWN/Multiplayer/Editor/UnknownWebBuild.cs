@@ -7,13 +7,27 @@ using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 /// <summary>Web-only build settings. The Windows target and its build options are untouched.</summary>
-public sealed class UnknownWebBuild : IPostprocessBuildWithReport
+public sealed class UnknownWebBuild : IPreprocessBuildWithReport, IPostprocessBuildWithReport
 {
     public int callbackOrder => 100;
+    // Apply this for the ordinary Build Profiles button too, not only the custom menu.
+    // Limit the generated C++ and skip the expensive wasm-opt pass during iteration.
+    // These are Web-only settings; Windows retains its own backend/code generation.
+    [MenuItem("UNKNOWN/Build/Configure Web build time")]
+    public static void ConfigureWebBuildTime()
+    {
+        PlayerSettings.SetIl2CppCodeGeneration(NamedBuildTarget.WebGL, Il2CppCodeGeneration.OptimizeSize);
+        UnityEditor.WebGL.UserBuildSettings.codeOptimization=UnityEditor.WebGL.WasmCodeOptimization.BuildTimes;
+    }
+    public void OnPreprocessBuild(BuildReport report)
+    {
+        if(report.summary.platform==BuildTarget.WebGL)ConfigureWebBuildTime();
+    }
     [MenuItem("UNKNOWN/Build/Web (Release, uncompressed)")]
     public static void Build()
     {
         try {
+            ConfigureWebBuildTime();
             foreach(var role in new[]{"Body","Serif","Title"}) {
                 var font=Resources.Load<Font>("WebFonts/"+role);
                 if(font==null)throw new BuildFailedException("Missing web font: "+role);
@@ -48,7 +62,10 @@ public sealed class UnknownWebBuild : IPostprocessBuildWithReport
         var html=File.ReadAllText(path);
         // Keep Unity's default loader/template; enable the documented Unity 6 IndexedDB autosync.
         const string marker="document.body.appendChild(script);";
-        if(!html.Contains(marker))throw new BuildFailedException("Default Web template changed: check persistence and canvas sizing");
+        if(!html.Contains(marker)) {
+            Debug.LogWarning("[UNKNOWN Web] Custom template: enable config.autoSyncPersistentDataPath and 16:9 canvas sizing in that template.");
+            return;
+        }
         html=html.Replace(marker,@"config.autoSyncPersistentDataPath = true;
       config.devicePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
       function fitUnknownCanvas() {
