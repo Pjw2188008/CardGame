@@ -374,8 +374,8 @@ namespace Unknown.Multiplayer
             if (room != null) room.Changed -= Render;
             if (document != null) Destroy(document.gameObject);
             if (panelSettings != null) Destroy(panelSettings);
-            if (koreanFont != null) Destroy(koreanFont);
-            if (titleFont != null) Destroy(titleFont);
+            if (koreanFont != null) Unknown.Battle.PlatformFont.Release(koreanFont);
+            if (titleFont != null) Unknown.Battle.PlatformFont.Release(titleFont);
         }
         sealed class Flourish : VisualElement
         {

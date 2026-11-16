@@ -222,7 +222,7 @@ namespace Unknown.Battle
             Vector2 point;RectTransformUtility.ScreenPointToLocalPointInRectangle(root,mouse.position.ReadValue(),null,out point);
             point-=root.rect.min;tooltip.anchoredPosition=new Vector2(Mathf.Clamp(point.x+18,0,Mathf.Max(0,root.rect.width-tooltip.rect.width)),Mathf.Clamp(point.y+18,0,Mathf.Max(0,root.rect.height-tooltip.rect.height)));
         }
-        void OnDestroy(){if(battle!=null)Destroy(battle.gameObject);if(font!=null)Destroy(font);}
+        void OnDestroy(){if(battle!=null)Destroy(battle.gameObject);if(font!=null)Unknown.Battle.PlatformFont.Release(font);}
         public static string Kind(SingleNodeKind k)=>new[]{"시작","일반 전투","엘리트","증강","회복","덱 정리","이벤트","최종 보스"}[(int)k];
         static string RewardName(SingleStage s)=>s.kind==SingleNodeKind.Battle?"HP 비율 토큰 1~5 + 카드 3택1":s.kind==SingleNodeKind.Elite?"HP 비율 토큰 1~5 + 증강 3택1":s.kind==SingleNodeKind.Boss?"챕터 클리어 / 영구 토큰":s.kind==SingleNodeKind.Heal?"HP 회복":s.kind==SingleNodeKind.Purge?"카드 제거 또는 교체":s.kind==SingleNodeKind.Event?"HP와 토큰 선택":"증강 3택1";
         public static string RestrictionName(SingleRestriction r)=>new[]{"없음","턴 공격 최대 2회","최강 유닛 첫 공격 -2","직접 공격 턴당 1회","첫 소환 출전 효과 봉인","3번 슬롯 포커 보너스 봉인","스페이드 출전 효과 봉인","회복량 절반","전투 종료 회복 금지","소환 시 내 HP -1","첫 추가 드로우 1장 무효","마나 회복 -1","첫 소환 비용 +1","턴 홀짝 계급 소환 제한","매 턴 제약 변경","턴마다 1·5번 슬롯 교환"}[(int)r];

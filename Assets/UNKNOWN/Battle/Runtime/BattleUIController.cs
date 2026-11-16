@@ -516,6 +516,6 @@ namespace Unknown.Battle
         void OnApplicationPause(bool value) { if(value)SingleCheckpoint();applicationPaused = value; if(value)EndAttackDrag(); }
         static Color TimerColor(double seconds) => seconds<=5 ? new Color(1,0.24f,0.24f) : seconds<=10 ? new Color(1,0.62f,0.18f) : Color.white;
         void OnApplicationFocus(bool focused) { if(!focused)EndAttackDrag(); }
-        void OnDestroy() { EndAttackDrag(); EndCardDrag(); StopOnline(); if(tutorialTone!=null)Destroy(tutorialTone); if (font != null) Destroy(font); }
+        void OnDestroy() { EndAttackDrag(); EndCardDrag(); StopOnline(); if(tutorialTone!=null)Destroy(tutorialTone); if (font != null) Unknown.Battle.PlatformFont.Release(font); }
     }
 }

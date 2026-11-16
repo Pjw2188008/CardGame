@@ -75,6 +75,6 @@ namespace Unknown.Battle
             if(Time.unscaledTime>=nextScan){nextScan=Time.unscaledTime+1;foreach(var source in FindObjectsByType<AudioSource>(FindObjectsInactive.Include,FindObjectsSortMode.None))if(!sourceLevels.ContainsKey(source))Register(source,source.GetComponent<GameAudioChannel>()?.channel ?? AudioChannel.SFX);}
             if(IsOpen && UnityEngine.InputSystem.Keyboard.current?.escapeKey.wasPressedThisFrame==true){ConsumedEscapeFrame=Time.frameCount;Close();}
         }
-        void OnDestroy() {if(instance==this)instance=null;if(previewClip!=null)Destroy(previewClip);if(optionsFont!=null)Destroy(optionsFont);}
+        void OnDestroy() {if(instance==this)instance=null;if(previewClip!=null)Destroy(previewClip);if(optionsFont!=null)Unknown.Battle.PlatformFont.Release(optionsFont);}
     }
 }
