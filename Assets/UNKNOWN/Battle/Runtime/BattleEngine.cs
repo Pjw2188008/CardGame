@@ -9,6 +9,7 @@ namespace Unknown.Battle
     {
         public int StartingHP { get; set; } = 30;
         public int StartingHand { get; set; } = 3;
+        public int FirstPlayer { get; set; } = 0;
         public int HandLimit { get; set; } = 8;
         public int FieldSlots { get; set; } = 5;
         public int StartingMana { get; set; } = 3;
@@ -127,7 +128,7 @@ namespace Unknown.Battle
         {
             rules = (config ?? new BattleConfig()).Copy();
             ConfigureFullReworkMap();
-            if (rules.FieldSlots < 1 || rules.HandLimit < 1 || rules.StartingHP < 1 || rules.StartingHand < 0 || rules.StartingHand > rules.HandLimit
+            if (rules.FirstPlayer < 0 || rules.FirstPlayer > 1 || rules.FieldSlots < 1 || rules.HandLimit < 1 || rules.StartingHP < 1 || rules.StartingHand < 0 || rules.StartingHand > rules.HandLimit
                 || rules.UnknownLimit < 0 || rules.StartingMana < 0 || rules.ManaCap < rules.StartingMana || rules.ManaCap > 10 || rules.InitialDeckSeeds!=null && rules.InitialDeckSeeds.Length!=2) throw new ArgumentOutOfRangeException(nameof(config));
             random = randomSource ?? new SeededRandom(seed);
             State = new BattleState(rules);
@@ -143,9 +144,9 @@ namespace Unknown.Battle
                 }
                 Draw(p, rules.StartingHand);
             }
-            // Engine slot 0 starts the match; slot 1 is second, independent of network host identity.
+            // Network identity stays fixed; opening compensation follows the selected turn order.
             if (rules.StartingHand > 0) DrawSecondOpeningCard();
-            BeginTurn(0);
+            BeginTurn(rules.FirstPlayer);
         }
 
         internal CardInstance NewCard(CardDefinition definition, int owner) => new CardInstance(++nextID, definition, owner);
@@ -186,7 +187,8 @@ namespace Unknown.Battle
         }
         void DrawSecondOpeningCard()
         {
-            var player = State.Players[1];
+            int second = 1 - rules.FirstPlayer;
+            var player = State.Players[second];
             if (player.HandCards.Count >= rules.HandLimit) return;
             var deck = player.DeckCards;
             var candidates = deck.Where(c => c.Definition.CardType == CardType.Normal && c.Definition.ManaCost <= 2).ToArray();
@@ -195,7 +197,7 @@ namespace Unknown.Battle
             var card = candidates[random.Next(candidates.Length)];
             // Move this existing instance to the draw end; Draw handles removal, events and the hand limit.
             deck.Remove(card); deck.Add(card);
-            Draw(1, 1);
+            Draw(second, 1);
         }
         void BeginTurn(int player)
         {
@@ -208,7 +210,7 @@ namespace Unknown.Battle
             current.CurrentMana = current.MaxMana;
             Log($"── 턴 {State.TurnNumber} · P{player + 1} ──");
             Emit(new BattleEvent(BattleEventKind.TurnStart, player));
-            if (player == 1 && current.TurnsStarted == 1 && current.CurrentMana < rules.ManaCap)
+            if (player == 1 - rules.FirstPlayer && current.TurnsStarted == 1 && current.CurrentMana < rules.ManaCap)
             {
                 int before = current.CurrentMana;
                 current.CurrentMana = Math.Min(rules.ManaCap, current.CurrentMana + 1);

@@ -38,7 +38,7 @@ namespace Unknown.Battle
             g.nextID=Math.Max(1000,s.players.SelectMany(p=>p.hand.Concat(p.board)).Where(c=>c!=null && c.occupied).Select(c=>c.id).DefaultIfEmpty(0).Max());
             for(int owner=0;owner<2;owner++) {
                 var p=g.State.Players[owner];var v=s.players[owner];p.HandCards.Clear();p.DeckCards.Clear();p.DiscardCards.Clear();
-                p.HP=v.hp;p.CurrentMana=v.mana;p.MaxMana=v.maxMana;p.TurnsStarted=Math.Max(0,(s.turn+1-owner)/2);p.UnknownCreated=v.unknownCreated;p.JokerSuccesses=v.jokerSuccesses;p.JokerChanceDelta=v.jokerChanceDelta;p.ManualDiscardUsed=v.manualDiscardUsed;p.Poker=v.poker.Copy();
+                p.HP=v.hp;p.CurrentMana=v.mana;p.MaxMana=v.maxMana;p.TurnsStarted=Math.Max(0,(s.turn+1-(owner==s.firstPlayer ? 0 : 1))/2);p.UnknownCreated=v.unknownCreated;p.JokerSuccesses=v.jokerSuccesses;p.JokerChanceDelta=v.jokerChanceDelta;p.ManualDiscardUsed=v.manualDiscardUsed;p.Poker=v.poker.Copy();
                 for(int slot=0;slot<p.Slots.Length;slot++)p.Slots[slot]=v.board[slot]?.ToCard();
                 if(owner==s.recipient)p.HandCards.AddRange(v.hand.Select(c=>c.ToCard()));
                 else for(int i=0;i<v.handCount;i++)p.HandCards.Add(i==s.revealedIndex && s.revealedCard?.occupied==true ? s.revealedCard.ToCard() : g.NewCard(CardDatabase.DeckFor(config.CardVersion)[(i*7+3)%54],owner));

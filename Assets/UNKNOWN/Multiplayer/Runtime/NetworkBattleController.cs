@@ -76,8 +76,10 @@ namespace Unknown.Multiplayer
                 if(mapSelection==null)mapSelection=new RandomMapSelection(new SeededRandom(NetworkBattleSmokeRunner.SeedOverride ?? Environment.TickCount),mapRules);
                 SelectedMap=mapSelection.BeginMatch();
                 Debug.Log($"[UNKNOWN Map] match={MapDrawCount} map={SelectedMap} hostDraws={MapDrawCount}");
+                int firstPlayer = UnityEngine.Random.Range(0, 2);
+                Debug.Log($"[UNKNOWN TurnOrder] firstPlayer={firstPlayer} first={(firstPlayer==0 ? "Host" : "Guest")}");
                 authority = new BattleAuthority(NetworkBattleSmokeRunner.SeedOverride ?? Environment.TickCount,
-                    new BattleConfig { Map=SelectedMap.Value,MapRules=mapRules, StartingHand=NetworkBattleSmokeRunner.SystemsCheck ? 0 : 3, MapEvents=SelectedMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() }); PrepareTurnClock();
+                    new BattleConfig { FirstPlayer=firstPlayer,Map=SelectedMap.Value,MapRules=mapRules, StartingHand=NetworkBattleSmokeRunner.SystemsCheck ? 0 : 3, MapEvents=SelectedMap==BattleMap.JokerGame ? JokerMapSettings.LoadRules() : JokerEventDefinition.Defaults() }); PrepareTurnClock();
                 busy = true; Publish(authority.Engine.DrainEvents());
             }
             if (clockRunning && !authority.Engine.State.IsOver && nm.ServerTime.Time >= deadline && !authority.Engine.State.TurnExpired)

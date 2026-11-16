@@ -72,6 +72,7 @@ namespace Unknown.Battle
     [Serializable] public sealed class BattleSnapshot
     {
         public int revision, recipient, active, turn, winner;
+        public int firstPlayer;
         public int handLimit=8;
         public VictoryReason victoryReason;
         public double deadline;
@@ -98,7 +99,7 @@ namespace Unknown.Battle
         {
             var s = engine.State;
             return new BattleSnapshot { revision = revision, recipient = recipient, active = s.ActivePlayer,
-                handLimit=engine.Config.HandLimit,
+                handLimit=engine.Config.HandLimit,firstPlayer=engine.Config.FirstPlayer,
                 cardVersion=engine.Config.CardVersion,exchangePending=engine.NeedsExchange,pendingSource=engine.PendingSourceID,pendingIndex=engine.PendingIndex,
                 pendingTargetKinds=engine.PendingKinds,pendingTargetIDs=engine.PendingIDs,pendingDistinctIDs=engine.PendingDistinct,
                 turn = s.TurnNumber, winner = s.Winner, victoryReason = s.VictoryReason, expired = s.TurnExpired, deadline = deadline, busy = busy, turnDuration = turnDuration, clockRunning = clockRunning,
@@ -125,7 +126,7 @@ namespace Unknown.Battle
         // A view does not shuffle, draw, create a hidden deck, or execute commands.
         BattleEngine(BattleSnapshot s)
         {
-            rules = new BattleConfig { FieldSlots = s.players[0].board.Length, Map=s.map,HandLimit=s.handLimit,CardVersion=s.cardVersion };
+            rules = new BattleConfig { FieldSlots = s.players[0].board.Length, FirstPlayer=s.firstPlayer, Map=s.map,HandLimit=s.handLimit,CardVersion=s.cardVersion };
             State = new BattleState(rules); viewOnly = true; ApplyView(s);
         }
         public static BattleEngine CreateView(BattleSnapshot s) => new BattleEngine(s);
@@ -133,7 +134,7 @@ namespace Unknown.Battle
         {
             if (!viewOnly) throw new InvalidOperationException("Authority cannot import a client view.");
             State.ActivePlayer = s.active; State.TurnNumber = s.turn; State.Winner = s.winner; State.VictoryReason = s.victoryReason; State.TurnExpired = s.expired;
-            rules.Map=s.map; MapEvent=s.mapEvent?.ToResult(); revealViewer=s.recipient;
+            rules.Map=s.map;rules.FirstPlayer=s.firstPlayer; MapEvent=s.mapEvent?.ToResult(); revealViewer=s.recipient;
             rules.MapRules=(s.mapRules ?? MapDefinition.Defaults()).Select(d=>d.Copy()).ToArray(); SuitEffect=s.suitEffect?.Copy();
             viewRevealed=s.revealedCard?.ToCard(); viewRevealedIndex=s.revealedIndex;
             State.Entries.Clear(); State.Entries.AddRange(s.log); State.LogVersion = s.revision;
