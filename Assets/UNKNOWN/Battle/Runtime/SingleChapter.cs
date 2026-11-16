@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -11,12 +11,15 @@ namespace Unknown.Battle
     public enum SinglePatternKind { Strengthen, Summon, Weaken, Rally }
     [Serializable] public sealed class SingleUnit { public string card; public int slot; }
     [Serializable] public sealed class SinglePattern { public int turn,amount=1; public string condition="turn",card,watchCard;public int hpPercent=50; public SinglePatternKind kind; public int slot; }
+    [Serializable] public sealed class SingleEnemyCard { public string card,condition=""; public int priority,minTurn=1,maxTurn,weight=1,preferredSlot=-1,maxUses; }
     [Serializable] public sealed class SingleStage
     {
-        public string id,name;public SingleNodeKind kind;public BattleMap map;
+        public string id,name,enemyType="";public SingleNodeKind kind;public BattleMap map;
         public int cost,enemyHP=20,turnLimit=8,startMana=3,manaRecovery=3,turnSpendLimit=7,manaBudget=30;
         public int attackLimit=2,strongestPenalty=2,directLimit=1,healingPercent=50,summonBlood=1,firstCost=1,manaReduction=1,sealedSlot=2;
         public SingleRestriction[] restrictions=new SingleRestriction[0];
+        public int enemyStartMana=5,enemyManaRecovery=4,enemyManaCap=10,enemyBudget=40,enemySummonsPerTurn=1,enemyExtraTurn=3,enemyExtraHP=50;
+        public SingleEnemyCard[] enemyPool=new SingleEnemyCard[0];
         public SingleUnit[] units=new SingleUnit[0];public SinglePattern[] patterns=new SinglePattern[0];
     }
     [Serializable] public sealed class SingleDifficulty { public string name;public int cost,requiredClear=-1,attackBonus,hpBonus,turnPenalty,budgetPenalty,extraRestrictions,rewardPercent=100,patternBonus; }
@@ -42,6 +45,12 @@ namespace Unknown.Battle
             foreach(var s in stages) {
                 if(s.cost<0 || s.turnLimit<1 || s.manaBudget<0 || s.units.Select(u=>u.slot).Distinct().Count()!=s.units.Length || s.units.Any(u=>u.slot<0 || u.slot>4))throw new InvalidDataException("Invalid stage "+s.id);
                 if(s.sealedSlot<0 || s.sealedSlot>4 || s.startMana<0 || s.startMana>10 || s.turnSpendLimit<1 || s.healingPercent<0 || s.healingPercent>100)throw new InvalidDataException("Invalid stage limits: "+s.id);
+                if(s.enemyPool==null)s.enemyPool=new SingleEnemyCard[0];
+                if(s.enemyStartMana<0 || s.enemyManaRecovery<0 || s.enemyManaCap<1 || s.enemyBudget<0 || s.enemySummonsPerTurn<1 || s.enemySummonsPerTurn>2)throw new InvalidDataException("Invalid enemy budget: "+s.id);
+                foreach(var entry in s.enemyPool) {
+                    var card=CardDatabase.Get(entry.card);
+                    if(card.CardType==CardType.Joker || entry.weight<1 || entry.minTurn<1 || entry.maxTurn>0 && entry.maxTurn<entry.minTurn || entry.preferredSlot< -1 || entry.preferredSlot>4 || entry.maxUses<0 || !new[]{"","half","empty","ally","pattern"}.Contains(entry.condition))throw new InvalidDataException("Invalid enemy card: "+s.id);
+                }
                 foreach(var u in s.units)CardDatabase.Get(u.card);
                 foreach(var p in s.patterns)if(p.kind==SinglePatternKind.Summon)CardDatabase.Get(p.card);
             }
@@ -114,6 +123,7 @@ namespace Unknown.Battle
             Changed?.Invoke();
         }
         public bool CanUse(SingleStarter s)=>string.IsNullOrEmpty(s.unlock)||Profile.content.Contains(s.unlock);
+        public void Start(int difficulty,int seed)=>Start(difficulty,Data.starters.First(s=>string.IsNullOrEmpty(s.unlock)).id,seed);
         public void Start(int difficulty,string starter,int seed) {
             if(!Profile.unlocked.Contains(difficulty))throw new InvalidOperationException("난이도가 잠겨 있습니다.");
             var d=Data.starters.First(s=>s.id==starter);if(!CanUse(d))throw new InvalidOperationException("시작 덱이 잠겨 있습니다.");

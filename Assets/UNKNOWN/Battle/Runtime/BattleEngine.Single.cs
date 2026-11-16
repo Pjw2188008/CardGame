@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 namespace Unknown.Battle
@@ -7,9 +7,11 @@ namespace Unknown.Battle
     {
         public SingleStage stage;public SingleDifficulty difficulty;public SingleAugment[] augmentData;public string[] deck,augments;public int hp,maxHP,seed;public bool tutorial;
     }
+    [Serializable] public sealed class SingleEnemyUse { public string card;public int count; }
     [Serializable] public sealed class SingleWeakening { public int id,amount,expires; }
     [Serializable] public sealed class SingleBattleProgress
     {
+        public int enemyTurn,enemyMana,enemySpent,enemySummoned;public List<SingleEnemyUse> enemyUses=new List<SingleEnemyUse>();
         public int spent,turnSpent,attacks,directAttacks,shield,weakenSource=-1,weakenIndex=-1,weakenTurn=-1;
         public List<string> usedCards=new List<string>();
         public List<int> pendingEntrances=new List<int>();public string failure="";
@@ -82,20 +84,56 @@ namespace Unknown.Battle
                 foreach(int i in new[]{0,1,3,6,7,11})Progress.once[i]=false;
                 if(Has(SingleRestriction.Changing))g.ReconcilePoker();
                 if(Has(SingleRestriction.SwapSlots) && Round>1){var slots=g.State.Players[0].Slots;var tmp=slots[0];slots[0]=slots[4];slots[4]=tmp;g.ReconcilePoker();}
-            }else Patterns();
+            }else {PrepareEnemyTurn();Patterns();}
         }
         public void Patterns() {
             if(g.State.IsOver)return;
             for(int i=0;i<Options.stage.patterns.Length;i++) {
                 var p=Options.stage.patterns[i];if(Progress.patterns.Contains(i))continue;
                 bool trigger=p.condition=="half" ? (long)g.State.Players[1].HP*100<=Options.stage.enemyHP*p.hpPercent : p.condition=="death" ? g.State.Players[1].DiscardCards.Any(c=>string.IsNullOrEmpty(p.watchCard) || c.Definition.CardID==p.watchCard) : p.condition=="unknown" ? g.State.Players[0].Board.Any(c=>c?.Definition.CardType==CardType.Unknown) : g.State.ActivePlayer==1 && Round>=p.turn;
-                if(!trigger)continue;Progress.patterns.Add(i);int amount=p.amount+Options.difficulty.patternBonus;
-                if(p.kind==SinglePatternKind.Summon)g.SinglePlace(p.card,p.slot,false);
-                else foreach(var c in g.State.Players[p.kind==SinglePatternKind.Weaken?0:1].Board.Where(c=>c!=null).ToArray()) {
+                if(!trigger)continue;
+                if(p.kind==SinglePatternKind.Summon) {
+                    if(g.State.ActivePlayer!=1 || !EnemySummon(p.card,p.slot,true))continue;
+                    Progress.patterns.Add(i);continue;
+                }
+                Progress.patterns.Add(i);int amount=p.amount+Options.difficulty.patternBonus;
+                foreach(var c in g.State.Players[p.kind==SinglePatternKind.Weaken?0:1].Board.Where(c=>c!=null).ToArray()) {
                     if(p.kind==SinglePatternKind.Rally)g.SingleStats(c,amount,amount);else g.SingleStats(c,p.kind==SinglePatternKind.Weaken?-amount:amount,0);
                 }
             }
             g.SingleResolveEntrances();
+        }
+        int EnemyLimit=>Math.Min(2,Options.stage.enemySummonsPerTurn+(Options.stage.kind==SingleNodeKind.Battle?0:Round>=Options.stage.enemyExtraTurn || (long)g.State.Players[1].HP*100<=Options.stage.enemyHP*Options.stage.enemyExtraHP?1:0));
+        void PrepareEnemyTurn() {
+            if(Progress.enemyTurn==g.State.TurnNumber)return;
+            bool first=Progress.enemyTurn==0;Progress.enemyTurn=g.State.TurnNumber;Progress.enemySummoned=0;
+            Progress.enemyMana=Math.Min(Options.stage.enemyManaCap,first?Options.stage.enemyStartMana:Progress.enemyMana+Options.stage.enemyManaRecovery);
+            g.State.Players[1].CurrentMana=Progress.enemyMana;g.State.Players[1].MaxMana=Options.stage.enemyManaCap;
+        }
+        bool EnemySummon(string id,int slot,bool scripted=false) {
+            if(g.State.IsOver || g.State.ActivePlayer!=1 || g.NeedsTarget || Progress.enemySummoned>=EnemyLimit || g.State.Players[1].Board.All(c=>c!=null))return false;
+            if(!Options.stage.enemyPool.Any(e=>e.card==id && Eligible(e,scripted)))return false;
+            int cost=CardDatabase.Get(id).ManaCost;
+            if(cost>Progress.enemyMana || cost>Options.stage.enemyBudget-Progress.enemySpent)return false;
+            Progress.enemyMana-=cost;g.State.Players[1].CurrentMana=Progress.enemyMana;Progress.enemySpent+=cost;Progress.enemySummoned++;
+            var use=Progress.enemyUses.FirstOrDefault(u=>u.card==id);if(use==null){use=new SingleEnemyUse{card=id};Progress.enemyUses.Add(use);}use.count++;
+            g.SinglePlace(id,slot,false);g.SingleResolveEntrances();return true;
+        }
+        bool Eligible(SingleEnemyCard e,bool scripted=false) {
+            var board=g.State.Players[1].Board;
+            return (scripted || e.condition!="pattern") && Round>=e.minTurn && (e.maxTurn==0 || Round<=e.maxTurn) &&
+                (e.maxUses==0 || (Progress.enemyUses.FirstOrDefault(u=>u.card==e.card)?.count??0)<e.maxUses) &&
+                (e.condition!="half" || (long)g.State.Players[1].HP*100<=Options.stage.enemyHP*50) &&
+                (e.condition!="empty" || board.All(c=>c==null)) && (e.condition!="ally" || board.Any(c=>c!=null)) &&
+                CardDatabase.Get(e.card).ManaCost<=Math.Min(Progress.enemyMana,Options.stage.enemyBudget-Progress.enemySpent);
+        }
+        bool SummonFromPool() {
+            if(g.State.Players[1].Board.All(c=>c!=null))return false;
+            var pool=Options.stage.enemyPool.Where(e=>Eligible(e)).ToArray();if(pool.Length==0)return false;
+            int priority=pool.Max(e=>e.priority);pool=pool.Where(e=>e.priority==priority).ToArray();
+            int roll=g.SingleRoll(pool.Sum(e=>e.weight));
+            foreach(var e in pool){roll-=e.weight;if(roll<0)return EnemySummon(e.card,e.preferredSlot);}
+            return false;
         }
         public string Intent() {
             int next=g.State.ActivePlayer==0?g.State.TurnNumber+1:g.State.TurnNumber;
@@ -104,10 +142,15 @@ namespace Unknown.Battle
             var pending=Options.stage.patterns.Where((p,i)=>!Progress.patterns.Contains(i)).Select(p=>
                 (p.condition=="turn"?$"{p.turn}턴":p.condition=="half"?$"적 HP {p.hpPercent}% 이하":p.condition=="death"?"지정 적 유닛 사망":"UNKNOWN 소환")+": "+
                 (p.kind==SinglePatternKind.Summon?CardDatabase.Get(p.card).CardName+" 소환":p.kind==SinglePatternKind.Weaken?"아군 공격력 -"+(p.amount+Options.difficulty.patternBonus):p.kind==SinglePatternKind.Rally?"적 공격·체력 +"+(p.amount+Options.difficulty.patternBonus):"적 공격력 +"+(p.amount+Options.difficulty.patternBonus)));
-            return "현재 기준 예고: "+string.Join(" / ",attacks.Concat(pending));
+            string summon="다음 적 턴 소환 "+(Options.stage.kind==SingleNodeKind.Battle?Options.stage.enemySummonsPerTurn.ToString():"1~2")+"장 · "+Options.stage.enemyType;
+            if(g.State.Players[1].Board.All(c=>c!=null))summon+=" (현재 필드 가득 참)";
+            if(Progress.enemySpent>=Options.stage.enemyBudget)summon="소환 예산 소진";
+            return summon+"\n"+string.Join(" / ",attacks.Concat(pending));
         }
         public bool EnemyStep() {
-            Patterns();if(g.State.IsOver)return false;
+            if(g.State.ActivePlayer!=1 || g.State.IsOver)return false;
+            PrepareEnemyTurn();Patterns();if(g.State.IsOver)return false;
+            if(Progress.enemySummoned<EnemyLimit && SummonFromPool())return true;
             var attacker=g.State.Players[1].Board.FirstOrDefault(c=>g.CanAttack(1,c));
             if(attacker==null)return g.EndTurn(1);
             var board=g.State.Players[0].Board;int slot=Enumerable.Range(0,board.Count).Where(i=>board[i]!=null).OrderBy(i=>board[i].CurrentHP).DefaultIfEmpty(-1).First();
@@ -129,6 +172,7 @@ namespace Unknown.Battle
             if(inEvent)return e;
             inEvent=true;
             try {
+                if(e.Kind==BattleEventKind.ManaGained && e.Owner==1){Progress.enemyMana=Math.Min(Options.stage.enemyManaCap,g.State.Players[1].CurrentMana);g.State.Players[1].CurrentMana=Progress.enemyMana;}
                 var unit=g.SingleFind(e.TargetID);var dealer=g.SingleFind(e.SourceID);
                 if(e.Owner==0 && (e.Kind==BattleEventKind.Summon || e.Kind==BattleEventKind.JokerTravel)){var used=e.Kind==BattleEventKind.Summon?unit:dealer;if(used!=null && !Progress.usedCards.Contains(used.Definition.CardID))Progress.usedCards.Add(used.Definition.CardID);}
                 if(e.Kind==BattleEventKind.ManaGained && e.Owner==0 && Has(SingleRestriction.LessMana) && e.Amount>0){int lost=Math.Min(e.Amount,Options.stage.manaReduction);g.State.Players[0].CurrentMana-=lost;e=Replace(e,e.Amount-lost);}
@@ -180,6 +224,7 @@ namespace Unknown.Battle
         internal bool SingleTurnDrawing;
         internal CardInstance SingleFind(int id)=>State.Players.SelectMany(p=>p.Hand.Concat(p.Board).Concat(p.DeckCards).Concat(p.DiscardCards)).FirstOrDefault(c=>c!=null && c.InstanceID==id);
         internal void SingleEmit(BattleEvent e)=>Emit(e);
+        internal int SingleRoll(int max)=>random.Next(max);
         internal void SingleFinish(int winner)=>FinishGame(winner,VictoryReason.OpponentHPZero);
         internal void SingleShuffle(List<CardInstance> deck){for(int i=deck.Count-1;i>0;i--){int j=random.Next(i+1);var t=deck[i];deck[i]=deck[j];deck[j]=t;}}
         internal void SingleStats(CardInstance c,int attack,int hp) {

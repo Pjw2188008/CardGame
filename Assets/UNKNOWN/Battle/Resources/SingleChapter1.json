@@ -1,4 +1,4 @@
-{
+﻿{
   "startingTokens": 10,
   "maxHP": 30,
   "healing": 8,
@@ -92,7 +92,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "혼합형",
+      "enemyStartMana": 4,
+      "enemyManaRecovery": 3,
+      "enemyManaCap": 10,
+      "enemyBudget": 30,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Diamond_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_3",
+          "priority": -1,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "battle1",
@@ -144,7 +204,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "공격형",
+      "enemyStartMana": 4,
+      "enemyManaRecovery": 3,
+      "enemyManaCap": 10,
+      "enemyBudget": 30,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Diamond_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_3",
+          "priority": -1,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "battle2",
@@ -196,7 +316,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "방해형",
+      "enemyStartMana": 4,
+      "enemyManaRecovery": 3,
+      "enemyManaCap": 10,
+      "enemyBudget": 30,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Spade_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_3",
+          "priority": -1,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "battle3",
@@ -248,7 +428,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "생존형",
+      "enemyStartMana": 4,
+      "enemyManaRecovery": 3,
+      "enemyManaCap": 10,
+      "enemyBudget": 30,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Heart_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_3",
+          "priority": -1,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "battle4",
@@ -304,7 +544,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "자원형",
+      "enemyStartMana": 4,
+      "enemyManaRecovery": 3,
+      "enemyManaCap": 10,
+      "enemyBudget": 30,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Club_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_3",
+          "priority": -1,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "battle5",
@@ -360,7 +660,77 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "변칙형",
+      "enemyStartMana": 4,
+      "enemyManaRecovery": 3,
+      "enemyManaCap": 10,
+      "enemyBudget": 30,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Diamond_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_7",
+          "priority": 2,
+          "minTurn": 3,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_J",
+          "priority": 3,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_3",
+          "priority": -1,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "battle6",
@@ -416,7 +786,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "혼합형",
+      "enemyStartMana": 4,
+      "enemyManaRecovery": 3,
+      "enemyManaCap": 10,
+      "enemyBudget": 30,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Diamond_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_3",
+          "priority": -1,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "battle7",
@@ -472,7 +902,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "공격형",
+      "enemyStartMana": 4,
+      "enemyManaRecovery": 3,
+      "enemyManaCap": 10,
+      "enemyBudget": 30,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Diamond_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_3",
+          "priority": -1,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "battle8",
@@ -528,7 +1018,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "방해형",
+      "enemyStartMana": 4,
+      "enemyManaRecovery": 3,
+      "enemyManaCap": 10,
+      "enemyBudget": 30,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Spade_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_3",
+          "priority": -1,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "battle9",
@@ -584,7 +1134,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "생존형",
+      "enemyStartMana": 4,
+      "enemyManaRecovery": 3,
+      "enemyManaCap": 10,
+      "enemyBudget": 30,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Heart_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_3",
+          "priority": -1,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "battle10",
@@ -640,7 +1250,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "자원형",
+      "enemyStartMana": 4,
+      "enemyManaRecovery": 3,
+      "enemyManaCap": 10,
+      "enemyBudget": 30,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Club_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_3",
+          "priority": -1,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "elite0",
@@ -707,7 +1377,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "공격형",
+      "enemyStartMana": 6,
+      "enemyManaRecovery": 5,
+      "enemyManaCap": 10,
+      "enemyBudget": 45,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Diamond_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_9",
+          "priority": -1,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "elite1",
@@ -774,7 +1504,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "방해형",
+      "enemyStartMana": 6,
+      "enemyManaRecovery": 5,
+      "enemyManaCap": 10,
+      "enemyBudget": 45,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Spade_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_9",
+          "priority": -1,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "elite2",
@@ -841,7 +1631,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "생존형",
+      "enemyStartMana": 6,
+      "enemyManaRecovery": 5,
+      "enemyManaCap": 10,
+      "enemyBudget": 45,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Heart_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_9",
+          "priority": -1,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "elite3",
@@ -908,7 +1758,67 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "자원형",
+      "enemyStartMana": 6,
+      "enemyManaRecovery": 5,
+      "enemyManaCap": 10,
+      "enemyBudget": 45,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Club_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_J",
+          "priority": 2,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_9",
+          "priority": -1,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 2,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     },
     {
       "id": "augment0",
@@ -1187,7 +2097,117 @@
       "summonBlood": 1,
       "firstCost": 1,
       "manaReduction": 1,
-      "sealedSlot": 2
+      "sealedSlot": 2,
+      "enemyType": "변칙형",
+      "enemyStartMana": 6,
+      "enemyManaRecovery": 5,
+      "enemyManaCap": 10,
+      "enemyBudget": 65,
+      "enemySummonsPerTurn": 1,
+      "enemyExtraTurn": 3,
+      "enemyExtraHP": 50,
+      "enemyPool": [
+        {
+          "card": "Diamond_2",
+          "priority": 0,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 2,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Heart_4",
+          "priority": 1,
+          "minTurn": 2,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Spade_7",
+          "priority": 2,
+          "minTurn": 3,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Club_7",
+          "priority": 2,
+          "minTurn": 4,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_J",
+          "priority": 3,
+          "minTurn": 6,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 0,
+          "condition": ""
+        },
+        {
+          "card": "Unknown_Q",
+          "priority": 3,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 2,
+          "condition": ""
+        },
+        {
+          "card": "Unknown_K",
+          "priority": 4,
+          "minTurn": 8,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": -1,
+          "maxUses": 2,
+          "condition": ""
+        },
+        {
+          "card": "Diamond_8",
+          "priority": -1,
+          "minTurn": 3,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 0,
+          "maxUses": 0,
+          "condition": "pattern"
+        },
+        {
+          "card": "Unknown_K",
+          "priority": -1,
+          "minTurn": 5,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 1,
+          "maxUses": 0,
+          "condition": "pattern"
+        },
+        {
+          "card": "Unknown_Q",
+          "priority": -1,
+          "minTurn": 1,
+          "maxTurn": 0,
+          "weight": 1,
+          "preferredSlot": 3,
+          "maxUses": 0,
+          "condition": "pattern"
+        }
+      ]
     }
   ],
   "difficulties": [
