@@ -227,6 +227,7 @@ namespace Unknown.Battle
                 else Draw(player, 1);
             }
             foreach (var unit in current.Slots) if (unit != null) unit.HasAttacked = false;
+            StartPokerTurn(player);
             StartMapTurn(player);
         }
         public bool ExpireTurn(int actor)
@@ -290,6 +291,7 @@ namespace Unknown.Battle
             Emit(new BattleEvent(BattleEventKind.Summon, actor, source: card.InstanceID, target: card.InstanceID, slot: slot, definition: card.Definition));
             ApplyMapSummon(card);
             ReconcilePoker();
+            if(State.IsOver)return true;
             source = card; effectIndex = 0; selectedTargets.Clear(); chainHits.Clear();
             ResolveEffects(); return true;
         }
@@ -305,10 +307,11 @@ namespace Unknown.Battle
             if (enemySlot == -1)
             {
                 if (opponent.Slots.Any(c => c != null)) return Fail("상대 필드에 유닛이 있어 직접 공격할 수 없습니다.");
-                int damage = Math.Min(opponent.HP, attacker.Attack);
+                int outgoingDamage = PokerAttackDamage(attacker);
+                int damage = Math.Min(opponent.HP, outgoingDamage);
                 bool first=!attacker.FirstAttackHealSpent;attacker.FirstAttackHealSpent=true;
-                attacker.HasAttacked = true; opponent.HP = Math.Max(0, opponent.HP - attacker.Attack);
-                MeasureDamageAttempt(attacker, null, attacker.Attack, damage);
+                attacker.HasAttacked = true; opponent.HP = Math.Max(0, opponent.HP - outgoingDamage);
+                MeasureDamageAttempt(attacker, null, outgoingDamage, damage);
                 Emit(new BattleEvent(BattleEventKind.Attack, actor, source: attacker.InstanceID, amount: damage, targetOwner: 1 - actor));
                 Log($"{attacker.Definition.CardName} → P{2 - actor} 직접 피해 {damage}");
                 if (opponent.HP <= 0) FinishGame(actor, VictoryReason.OpponentHPZero);
@@ -320,7 +323,7 @@ namespace Unknown.Battle
             bool firstAttack=!attacker.FirstAttackHealSpent;attacker.FirstAttackHealSpent=true;
             attacker.HasAttacked = true;
             // Both attacks use the pre-combat stats, even if one of the hits is lethal.
-            int outgoing = attacker.Attack, incoming = defender.Attack;
+            int outgoing = PokerAttackDamage(attacker), incoming = defender.Attack;
             int actualOutgoing = Math.Min(defender.CurrentHP, outgoing), actualIncoming = Math.Min(attacker.CurrentHP, incoming);
             MeasureDamageAttempt(attacker, defender, outgoing, actualOutgoing);
             MeasureDamageAttempt(defender, attacker, incoming, actualIncoming);

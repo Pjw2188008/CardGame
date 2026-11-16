@@ -15,6 +15,7 @@ namespace Unknown.Battle
         public int id, owner, attack, hp, maxHP, summonedTurn;
         public bool occupied, attacked, jokerUsed;
         public bool firstAttackHealSpent;
+        public bool pokerStraightAttackSpent;
         public bool heartMapHealSpent;
         public CardBalanceVersion cardVersion;
         public CardDefinition Definition=>CardDatabase.Get(definition,cardVersion);
@@ -24,7 +25,7 @@ namespace Unknown.Battle
         public bool hasStatLayers;
         public static CardViewData From(CardInstance c) => c == null ? new CardViewData() : new CardViewData {
             occupied = true,
-            heartMapHealSpent=c.HeartMapHealSpent,firstAttackHealSpent=c.FirstAttackHealSpent,cardVersion=c.Definition.Version,
+            pokerStraightAttackSpent=c.PokerStraightAttackSpent,heartMapHealSpent=c.HeartMapHealSpent,firstAttackHealSpent=c.FirstAttackHealSpent,cardVersion=c.Definition.Version,
             id = c.InstanceID, owner = c.Owner, definition = c.Definition.CardID, attack = c.Attack,
             hp = c.CurrentHP, maxHP = c.MaxHP, summonedTurn = c.SummonedTurn, attacked = c.HasAttacked, jokerUsed = c.JokerUsed,
             hasStatLayers=true,rawAttack=c.RawAttack,rawHP=c.RawHP,
@@ -32,7 +33,7 @@ namespace Unknown.Battle
         public CardInstance ToCard() {
             if(!occupied)return null;
             var c=new CardInstance(id, CardDatabase.Get(definition,cardVersion), owner) {
-            HeartMapHealSpent=heartMapHealSpent,FirstAttackHealSpent=firstAttackHealSpent,
+            PokerStraightAttackSpent=pokerStraightAttackSpent,HeartMapHealSpent=heartMapHealSpent,FirstAttackHealSpent=firstAttackHealSpent,
             PokerAttack=pokerAttack,PokerHP=pokerHP,Attack = attack, CurrentHP = hp, MaxHP = maxHP, SummonedTurn = summonedTurn, HasAttacked = attacked, JokerUsed = jokerUsed,
             MapAttack=mapAttack,MapHP=mapHP,JokerAttack=jokerAttack,JokerHP=jokerHP,AbilityAttack=abilityAttack,AbilityHP=abilityHP };
             if(hasStatLayers)c.ImportCore(rawAttack,rawHP);

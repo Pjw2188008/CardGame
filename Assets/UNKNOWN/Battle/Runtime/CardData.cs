@@ -73,6 +73,7 @@ namespace Unknown.Battle
         public int SummonedTurn { get; internal set; } = -1;
         public bool HasAttacked { get; internal set; }
         public bool JokerUsed { get; internal set; }
+        public bool PokerStraightAttackSpent {get;internal set;}
         public bool FirstAttackHealSpent {get;internal set;}
         public bool HeartMapHealSpent {get;internal set;}
         internal CardInstance(int id, CardDefinition definition, int owner)

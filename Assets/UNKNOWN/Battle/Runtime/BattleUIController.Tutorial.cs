@@ -105,7 +105,7 @@ namespace Unknown.Battle
                 case 2:tutorialExplanation.text="목표: 카드 1장 소환\n\n♥3 비용: 1 MP\n소환 후 마나 감소를 확인하세요.\n필드가 꽉 차거나 마나가 부족하면 소환할 수 없습니다.";break;
                 case 3:tutorialExplanation.text="목표: 유닛 공격 + 직접 공격\n\n"+(tutorial.UnitAttack ? "✓ 유닛 공격 완료\n상대 필드가 비었습니다." : "상대 유닛을 먼저 제거하세요.")+"\n\n소환한 턴에는 공격할 수 없습니다. 각 유닛은 턴마다 한 번 공격합니다.";break;
                 case 4:tutorialExplanation.text="목표: 카드 1장 직접 버리기\n\n손패는 최대 8장입니다. 초과한 새 카드만 폐기됩니다.\n\n수동 버리기는 자신의 턴마다 1회, 무료입니다. 즉시 다시 뽑지 않습니다.";break;
-                case 5:tutorialExplanation.text="목표: ONE PAIR · 공격력 +2\n\n같은 계급 5 두 장을 소환하세요.\n♥5 효과의 대상도 선택하세요.\n\n최고 족보 하나만 적용되고,\n깨지면 효과가 해제됩니다.\nJOKER·UNKNOWN은 제외됩니다.\n\n우측 MY SYNERGY 클릭:\n9종 족보 전체 보기";break;
+                case 5:tutorialExplanation.text="목표: ONE PAIR · 아군 전체 공격력 +1\n\n같은 계급 5 두 장을 소환하세요.\n♥5 효과의 대상도 선택하세요.\n\n최고 족보 하나만 적용되고,\n깨지면 효과가 해제됩니다.\n족보 판정은 일반 카드만, 강화는 UNKNOWN도 포함됩니다.\n\n우측 MY SYNERGY 클릭:\n9종 족보 전체 보기";break;
                 case 6:tutorialExplanation.text="목표: 도박 실행 및 결과 확인\n\n성공 50%: 공격력·최대 체력 1.5배 (올림)\n실패 50%: 대상 파괴\n\n어느 결과든 학습 완료입니다. 도박 비용은 2 MP입니다.";break;
                 case 7:tutorialExplanation.text="목표: UNKNOWN 3종 조합 및 필드 배치\n\nA + J → UNKNOWN JACK\nA + Q → UNKNOWN QUEEN\nA + K → UNKNOWN KING\n\n문양은 무관하며 손패 재료만 사용합니다. 비용 0 MP.\n생성 후 다음 재료를 지급합니다.\n생성한 UNKNOWN 3장을 필드로 드래그하세요.\n이 실습에서는 소환 후 마나를 충전합니다.\n\nUNKNOWN "+tutorial.Combinations+"/3";break;
             }
