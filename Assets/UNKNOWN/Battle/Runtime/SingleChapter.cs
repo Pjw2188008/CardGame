@@ -56,6 +56,7 @@ namespace Unknown.Battle
             }
         }
     }
+    public enum SingleNodeState { Current, Available, InsufficientTokens, Unreached, Completed, Skipped }
     [Serializable] public sealed class SingleNode { public int id,layer,lane;public string stage;public int[] next; }
     public static class SingleGraph
     {
@@ -80,6 +81,7 @@ namespace Unknown.Battle
             var seen=new HashSet<int>{0};var economy=new Dictionary<int,int>{{0,data.startingTokens}};
             foreach(var n in nodes) {
                 if(!seen.Contains(n.id))throw new InvalidDataException("Isolated node");
+                if(n.next==null || n.next.Distinct().Count()!=n.next.Length)throw new InvalidDataException("Invalid node edges");
                 if(n.id!=24 && n.next.Length<1)throw new InvalidDataException("Dead end");
                 foreach(int id in n.next) {
                     if(id<=n.id || id>=25 || nodes[id].layer!=n.layer+1)throw new InvalidDataException("Cycle or invalid edge");seen.Add(id);
@@ -90,6 +92,9 @@ namespace Unknown.Battle
                     }
                 }
             }
+            var reachesBoss=new HashSet<int>{24};
+            for(int i=nodes.Length-2;i>=0;i--)if(nodes[i].next.Any(reachesBoss.Contains))reachesBoss.Add(i);
+            if(reachesBoss.Count!=nodes.Length)throw new InvalidDataException("Node cannot reach boss");
             if(!economy.ContainsKey(24))throw new InvalidDataException("No affordable perfect-health boss route");
         }
     }
@@ -135,9 +140,26 @@ namespace Unknown.Battle
         public bool IsTeachingBattle=>Stage.kind==SingleNodeKind.Battle && Run.visited.Count(id=>{var k=Data.stages.First(s=>s.id==Run.nodes[id].stage).kind;return k==SingleNodeKind.Battle || k==SingleNodeKind.Elite;})==1;
         public SingleStage Stage=>Data.stages.First(s=>s.id==Run.nodes[Run.current].stage);
         public IEnumerable<SingleNode> Next=>Run.nodes[Run.current].next.Select(id=>Run.nodes[id]);
+        public SingleNodeState NodeState(int node) {
+            if(node==Run.current)return SingleNodeState.Current;
+            if(Run.visited.Contains(node))return SingleNodeState.Completed;
+            if(Run.nodes[node].layer<=Run.nodes[Run.current].layer)return SingleNodeState.Skipped;
+            if(Run.phase=="map" && Run.nodes[Run.current].next.Contains(node))return EntryError(node).Length==0?SingleNodeState.Available:SingleNodeState.InsufficientTokens;
+            return SingleNodeState.Unreached;
+        }
+        public string EntryError(int node) {
+            if(Run==null || node<0 || node>=Run.nodes.Length)return "현재 위치에서 이동할 수 없습니다.";
+            if(node==Run.current)return "현재 위치입니다.";
+            if(Run.visited.Contains(node))return "이미 완료한 스테이지입니다.";
+            if(Run.phase=="done")return "종료된 런입니다.";
+            if(Run.phase!="map")return "현재 스테이지를 먼저 완료하세요.";
+            if(!Run.nodes[Run.current].next.Contains(node))return Run.nodes[node].layer<=Run.nodes[Run.current].layer?"선택하지 않은 이전 분기입니다.":"연결되지 않은 경로입니다.";
+            int cost=Data.stages.First(s=>s.id==Run.nodes[node].stage).cost;
+            return Run.tokens<cost?$"필요 {cost} / 보유 {Run.tokens} · {cost-Run.tokens}토큰 부족":"";
+        }
         public void Enter(int node) {
-            if(Run.phase!="map" || !Next.Any(n=>n.id==node))throw new InvalidOperationException("현재 이동할 수 없는 노드입니다.");
-            var stage=Data.stages.First(s=>s.id==Run.nodes[node].stage);if(Run.tokens<stage.cost)throw new InvalidOperationException($"토큰 {stage.cost-Run.tokens}개 부족");
+            string reason=EntryError(node);if(reason.Length>0)throw new InvalidOperationException(reason);
+            var stage=Data.stages.First(s=>s.id==Run.nodes[node].stage);
             Run.tokens-=stage.cost;Run.current=node;Run.visited.Add(node);Run.phase="prepare";Run.battle=null;Run.settled=false;Run.offers.Clear();Save();
         }
         public static int Tier(int hp,int maxHP)=>hp<=0?0:Math.Min(4,Math.Max(0,(int)(((long)hp*5-1)/Math.Max(1,maxHP))));
