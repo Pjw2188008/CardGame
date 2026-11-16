@@ -75,20 +75,26 @@ namespace Unknown.Battle
             Text($"HP {r.hp}/{r.maxHP}     ◆ 런 토큰 {r.tokens}",.05f,.815f,.62f,.05f,23);
             var viewport=Rect(root,"Route viewport",.035f,.18f,.66f,.60f,new Color(.025f,.018f,.035f,.82f));viewport.gameObject.AddComponent<RectMask2D>();
             mapScroll=viewport.gameObject.AddComponent<ScrollRect>();mapScroll.horizontal=true;mapScroll.vertical=false;mapScroll.scrollSensitivity=45;mapScroll.viewport=viewport;mapScroll.movementType=ScrollRect.MovementType.Clamped;
-            var plot=Rect(viewport,"Route graph",0,0,0,1);plot.pivot=new Vector2(0,.5f);plot.sizeDelta=new Vector2(2600,0);mapScroll.content=plot;
+            var plot=Rect(viewport,"Route graph",0,0,0,1);plot.pivot=new Vector2(0,.5f);plot.sizeDelta=new Vector2(2800,0);mapScroll.content=plot;
+            var destinations=r.nodes[r.current].next;
+            Text("현재 "+(r.current+1).ToString("00")+" → 이동 경로: "+string.Join(" · ",destinations.Select(id=>"<color="+(Campaign.EntryError(id).Length==0?"#70E5C4":"#E69586")+">"+(id+1).ToString("00")+"</color>")),.05f,.782f,.62f,.028f,18);
+            for(int layer=0;layer<10;layer++)Text(layer==0?"START":layer==9?"BOSS":layer.ToString("00"),.045f+layer*.10f-.035f,.945f,.07f,.04f,18,plot);
             foreach(var n in r.nodes)foreach(int target in n.next) {
                 bool passed=Enumerable.Range(0,Math.Max(0,r.visited.Count-1)).Any(i=>r.visited[i]==n.id && r.visited[i+1]==target);
-                bool current=n.id==r.current;var state=Campaign.NodeState(target);
-                Color color=passed?new Color(.48f,.57f,.65f):current?(state==SingleNodeState.Available?new Color(.35f,.85f,.76f):new Color(.8f,.3f,.3f)):new Color(.33f,.28f,.29f,.6f);
-                bool highlight=current && target==selected;
-                if(highlight)color=state==SingleNodeState.Available?new Color(1,.79f,.32f):new Color(1,.4f,.35f);
-                var line=Rect(plot,"Path "+n.id+"-"+target,0,0,0,0,color);line.GetComponent<Image>().raycastTarget=false;
-                var path=line.gameObject.AddComponent<SinglePathLine>();path.from=Position(n);path.to=Position(r.nodes[target]);path.width=highlight?5:current?4:2;
+                bool current=n.id==r.current,related=n.id==selected || target==selected;
+                bool available=Campaign.EntryError(target).Length==0;
+                Color color=current?(available?new Color(.35f,.9f,.76f):new Color(.9f,.4f,.35f)):related?new Color(1,.79f,.32f):passed?new Color(.60f,.65f,.72f):new Color(.44f,.43f,.48f,selected>=0?.35f:.65f);
+                if(current && target==selected)color=new Color(1,.79f,.32f);
+                var line=Rect(plot,"Path "+n.id+"-"+target,0,0,1,1);
+                var path=line.gameObject.AddComponent<SinglePathLine>();path.raycastTarget=false;path.color=color;
+                path.from=Position(n);path.to=Position(r.nodes[target]);path.width=current?5:related?4:passed?3:2.5f;
+                path.detour=r.nodes[target].layer-n.layer>1;path.rail=.035f+(n.id%3)*.012f;
             }
+            foreach(var path in plot.GetComponentsInChildren<SinglePathLine>().OrderBy(p=>p.width))path.transform.SetAsLastSibling();
             foreach(var n in r.nodes) {
                 var stage=Campaign.Data.stages.First(s=>s.id==n.stage);var pos=Position(n);int id=n.id;var state=Campaign.NodeState(id);
                 string turns=Combat(stage)?"◷ 제한 턴 "+EffectiveTurns(stage,n.id):"";
-                var button=Button(NodeIcon(stage.kind)+" "+ShortKind(stage.kind)+"\n"+turns+"\n◆ 진입 토큰 "+stage.cost+"\n"+StateName(state),pos.x-.035f,pos.y-.105f,.07f,.21f,()=>{selected=id;Map();},true,plot);
+                var button=Button((n.id+1).ToString("00")+" · "+ShortKind(stage.kind)+"\n"+turns+"\n◆ 진입 토큰 "+stage.cost+"\n"+StateName(state),pos.x-.035f,pos.y-.105f,.07f,.21f,()=>{selected=id;Map();},true,plot);
                 button.name="Node "+id;button.GetComponent<Image>().color=NodeColor(state);
                 var edge=button.GetComponent<Outline>();edge.effectDistance=Vector2.one*(selected==id?3:1);edge.effectColor=selected==id?new Color(1,.8f,.32f):new Color(.48f,.35f,.2f);
             }
@@ -106,11 +112,15 @@ namespace Unknown.Battle
             Text(stage.name,.04f,.65f,.92f,.065f,25,panel);
             Text(NodeIcon(stage.kind)+" "+BattleTypeName(stage),.04f,.59f,.92f,.05f,18,panel);
             string details=Combat(stage)?$"난이도: {Campaign.Data.difficulties[Campaign.Run.difficulty].name}\n적 HP {stage.enemyHP}\n◷ 제한 턴 {EffectiveTurns(stage,selected)}\n총 마나 예산 {Campaign.ManaBudgetFor(stage)}":"";
-            Text(details+"\n◆ 진입 토큰 "+stage.cost+"\n방해 효과: "+Restrictions(stage)+"\n보상: "+RewardName(stage),.06f,.24f,.88f,.34f,19,panel);
-            string reason=Campaign.EntryError(selected);Text(reason,.06f,.13f,.88f,.10f,18,panel).color=new Color(1,.64f,.57f);
+            Text(details+"\n◆ 진입 토큰 "+stage.cost+"\n방해 효과: "+Restrictions(stage)+"\n보상: "+RewardName(stage),.06f,.29f,.88f,.29f,19,panel);
+            Text("이전: "+string.Join(" · ",Campaign.Run.nodes.Where(n=>n.next.Contains(selected)).Select(n=>(n.id+1).ToString("00")))+"\n다음: "+(Campaign.Run.nodes[selected].next.Length==0?"도착":string.Join(" · ",Campaign.Run.nodes[selected].next.Select(id=>(id+1).ToString("00")))),.06f,.19f,.88f,.09f,18,panel);
+            string reason=Campaign.EntryError(selected);Text(reason,.06f,.115f,.88f,.065f,18,panel).color=new Color(1,.64f,.57f);
             Button("진입",.10f,.035f,.80f,.075f,()=>{Campaign.Enter(selected);Prepare();},reason.Length==0,panel);
         }
-        Vector2 Position(SingleNode n)=>new Vector2(.045f+n.layer*.10f,n.layer==0 || n.layer==9?.5f:.80f-n.lane*.30f);
+        Vector2 Position(SingleNode n) {
+            int count=Campaign.Run.nodes.Count(x=>x.layer==n.layer);
+            return new Vector2(.045f+n.layer*.10f,count==1?.5f:count==2?.68f-n.lane*.36f:.82f-n.lane*.32f);
+        }
         bool Combat(SingleStage stage)=>stage.kind==SingleNodeKind.Battle || stage.kind==SingleNodeKind.Elite || stage.kind==SingleNodeKind.Boss;
         int EffectiveTurns(SingleStage stage,int node)=>Campaign.TurnLimitFor(stage,node);
         string Restrictions(SingleStage stage)=>string.Join(" / ",stage.restrictions.Concat(new[]{SingleRestriction.FirstCost,SingleRestriction.AttackLimit,SingleRestriction.HalfHealing}.Take(Combat(stage)?Campaign.Data.difficulties[Campaign.Run.difficulty].extraRestrictions:0)).Distinct().Select(RestrictionName).DefaultIfEmpty("없음"));
@@ -233,11 +243,34 @@ namespace Unknown.Battle
         public void OnPointerExit(PointerEventData e)=>hide?.Invoke();
         void OnDisable()=>hide?.Invoke();
     }
-    public sealed class SinglePathLine : MonoBehaviour {
-        public Vector2 from,to;public float width=2;
-        void OnEnable(){Canvas.willRenderCanvases+=Layout;}
-        void OnDisable(){Canvas.willRenderCanvases-=Layout;}
-        void LateUpdate()=>Layout();
-        void Layout(){var r=(RectTransform)transform;var parent=(RectTransform)transform.parent;var size=parent.rect.size;var delta=Vector2.Scale(to-from,size);r.anchorMin=r.anchorMax=Vector2.zero;r.pivot=new Vector2(0,.5f);r.anchoredPosition=Vector2.Scale(from,size);r.sizeDelta=new Vector2(delta.magnitude,width);r.localRotation=Quaternion.Euler(0,0,Mathf.Atan2(delta.y,delta.x)*Mathf.Rad2Deg);}
+    [RequireComponent(typeof(CanvasRenderer))]
+    public sealed class SinglePathLine : MaskableGraphic {
+        public Vector2 from,to;public float width=3,rail=.035f;public bool detour;
+        protected override void OnPopulateMesh(VertexHelper mesh) {
+            mesh.Clear();var rect=rectTransform.rect;
+            Vector2 Point(Vector2 p)=>rect.min+Vector2.Scale(p,rect.size);
+            var a=Point(from+new Vector2(.035f,0));var b=Point(to-new Vector2(.035f,0));
+            float bend=Mathf.Min(70,(b.x-a.x)*.45f);
+            if(detour) {
+                float y=rect.yMin+rail*rect.height;
+                var c=new Vector2(a.x+bend,y);var d=new Vector2(b.x-bend,y);
+                Curve(mesh,a,a+Vector2.right*bend,c+Vector2.up*40,c);
+                Segment(mesh,c,d);Curve(mesh,d,d+Vector2.up*40,b-Vector2.right*bend,b);
+            } else Curve(mesh,a,a+Vector2.right*bend,b-Vector2.right*bend,b);
+            int start=mesh.currentVertCount;
+            mesh.AddVert(b,color,Vector2.zero);mesh.AddVert(b+new Vector2(-13,7),color,Vector2.zero);mesh.AddVert(b+new Vector2(-13,-7),color,Vector2.zero);
+            mesh.AddTriangle(start,start+1,start+2);
+        }
+        void Curve(VertexHelper mesh,Vector2 a,Vector2 b,Vector2 c,Vector2 d) {
+            var previous=a;
+            for(int i=1;i<=16;i++) {float t=i/16f,u=1-t;var point=u*u*u*a+3*u*u*t*b+3*u*t*t*c+t*t*t*d;Segment(mesh,previous,point);previous=point;}
+        }
+        void Segment(VertexHelper mesh,Vector2 a,Vector2 b) {
+            var delta=b-a;if(delta.sqrMagnitude<.001f)return;
+            var normal=new Vector2(-delta.y,delta.x).normalized*width*.5f;int start=mesh.currentVertCount;
+            mesh.AddVert(a-normal,color,Vector2.zero);mesh.AddVert(a+normal,color,Vector2.zero);mesh.AddVert(b+normal,color,Vector2.zero);mesh.AddVert(b-normal,color,Vector2.zero);
+            mesh.AddTriangle(start,start+1,start+2);mesh.AddTriangle(start,start+2,start+3);
+        }
     }
+
 }

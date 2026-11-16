@@ -85,10 +85,23 @@ namespace Unknown.Battle
             for(int layer=0;layer<10;layer++)for(int lane=0;lane<sizes[layer];lane++)nodes.Add(new SingleNode{id=nodes.Count,layer=layer,lane=lane,stage=layer==0 ? data.stages.First(s=>s.kind==SingleNodeKind.Start).id : layer==9 ? data.stages.First(s=>s.kind==SingleNodeKind.Boss).id : order[cursor++].id});
             for(int layer=0;layer<9;layer++) {
                 var from=nodes.Where(n=>n.layer==layer).ToArray();var to=nodes.Where(n=>n.layer==layer+1).ToArray();
-                foreach(var n in from)n.next=to.Length<=2 ? to.Select(x=>x.id).ToArray() : to.OrderBy(_=>r.Next()).Take(r.Next(2,4)).Select(x=>x.id).OrderBy(x=>x).ToArray();
-                foreach(var missing in to.Where(t=>!from.Any(n=>n.next.Contains(t.id)))) {
-                    var source=from.FirstOrDefault(n=>n.next.Length<3);if(source==null)throw new InvalidDataException("Unreachable layer");source.next=source.next.Concat(new[]{missing.id}).OrderBy(x=>x).ToArray();
+                var links=from.ToDictionary(n=>n.id,n=>new HashSet<int>());
+                // Ordered coverage gives every node an entrance and an exit, without crossing lanes.
+                foreach(var n in from) {
+                    int lane=from.Length==1?0:(int)Math.Round((double)n.lane*(to.Length-1)/(from.Length-1));
+                    links[n.id].Add(to[lane].id);
                 }
+                foreach(var target in to.Where(t=>!links.Values.Any(v=>v.Contains(t.id)))) {
+                    int lane=to.Length==1?0:(int)Math.Round((double)target.lane*(from.Length-1)/(to.Length-1));
+                    links[from[lane].id].Add(target.id);
+                }
+                foreach(var edge in from.SelectMany(n=>to.Select(t=>new{source=n,target=t})).OrderBy(_=>r.Next())) {
+                    var set=links[edge.source.id];
+                    if(set.Contains(edge.target.id) || set.Count>=2 || r.NextDouble()>.55)continue;
+                    bool crosses=from.Any(n=>links[n.id].Any(id=>(n.lane-edge.source.lane)*(nodes[id].lane-edge.target.lane)<0));
+                    if(!crosses)set.Add(edge.target.id);
+                }
+                foreach(var n in from)n.next=links[n.id].OrderBy(id=>id).ToArray();
             }
             nodes.Last().next=new int[0];var result=nodes.ToArray();AssignGrowthSafeStages(data,result,order.Skip(6).ToArray(),r);Validate(data,result);return result;
         }
