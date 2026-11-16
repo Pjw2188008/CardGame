@@ -462,6 +462,7 @@ MonoBehaviour:
   networkManager: {fileID: 0}
   gameplayScene: 
   authenticationProfile: 
+  servicesEnvironment: production
 --- !u!114 &252479150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -560,8 +561,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9bbe3ad44e6d924bb028c8144aad448, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   turnDuration: 40
 --- !u!1 &517961112
 GameObject:
@@ -1402,9 +1403,9 @@ MonoBehaviour:
   m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96

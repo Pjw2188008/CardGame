@@ -2,7 +2,7 @@
 .night-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .title-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .title-art-home .title, .title-art-home .flourish { display: none; }
-.title-art-home .menu-shell { position: absolute; top: 62%; left: 0; right: 0; bottom: 1%; width: auto; max-width: none; padding: 0 16px; justify-content: flex-start; }
+.title-art-home .menu-shell { position: absolute; top: 62%; left: 0; right: 0; bottom: auto; width: auto; max-width: none; padding: 0 16px; justify-content: flex-start; transform-origin: 50% 0%; }
 .title-art-home .menu-action { min-height: 34px; margin: 1px 0; padding: 4px 16px; background-color: rgba(10, 4, 3, 0.6); color: rgb(246, 226, 187); }
 .title-art-home .menu-action:hover, .title-art-home .menu-action:focus { background-color: rgba(78, 43, 15, 0.85); color: rgb(255, 244, 211); }
 .title-art-home .action-text { font-size: 21px; }
@@ -11,9 +11,8 @@
 .menu-art .title { color: rgb(246, 226, 187); }
 .menu-art .menu-action { color: rgb(246, 226, 187); background-color: rgba(10, 4, 3, 0.55); }
 .menu-art .menu-action:hover, .menu-art .menu-action:focus { color: rgb(255, 244, 211); background-color: rgba(78, 43, 15, 0.85); }
-.room-scroll { flex-grow: 1; flex-basis: 0; min-height: 0; width: 100%; }
-.room-scroll > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container { flex-grow: 1; align-items: center; justify-content: center; }
-.menu-shell { width: 94%; max-width: 660px; flex-shrink: 0; padding: 44px 28px; align-self: center; align-items: center; justify-content: center; }
+.room-scroll { flex-grow: 1; flex-basis: 0; min-height: 0; width: 100%; padding-bottom: 32px; align-items: center; justify-content: center; overflow: hidden; }
+.menu-shell { width: 94%; max-width: 660px; flex-shrink: 0; padding: 44px 28px; transform-origin: 50% 50%; align-self: center; align-items: center; justify-content: center; }
 .title { width: 100%; font-size: 70px; letter-spacing: 8px; -unity-text-align: middle-center; color: rgb(237, 241, 243); margin: 0; }
 .flourish { width: 340px; height: 28px; margin-top: 3px; margin-bottom: 32px; }
 .page-content { width: 100%; opacity: 1; transition-property: opacity; transition-duration: 0.14s; transition-timing-function: ease-in-out; }

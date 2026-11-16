@@ -24,7 +24,7 @@ namespace Unknown.Multiplayer
         UIDocument document;
         PanelSettings panelSettings;
         Font koreanFont, titleFont;
-        VisualElement content, errorBox;
+        VisualElement content, errorBox, menuViewport, menuShell;
         Image titleBackdrop;
         Image menuBackdrop;
         readonly Dictionary<Page, VisualElement> pages = new Dictionary<Page, VisualElement>();
@@ -80,20 +80,15 @@ namespace Unknown.Multiplayer
                 titleBackdrop=new Image {name="title-background",image=visuals.titleBackground,scaleMode=ScaleMode.ScaleAndCrop,pickingMode=PickingMode.Ignore};
                 titleBackdrop.AddToClassList("title-backdrop");root.Add(titleBackdrop);
             }
-            var scroll = new ScrollView(ScrollViewMode.Vertical);
-            scroll.AddToClassList("room-scroll");
-            scroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
-            root.Add(scroll);
-            // Center against the actual viewport, including when the window is resized.
-            scroll.contentContainer.style.alignItems = Align.Center;
-            scroll.contentContainer.style.justifyContent = Justify.Center;
-            scroll.contentContainer.style.flexGrow = 1;
-            scroll.contentContainer.style.width = Length.Percent(100);
-            scroll.contentViewport.RegisterCallback<GeometryChangedEvent>(evt =>
-                scroll.contentContainer.style.minHeight = evt.newRect.height);
-            var shell = new VisualElement();
+            // Menus fit the viewport; only actual content lists (deck/routes) scroll.
+            menuViewport = new VisualElement();
+            menuViewport.AddToClassList("room-scroll");
+            root.Add(menuViewport);
+            var shell = menuShell = new VisualElement();
             shell.AddToClassList("menu-shell");
-            scroll.Add(shell);
+            menuViewport.Add(shell);
+            menuViewport.RegisterCallback<GeometryChangedEvent>(_ => FitMenu());
+            shell.RegisterCallback<GeometryChangedEvent>(_ => FitMenu());
             var title = Text(shell, "UNKNOWN", "title");
             title.style.unityFontDefinition = FontDefinition.FromFont(titleFont);
             shell.Add(new Flourish());
@@ -171,6 +166,18 @@ namespace Unknown.Multiplayer
             Text(footer, "↑ ↓  선택     ENTER  확인     ESC  돌아가기", "key-hints");
             root.RegisterCallback<KeyDownEvent>(OnKeyDown);
             ShowPage(Page.Home, false);
+        }
+
+        void FitMenu()
+        {
+            if(menuShell==null || menuViewport==null)return;
+            float width=menuShell.layout.width,height=menuShell.layout.height;
+            if(!float.IsFinite(width) || !float.IsFinite(height) || width<=0 || height<=0)return;
+            var area=menuViewport.contentRect;
+            bool home=document.rootVisualElement.ClassListContains("title-art-home");
+            float availableHeight=home ? area.yMax-menuShell.layout.y-8 : area.height-16;
+            float scale=Mathf.Min(1,Mathf.Max(1,area.width-24)/width,Mathf.Max(1,availableHeight)/height);
+            menuShell.style.scale=new Scale(new Vector2(scale,scale));
         }
 
         VisualElement MakePage(Page page)
@@ -258,6 +265,7 @@ namespace Unknown.Multiplayer
             document.rootVisualElement.EnableInClassList("menu-art",illustratedMenu);
             if(menuBackdrop!=null)menuBackdrop.style.display=illustratedMenu ? DisplayStyle.Flex : DisplayStyle.None;
             foreach (var entry in pages) entry.Value.style.display = entry.Key == page ? DisplayStyle.Flex : DisplayStyle.None;
+            menuShell.schedule.Execute(FitMenu);
             if (!focus) return;
             content.schedule.Execute(() =>
             {
