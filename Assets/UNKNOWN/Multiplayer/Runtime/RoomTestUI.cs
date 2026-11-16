@@ -64,8 +64,8 @@ namespace Unknown.Multiplayer
 
         void Build(VisualElement root)
         {
-            koreanFont = Font.CreateDynamicFontFromOSFont(new[] { "Batang", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Serif CJK KR", "Arial" }, 20);
-            titleFont = Font.CreateDynamicFontFromOSFont(new[] { "Times New Roman", "Georgia", "Noto Serif", "Arial" }, 64);
+            koreanFont = Unknown.Battle.PlatformFont.Create(new[] { "Batang", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Serif CJK KR", "Arial" },20,"Serif");
+            titleFont = Unknown.Battle.PlatformFont.Create(new[] { "Times New Roman", "Georgia", "Noto Serif", "Arial" },64,"Title");
             root.style.unityFontDefinition = FontDefinition.FromFont(koreanFont);
             root.AddToClassList("unknown-root");
             var stylesheet = Resources.Load<StyleSheet>("UnknownRoomStyle");

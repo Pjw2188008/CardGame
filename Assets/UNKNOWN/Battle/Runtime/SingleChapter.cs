@@ -138,7 +138,13 @@ namespace Unknown.Battle
         public void Save() {
             string dir=Path.GetDirectoryName(SavePath);Directory.CreateDirectory(dir);string temp=SavePath+".tmp";
             File.WriteAllText(temp,JsonUtility.ToJson(Profile,true));
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // IDBFS is a virtual filesystem; native atomic File.Replace is unavailable.
+            // The web template enables Unity's automatic persistentDataPath -> IndexedDB sync.
+            File.Copy(temp,SavePath,true);File.Delete(temp);
+#else
             if(File.Exists(SavePath))File.Replace(temp,SavePath,null);else File.Move(temp,SavePath);
+#endif
             Changed?.Invoke();
         }
         public bool CanUse(SingleStarter s)=>string.IsNullOrEmpty(s.unlock)||Profile.content.Contains(s.unlock);

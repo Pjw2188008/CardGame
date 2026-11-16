@@ -52,7 +52,7 @@ namespace Unknown.Battle
 
         void Start()
         {
-            font = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Apple SD Gothic Neo", "Arial" }, 18);
+            font = Unknown.Battle.PlatformFont.Create(new[] { "Malgun Gothic", "Apple SD Gothic Neo", "Arial" },18,"Body");
             BuildCanvas(); if(tutorialRequested)StartTutorial(); else if (online == null) NewMatch(); else StartOnline();
         }
         void NewMatch()

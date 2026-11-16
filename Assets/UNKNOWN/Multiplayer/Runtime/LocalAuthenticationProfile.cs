@@ -12,6 +12,12 @@ namespace Unknown.Multiplayer
         public static string Acquire(string configured)
         {
             if(selected!=null)return selected;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // Browser tabs have no OS mutex. Each loaded game uses its own auth cache namespace.
+            // Existing native profiles and their cached credentials are untouched.
+            selected="web_"+Guid.NewGuid().ToString("N").Substring(0,20);
+            return selected;
+#else
             string requested=configured;
             var args=Environment.GetCommandLineArgs();
             int at=Array.IndexOf(args,"-unknownProfile");
@@ -42,6 +48,7 @@ namespace Unknown.Multiplayer
                 if(explicitProfile)throw new InvalidOperationException($"인증 프로필 '{requested}'을 다른 실행 중인 UNKNOWN이 사용하고 있습니다. 다른 -unknownProfile을 지정하거나 옵션 없이 실행하세요.");
             }
             throw new InvalidOperationException("동시에 실행 중인 UNKNOWN 인스턴스가 너무 많습니다.");
+#endif
         }
         static void Release()
         {

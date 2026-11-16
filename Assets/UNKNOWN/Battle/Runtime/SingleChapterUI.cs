@@ -19,7 +19,7 @@ namespace Unknown.Battle
             var go=new GameObject("UNKNOWN Chapter 1");var ui=go.AddComponent<SingleChapterUI>();ui.returnTitle=onReturn;return ui;
         }
         void Start() {
-            font=Font.CreateDynamicFontFromOSFont(new[]{"Malgun Gothic","Arial"},18);
+            font=Unknown.Battle.PlatformFont.Create(new[]{"Malgun Gothic","Arial"},18,"Body");
             var go=new GameObject("Chapter Canvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster));go.transform.SetParent(transform,false);
             var canvas=go.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=1100;
             var scaler=go.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1920,1080);scaler.matchWidthOrHeight=.5f;

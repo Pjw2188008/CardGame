@@ -211,6 +211,10 @@ namespace Unknown.Multiplayer
                 throw new InvalidOperationException("씬에 활성 NetworkManager가 정확히 하나 있어야 합니다. 기존 NetworkManager에 RoomController를 연결하세요.");
             if (!(networkManager.NetworkConfig.NetworkTransport is UnityTransport))
                 throw new InvalidOperationException("기존 NetworkManager의 Network Transport에 UnityTransport를 지정하세요.");
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // MPS 2.4.1 selects Relay WSS for web; UTP must use the matching interface.
+            ((UnityTransport)networkManager.NetworkConfig.NetworkTransport).UseWebSockets=true;
+#endif
             if(networkManager.GetComponents<UnityTransport>().Length != 1)
                 throw new InvalidOperationException("기존 NetworkManager에는 UnityTransport가 정확히 하나 있어야 합니다.");
             if (networkManager.IsListening || networkManager.ShutdownInProgress)

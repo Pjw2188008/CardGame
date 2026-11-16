@@ -12,7 +12,7 @@ namespace Unknown.Battle
         public void Open()
         {
             if(IsOpen)return;draft=Current.Copy();
-            if(optionsFont==null)optionsFont=Font.CreateDynamicFontFromOSFont(new[]{"Malgun Gothic","Arial"},20);
+            if(optionsFont==null)optionsFont=Unknown.Battle.PlatformFont.Create(new[]{"Malgun Gothic","Arial"},20,"Body");
             panel=new GameObject("UNKNOWN Settings",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster));panel.transform.SetParent(transform,false);
             panel.GetComponent<Canvas>().renderMode=RenderMode.ScreenSpaceOverlay;panel.GetComponent<Canvas>().sortingOrder=3000;
             var scaler=panel.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.matchWidthOrHeight=0.5f;

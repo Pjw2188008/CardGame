@@ -12,7 +12,15 @@ namespace Unknown.Multiplayer
         public string LastConnectionFailure { get; private set; } = "";
         public string AuthenticationProfile => UnityServices.State == ServicesInitializationState.Initialized ? AuthenticationService.Instance.Profile : "uninitialized";
         public string AuthenticationPlayerId => UnityServices.State == ServicesInitializationState.Initialized ? AuthenticationService.Instance.PlayerId : "";
-        public int ProcessId => System.Diagnostics.Process.GetCurrentProcess().Id;
+        public int ProcessId {
+            get {
+#if UNITY_WEBGL && !UNITY_EDITOR
+                return 0; // The browser does not expose an OS process ID.
+#else
+                return System.Diagnostics.Process.GetCurrentProcess().Id;
+#endif
+            }
+        }
         public string NetworkState() => networkManager == null ? "manager=null" : $"manager={networkManager.GetInstanceID()} transport={networkManager.NetworkConfig.NetworkTransport?.GetType().Name} listening={networkManager.IsListening} host={networkManager.IsHost} client={networkManager.IsClient} connected={networkManager.IsConnectedClient} localClient={networkManager.LocalClientId} connectedPlayers={ConnectedPlayers}";
         void Trace(string step,string detail,bool failure=false)
         {

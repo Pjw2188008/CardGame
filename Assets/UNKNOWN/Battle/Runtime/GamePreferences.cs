@@ -55,7 +55,14 @@ namespace Unknown.Battle
         }
         public void ApplyScreen(LocalOptions draft) {var copy=draft.Copy();Sanitize(copy);Current.mode=copy.mode;Current.width=copy.width;Current.height=copy.height;Current.vsync=copy.vsync;ApplyDisplay(Current);Save();}
         static FullScreenMode Mode(int mode) => mode==0 ? FullScreenMode.ExclusiveFullScreen : mode==1 ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
-        void ApplyDisplay(LocalOptions v) {QualitySettings.vSyncCount=v.vsync;if(!Application.isBatchMode)Screen.SetResolution(v.width,v.height,Mode(v.mode));}
+        void ApplyDisplay(LocalOptions v) {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // The enclosing page owns canvas resolution; browsers own vsync/window modes.
+            // Fullscreen requests remain tied to the template's user-gesture button.
+#else
+            QualitySettings.vSyncCount=v.vsync;if(!Application.isBatchMode)Screen.SetResolution(v.width,v.height,Mode(v.mode));
+#endif
+        }
         public void Preview(AudioChannel channel)
         {
             if(previewClip==null){const int rate=44100;var data=new float[rate/3];for(int i=0;i<data.Length;i++)data[i]=0.12f*Mathf.Sin(2*Mathf.PI*440*i/rate)*Mathf.Sin(Mathf.PI*i/data.Length);previewClip=AudioClip.Create("Settings preview",data.Length,1,rate,false);previewClip.SetData(data,0);}
