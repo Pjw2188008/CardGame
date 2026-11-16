@@ -85,27 +85,12 @@ namespace Unknown.Battle
             for(int layer=0;layer<10;layer++)for(int lane=0;lane<sizes[layer];lane++)nodes.Add(new SingleNode{id=nodes.Count,layer=layer,lane=lane,stage=layer==0 ? data.stages.First(s=>s.kind==SingleNodeKind.Start).id : layer==9 ? data.stages.First(s=>s.kind==SingleNodeKind.Boss).id : order[cursor++].id});
             for(int layer=0;layer<9;layer++) {
                 var from=nodes.Where(n=>n.layer==layer).ToArray();var to=nodes.Where(n=>n.layer==layer+1).ToArray();
-                var links=from.ToDictionary(n=>n.id,n=>new HashSet<int>());
-                // Ordered coverage gives every node an entrance and an exit, without crossing lanes.
-                foreach(var n in from) {
-                    int lane=from.Length==1?0:(int)Math.Round((double)n.lane*(to.Length-1)/(from.Length-1));
-                    links[n.id].Add(to[lane].id);
-                }
-                foreach(var target in to.Where(t=>!links.Values.Any(v=>v.Contains(t.id)))) {
-                    int lane=to.Length==1?0:(int)Math.Round((double)target.lane*(from.Length-1)/(to.Length-1));
-                    links[from[lane].id].Add(target.id);
-                }
-                foreach(var edge in from.SelectMany(n=>to.Select(t=>new{source=n,target=t})).OrderBy(_=>r.Next())) {
-                    var set=links[edge.source.id];
-                    if(set.Contains(edge.target.id) || set.Count>=2 || r.NextDouble()>.55)continue;
-                    bool crosses=from.Any(n=>links[n.id].Any(id=>(n.lane-edge.source.lane)*(nodes[id].lane-edge.target.lane)<0));
-                    if(!crosses)set.Add(edge.target.id);
-                }
-                foreach(var n in from)n.next=links[n.id].OrderBy(id=>id).ToArray();
+                // Lane never restricts the next layer: every region is a valid route.
+                foreach(var n in from)n.next=to.Select(t=>t.id).ToArray();
             }
             nodes.Last().next=new int[0];var result=nodes.ToArray();AssignGrowthSafeStages(data,result,order.Skip(6).ToArray(),r);Validate(data,result);return result;
         }
-        // Keep the low-HP first six battles, 25 unique stages and the existing random edges.
+        // Keep the low-HP first six battles, 25 unique stages and complete next-layer connections.
         // Assign remaining stage kinds against all incoming path histories, not one sampled route.
         static void AssignGrowthSafeStages(SingleChapterData data,SingleNode[] nodes,SingleStage[] remaining,System.Random random) {
             var pools=remaining.GroupBy(s=>s.kind).ToDictionary(g=>g.Key,g=>g.ToList());

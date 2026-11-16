@@ -83,7 +83,7 @@ namespace Unknown.Battle
                 bool passed=Enumerable.Range(0,Math.Max(0,r.visited.Count-1)).Any(i=>r.visited[i]==n.id && r.visited[i+1]==target);
                 bool current=n.id==r.current,related=n.id==selected || target==selected;
                 bool available=Campaign.EntryError(target).Length==0;
-                Color color=current?(available?new Color(.35f,.9f,.76f):new Color(.9f,.4f,.35f)):related?new Color(1,.79f,.32f):passed?new Color(.60f,.65f,.72f):new Color(.44f,.43f,.48f,selected>=0?.35f:.65f);
+                Color color=current?(available?new Color(.35f,.9f,.76f):new Color(.9f,.4f,.35f)):related?new Color(1,.79f,.32f):passed?new Color(.60f,.65f,.72f):new Color(.44f,.43f,.48f,selected>=0?.16f:.28f);
                 if(current && target==selected)color=new Color(1,.79f,.32f);
                 var line=Rect(plot,"Path "+n.id+"-"+target,0,0,1,1);
                 var path=line.gameObject.AddComponent<SinglePathLine>();path.raycastTarget=false;path.color=color;
