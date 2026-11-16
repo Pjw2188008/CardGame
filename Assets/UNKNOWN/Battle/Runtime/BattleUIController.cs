@@ -239,12 +239,13 @@ namespace Unknown.Battle
         }
         void RunCommand(Func<bool> command, string message)
         {
-            if (Blocked()) return;
+            if(Blocked()){if(singleCampaign!=null)Toast(ActionBlockedReason());return;}
             actionBusy = true;
             bool success;
             try { success = command(); }
             catch { actionBusy = false; throw; }
             if (!success) { actionBusy = false; Result(false); return; }
+            if(singleCampaign!=null && !engine.NeedsTarget)engine.Single.Patterns();
             SingleCheckpoint();
             feedback = message; ClearSelection(); RefreshMana();RefreshPokerUI();
             StartCoroutine(ActionPresentation(engine.DrainEvents()));
@@ -267,7 +268,7 @@ namespace Unknown.Battle
                     pending = HumanAiEvents(engine.DrainEvents());
                 }
             }
-            finally { animations.ClearAction(); actionBusy = false; Refresh();if(aiMode)aiNextAction=Time.unscaledTime+.4f; }
+            finally { animations.ClearAction(); actionBusy = false; Refresh();if(aiMode)aiNextAction=Time.unscaledTime+(singleCampaign!=null?.1f:.4f); }
             if (engine.State.IsOver) ShowWinner();
             else if (engine.State.TurnExpired) StartCoroutine(TransitionTurn(true));
         }
@@ -289,7 +290,7 @@ namespace Unknown.Battle
             }
             finally { animations.ClearAction(); transitioning = false; }
             clock.Begin(Math.Max(1, turnDuration), Time.realtimeSinceStartupAsDouble);
-            if(aiMode)aiNextAction=Time.unscaledTime+.4f;
+            if(aiMode)aiNextAction=Time.unscaledTime+(singleCampaign!=null?.1f:.4f);
             Refresh();
         }
         IEnumerator TransitionTurn(bool timedOut)
@@ -327,7 +328,8 @@ namespace Unknown.Battle
         }
         void SelectHand(CardInstance card)
         {
-            if (Blocked() || card==null) return;
+            if(card==null)return;
+            if(Blocked()){if(singleCampaign!=null)Toast(ActionBlockedReason());return;}
             if(engine.NeedsExchange){ExchangeCard(card.InstanceID);return;}
             if(discardMode) {DiscardSelected(card);return;}
             if(combinationMode) { SelectCombinationMaterial(card); return; }
@@ -350,7 +352,8 @@ namespace Unknown.Battle
         }
         void ClickSlot(int owner, int slot)
         {
-            if (Blocked() || combinationMode || discardMode) return;
+            if(Blocked()){if(singleCampaign!=null)Toast(ActionBlockedReason());return;}
+            if(combinationMode || discardMode)return;
             int active = ViewPlayer;
             if (engine.NeedsTarget) { Dispatch(BattleAction.Target, owner, slot, () => engine.SelectEffectTarget(active, owner, slot), "소환 효과 처리"); return; }
             var unit = engine.State.Players[owner].Board[slot];
@@ -367,7 +370,7 @@ namespace Unknown.Battle
             {
                 handID = -1;
                 if (engine.CanAttack(active, unit)) { attackerID = attackerID == unit.InstanceID ? -1 : unit.InstanceID; feedback = "적 유닛 또는 직접 공격을 선택하세요."; }
-                else { attackerID = -1; feedback = unit.HasAttacked ? "이미 공격했습니다." : "소환한 턴에는 공격할 수 없습니다."; }
+                else { attackerID = -1; feedback = unit.HasAttacked ? "이미 공격했습니다." : "소환한 턴에는 공격할 수 없습니다.";if(singleCampaign!=null)Toast(feedback); }
                 Refresh();
             }
         }
@@ -407,7 +410,7 @@ namespace Unknown.Battle
             ownInfo.text = $"나 · 플레이어 {active + 1}     HP {me.HP} / {engine.Config.StartingHP}     덱 {me.DeckCount}     패 {me.Hand.Count}/{engine.Config.HandLimit}";
             turnText.text = state.IsOver ? $"플레이어 {state.Winner + 1} 승리" : $"턴 {state.TurnNumber} · 플레이어 {state.ActivePlayer + 1}";
             if(aiMode && !state.IsOver)turnText.text=$"턴 {state.TurnNumber} · "+(state.ActivePlayer==0 ? "나" : "AI 생각 중");
-            notice.text = engine.NeedsTarget && state.ActivePlayer==ViewPlayer ? engine.TargetPrompt : Time.unscaledTime < toastUntil ? toastText : "";
+            notice.text = NoticeText();
             RefreshCombinationSlots();
             RefreshMapUI();
             log.text = string.Join("\n", engine.VisibleLog(active).Reverse().Take(3).Reverse());

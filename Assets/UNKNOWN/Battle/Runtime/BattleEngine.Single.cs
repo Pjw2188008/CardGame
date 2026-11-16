@@ -59,8 +59,8 @@ namespace Unknown.Battle
         }
         public string AttackError(CardInstance c,int slot) {
             if(c.Owner!=0)return "";
-            if(Has(SingleRestriction.AttackLimit) && Progress.attacks>=Options.stage.attackLimit)return "이번 턴 공격은 최대 2회입니다.";
-            if(slot<0 && Has(SingleRestriction.DirectLimit) && Progress.directAttacks>=Options.stage.directLimit)return "이번 턴 직접 공격은 최대 1회입니다.";
+            if(Has(SingleRestriction.AttackLimit) && Progress.attacks>=Options.stage.attackLimit)return $"이번 턴 공격은 최대 {Options.stage.attackLimit}회입니다.";
+            if(slot<0 && Has(SingleRestriction.DirectLimit) && Progress.directAttacks>=Options.stage.directLimit)return $"이번 턴 직접 공격은 최대 {Options.stage.directLimit}회입니다.";
             return "";
         }
         public bool Seal(CardInstance c) => c.Owner==0 && (Has(SingleRestriction.SealFirstSummon) && !Progress.firstSummon || Has(SingleRestriction.SealSuit) && c.Definition.Suit==Suit.Spade);
@@ -73,8 +73,8 @@ namespace Unknown.Battle
             if(Aug(11) && !Progress.once[11] && Round==Limit){amount+=Amount(11,3);Progress.once[11]=true;}
             return amount;
         }
-        public bool ExpireBeforeTurnEffects() {
-            if(g.State.IsOver || Round<=Limit)return false;
+        public bool ExpireBeforeTurnEffects(bool endingPlayerTurn=false) {
+            if(g.State.IsOver || Round<Limit || Round==Limit && g.State.ActivePlayer==0 && !endingPlayerTurn)return false;
             Progress.failure="TURN LIMIT";g.SingleFinish(1);return true;
         }
         public void Turn(int owner) {
@@ -154,12 +154,18 @@ namespace Unknown.Battle
         public bool EnemyStep() {
             if(g.State.ActivePlayer!=1 || g.State.IsOver)return false;
             PrepareEnemyTurn();Patterns();if(g.State.IsOver)return false;
-            if(Progress.enemySummoned<EnemyLimit && SummonFromPool())return true;
-            var attacker=g.State.Players[1].Board.FirstOrDefault(c=>g.CanAttack(1,c));
-            if(attacker==null)return g.EndTurn(1);
-            var board=g.State.Players[0].Board;int slot=Enumerable.Range(0,board.Count).Where(i=>board[i]!=null).OrderBy(i=>board[i].CurrentHP).DefaultIfEmpty(-1).First();
-            return g.Attack(1,attacker.InstanceID,slot);
+            bool acted;
+            if(Progress.enemySummoned<EnemyLimit && SummonFromPool())acted=true;
+            else {
+                var attacker=g.State.Players[1].Board.FirstOrDefault(c=>g.CanAttack(1,c));
+                if(attacker==null)return g.EndTurn(1);
+                var board=g.State.Players[0].Board;int slot=Enumerable.Range(0,board.Count).Where(i=>board[i]!=null).OrderBy(i=>board[i].CurrentHP).DefaultIfEmpty(-1).First();
+                acted=g.Attack(1,attacker.InstanceID,slot);
+            }
+            if(acted && !g.State.IsOver)Patterns();
+            return acted;
         }
+
         public bool Recycle(int owner) {
             if(owner!=0)return false;var p=g.State.Players[owner];
             var cards=p.DiscardCards.Where(c=>c.Definition.CardType!=CardType.Unknown).ToArray();

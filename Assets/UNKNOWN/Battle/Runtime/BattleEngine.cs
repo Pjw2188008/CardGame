@@ -210,6 +210,8 @@ namespace Unknown.Battle
         }
         void BeginTurn(int player)
         {
+            // Settle the last allowed player turn before switching perspective or running enemy effects.
+            if(Single!=null && player==1 && State.TurnNumber>0 && Single.ExpireBeforeTurnEffects(true))return;
             State.ActivePlayer = player; State.TurnNumber++; State.SummonsThisTurn = 0;
             State.TurnExpired = false;
             if(Single!=null && Single.ExpireBeforeTurnEffects())return;

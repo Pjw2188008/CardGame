@@ -119,7 +119,12 @@ namespace Unknown.Battle
             tooltip.anchoredPosition=new Vector2(Mathf.Clamp(p.x,bounds.xMin+half.x+10,bounds.xMax-half.x-10),Mathf.Clamp(p.y,bounds.yMin+half.y+10,bounds.yMax-half.y-10));
         }
         void HideTooltip() { HideCardPreview();if(tooltip!=null) tooltip.gameObject.SetActive(false); }
-        void Toast(string text) { toastText=text; toastUntil=Time.unscaledTime+1.5f; }
+        string NoticeText() {
+            if(singleCampaign!=null && Time.unscaledTime<toastUntil)return toastText;
+            return engine.NeedsTarget && engine.State.ActivePlayer==ViewPlayer ? engine.TargetPrompt : Time.unscaledTime<toastUntil ? toastText : "";
+        }
+        string ActionBlockedReason()=>engine.State.IsOver ? "종료된 경기입니다." : engine.State.ActivePlayer!=ViewPlayer ? "상대방의 턴입니다." : engine.State.TurnExpired ? "턴 시간이 종료되었습니다." : "현재 동작을 처리하고 있습니다.";
+        void Toast(string text) { toastText=text; toastUntil=Time.unscaledTime+(singleCampaign!=null?3.5f:1.5f);if(notice!=null)notice.text=text; }
         public bool BeginCardDrag(int id,RectTransform original,PointerEventData data)
         {
             if(tutorial!=null && tutorial.Step!=2 && tutorial.Step!=5 && tutorial.Step!=6 && tutorial.Step!=7)return false;
@@ -205,7 +210,7 @@ namespace Unknown.Battle
             if(AttackDragging && !ReadyToAttack(BoardCard(attackDragID)))EndAttackDrag();
             if(combinationMode && (Blocked() || engine.NeedsTarget || combinationTurn!=engine.State.TurnNumber))CancelInteractionSelection();
             UpdateAttackPointer();
-            notice.text=engine.NeedsTarget && engine.State.ActivePlayer==ViewPlayer ? engine.TargetPrompt : Time.unscaledTime<toastUntil ? toastText : "";
+            notice.text=NoticeText();
             if(layoutWidth==Screen.width && layoutHeight==Screen.height) return;
             layoutWidth=Screen.width; layoutHeight=Screen.height; Canvas.ForceUpdateCanvases();
             float width=Mathf.Min(1060,interactionRoot.rect.width-80);

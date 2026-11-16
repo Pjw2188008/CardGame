@@ -6,7 +6,7 @@ namespace Unknown.Battle
 {
     public sealed partial class BattleUIController
     {
-        SingleCampaign singleCampaign;Action singleReturn;bool singleFinished;Text singleIntent;RectTransform singleDetails;bool singleExpanded;
+        SingleCampaign singleCampaign;Action singleReturn;bool singleFinished;Text singleIntent;RectTransform singleDetails;bool singleExpanded;RectTransform singleNotice;
         public void ConfigureSingle(SingleCampaign campaign,Action onReturn) {
             singleCampaign=campaign;singleReturn=onReturn;aiMode=true;revealHands=false;turnDuration=86400;
             returned=()=>{singleReturn?.Invoke();};
@@ -18,13 +18,13 @@ namespace Unknown.Battle
         }
         void SingleCheckpoint() {
             if(singleCampaign==null || engine==null || singleFinished)return;
-            engine.Single.Patterns();singleCampaign.Run.battle=engine.SaveSingle();
+            singleCampaign.Run.battle=engine.SaveSingle();
             foreach(string id in engine.Single.Progress.usedCards)if(!singleCampaign.Run.usedCards.Contains(id))singleCampaign.Run.usedCards.Add(id);
             singleCampaign.Save();
         }
         void OnApplicationQuit(){SingleCheckpoint();}
         void TickSingleEnemy() {
-            int oldTurn=engine.State.TurnNumber;engine.Single.EnemyStep();SingleCheckpoint();aiNextAction=Time.unscaledTime+.4f;
+            int oldTurn=engine.State.TurnNumber;engine.Single.EnemyStep();SingleCheckpoint();aiNextAction=Time.unscaledTime+.1f;
             if(engine.State.IsOver){StartCoroutine(ActionPresentation(engine.DrainEvents()));return;}
             if(oldTurn!=engine.State.TurnNumber){queuedTurnEvents=HumanAiEvents(engine.DrainEvents());StartCoroutine(BeginTurnPresentation());}
             else StartCoroutine(ActionPresentation(engine.DrainEvents()));
@@ -45,6 +45,16 @@ namespace Unknown.Battle
                 var scroll=intent.gameObject.AddComponent<ScrollRect>();scroll.horizontal=false;scroll.viewport=intent;scroll.content=content;scroll.movementType=ScrollRect.MovementType.Clamped;
                 singleDetails.gameObject.SetActive(singleExpanded);
             }
+            if(singleNotice==null) {
+                singleNotice=Box(interactionRoot,"Single action notice",new Vector2(.28f,.56f),new Vector2(.72f,.65f),new Color(.025f,.025f,.04f,.96f));
+                singleNotice.GetComponent<Image>().raycastTarget=false;
+                singleNotice.gameObject.AddComponent<CanvasGroup>().blocksRaycasts=false;
+                notice.transform.SetParent(singleNotice,false);var rect=notice.rectTransform;
+                rect.anchorMin=new Vector2(.03f,.08f);rect.anchorMax=new Vector2(.97f,.92f);rect.offsetMin=rect.offsetMax=Vector2.zero;
+                notice.fontSize=22;notice.resizeTextForBestFit=true;notice.resizeTextMinSize=16;notice.resizeTextMaxSize=22;
+            }
+            singleNotice.gameObject.SetActive(!engine.State.IsOver && !IsPaused && notice.text.Length>0);
+            if(singleNotice.gameObject.activeSelf)singleNotice.SetAsLastSibling();
             var s=engine.Single;
             singleIntent.text=$"난이도: {s.Options.difficulty.name} · 제한 {s.Limit}턴\n마나 예산 {s.RemainingBudget}/{s.Budget} · 턴 사용 {s.Progress.turnSpent}/{s.Options.stage.turnSpendLimit}\n덱 {engine.State.Players[0].DeckCount}장\n"+s.Intent()+"\n\n제한: "+SingleRestrictionText()+"\n\n증강: "+string.Join(" / ",singleCampaign.Run.augments.Select(id=>singleCampaign.Data.augments.First(a=>a.id==id).name))+"\n보호막 "+s.Progress.shield;
             singleIntent.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,Math.Max(singleDetails.rect.height,singleIntent.preferredHeight+16));

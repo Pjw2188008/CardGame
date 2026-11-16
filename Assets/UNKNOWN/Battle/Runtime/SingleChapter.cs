@@ -105,7 +105,7 @@ namespace Unknown.Battle
                 bool waiting=incoming[index].Any(p=>pending[p]);int consecutive=incoming[index].Select(p=>streak[p]).DefaultIfEmpty(0).Max()+1;
                 foreach(var kind in pools.Keys.Where(k=>pools[k].Count>0).OrderBy(k=>random.Next()).ToArray()) {
                     bool combat=kind==SingleNodeKind.Battle || kind==SingleNodeKind.Elite;
-                    if(nodes[index].layer==8 && !combat || !combat && consecutive>2 || kind==SingleNodeKind.Augment && waiting)continue;
+                    if(nodes[index].layer==8 && !combat || !combat && consecutive>1 || kind==SingleNodeKind.Augment && waiting)continue;
                     int combats=pools.Where(p=>p.Key==SingleNodeKind.Battle || p.Key==SingleNodeKind.Elite).Sum(p=>p.Value.Count);
                     if(nodes[index].layer<8 && combat && combats<=2)continue;
                     var pool=pools[kind];var stage=pool[pool.Count-1];pool.RemoveAt(pool.Count-1);nodes[index].stage=stage.id;
@@ -127,7 +127,24 @@ namespace Unknown.Battle
             }
             foreach(var node in nodes.Where(n=>n.layer==4 || n.layer==6 || n.layer==8)){node.stage=battles[battles.Count-1].id;battles.RemoveAt(battles.Count-1);}
         }
-        public static void Validate(SingleChapterData data,SingleNode[] nodes,bool growthRules=true) {
+        // Old runs keep their stages, rewards and position. Bypass support-to-support
+        // edges through the nearest combat frontier, preserving alternate support choices.
+        public static SingleNode[] RequireCombatBetweenSupport(SingleChapterData data,SingleNode[] original,bool combatBorders=true) {
+            var nodes=original.Select(n=>new SingleNode{id=n.id,layer=n.layer,lane=n.lane,stage=n.stage,next=(int[])n.next.Clone()}).ToArray();
+            var combat=nodes.Select(n=>data.stages.First(s=>s.id==n.stage).IsCombat || n.id==0).ToArray();
+            var edges=nodes.Select(n=>new HashSet<int>(n.next)).ToArray();
+            Func<int,IEnumerable<int>> before=null,after=null;
+            before=id=>original.Where(n=>n.next.Contains(id)).SelectMany(n=>combat[n.id]?new[]{n.id}:before(n.id)).Distinct();
+            after=id=>original[id].next.SelectMany(n=>combat[n]?new[]{n}:after(n)).Distinct();
+            foreach(var node in original)foreach(int target in node.next)if(!combat[node.id] && !combat[target]) {
+                edges[node.id].Remove(target);
+                foreach(int next in after(target))edges[node.id].Add(next);
+                foreach(int previous in before(node.id))edges[previous].Add(target);
+            }
+            foreach(var node in nodes)node.next=edges[node.id].OrderBy(id=>id).ToArray();
+            Validate(data,nodes,true,combatBorders);return nodes;
+        }
+        public static void Validate(SingleChapterData data,SingleNode[] nodes,bool growthRules=true,bool combatBorders=true) {
             if(nodes.Length!=25 || nodes.Select(n=>n.stage).Distinct().Count()!=25 || nodes.Where((n,i)=>n.id!=i).Any() || nodes[0].layer!=0 || nodes[24].layer!=9)throw new InvalidDataException("Invalid graph size");
             if(data.stages.First(s=>s.id==nodes[0].stage).kind!=SingleNodeKind.Start || data.stages.First(s=>s.id==nodes[24].stage).kind!=SingleNodeKind.Boss)throw new InvalidDataException("Invalid start/boss stages");
             var seen=new HashSet<int>{0};var economy=new Dictionary<int,int>{{0,data.startingTokens}};
@@ -136,7 +153,7 @@ namespace Unknown.Battle
                 if(n.next==null || n.next.Distinct().Count()!=n.next.Length)throw new InvalidDataException("Invalid node edges");
                 if(n.id!=24 && n.next.Length<1)throw new InvalidDataException("Dead end");
                 foreach(int id in n.next) {
-                    if(id<=n.id || id>=25 || nodes[id].layer!=n.layer+1)throw new InvalidDataException("Cycle or invalid edge");seen.Add(id);
+                    if(id<=n.id || id>=25 || nodes[id].layer<=n.layer)throw new InvalidDataException("Cycle or invalid edge");seen.Add(id);
                     var s=data.stages.First(x=>x.id==nodes[id].stage);int balance;
                     if(economy.TryGetValue(n.id,out balance) && balance>=s.cost) {
                         int reward=s.kind==SingleNodeKind.Battle || s.kind==SingleNodeKind.Elite || s.kind==SingleNodeKind.Boss ? data.runRewards.Max() : 0;
@@ -149,9 +166,9 @@ namespace Unknown.Battle
                 foreach(var node in nodes.Skip(1)) {
                     var stage=data.stages.First(s=>s.id==node.stage);var parents=nodes.Where(p=>p.next.Contains(node.id)).ToArray();
                     bool waiting=parents.Any(p=>pending[p.id]);int consecutive=parents.Select(p=>streak[p.id]).DefaultIfEmpty(0).Max()+1;
-                    if((parents.Any(p=>p.id==0) || node.next.Contains(24)) && !stage.IsCombat)throw new InvalidDataException("Start/boss must border combat");
+                    if(combatBorders && (parents.Any(p=>p.id==0) || node.next.Contains(24)) && !stage.IsCombat)throw new InvalidDataException("Start/boss must border combat");
                     if(stage.kind==SingleNodeKind.Augment && waiting)throw new InvalidDataException("Augments require an intervening combat");
-                    if(!stage.IsCombat && consecutive>2)throw new InvalidDataException("Three consecutive noncombat nodes");
+                    if(!stage.IsCombat && consecutive>1)throw new InvalidDataException("Consecutive noncombat nodes");
                     pending[node.id]=!stage.IsCombat && (waiting || stage.kind==SingleNodeKind.Augment);streak[node.id]=stage.IsCombat?0:consecutive;
                 }
             }
@@ -165,7 +182,7 @@ namespace Unknown.Battle
     {
         public string id,phase="map",failure="",starter;public int graphVersion;public int seed,difficulty,current,tokens,hp,maxHP,permanentAward,lastRunAward,firstClearAward;
         public SingleNode[] nodes;public List<int> visited=new List<int>{0};public List<string> deck=new List<string>(),augments=new List<string>(),offers=new List<string>();
-        public SingleBattleSave battle;public bool settled;public List<string> usedCards=new List<string>();
+        public SingleBattleSave battle;public bool settled,legacyCombatBorders;public List<string> usedCards=new List<string>();
     }
     [Serializable] public sealed class SingleHistory { public string id,result,starter;public int seed,difficulty,visited,hp,reward; }
     [Serializable] public sealed class SingleProfile
@@ -182,7 +199,13 @@ namespace Unknown.Battle
             Data=data;SavePath=savePath??Path.Combine(Application.persistentDataPath,"unknown-chapter1-v1.json");
             Profile=File.Exists(SavePath) ? JsonUtility.FromJson<SingleProfile>(File.ReadAllText(SavePath)) : new SingleProfile();
             if(Profile==null || Profile.version!=1)throw new InvalidDataException("Unsupported chapter save version");
-            if(Run!=null)SingleGraph.Validate(Data,Run.nodes,Run.graphVersion>=1);
+            if(Run!=null) {
+                SingleGraph.Validate(Data,Run.nodes,false);
+                if(Run.graphVersion<2){
+                    Run.legacyCombatBorders=Run.graphVersion==0;
+                    Run.nodes=SingleGraph.RequireCombatBetweenSupport(Data,Run.nodes,!Run.legacyCombatBorders);Run.graphVersion=2;Save();
+                } else SingleGraph.Validate(Data,Run.nodes,true,!Run.legacyCombatBorders);
+            }
         }
         public void Save() {
             string dir=Path.GetDirectoryName(SavePath);Directory.CreateDirectory(dir);string temp=SavePath+".tmp";
@@ -204,7 +227,7 @@ namespace Unknown.Battle
             if(Run!=null && Run.phase!="done")Finish(false,"ABANDONED");
             SingleNode[] graph=null;for(int attempt=0;attempt<100;attempt++)try{graph=SingleGraph.Generate(Data,unchecked(seed+attempt));seed=unchecked(seed+attempt);break;}catch(InvalidDataException){ }
             if(graph==null)throw new InvalidDataException("Unable to generate affordable graph");
-            Profile.run=new SingleRun{graphVersion=1,id=Guid.NewGuid().ToString("N"),seed=seed,difficulty=difficulty,starter=starter,nodes=graph,tokens=Data.startingTokens,hp=Data.maxHP,maxHP=Data.maxHP,deck=d.cards.ToList()};Save();
+            Profile.run=new SingleRun{graphVersion=2,id=Guid.NewGuid().ToString("N"),seed=seed,difficulty=difficulty,starter=starter,nodes=graph,tokens=Data.startingTokens,hp=Data.maxHP,maxHP=Data.maxHP,deck=d.cards.ToList()};Save();
         }
         public bool IsTeachingBattle=>Stage.kind==SingleNodeKind.Battle && Run.visited.Count(id=>{var k=Data.stages.First(s=>s.id==Run.nodes[id].stage).kind;return k==SingleNodeKind.Battle || k==SingleNodeKind.Elite;})==1;
         public int TurnLimitFor(SingleStage stage,int node)=>stage.ResolveTurnLimit(Data.difficulties[Run.difficulty],Run.nodes[node].layer);
@@ -227,7 +250,9 @@ namespace Unknown.Battle
             if(Run.phase=="done")return "종료된 런입니다.";
             if(Run.phase!="map")return "현재 스테이지를 먼저 완료하세요.";
             if(!Run.nodes[Run.current].next.Contains(node))return Run.nodes[node].layer<=Run.nodes[Run.current].layer?"선택하지 않은 이전 분기입니다.":"연결되지 않은 경로입니다.";
-            int cost=Data.stages.First(s=>s.id==Run.nodes[node].stage).cost;
+            var nextStage=Data.stages.First(s=>s.id==Run.nodes[node].stage);
+            if(Run.current!=0 && !Stage.IsCombat && !nextStage.IsCombat)return "다음 비전투 노드에 가려면 먼저 전투를 클리어해야 합니다.";
+            int cost=nextStage.cost;
             return Run.tokens<cost?$"필요 {cost} / 보유 {Run.tokens} · {cost-Run.tokens}토큰 부족":"";
         }
         public void Enter(int node) {
