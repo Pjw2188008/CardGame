@@ -459,10 +459,15 @@ namespace Unknown.Battle
             Label(cost, (!onBoard && card.Owner==ViewPlayer && def.CardType!=CardType.Joker && engine!=null ? engine.PlacementCost(card) : def.ManaCost).ToString(), Vector2.zero, Vector2.one, 22, Color.white);
             var rankLabel=Label(rect, def.CardType == CardType.Normal ? CardDatabase.RankText(def.Rank) : def.CardName, new Vector2(0.22f, 0.82f), new Vector2(0.98f, 0.99f), unknown ? 14 : 22, ink);rankLabel.name="Card Rank";
             var symbolLabel=Label(rect, unknown ? "UNKNOWN" : def.CardType == CardType.Joker ? "★" : CardDatabase.Symbol(def.Suit), new Vector2(0.05f, 0.48f), new Vector2(0.95f, 0.83f), unknown ? 22 : 46, ink);symbolLabel.name="Card Symbol";
-            var description = Label(rect, CardDisplayText.For(card), new Vector2(0.04f, 0.23f), new Vector2(0.96f, 0.49f), 14, unknown ? ink : new Color(0.15f, 0.18f, 0.2f));
-            description.name="Card Description";description.gameObject.AddComponent<CardDescriptionFit>().SetMaximum(12);
+            var descriptionArea=new GameObject("Card Description",typeof(RectTransform),typeof(RectMask2D)).GetComponent<RectTransform>();
+            descriptionArea.SetParent(rect,false);descriptionArea.anchorMin=new Vector2(.08f,.25f);descriptionArea.anchorMax=new Vector2(.92f,.46f);descriptionArea.offsetMin=descriptionArea.offsetMax=Vector2.zero;
+            var description = Label(descriptionArea, CardDisplayText.For(card), Vector2.zero, Vector2.one, 14, unknown ? ink : new Color(0.15f, 0.18f, 0.2f));
+            description.name="Description Text";description.rectTransform.offsetMin=description.rectTransform.offsetMax=Vector2.zero;description.gameObject.AddComponent<CardDescriptionFit>().SetMaximum(12);
             Label(rect, "", new Vector2(0.01f, 0.055f), new Vector2(0.34f, 0.24f), 26, ink).name="Stat ATK";
             Label(rect, "", new Vector2(0.55f, 0.055f), new Vector2(0.99f, 0.24f), 26, ink).name="Stat HP";
+            var protection=Label(rect,"",new Vector2(.36f,.06f),new Vector2(.55f,.22f),14,new Color(.32f,.8f,1f));
+            protection.name="Stat Protection";protection.resizeTextForBestFit=true;protection.resizeTextMinSize=8;protection.resizeTextMaxSize=14;
+            protection.gameObject.AddComponent<CardBadgeCenter>();
             UpdateCardStats(rect,card,false);
             ApplyCardArtwork(rect,card);
             var hover = rect.gameObject.AddComponent<CardHover>();

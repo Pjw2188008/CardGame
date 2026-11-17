@@ -7,7 +7,7 @@ namespace Unknown.Battle
     public sealed class CardArtLayout : UIBehaviour
     {
         public RawImage artwork;
-        public RectTransform mana,description,attack,health;
+        public RectTransform mana,description,attack,health,protection;
         public bool joker;
         bool layoutPending;
 
@@ -25,15 +25,18 @@ namespace Unknown.Battle
             void Place(RectTransform target,Vector2 min,Vector2 max) {if(target==null)return;target.anchorMin=origin+Vector2.Scale(min,span);target.anchorMax=origin+Vector2.Scale(max,span);target.offsetMin=target.offsetMax=Vector2.zero;}
             Place(artwork.rectTransform,Vector2.zero,Vector2.one);
             Place(mana,joker ? new Vector2(.13f,.815f) : new Vector2(.085f,.785f),joker ? new Vector2(.31f,.965f) : new Vector2(.265f,.935f));
-            Place(description,new Vector2(.15f,joker ? .22f : .24f),new Vector2(.87f,.40f));
+            // Keep ability text above the ATK/HP badges, including their upper edges.
+            Place(description,new Vector2(.155f,joker ? .23f : .26f),new Vector2(.845f,.38f));
             Place(attack,joker ? new Vector2(.30f,.115f) : new Vector2(.115f,.095f),joker ? new Vector2(.70f,.205f) : new Vector2(.275f,.235f));
             Place(health,new Vector2(.745f,.105f),new Vector2(.905f,.245f));
+            Place(protection,new Vector2(.54f,.105f),new Vector2(.735f,.235f));
             float scale=Mathf.Clamp(rect.height*span.y/244f,.5f,3f);
             void Fit(Text text,int maximum,int minimum) {if(text==null)return;text.resizeTextForBestFit=true;text.resizeTextMinSize=minimum;text.resizeTextMaxSize=Mathf.Max(minimum,Mathf.RoundToInt(maximum*scale));text.fontSize=text.resizeTextMaxSize;}
             Fit(mana==null ? null : mana.GetComponentInChildren<Text>(),18,9);
-            if(description!=null){var fit=description.GetComponent<CardDescriptionFit>();if(fit!=null)fit.SetMaximum(Mathf.RoundToInt(10*scale));}
+            if(description!=null){var fit=description.GetComponentInChildren<CardDescriptionFit>();if(fit!=null)fit.SetMaximum(Mathf.RoundToInt(11*scale));}
             Fit(attack==null ? null : attack.GetComponent<Text>(),joker ? 12 : 18,joker ? 7 : 10);
             Fit(health==null ? null : health.GetComponent<Text>(),18,9);
+            Fit(protection==null ? null : protection.GetComponent<Text>(),14,8);
         }
     }
 }

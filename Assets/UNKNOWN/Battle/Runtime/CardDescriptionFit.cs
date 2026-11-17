@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 namespace Unknown.Battle
 {
@@ -13,6 +13,7 @@ namespace Unknown.Battle
         int maximum=12,previousMaximum,chosen=6;
         float previousPixels;
         public void SetMaximum(int size){maximum=Mathf.Max(1,size);RefreshFit();}
+        public void RefitNow(){RefreshFit();}
         protected override void OnEnable(){base.OnEnable();RefreshFit();}
         protected override void OnRectTransformDimensionsChange(){base.OnRectTransformDimensionsChange();RefreshFit();}
         void LateUpdate(){RefreshFit();}

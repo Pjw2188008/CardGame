@@ -66,8 +66,10 @@ namespace Unknown.Battle
             atk.text=card.Definition.CardType==CardType.Joker ? "50%" : card.Attack.ToString();
             atk.color=ink;
             hp.text=card.Definition.CardType==CardType.Joker ? "" : card.CurrentHP.ToString();hp.color=ink;
-            var description=rect.Find("Card Description")?.GetComponent<Text>();
-            if(description!=null)description.text=CardDisplayText.For(card);
+            var protection=rect.Find("Stat Protection")?.GetComponent<Text>();
+            if(protection!=null)protection.text=card.Definition.CardType!=CardType.Joker && card.Protection>0 ? "+"+card.Protection : "";
+            var description=rect.Find("Card Description")?.GetComponentInChildren<Text>();
+            if(description!=null){description.text=CardDisplayText.For(card);description.GetComponent<CardDescriptionFit>()?.RefitNow();}
             if(!onBoard)return;
             bool member=engine.State.Players[card.Owner].Poker.members.Contains(card.InstanceID);
             var icon=rect.Find("Poker Icon");

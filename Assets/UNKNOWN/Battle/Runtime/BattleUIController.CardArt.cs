@@ -14,13 +14,14 @@ namespace Unknown.Battle
             var image=go.GetComponent<RawImage>();image.texture=texture;image.raycastTarget=false;
             var cost=(RectTransform)rect.Find("Mana cost");cost.GetComponent<Image>().color=Color.clear;cost.GetComponent<Image>().raycastTarget=false;
             var costText=cost.GetComponentInChildren<Text>();costText.rectTransform.offsetMin=costText.rectTransform.offsetMax=Vector2.zero;
-            var description=rect.Find("Card Description").GetComponent<Text>();description.color=new Color(.98f,.92f,.82f);
+            var description=rect.Find("Card Description").GetComponentInChildren<Text>();description.color=new Color(.98f,.92f,.82f);
             description.GetComponent<CardDescriptionFit>().SetMaximum(10);
             var atk=rect.Find("Stat ATK").GetComponent<Text>();var hp=rect.Find("Stat HP").GetComponent<Text>();atk.fontSize=18;hp.fontSize=16;
             atk.resizeTextForBestFit=hp.resizeTextForBestFit=true;atk.resizeTextMinSize=10;hp.resizeTextMinSize=9;atk.resizeTextMaxSize=18;hp.resizeTextMaxSize=16;
-            foreach(var text in new[]{costText,description,atk,hp}) {var shadow=text.gameObject.AddComponent<Shadow>();shadow.effectColor=new Color(0,0,0,.85f);shadow.effectDistance=new Vector2(1,-1);}
-            var layout=rect.gameObject.AddComponent<CardArtLayout>();layout.artwork=image;layout.mana=cost;layout.description=description.rectTransform;
-            layout.attack=atk.rectTransform;layout.health=hp.rectTransform;layout.joker=card.Definition.CardType==CardType.Joker;layout.RefreshLayout();
+            var protection=rect.Find("Stat Protection").GetComponent<Text>();
+            foreach(var text in new[]{costText,description,atk,hp,protection}) {var shadow=text.gameObject.AddComponent<Shadow>();shadow.effectColor=new Color(0,0,0,.85f);shadow.effectDistance=new Vector2(1,-1);}
+            var layout=rect.gameObject.AddComponent<CardArtLayout>();layout.artwork=image;layout.mana=cost;layout.description=(RectTransform)rect.Find("Card Description");
+            layout.attack=atk.rectTransform;layout.health=hp.rectTransform;layout.protection=protection.rectTransform;layout.joker=card.Definition.CardType==CardType.Joker;layout.RefreshLayout();
             foreach(var text in new[]{costText,atk,hp})text.gameObject.AddComponent<CardBadgeCenter>();
             UpdateCardStats(rect,card,false);
         }
