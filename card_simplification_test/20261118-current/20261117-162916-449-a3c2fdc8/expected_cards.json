@@ -1,0 +1,927 @@
+{
+  "cards": [
+    {
+      "id": "Diamond_2",
+      "mana": 1,
+      "attack": 2,
+      "hp": 2,
+      "description": "출전: 적 1명 피해 2",
+      "effects": [
+        {
+          "kind": "Damage",
+          "amount": 2,
+          "target": "Enemy",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Diamond_3",
+      "mana": 1,
+      "attack": 3,
+      "hp": 1,
+      "description": "출전: 적 1명 피해 3",
+      "effects": [
+        {
+          "kind": "Damage",
+          "amount": 3,
+          "target": "Enemy",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Diamond_4",
+      "mana": 2,
+      "attack": 3,
+      "hp": 3,
+      "description": "출전: 적 1명 피해 3",
+      "effects": [
+        {
+          "kind": "Damage",
+          "amount": 3,
+          "target": "Enemy",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Diamond_5",
+      "mana": 2,
+      "attack": 4,
+      "hp": 2,
+      "description": "출전: 아군 1명 ATK +2",
+      "effects": [
+        {
+          "kind": "ModifyAttack",
+          "amount": 2,
+          "target": "Ally",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Diamond_6",
+      "mana": 3,
+      "attack": 5,
+      "hp": 3,
+      "description": "출전: 적 1명 피해 5",
+      "effects": [
+        {
+          "kind": "Damage",
+          "amount": 5,
+          "target": "Enemy",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Diamond_7",
+      "mana": 3,
+      "attack": 5,
+      "hp": 4,
+      "description": "출전: 적 1명 보호 제거 후 피해 2",
+      "effects": [
+        {
+          "kind": "RemoveProtection",
+          "amount": 0,
+          "target": "Enemy",
+          "duration": 0,
+          "freshTarget": false
+        },
+        {
+          "kind": "Damage",
+          "amount": 2,
+          "target": "Enemy",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Diamond_8",
+      "mana": 4,
+      "attack": 6,
+      "hp": 4,
+      "description": "출전: 아군 전체 ATK +1",
+      "effects": [
+        {
+          "kind": "ModifyAttack",
+          "amount": 1,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Diamond_9",
+      "mana": 4,
+      "attack": 7,
+      "hp": 4,
+      "description": "출전: 적 1명 피해 6",
+      "effects": [
+        {
+          "kind": "Damage",
+          "amount": 6,
+          "target": "Enemy",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Diamond_10",
+      "mana": 5,
+      "attack": 8,
+      "hp": 5,
+      "description": "출전: 적 전체 피해 3",
+      "effects": [
+        {
+          "kind": "Damage",
+          "amount": 3,
+          "target": "AllEnemies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Diamond_J",
+      "mana": 5,
+      "attack": 7,
+      "hp": 7,
+      "description": "출전: 아군 전체 ATK +2",
+      "effects": [
+        {
+          "kind": "ModifyAttack",
+          "amount": 2,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Diamond_Q",
+      "mana": 6,
+      "attack": 8,
+      "hp": 8,
+      "description": "출전: 적 전체 피해 4",
+      "effects": [
+        {
+          "kind": "Damage",
+          "amount": 4,
+          "target": "AllEnemies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Diamond_K",
+      "mana": 7,
+      "attack": 10,
+      "hp": 9,
+      "description": "출전: 적 1명 피해 8, 아군 1명 ATK +2",
+      "effects": [
+        {
+          "kind": "Damage",
+          "amount": 8,
+          "target": "Enemy",
+          "duration": 0,
+          "freshTarget": false
+        },
+        {
+          "kind": "ModifyAttack",
+          "amount": 2,
+          "target": "Ally",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Diamond_A",
+      "mana": 6,
+      "attack": 9,
+      "hp": 7,
+      "description": "출전: 적 전체 피해 3, 아군 전체 ATK +1",
+      "effects": [
+        {
+          "kind": "Damage",
+          "amount": 3,
+          "target": "AllEnemies",
+          "duration": 0,
+          "freshTarget": false
+        },
+        {
+          "kind": "ModifyAttack",
+          "amount": 1,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_2",
+      "mana": 1,
+      "attack": 1,
+      "hp": 3,
+      "description": "출전: 적 1명 ATK -1, 2턴",
+      "effects": [
+        {
+          "kind": "CardWeaken",
+          "amount": 1,
+          "target": "Enemy",
+          "duration": 2,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_3",
+      "mana": 1,
+      "attack": 2,
+      "hp": 2,
+      "description": "출전: 적 1명 최대 HP -1, 2턴",
+      "effects": [
+        {
+          "kind": "HealthWeaken",
+          "amount": 1,
+          "target": "Enemy",
+          "duration": 2,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_4",
+      "mana": 2,
+      "attack": 2,
+      "hp": 4,
+      "description": "출전: 적 1명 ATK -2, 2턴",
+      "effects": [
+        {
+          "kind": "CardWeaken",
+          "amount": 2,
+          "target": "Enemy",
+          "duration": 2,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_5",
+      "mana": 2,
+      "attack": 3,
+      "hp": 3,
+      "description": "출전: 적 1명 최대 HP -2, 2턴",
+      "effects": [
+        {
+          "kind": "HealthWeaken",
+          "amount": 2,
+          "target": "Enemy",
+          "duration": 2,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_6",
+      "mana": 3,
+      "attack": 4,
+      "hp": 4,
+      "description": "출전: 적 1명 ATK -1, 최대 HP -1, 2턴",
+      "effects": [
+        {
+          "kind": "CardWeaken",
+          "amount": 1,
+          "target": "Enemy",
+          "duration": 2,
+          "freshTarget": false
+        },
+        {
+          "kind": "HealthWeaken",
+          "amount": 1,
+          "target": "Enemy",
+          "duration": 2,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_7",
+      "mana": 3,
+      "attack": 4,
+      "hp": 5,
+      "description": "출전: 적 1명 ATK -2, 3턴",
+      "effects": [
+        {
+          "kind": "CardWeaken",
+          "amount": 2,
+          "target": "Enemy",
+          "duration": 3,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_8",
+      "mana": 4,
+      "attack": 5,
+      "hp": 5,
+      "description": "출전: 적 전체 ATK -1, 2턴",
+      "effects": [
+        {
+          "kind": "CardWeaken",
+          "amount": 1,
+          "target": "AllEnemies",
+          "duration": 2,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_9",
+      "mana": 4,
+      "attack": 6,
+      "hp": 5,
+      "description": "출전: 적 1명 최대 HP -3, 2턴",
+      "effects": [
+        {
+          "kind": "HealthWeaken",
+          "amount": 3,
+          "target": "Enemy",
+          "duration": 2,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_10",
+      "mana": 5,
+      "attack": 6,
+      "hp": 7,
+      "description": "출전: 적 전체 최대 HP -1, 2턴",
+      "effects": [
+        {
+          "kind": "HealthWeaken",
+          "amount": 1,
+          "target": "AllEnemies",
+          "duration": 2,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_J",
+      "mana": 5,
+      "attack": 6,
+      "hp": 7,
+      "description": "출전: 적 1명 ATK -3, 3턴",
+      "effects": [
+        {
+          "kind": "CardWeaken",
+          "amount": 3,
+          "target": "Enemy",
+          "duration": 3,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_Q",
+      "mana": 6,
+      "attack": 7,
+      "hp": 9,
+      "description": "출전: 적 전체 ATK -2, 3턴",
+      "effects": [
+        {
+          "kind": "CardWeaken",
+          "amount": 2,
+          "target": "AllEnemies",
+          "duration": 3,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_K",
+      "mana": 7,
+      "attack": 9,
+      "hp": 9,
+      "description": "출전: 적 1명 ATK -3, 최대 HP -3, 3턴",
+      "effects": [
+        {
+          "kind": "CardWeaken",
+          "amount": 3,
+          "target": "Enemy",
+          "duration": 3,
+          "freshTarget": false
+        },
+        {
+          "kind": "HealthWeaken",
+          "amount": 3,
+          "target": "Enemy",
+          "duration": 3,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Spade_A",
+      "mana": 6,
+      "attack": 8,
+      "hp": 8,
+      "description": "출전: 적 전체 ATK -1, 최대 HP -2, 3턴",
+      "effects": [
+        {
+          "kind": "CardWeaken",
+          "amount": 1,
+          "target": "AllEnemies",
+          "duration": 3,
+          "freshTarget": false
+        },
+        {
+          "kind": "HealthWeaken",
+          "amount": 2,
+          "target": "AllEnemies",
+          "duration": 3,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_2",
+      "mana": 1,
+      "attack": 1,
+      "hp": 4,
+      "description": "출전: 아군 1명 HP 2 회복",
+      "effects": [
+        {
+          "kind": "Heal",
+          "amount": 2,
+          "target": "Ally",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_3",
+      "mana": 1,
+      "attack": 2,
+      "hp": 3,
+      "description": "출전: 아군 1명 보호 2",
+      "effects": [
+        {
+          "kind": "Protection",
+          "amount": 2,
+          "target": "Ally",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_4",
+      "mana": 2,
+      "attack": 2,
+      "hp": 5,
+      "description": "출전: 아군 1명 HP 3 회복",
+      "effects": [
+        {
+          "kind": "Heal",
+          "amount": 3,
+          "target": "Ally",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_5",
+      "mana": 2,
+      "attack": 3,
+      "hp": 4,
+      "description": "출전: 아군 1명 최대 HP +2, 현재 HP +2",
+      "effects": [
+        {
+          "kind": "IncreaseMaxHP",
+          "amount": 2,
+          "target": "Ally",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_6",
+      "mana": 3,
+      "attack": 3,
+      "hp": 6,
+      "description": "출전: 아군 전체 HP 2 회복",
+      "effects": [
+        {
+          "kind": "Heal",
+          "amount": 2,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_7",
+      "mana": 3,
+      "attack": 4,
+      "hp": 6,
+      "description": "출전: 아군 1명 보호 3",
+      "effects": [
+        {
+          "kind": "Protection",
+          "amount": 3,
+          "target": "Ally",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_8",
+      "mana": 4,
+      "attack": 4,
+      "hp": 8,
+      "description": "출전: 아군 전체 최대 HP +1, 현재 HP +1",
+      "effects": [
+        {
+          "kind": "IncreaseMaxHP",
+          "amount": 1,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_9",
+      "mana": 4,
+      "attack": 5,
+      "hp": 7,
+      "description": "출전: 아군 전체 HP 3 회복",
+      "effects": [
+        {
+          "kind": "Heal",
+          "amount": 3,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_10",
+      "mana": 5,
+      "attack": 6,
+      "hp": 9,
+      "description": "출전: 아군 전체 보호 2",
+      "effects": [
+        {
+          "kind": "Protection",
+          "amount": 2,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_J",
+      "mana": 5,
+      "attack": 5,
+      "hp": 10,
+      "description": "출전: 아군 전체 최대 HP +2, 현재 HP +2",
+      "effects": [
+        {
+          "kind": "IncreaseMaxHP",
+          "amount": 2,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_Q",
+      "mana": 6,
+      "attack": 7,
+      "hp": 11,
+      "description": "출전: 아군 전체 HP 4 회복, 보호 2",
+      "effects": [
+        {
+          "kind": "Heal",
+          "amount": 4,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        },
+        {
+          "kind": "Protection",
+          "amount": 2,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_K",
+      "mana": 7,
+      "attack": 8,
+      "hp": 12,
+      "description": "출전: 아군 전체 보호 3, 최대·현재 HP +2",
+      "effects": [
+        {
+          "kind": "Protection",
+          "amount": 3,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        },
+        {
+          "kind": "IncreaseMaxHP",
+          "amount": 2,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Heart_A",
+      "mana": 6,
+      "attack": 7,
+      "hp": 11,
+      "description": "출전: 아군 전체 최대 HP +2, 현재 HP +2, 보호 1",
+      "effects": [
+        {
+          "kind": "IncreaseMaxHP",
+          "amount": 2,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        },
+        {
+          "kind": "Protection",
+          "amount": 1,
+          "target": "AllAllies",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_2",
+      "mana": 1,
+      "attack": 1,
+      "hp": 2,
+      "description": "출전: 카드 1장 드로우",
+      "effects": [
+        {
+          "kind": "DrawCard",
+          "amount": 1,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_3",
+      "mana": 1,
+      "attack": 2,
+      "hp": 2,
+      "description": "출전: 마나 +1",
+      "effects": [
+        {
+          "kind": "GainMana",
+          "amount": 1,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_4",
+      "mana": 2,
+      "attack": 2,
+      "hp": 3,
+      "description": "출전: 손패 1장 버리고 카드 2장 드로우",
+      "effects": [
+        {
+          "kind": "TacticalExchange",
+          "amount": 2,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_5",
+      "mana": 2,
+      "attack": 3,
+      "hp": 3,
+      "description": "출전: 마나 +1",
+      "effects": [
+        {
+          "kind": "GainMana",
+          "amount": 1,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_6",
+      "mana": 3,
+      "attack": 3,
+      "hp": 4,
+      "description": "출전: 카드 2장 드로우",
+      "effects": [
+        {
+          "kind": "DrawCard",
+          "amount": 2,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_7",
+      "mana": 3,
+      "attack": 4,
+      "hp": 4,
+      "description": "출전: 카드 1장 드로우, 마나 +1",
+      "effects": [
+        {
+          "kind": "DrawCard",
+          "amount": 1,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        },
+        {
+          "kind": "GainMana",
+          "amount": 1,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_8",
+      "mana": 4,
+      "attack": 4,
+      "hp": 5,
+      "description": "출전: 카드 2장 드로우",
+      "effects": [
+        {
+          "kind": "DrawCard",
+          "amount": 2,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_9",
+      "mana": 4,
+      "attack": 5,
+      "hp": 5,
+      "description": "출전: 손패 1장 버리고 카드 3장 드로우",
+      "effects": [
+        {
+          "kind": "TacticalExchange",
+          "amount": 3,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_10",
+      "mana": 5,
+      "attack": 6,
+      "hp": 6,
+      "description": "출전: 카드 2장 드로우, 마나 +1",
+      "effects": [
+        {
+          "kind": "DrawCard",
+          "amount": 2,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        },
+        {
+          "kind": "GainMana",
+          "amount": 1,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_J",
+      "mana": 5,
+      "attack": 5,
+      "hp": 7,
+      "description": "출전: 카드 3장 드로우",
+      "effects": [
+        {
+          "kind": "DrawCard",
+          "amount": 3,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_Q",
+      "mana": 6,
+      "attack": 6,
+      "hp": 9,
+      "description": "출전: 손패 최대 2장 교환, 카드 3장 드로우",
+      "effects": [
+        {
+          "kind": "TacticalExchange",
+          "amount": 3,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_K",
+      "mana": 7,
+      "attack": 8,
+      "hp": 9,
+      "description": "출전: 카드 3장 드로우, 마나 +2",
+      "effects": [
+        {
+          "kind": "DrawCard",
+          "amount": 3,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        },
+        {
+          "kind": "GainMana",
+          "amount": 2,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    },
+    {
+      "id": "Club_A",
+      "mana": 6,
+      "attack": 7,
+      "hp": 8,
+      "description": "출전: 카드 2장 드로우, 마나 +2",
+      "effects": [
+        {
+          "kind": "DrawCard",
+          "amount": 2,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        },
+        {
+          "kind": "GainMana",
+          "amount": 2,
+          "target": "None",
+          "duration": 0,
+          "freshTarget": false
+        }
+      ]
+    }
+  ]
+}

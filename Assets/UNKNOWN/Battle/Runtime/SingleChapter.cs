@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -41,6 +41,7 @@ namespace Unknown.Battle
     [Serializable] public sealed class SingleStarter { public string id,name,unlock;public string[] cards; }
     [Serializable] public sealed class SingleChapterData
     {
+        public int startingDeckSize=8;
         public int startingTokens=10,maxHP=30,healing=8,firstClearBonus=20,eventDamage=5,eventTokens=4,eventHealing=4;
         public int[] runRewards={1,2,3,4,5},permanentRewards={10,15,20,25,30};
         public SingleStage[] stages;public SingleDifficulty[] difficulties;public SingleAugment[] augments;public SingleUnlock[] unlocks;public SingleStarter[] starters;
@@ -52,7 +53,7 @@ namespace Unknown.Battle
         public void Validate() {
             if(stages==null || stages.Length!=25 || stages.Select(s=>s.id).Distinct().Count()!=25)throw new InvalidDataException("Chapter requires 25 unique stages");
             int[] counts={1,11,4,3,2,2,1,1};for(int i=0;i<counts.Length;i++)if(stages.Count(s=>(int)s.kind==i)!=counts[i])throw new InvalidDataException("Invalid node composition");
-            if(difficulties.Length!=4 || augments.Length!=12 || starters.Any(s=>s.cards.Length!=12))throw new InvalidDataException("Invalid chapter content");
+            if(startingDeckSize<5 || difficulties.Length!=4 || augments.Length!=12 || starters.Any(s=>s.cards.Length!=12))throw new InvalidDataException("Invalid chapter content");
             if(difficulties.Any(d=>d.additionalTurns<0))throw new InvalidDataException("Invalid difficulty turn bonus");
             foreach(var difficulty in difficulties)foreach(var rule in difficulty.turnAdjustments??new SingleTurnAdjustment[0])if(rule.minLayer<1 || rule.maxLayer>10 || rule.minLayer>rule.maxLayer || rule.reduction<0 || rule.types==null || rule.types.Length==0)throw new InvalidDataException("Invalid turn adjustment");
             foreach(var starter in starters)foreach(string card in starter.cards)CardDatabase.Get(card);
@@ -222,14 +223,25 @@ namespace Unknown.Battle
             Changed?.Invoke();
         }
         public bool CanUse(SingleStarter s)=>string.IsNullOrEmpty(s.unlock)||Profile.content.Contains(s.unlock);
-        public void Start(int difficulty,int seed)=>Start(difficulty,Data.starters.First(s=>string.IsNullOrEmpty(s.unlock)).id,seed);
+        public void Start(int difficulty,int seed)=>StartSelected(difficulty,SingleStartingDeck.Build(CardPool(),Data.startingDeckSize,SingleDeckConcept.Attack),seed);
+        public void StartSelected(int difficulty,IEnumerable<string> cards,int seed) {
+            if(cards==null)throw new InvalidOperationException("시작 카드를 선택하세요.");
+            var deck=cards.ToList();var available=new HashSet<string>(CardPool());
+            if(deck.Count!=Data.startingDeckSize || deck.Distinct().Count()!=deck.Count || deck.Any(id=>id==null || !available.Contains(id)))
+                throw new InvalidOperationException("해금된 카드 중 서로 다른 "+Data.startingDeckSize+"장을 선택하세요.");
+            StartDeck(difficulty,"selected",seed,deck);
+        }
         public void Start(int difficulty,string starter,int seed) {
             if(!Profile.unlocked.Contains(difficulty))throw new InvalidOperationException("난이도가 잠겨 있습니다.");
             var d=Data.starters.First(s=>s.id==starter);if(!CanUse(d))throw new InvalidOperationException("시작 덱이 잠겨 있습니다.");
+            StartDeck(difficulty,starter,seed,d.cards.ToList());
+        }
+        void StartDeck(int difficulty,string starter,int seed,List<string> deck) {
+            if(difficulty<0 || difficulty>=Data.difficulties.Length || !Profile.unlocked.Contains(difficulty))throw new InvalidOperationException("난이도가 잠겨 있습니다.");
             if(Run!=null && Run.phase!="done")Finish(false,"ABANDONED");
             SingleNode[] graph=null;for(int attempt=0;attempt<100;attempt++)try{graph=SingleGraph.Generate(Data,unchecked(seed+attempt));seed=unchecked(seed+attempt);break;}catch(InvalidDataException){ }
             if(graph==null)throw new InvalidDataException("Unable to generate affordable graph");
-            Profile.run=new SingleRun{graphVersion=2,id=Guid.NewGuid().ToString("N"),seed=seed,difficulty=difficulty,starter=starter,nodes=graph,tokens=Data.startingTokens,hp=Data.maxHP,maxHP=Data.maxHP,deck=d.cards.ToList()};Save();
+            Profile.run=new SingleRun{graphVersion=2,id=Guid.NewGuid().ToString("N"),seed=seed,difficulty=difficulty,starter=starter,nodes=graph,tokens=Data.startingTokens,hp=Data.maxHP,maxHP=Data.maxHP,deck=deck.ToList()};Save();
         }
         public bool IsTeachingBattle=>Stage.kind==SingleNodeKind.Battle && Run.visited.Count(id=>{var k=Data.stages.First(s=>s.id==Run.nodes[id].stage).kind;return k==SingleNodeKind.Battle || k==SingleNodeKind.Elite;})==1;
         public int TurnLimitFor(SingleStage stage,int node)=>stage.ResolveTurnLimit(Data.difficulties[Run.difficulty],Run.nodes[node].layer);

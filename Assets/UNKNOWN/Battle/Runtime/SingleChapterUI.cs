@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 namespace Unknown.Battle
 {
-    public sealed class SingleChapterUI : MonoBehaviour
+    public sealed partial class SingleChapterUI : MonoBehaviour
     {
         public SingleCampaign Campaign {get;private set;}RectTransform root;
 #if UNITY_EDITOR
@@ -57,7 +57,7 @@ namespace Unknown.Battle
             root.gameObject.SetActive(true);Clear("CHAPTER 1",true);
             Text("난이도",.1f,.74f,.8f,.04f);
             for(int i=0;i<4;i++){int n=i;var d=Campaign.Data.difficulties[i];var b=Button((difficulty==i?"✓ ":"")+d.name,.12f+i*.195f,.65f,.175f,.065f,()=>{difficulty=n;Home();},Campaign.Profile.unlocked.Contains(i));Hint(b.gameObject,d.name+" · 보상 "+d.rewardPercent+"%"+(Campaign.Profile.unlocked.Contains(i)?"":" · 콘텐츠 해금 필요"));}
-            var start=Button("새로운 런",.33f,.47f,.34f,.075f,()=>{Campaign.Start(difficulty,Environment.TickCount);selected=-1;mapOffset=-1;Map();});Hint(start.gameObject,"기본 덱 12장으로 시작합니다. 진행 중인 런은 종료됩니다.");
+            var start=Button("새로운 런",.33f,.47f,.34f,.075f,ChooseStartingDeck);Hint(start.gameObject,"시작 카드 "+Campaign.Data.startingDeckSize+"장을 선택합니다. 시작을 확정하면 진행 중인 런은 종료됩니다.");
             Button("이어하기",.33f,.36f,.34f,.075f,Continue,Campaign.Run!=null && Campaign.Run.phase!="done");
             Button("해금 콘텐츠",.33f,.24f,.34f,.075f,Shop);Button("뒤로 가기",.33f,.13f,.34f,.075f,Exit);
         }
@@ -254,17 +254,22 @@ namespace Unknown.Battle
             if(texture==null)return null;var frame=Rect(parent,name,x,y,w,h);if(cover)frame.gameObject.AddComponent<RectMask2D>();var rect=Rect(frame,"Texture",0,0,1,1);var image=rect.gameObject.AddComponent<RawImage>();image.texture=texture;image.raycastTarget=false;
             var fit=rect.gameObject.AddComponent<AspectRatioFitter>();fit.aspectRatio=(float)texture.width/texture.height;fit.aspectMode=cover?AspectRatioFitter.AspectMode.EnvelopeParent:AspectRatioFitter.AspectMode.FitInParent;return image;
         }
-        void CardPreview(Transform parent,string id,float x,float y,float w,float h,Action click,bool enabled) {
+        RectTransform CardPreview(Transform parent,string id,float x,float y,float w,float h,Action click,bool enabled,bool compact=false) {
             var def=CardDatabase.Get(id);var rect=Rect(parent,"Card "+id,x,y,w,h,Color.clear);rect.GetComponent<Image>().raycastTarget=true;
             var button=rect.gameObject.AddComponent<Button>();button.interactable=enabled;button.onClick.AddListener(()=>{try{click();}catch(Exception ex){error=ex.Message;Continue();}});
-            var texture=CardArtSettings.TextureFor(id);if(texture==null){Text(def.CardName,0,0,1,1,22,rect);return;}
+            var texture=CardArtSettings.TextureFor(id);if(texture==null){Text(def.CardName,0,0,1,1,22,rect);return rect;}
             var art=Rect(rect,"Card artwork",0,0,1,1).gameObject.AddComponent<RawImage>();art.texture=texture;art.raycastTarget=false;
-            var mana=Text(def.ManaCost.ToString(),0,0,1,1,18,rect);var desc=Text(def.Description,0,0,1,1,10,rect);
+            var mana=Text(def.ManaCost.ToString(),0,0,1,1,18,rect);
+            var descriptionArea=compact ? Rect(rect,"Description viewport",0,0,1,1) : null;
+            if(descriptionArea!=null)descriptionArea.gameObject.AddComponent<RectMask2D>();
+            var desc=Text(compact ? CardDisplayText.For(new CardInstance(-1,def,0)) : def.Description,0,0,1,1,10,descriptionArea!=null ? descriptionArea : rect);
+            if(compact)desc.gameObject.AddComponent<CardDescriptionFit>().SetMaximum(11);
             var attack=Text(def.CardType==CardType.Joker?"50%":def.Attack.ToString(),0,0,1,1,18,rect);var health=Text(def.MaxHP.ToString(),0,0,1,1,18,rect);health.gameObject.SetActive(def.CardType!=CardType.Joker);
             foreach(var text in new[]{mana,desc,attack,health}){text.color=new Color(.98f,.92f,.82f);var shadow=text.gameObject.AddComponent<Shadow>();shadow.effectColor=new Color(0,0,0,.85f);shadow.effectDistance=new Vector2(1,-1);}
             foreach(var text in new[]{mana,attack,health})text.gameObject.AddComponent<CardBadgeCenter>();
-            var layout=rect.gameObject.AddComponent<CardArtLayout>();layout.artwork=art;layout.mana=mana.rectTransform;layout.description=desc.rectTransform;layout.attack=attack.rectTransform;layout.health=health.rectTransform;layout.joker=def.CardType==CardType.Joker;layout.RefreshLayout();
+            var layout=rect.gameObject.AddComponent<CardArtLayout>();layout.artwork=art;layout.mana=mana.rectTransform;layout.description=descriptionArea!=null ? descriptionArea : desc.rectTransform;layout.attack=attack.rectTransform;layout.health=health.rectTransform;layout.joker=def.CardType==CardType.Joker;layout.RefreshLayout();
             rect.gameObject.AddComponent<CardHover>().Configure(null,null,true,parent.GetComponent<LayoutGroup>()==null);
+            return rect;
         }
         static string NodeIcon(SingleNodeKind k)=>new[]{"●","⚔","◆","✦","+","−","?","♛"}[(int)k];
         void Hint(GameObject target,string value) {

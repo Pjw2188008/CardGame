@@ -1,4 +1,5 @@
 {
+  "startingDeckSize": 8,
   "startingTokens": 10,
   "maxHP": 30,
   "healing": 8,

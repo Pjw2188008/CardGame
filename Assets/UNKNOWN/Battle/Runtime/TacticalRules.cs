@@ -9,6 +9,7 @@ namespace Unknown.Battle
         bool Modern(CardInstance c) => c!=null && c.Definition.CardType==CardType.Normal && c.Definition.Version==CardBalanceVersion.FullBalanceRework;
         static bool Passive(CardEffect e) => e.Kind==EffectKind.StrikeBonus || e.Kind==EffectKind.IgnoreProtection || e.Kind==EffectKind.KillHero || e.Kind==EffectKind.KillGrow || e.Kind==EffectKind.WeakStrike || e.Kind==EffectKind.AttackWeaken || e.Kind==EffectKind.FullStrike || e.Kind==EffectKind.TurnHealSelf || e.Kind==EffectKind.TurnGrow;
         bool Eligible(CardEffect e,CardInstance c) {
+            if(e.Kind==EffectKind.RemoveProtection && Modern(source) && source.Definition.CardID=="Diamond_7")return true;
             if(e.Kind==EffectKind.WoundedDamage)return c.CurrentHP<c.MaxHP;
             if(e.Kind==EffectKind.WeakDamage || e.Kind==EffectKind.RemoveProtection)return c.CardWeakening>0;
             if(e.Kind==EffectKind.PriorWeakDamage)return chainHits.Contains(c.InstanceID);
@@ -139,7 +140,8 @@ namespace Unknown.Battle
         }
         void FinishTacticalExchange() {
             var e=source.Definition.EffectList[effectIndex];
-            int draws=e.Amount==4 ? exchangeChosen+2 : exchangeChosen>0 ? e.Amount : 0;
+            // Current cards always draw their stated count after the available discard choices.
+            int draws=Modern(source) ? e.Amount : e.Amount==4 ? exchangeChosen+2 : exchangeChosen>0 ? e.Amount : 0;
             int before=State.Players[source.Owner].HandCards.Count;Draw(source.Owner,draws);
             MeasureBalanceEffect(e,null,State.Players[source.Owner].HandCards.Count-before,"resolved");
             waitingExchange=false;exchangeChosen=0;effectIndex++;

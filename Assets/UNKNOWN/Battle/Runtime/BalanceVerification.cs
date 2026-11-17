@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 namespace Unknown.Battle
 {
-    public static class BalanceVerification
+    public static partial class BalanceVerification
     {
         static BattleEngine Fixture()
         {
