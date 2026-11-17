@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 namespace Unknown.Battle {
     public static partial class CardDatabase {
         static void ApplyTacticalCards(Dictionary<string,CardDefinition> result) {
@@ -18,19 +18,19 @@ namespace Unknown.Battle {
             Set("Diamond_Q",6,8,8,"출전: 적 유닛 1명 피해 4. 처치했다면 아군 전체 ATK +1 영구",new CardEffect(EffectKind.DamageTeamGrow,4,EffectTarget.Enemy));
             Set("Diamond_K",7,10,9,"출전: 적 유닛 1명 피해 5, 자신 보호 3",new CardEffect(EffectKind.Damage,5,EffectTarget.Enemy),new CardEffect(EffectKind.Protection,3,EffectTarget.Self));
             Set("Diamond_A",6,9,7,"출전: 적 유닛 1명 피해 4. 출전 효과 판정 시 필드에 자신 외 다이아 아군이 2장 이상이면 추가 피해 2",new CardEffect(EffectKind.DiamondBonusDamage,4,EffectTarget.Enemy));
-            Set("Spade_2",1,1,3,"출전: 적 유닛 1명 약화 1",new CardEffect(EffectKind.CardWeaken,1,EffectTarget.Enemy));
-            Set("Spade_3",1,2,2,"공격 시: 대상이 약화 상태라면 피해 +2",new CardEffect(EffectKind.WeakStrike,2,EffectTarget.Self));
-            Set("Spade_4",2,2,4,"출전: 적 유닛 1명 약화 2",new CardEffect(EffectKind.CardWeaken,2,EffectTarget.Enemy));
-            Set("Spade_5",2,3,3,"출전: 약화 상태 적 유닛 1명 피해 2",new CardEffect(EffectKind.WeakDamage,2,EffectTarget.Enemy));
-            Set("Spade_6",3,4,4,"공격 시: 대상 약화 1 적용 후 피해 계산",new CardEffect(EffectKind.AttackWeaken,1,EffectTarget.Self));
-            Set("Spade_7",3,4,5,"출전: 약화 상태 적 유닛 1명의 보호 제거",new CardEffect(EffectKind.RemoveProtection,0,EffectTarget.Enemy));
-            Set("Spade_8",4,5,5,"출전: 적 유닛 전체 약화 1",new CardEffect(EffectKind.CardWeaken,1,EffectTarget.AllEnemies));
-            Set("Spade_9",4,6,5,"공격 시: 대상이 약화 상태라면 피해 +3",new CardEffect(EffectKind.WeakStrike,3,EffectTarget.Self));
-            Set("Spade_10",5,6,7,"출전: 약화 상태 적 유닛 1명 피해 4",new CardEffect(EffectKind.WeakDamage,4,EffectTarget.Enemy));
-            Set("Spade_J",5,6,7,"출전: 적 유닛 1명 약화 3",new CardEffect(EffectKind.CardWeaken,3,EffectTarget.Enemy));
-            Set("Spade_Q",6,7,9,"출전: 적 유닛 전체 약화 2",new CardEffect(EffectKind.CardWeaken,2,EffectTarget.AllEnemies));
-            Set("Spade_K",7,9,9,"출전: 적 유닛 1명 피해 5. 대상이 이미 약화 상태라면 추가 피해 3",new CardEffect(EffectKind.WeakBonusDamage,5,EffectTarget.Enemy));
-            Set("Spade_A",6,8,8,"출전: 적 전체 약화 1. 적용 전 이미 약화 상태였던 적 유닛 중 1명에게 피해 3",new CardEffect(EffectKind.WeakenThenDamage,1,EffectTarget.None),new CardEffect(EffectKind.PriorWeakDamage,3,EffectTarget.Enemy));
+            Set("Spade_2",1,1,3,"출전: 적 유닛 1명 ATK -1, 2턴",new CardEffect(EffectKind.CardWeaken,1,EffectTarget.Enemy,false,2));
+            Set("Spade_3",1,2,2,"출전: 적 유닛 1명 최대 HP -1, 2턴",new CardEffect(EffectKind.HealthWeaken,1,EffectTarget.Enemy,false,2));
+            Set("Spade_4",2,2,4,"출전: 적 유닛 1명 ATK -2, 2턴",new CardEffect(EffectKind.CardWeaken,2,EffectTarget.Enemy,false,2));
+            Set("Spade_5",2,3,3,"출전: 적 유닛 1명 최대 HP -2, 2턴",new CardEffect(EffectKind.HealthWeaken,2,EffectTarget.Enemy,false,2));
+            Set("Spade_6",3,4,4,"공격 시: 대상 ATK -1, 2턴. 약화 적용 후 전투",new CardEffect(EffectKind.AttackWeaken,1,EffectTarget.Self,false,2));
+            Set("Spade_7",3,4,5,"출전: 적 유닛 1명 ATK -1, 최대 HP -1, 3턴",new CardEffect(EffectKind.CardWeaken,1,EffectTarget.Enemy,false,3),new CardEffect(EffectKind.HealthWeaken,1,EffectTarget.Enemy,false,3));
+            Set("Spade_8",4,5,5,"출전: 적 유닛 전체 ATK -1, 2턴",new CardEffect(EffectKind.CardWeaken,1,EffectTarget.AllEnemies,false,2));
+            Set("Spade_9",4,6,5,"공격 시: 대상이 공격력 또는 체력 약화 상태라면 이번 공격 피해 +3",new CardEffect(EffectKind.WeakStrike,3,EffectTarget.Self,false,0));
+            Set("Spade_10",5,6,7,"출전: 적 유닛 전체 최대 HP -2, 2턴",new CardEffect(EffectKind.HealthWeaken,2,EffectTarget.AllEnemies,false,2));
+            Set("Spade_J",5,6,7,"출전: 적 유닛 1명 ATK -3, 3턴",new CardEffect(EffectKind.CardWeaken,3,EffectTarget.Enemy,false,3));
+            Set("Spade_Q",6,7,9,"출전: 적 유닛 전체 ATK -2, 2턴",new CardEffect(EffectKind.CardWeaken,2,EffectTarget.AllEnemies,false,2));
+            Set("Spade_K",7,9,9,"출전: 적 유닛 1명 ATK -2, 최대 HP -3, 3턴",new CardEffect(EffectKind.CardWeaken,2,EffectTarget.Enemy,false,3),new CardEffect(EffectKind.HealthWeaken,3,EffectTarget.Enemy,false,3));
+            Set("Spade_A",6,8,8,"출전: 적 유닛 전체 ATK -1, 최대 HP -1, 2턴. 효과 적용 전 이미 약화 상태였던 적 1명에게 추가 피해 3",new CardEffect(EffectKind.WeakenThenDamage,1,EffectTarget.None,false,2),new CardEffect(EffectKind.PriorWeakDamage,3,EffectTarget.Enemy,false,0));
             Set("Heart_2",1,1,4,"출전: 아군 유닛 1명 HP 2 회복",new CardEffect(EffectKind.Heal,2,EffectTarget.Ally));
             Set("Heart_3",1,2,3,"출전: 아군 유닛 1명 보호 2",new CardEffect(EffectKind.Protection,2,EffectTarget.Ally));
             Set("Heart_4",2,2,5,"턴 시작: 자신 HP 1 회복",new CardEffect(EffectKind.TurnHealSelf,1,EffectTarget.Self));

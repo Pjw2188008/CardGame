@@ -171,7 +171,8 @@ namespace Unknown.Battle
                 var target=s.players[m.First].board[m.Second];var effect=o.Pending;
                 m.Score=m.First==a ? UnitValue(target) : UnitValue(target)*.6;
                 if(effect!=null) {if(effect.Kind==EffectKind.Heal)m.Score=Math.Min(effect.Amount,target.maxHP-target.hp)*4;
-                    if(effect.Kind==EffectKind.ChainWeaken)m.Score=Math.Min(effect.Amount,target.attack)*3;
+                    if(effect.Kind==EffectKind.HealthWeaken)m.Score=Math.Min(effect.Amount,Math.Min(3-target.healthWeakening,Math.Max(0,target.maxHP-1)))*3;
+                    if(effect.Kind==EffectKind.CardWeaken || effect.Kind==EffectKind.ChainWeaken)m.Score=Math.Min(effect.Amount,target.attack)*3;
                     if(effect.Kind==EffectKind.Damage || effect.Kind==EffectKind.ChainDamage)m.Score+=target.hp<=effect.Amount ? UnitValue(target)+12 : Math.Min(target.hp,effect.Amount);
                     if(effect.Kind==EffectKind.ModifyAttack)m.Score+=Math.Min(Math.Abs(effect.Amount),target.attack)*2;}
                 m.Reason="유효한 소환 효과 대상";return;

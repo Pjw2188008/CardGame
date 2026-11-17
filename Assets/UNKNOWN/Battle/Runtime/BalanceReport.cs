@@ -18,9 +18,9 @@ namespace Unknown.Battle
         public BalanceEffectDefinition[] effects;
         public static BalanceDefinition From(CardDefinition card) => new BalanceDefinition {
             cardID=card.CardID,name=card.CardName,suit=card.Suit.ToString(),rank=card.Rank.ToString(),type=card.CardType.ToString(),description=card.Description,version=card.Version.ToString(),
-            mana=card.ManaCost,attack=card.Attack,hp=card.MaxHP,effects=card.EffectList.Select(e=>new BalanceEffectDefinition{kind=e.Kind.ToString(),target=e.Target.ToString(),amount=e.Amount,freshTarget=e.FreshTarget}).ToArray()};
+            mana=card.ManaCost,attack=card.Attack,hp=card.MaxHP,effects=card.EffectList.Select(e=>new BalanceEffectDefinition{kind=e.Kind.ToString(),target=e.Target.ToString(),amount=e.Amount,duration=e.Duration,freshTarget=e.FreshTarget}).ToArray()};
     }
-    [Serializable] public sealed class BalanceEffectDefinition {public string kind,target;public int amount;public bool freshTarget;}
+    [Serializable] public sealed class BalanceEffectDefinition {public string kind,target;public int amount,duration;public bool freshTarget;}
     [Serializable]
     public sealed class BalanceCardReport
     {
@@ -182,7 +182,7 @@ namespace Unknown.Battle
             metadata.cardDataSHA256=Hash(string.Join("\n",definitions.Select(d=>JsonUtility.ToJson(d))));
             metadata.mapDataSHA256=Hash(string.Join("\n",run.Rules.MapRules.Select(d=>JsonUtility.ToJson(d)))+string.Join("\n",run.Rules.MapEvents.Select(d=>JsonUtility.ToJson(d))));
             string runtime=Path.Combine(Application.dataPath,"UNKNOWN/Battle/Runtime");
-            metadata.rulesCodeSHA256=Hash(string.Join("\n",new[]{"BattleEngine.Single.cs","FullReworkRules.cs","TacticalRules.cs","TacticalCardCatalog.cs","BattleEngine.cs","BattleEngine.NewEffects.cs","BattleProtocol.cs","CardData.cs","BattleCommands.cs","PokerSynergy.cs","SuitMapRules.cs","JokerMapRules.cs"}.Select(name=>File.ReadAllText(Path.Combine(runtime,name)))));
+            metadata.rulesCodeSHA256=Hash(string.Join("\n",new[]{"BattleEngine.Single.cs","FullReworkRules.cs","TimedWeakness.cs","TacticalRules.cs","TacticalCardCatalog.cs","BattleEngine.cs","BattleEngine.NewEffects.cs","BattleProtocol.cs","CardData.cs","BattleCommands.cs","PokerSynergy.cs","SuitMapRules.cs","JokerMapRules.cs"}.Select(name=>File.ReadAllText(Path.Combine(runtime,name)))));
             metadata.aiCodeSHA256=Hash(string.Join("\n",new[]{"AiAgent.cs","AiObservation.cs","BalancePolicy.cs"}.Select(name=>File.ReadAllText(Path.Combine(runtime,name)))));
             metadata.testerCodeSHA256=Hash(string.Join("\n",new[]{"BalanceTelemetry.cs","BalancePolicy.cs","BalanceTestRun.cs","BalanceReport.cs"}.Select(name=>File.ReadAllText(Path.Combine(runtime,name)))));
             metadata.ruleDataSHA256=Hash(string.Join("|",new object[]{run.Rules.StartingHP,run.Rules.StartingHand,run.Rules.HandLimit,run.Rules.FieldSlots,run.Rules.StartingMana,run.Rules.ManaCap,run.Rules.UnknownLimit,run.Rules.ShuffleDecks,run.Rules.EnablePoker})

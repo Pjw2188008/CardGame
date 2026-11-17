@@ -23,9 +23,11 @@ namespace Unknown.Battle
         public int pokerAttack,pokerHP,mapAttack,mapHP,jokerAttack,jokerHP,abilityAttack,abilityHP;
         public int rawAttack,rawHP;
         public bool hasStatLayers;
+        public int attackWeakTurns,healthWeakTurns,healthWeakening,healthWeakCurrent,attackWeakAppliedTurn,healthWeakAppliedTurn,lastWeakTickTurn,attackWeakSource,healthWeakSource;
         public int protection,protectionSource,cardWeakening,weakUntil,temporaryAttack,growthCount,lastCardTurn;
         public static CardViewData From(CardInstance c) => c == null ? new CardViewData() : new CardViewData {
             occupied = true,
+            attackWeakTurns=c.AttackWeakTurns,healthWeakTurns=c.HealthWeakTurns,healthWeakening=c.HealthWeakening,healthWeakCurrent=c.HealthWeakCurrent,attackWeakAppliedTurn=c.AttackWeakAppliedTurn,healthWeakAppliedTurn=c.HealthWeakAppliedTurn,lastWeakTickTurn=c.LastWeakTickTurn,attackWeakSource=c.AttackWeakSource,healthWeakSource=c.HealthWeakSource,
             protection=c.Protection,protectionSource=c.ProtectionSource,cardWeakening=c.CardWeakening,weakUntil=c.WeakUntil,temporaryAttack=c.TemporaryAttack,growthCount=c.GrowthCount,lastCardTurn=c.LastCardTurn,
             pokerStraightAttackSpent=c.PokerStraightAttackSpent,heartMapHealSpent=c.HeartMapHealSpent,firstAttackHealSpent=c.FirstAttackHealSpent,cardVersion=c.Definition.Version,
             id = c.InstanceID, owner = c.Owner, definition = c.Definition.CardID, attack = c.Attack,
@@ -35,10 +37,12 @@ namespace Unknown.Battle
         public CardInstance ToCard() {
             if(!occupied)return null;
             var c=new CardInstance(id, CardDatabase.Get(definition,cardVersion), owner) {
+            AttackWeakTurns=attackWeakTurns,HealthWeakTurns=healthWeakTurns,HealthWeakening=healthWeakening,HealthWeakCurrent=healthWeakCurrent,AttackWeakAppliedTurn=attackWeakAppliedTurn,HealthWeakAppliedTurn=healthWeakAppliedTurn,LastWeakTickTurn=lastWeakTickTurn,AttackWeakSource=attackWeakSource,HealthWeakSource=healthWeakSource,
             Protection=protection,ProtectionSource=protectionSource,CardWeakening=cardWeakening,WeakUntil=weakUntil,TemporaryAttack=temporaryAttack,GrowthCount=growthCount,LastCardTurn=lastCardTurn,
             PokerStraightAttackSpent=pokerStraightAttackSpent,HeartMapHealSpent=heartMapHealSpent,FirstAttackHealSpent=firstAttackHealSpent,
             PokerAttack=pokerAttack,PokerHP=pokerHP,Attack = attack, CurrentHP = hp, MaxHP = maxHP, SummonedTurn = summonedTurn, HasAttacked = attacked, JokerUsed = jokerUsed,
             MapAttack=mapAttack,MapHP=mapHP,JokerAttack=jokerAttack,JokerHP=jokerHP,AbilityAttack=abilityAttack,AbilityHP=abilityHP };
+            if(c.CardWeakening>0 && c.AttackWeakTurns==0)c.AttackWeakTurns=1; // Legacy saves used next-owner-turn expiry.
             if(hasStatLayers)c.ImportCore(rawAttack,rawHP);
             return c;
         }

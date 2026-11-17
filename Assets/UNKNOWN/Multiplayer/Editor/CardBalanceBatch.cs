@@ -12,7 +12,7 @@ namespace Unknown.Multiplayer.Editor
     {
 
         static BalanceTestRun overhaulRun;
-        const string OverhaulFolder="Library/CardOverhaulFinal";
+        const string OverhaulFolder="Library/SpadeWeakness";
         [Serializable]sealed class ExpectedCard {public string id,description;public int mana,attack,hp;}
         [Serializable]sealed class ExpectedCards {public ExpectedCard[] cards;}
         [Serializable]sealed class OverhaulStatus {public string state,path,error;public int attempted,completed,unresolved,errors;public string[] checks;}
@@ -33,19 +33,25 @@ namespace Unknown.Multiplayer.Editor
                     if(expected.cards.Length!=52)throw new Exception("Expected exactly 52 cards");
                     foreach(var e in expected.cards){var c=CardDatabase.Get(e.id);
                         if(c.ManaCost!=e.mana || c.Attack!=e.attack || c.MaxHP!=e.hp || c.Description!=e.description)throw new Exception("Card definition mismatch: "+e.id);}
-                    var checks=BalanceVerification.VerifyCurrentCards();
+                    var original=JsonUtility.FromJson<BalanceMetadata>(File.ReadAllText(OverhaulFolder+"/baseline.json"));
+                    foreach(var d in original.cards){
+                        var c=CardDatabase.Get(d.cardID);
+                        if(c.Suit!=Suit.Spade || c.CardType!=CardType.Normal){if(JsonUtility.ToJson(d)!=JsonUtility.ToJson(BalanceDefinition.From(c)))throw new Exception("Unrelated card changed: "+c.CardID);}
+                        else if(d.mana!=c.ManaCost || d.attack!=c.Attack || d.hp!=c.MaxHP)throw new Exception("Spade base stats changed: "+c.CardID);
+                    }
+                    var checks=BalanceVerification.VerifyCurrentCards().Concat(BalanceVerification.VerifyTimedSpade()).ToArray();
                     File.WriteAllText(OverhaulFolder+"/effect_checks.json",JsonUtility.ToJson(new OverhaulStatus{state="passed",checks=checks},true));
                     if(File.Exists(OverhaulFolder+"/started.json"))throw new Exception("This validation run was already started; refusing a duplicate run");
                     var schedule=new List<BalanceScheduledMatch>();
                     // The second block supplies replacement attempts only for missing valid map/first-seat quotas.
-                    for(int block=0;block<2;block++)for(int index=0;index<100;index++)for(int map=0;map<6;map++){
-                        int sample=block*100+index,seed=unchecked(17112026+sample*104729);
-                        schedule.Add(new BalanceScheduledMatch{conditionID="current-52-"+sample,swapID="seat-"+(index%2),map=(BattleMap)map,firstPlayer=index%2,
+                    for(int block=0;block<2;block++)for(int index=0;index<30;index++)for(int map=0;map<6;map++){
+                        int sample=block*30+index,seed=unchecked(17112026+sample*104729);
+                        schedule.Add(new BalanceScheduledMatch{conditionID="spade-duration-"+sample,swapID="seat-"+(index%2),map=(BattleMap)map,firstPlayer=index%2,
                             first=(BalanceAI)((index/2)%4),second=(BalanceAI)((index/8)%4),combatSeed=seed,
                             firstDeckSeed=unchecked(seed^0x173142),secondDeckSeed=unchecked(seed^0x483471),firstPolicySeed=unchecked(seed^0x178354),secondPolicySeed=unchecked(seed^0x382917)});
                     }
-                    overhaulRun=new BalanceTestRun(new BalanceTestSettings{matches=schedule.Count,completedPerMap=100,maxTurns=500,maxActions=20000,detailedLog=false},
-                        Path.GetFullPath("card_balance_overhaul_test/20261117-final"),new BattleConfig{EnablePoker=true,MapRules=BattleMapSettings.LoadRules(),MapEvents=JokerMapSettings.LoadRules()},schedule.ToArray());
+                    overhaulRun=new BalanceTestRun(new BalanceTestSettings{matches=schedule.Count,completedPerMap=30,maxTurns=500,maxActions=20000,detailedLog=false},
+                        Path.GetFullPath("spade_weakness_test/20261117-current"),new BattleConfig{EnablePoker=true,MapRules=BattleMapSettings.LoadRules(),MapEvents=JokerMapSettings.LoadRules()},schedule.ToArray());
                     File.WriteAllText(OverhaulFolder+"/started.json",JsonUtility.ToJson(new OverhaulStatus{state="started",path=overhaulRun.DirectoryPath},true));
                     WriteOverhaul("running",checks:checks);
                 }catch(Exception e){WriteOverhaul("failed",e.ToString());Debug.LogException(e);}
@@ -56,7 +62,7 @@ namespace Unknown.Multiplayer.Editor
                 if(overhaulRun.Matches.Count>0 && overhaulRun.Matches.Last().status=="error"){
                     string failure=overhaulRun.Matches.Last().error;overhaulRun.Stop();WriteOverhaul("failed",failure);return;
                 }
-                if(overhaulRun.Finished){WriteOverhaul(overhaulRun.ValidMatches==600 ? "completed" : "incomplete");File.WriteAllText("card_balance_overhaul_test/latest_result.txt",overhaulRun.DirectoryPath);}
+                if(overhaulRun.Finished){WriteOverhaul(overhaulRun.ValidMatches==180 ? "completed" : "incomplete");File.WriteAllText("spade_weakness_test/latest_result.txt",overhaulRun.DirectoryPath);}
                 else if(EditorApplication.timeSinceStartup%2<.05)WriteOverhaul("running");
             }catch(Exception e){WriteOverhaul("failed",e.ToString());Debug.LogException(e);}
         }

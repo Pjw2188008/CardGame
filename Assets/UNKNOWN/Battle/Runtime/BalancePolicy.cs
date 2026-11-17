@@ -57,6 +57,7 @@ namespace Unknown.Battle
                 if(effect.Kind==EffectKind.CardWeaken || effect.Kind==EffectKind.ChainWeaken)return Math.Min(effect.Amount,target.attack)*3;
                 if(effect.Kind==EffectKind.Heal)return Math.Min(effect.Amount,target.maxHP-target.hp)*(control ? 5 : 3);
                 if(effect.Kind==EffectKind.ModifyAttack)return effect.Amount>0 ? effect.Amount*(target.attacked ? 1 : 3) : Math.Min(-effect.Amount,target.attack)*3;
+                if(effect.Kind==EffectKind.HealthWeaken)return Math.Min(effect.Amount,Math.Min(3-target.healthWeakening,Math.Max(0,target.maxHP-1)))*3;
                 if(effect.Kind==EffectKind.Protection)return Math.Max(0,effect.Amount-target.protection)*(control ? 3 : 2);
                 if(effect.Kind==EffectKind.TemporaryAttack)return effect.Amount*(target.attacked ? 1 : 3);
                 if(effect.Kind==EffectKind.RemoveProtection)return target.protection*3;
@@ -90,6 +91,7 @@ namespace Unknown.Battle
                         ability+=foes.Length==0 ? 0 : Math.Min(effect.Amount,foes.Max(c=>c.hp))*(effect.Kind==EffectKind.ChainDamage ? Math.Min(2,foes.Length) : count)*2;break;
                     case EffectKind.SelfDamage:ability-=effect.Amount;break;
                     case EffectKind.Heal:ability+=targets.Length==0 ? 0 : Math.Min(effect.Amount,targets.Max(c=>c.maxHP-c.hp))*count*(control ? 3 : 1);break;
+                    case EffectKind.HealthWeaken:ability+=targets.Sum(t=>Math.Min(effect.Amount,Math.Min(3-t.healthWeakening,Math.Max(0,t.maxHP-1))))*2;break;
                     case EffectKind.CardWeaken:case EffectKind.Protection:case EffectKind.TemporaryAttack:case EffectKind.ModifyAttack:ability+=Math.Abs(effect.Amount)*count*(effect.Amount<0 ? 2 : 1.5);break;
                     case EffectKind.IncreaseMaxHP:ability+=effect.Amount*count*(control ? 2 : 1);break;
                     case EffectKind.DrawCard:ability+=Math.Min(effect.Amount,Math.Min(own.deckCount,8-own.handCount+1))*(control ? 4 : 2);break;

@@ -22,6 +22,9 @@ namespace Unknown.Battle
             => BalanceObserver?.Effect(this,card,effect,card,actual,"resolved");
         partial void MeasureTactical(CardInstance dealer,CardEffect e,CardInstance target,int actual,string outcome) => BalanceObserver?.Effect(this,dealer,e,target,actual,outcome);
         partial void MeasureTacticalHealing(CardInstance dealer,int actual) => (BalanceObserver as BalanceMatchCollector)?.TacticalHealing(dealer,actual);
+        partial void MeasureWeakApplied(CardInstance dealer,bool health,int reduction,bool successful) => (BalanceObserver as BalanceMatchCollector)?.WeakApplied(dealer,health,reduction,successful);
+        partial void MeasureWeakDuration(int sourceID,bool health,bool expired) => (BalanceObserver as BalanceMatchCollector)?.WeakDuration(sourceID,health,expired);
+        partial void MeasureWeakCondition(CardInstance dealer,bool successful) => (BalanceObserver as BalanceMatchCollector)?.WeakCondition(dealer,successful);
         partial void MeasureProtection(int sourceID,int prevented) => (BalanceObserver as BalanceMatchCollector)?.ProtectionPrevented(sourceID,prevented);
         partial void MeasureAttackRecoverySkipped(CardInstance card,CardEffect effect)
             => BalanceObserver?.Effect(this,card,effect,card,0,"source_destroyed");
@@ -36,6 +39,8 @@ namespace Unknown.Battle
         public long useTurnSum,summons,survivalTurnSum,deadUnits,censoredUnits,manaPaid;
         public long attackDamage,effectDamage,enemyUnitDamage,enemyHeroDamage,selfDamage,damageReceived,kills;
         public long protectionPrevented,weakenApplications;
+        public long spadeEffectAttempts,spadeEffectSuccesses,attackWeakAttempts,healthWeakAttempts,attackWeakApplications,healthWeakApplications,attackWeakReduction,healthWeakReduction;
+        public long attackWeakOwnerTurns,healthWeakOwnerTurns,attackWeakExpiries,healthWeakExpiries,weakConditionalAttempts,weakConditionalSuccesses;
         public long healing,attackIncrease,attackDecrease,extraHP,draws,discardEffects;
         public long afterAttackHealing,manaGained,manaWasted,exchangeDraws,exchangesSkipped,jokerPaidUses,jokerFreeUses,overflowDraws,unknownCreated;
         public long effectActivations,effectApplications,effectSuccesses,effectFailures,conditionsMet,invalidated;
@@ -179,6 +184,12 @@ namespace Unknown.Battle
         {
             card.stats.uses++;card.stats.useTurnSum+=engine.State.TurnNumber;used.Add(card.card.InstanceID);
         }
+        public void WeakApplied(CardInstance card,bool health,int reduction,bool successful){var r=Track(card).stats;
+            if(health){r.healthWeakAttempts++;r.healthWeakReduction+=reduction;if(successful)r.healthWeakApplications++;}
+            else {r.attackWeakAttempts++;r.attackWeakReduction+=reduction;if(successful)r.attackWeakApplications++;}}
+        public void WeakDuration(int sourceID,bool health,bool expired){var r=Find(sourceID)?.stats;if(r==null)return;
+            if(health){r.healthWeakOwnerTurns++;if(expired)r.healthWeakExpiries++;}else{r.attackWeakOwnerTurns++;if(expired)r.attackWeakExpiries++;}}
+        public void WeakCondition(CardInstance card,bool successful){var r=Track(card).stats;r.weakConditionalAttempts++;if(successful)r.weakConditionalSuccesses++;}
         public void TacticalHealing(CardInstance source,int actual){Track(source).stats.healing+=actual;}
         public void ProtectionPrevented(int sourceID,int actual){var source=Find(sourceID);if(source!=null)source.stats.protectionPrevented+=actual;}
         public void DamageAttempt(CardInstance dealer,CardInstance target,int requested,int actual) {
@@ -299,6 +310,10 @@ namespace Unknown.Battle
         {
             var source=Track(card);int index=card.Definition.EffectList.ToList().IndexOf(effect);
             var row=EffectRow(source,index,effect.Kind.ToString(),effect.Target.ToString());
+            if(card.Definition.Suit==Suit.Spade && card.Definition.CardType==CardType.Normal){
+                source.stats.spadeEffectAttempts++;
+                if(outcome=="resolved" && target!=null && (actual!=0 || effect.Kind==EffectKind.CardWeaken && target.CardWeakening>0 || effect.Kind==EffectKind.HealthWeaken && target.HealthWeakening>0 || effect.Kind==EffectKind.WeakenThenDamage && BattleEngine.IsWeakened(target)))source.stats.spadeEffectSuccesses++;
+            }
             bool first=activations.Add(card.InstanceID+"|"+index);
             if(first){row.activations++;source.stats.effectActivations++;}
             row.applications++;source.stats.effectApplications++;

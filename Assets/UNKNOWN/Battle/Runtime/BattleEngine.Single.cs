@@ -49,6 +49,12 @@ namespace Unknown.Battle
         public int Amount(int i,int fallback=1)=>Options.augmentData?.FirstOrDefault(a=>a.id==i.ToString())?.amount ?? fallback;
         public bool Aug(int i)=>Options.augments.Contains(i.ToString());
         public SingleBattleSession(BattleEngine engine,SingleBattleOptions options){g=engine;Options=options;Progress.shield=Aug(4)?Amount(4,4):0;}
+        internal int WeakeningDuration(CardInstance dealer,int duration) {
+            if(dealer.Owner==0 && Aug(2)) {
+                if(!Progress.firstWeakening){Progress.firstWeakening=true;Progress.weakenSource=dealer.InstanceID;Progress.weakenIndex=g.PendingIndex;Progress.weakenTurn=g.State.TurnNumber;}
+                if(Progress.weakenSource==dealer.InstanceID && Progress.weakenIndex==g.PendingIndex && Progress.weakenTurn==g.State.TurnNumber)duration+=Options.augmentData?.FirstOrDefault(a=>a.id=="2")?.duration ?? 1;
+            }return duration;
+        }
         public int Cost(CardInstance c)=>c.Definition.ManaCost+(Has(SingleRestriction.FirstCost) && !Progress.firstSummon && c.Definition.CardType!=CardType.Joker?Options.stage.firstCost:0);
         public bool Payable(int amount)=>amount<=RemainingBudget && Progress.turnSpent+amount<=Options.stage.turnSpendLimit;
         public string SummonError(CardInstance c,int slot) {
@@ -170,7 +176,7 @@ namespace Unknown.Battle
             if(owner!=0)return false;var p=g.State.Players[owner];
             var cards=p.DiscardCards.Where(c=>c.Definition.CardType!=CardType.Unknown).ToArray();
             if(cards.Length==0)return false;
-            foreach(var c in cards){p.DiscardCards.Remove(c);c.PokerAttack=c.PokerHP=0;c.ImportCore(c.Definition.Attack,c.Definition.MaxHP);c.CurrentHP=c.MaxHP;c.AbilityAttack=c.AbilityHP=c.MapAttack=c.MapHP=c.JokerAttack=c.JokerHP=0;c.HasAttacked=c.JokerUsed=c.FirstAttackHealSpent=c.PokerStraightAttackSpent=c.HeartMapHealSpent=false;c.Protection=c.ProtectionSource=c.CardWeakening=c.WeakUntil=c.TemporaryAttack=c.GrowthCount=0;c.LastCardTurn=-1;p.DeckCards.Add(c);}
+            foreach(var c in cards){p.DiscardCards.Remove(c);c.PokerAttack=c.PokerHP=0;c.ImportCore(c.Definition.Attack,c.Definition.MaxHP);c.CurrentHP=c.MaxHP;c.AbilityAttack=c.AbilityHP=c.MapAttack=c.MapHP=c.JokerAttack=c.JokerHP=0;c.HasAttacked=c.JokerUsed=c.FirstAttackHealSpent=c.PokerStraightAttackSpent=c.HeartMapHealSpent=false;c.Protection=c.ProtectionSource=c.CardWeakening=c.WeakUntil=c.TemporaryAttack=c.GrowthCount=0;c.LastCardTurn=-1;c.AttackWeakTurns=0;c.HealthWeakTurns=0;c.HealthWeakening=0;c.HealthWeakCurrent=0;c.AttackWeakAppliedTurn=-1;c.HealthWeakAppliedTurn=-1;c.LastWeakTickTurn=-1;c.AttackWeakSource=0;c.HealthWeakSource=0;p.DeckCards.Add(c);}
             g.SingleShuffle(p.DeckCards);return true;
         }
         public bool CancelDraw(int owner) {
@@ -209,14 +215,10 @@ namespace Unknown.Battle
                 }
                 if(e.Kind==BattleEventKind.Destroy)Progress.weakening.RemoveAll(w=>w.id==e.TargetID);
                 if(e.Kind==BattleEventKind.AttackChanged && e.Amount<0 && dealer!=null && dealer.Definition.Suit==Suit.Spade && unit!=null) {
-                    int duration=1;
-                    if(dealer.Owner==0 && Aug(2)) {
-                        if(!Progress.firstWeakening){Progress.firstWeakening=true;Progress.weakenSource=e.SourceID;Progress.weakenIndex=g.PendingIndex;Progress.weakenTurn=g.State.TurnNumber;}
-                        if(Progress.weakenSource==e.SourceID && Progress.weakenIndex==g.PendingIndex && Progress.weakenTurn==g.State.TurnNumber)duration+=Options.augmentData?.FirstOrDefault(a=>a.id=="2")?.duration ?? 1;
+                    if(!g.TimedSpade(dealer)){
+                        int duration=WeakeningDuration(dealer,1);
+                        Progress.weakening.Add(new SingleWeakening{id=unit.InstanceID,amount=-e.Amount,expires=g.State.TurnNumber+duration*2});
                     }
-                    if(dealer.Definition.CardType==CardType.Normal && dealer.Definition.Version==CardDatabase.DefaultVersion && unit.CardWeakening>0)
-                        unit.WeakUntil=Math.Max(unit.WeakUntil,g.State.Players[unit.Owner].TurnsStarted+duration);
-                    else Progress.weakening.Add(new SingleWeakening{id=unit.InstanceID,amount=-e.Amount,expires=g.State.TurnNumber+duration*2});
                 }
                 if(e.Kind==BattleEventKind.Discard && e.Owner==0 && e.Secondary==2 && Aug(7) && !Progress.once[7]){Progress.once[7]=true;g.Draw(0,Amount(7));}
                 if(e.Kind==BattleEventKind.JokerSuccess && e.Owner==0 && Aug(10))g.Draw(0,Amount(10));

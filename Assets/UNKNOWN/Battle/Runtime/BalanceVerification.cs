@@ -35,6 +35,76 @@ namespace Unknown.Battle
             if(targetOwner>=0 && g.NeedsTarget && !g.SelectEffectTarget(actor,targetOwner,targetSlot))throw new InvalidOperationException(id+" target: "+g.State.LastError);
             return c;
         }
+        static void InvokeWeak(BattleEngine g,string method,params object[] args) => typeof(BattleEngine).GetMethod(method,System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance).Invoke(g,args);
+        public static string[] VerifyTimedSpade() {
+            var passed=new List<string>();
+            {
+                var g=CurrentFixture();var t=CurrentUnit(g,"Diamond_K",1);t.MaxHP=10;t.CurrentHP=8;var attacker=CurrentUnit(g,"Diamond_4",0,1);
+                PlayCurrent(g,"Spade_5",0,1);Require(t.MaxHP==8 && t.CurrentHP==6 && t.HealthWeakening==2 && t.HealthWeakCurrent==2,"HP weakening applies 8/10 to 6/8",passed);
+                Require(g.Attack(0,attacker.InstanceID,0) && t.CurrentHP==3,"Real combat damage remains distinct from HP weakening",passed);
+                g.EndTurn(0);g.EndTurn(1);Require(t.HealthWeakTurns==1 && t.CurrentHP==3,"HP weakening counts target-owner turns only",passed);
+                g.EndTurn(0);g.EndTurn(1);Require(t.MaxHP==10 && t.CurrentHP==5 && t.HealthWeakening==0,"Expiry restores only weak HP loss: 3/8 to 5/10",passed);
+                g.EndTurn(0);g.EndTurn(1);Require(t.CurrentHP==5,"No duplicate current-HP restoration",passed);
+            }
+            {
+                var g=CurrentFixture();var t=CurrentUnit(g,"Diamond_K",1);t.CurrentHP=1;
+                PlayCurrent(g,"Spade_5",0,1);Require(t.CurrentHP==1 && t.HealthWeakCurrent==0 && t.HealthWeakening==2,"HP weakening cannot kill or save nonexistent current-HP loss",passed);
+                g.EndTurn(0);g.EndTurn(1);g.EndTurn(0);g.EndTurn(1);Require(t.CurrentHP==1,"Expiry is not an extra heal at minimum HP",passed);
+            }
+            {
+                var g=CurrentFixture();var t=CurrentUnit(g,"Diamond_K",1);PlayCurrent(g,"Spade_5",0,1);PlayCurrent(g,"Spade_5",1,1);
+                Require(t.HealthWeakening==3 && t.HealthWeakTurns==2,"Health weakening stacks independently to 3",passed);
+                g.EndTurn(0);g.EndTurn(1);g.State.Players[0].CurrentMana=10;PlayCurrent(g,"Spade_5",2,1);
+                Require(t.HealthWeakening==3 && t.HealthWeakTurns==2,"At-cap reapplication refreshes HP duration",passed);
+            }
+            {
+                var g=CurrentFixture();var t=CurrentUnit(g,"Diamond_K",1);PlayCurrent(g,"Spade_7",0,1);
+                Require(t.CardWeakening==1 && t.HealthWeakening==1 && t.AttackWeakTurns==3 && t.HealthWeakTurns==3,"Spade 7 independently applies both 3-turn states",passed);
+                g.State.Players[0].CurrentMana=10;PlayCurrent(g,"Spade_K",1,1);
+                Require(t.CardWeakening==3 && t.HealthWeakening==3 && t.AttackWeakTurns==3 && t.HealthWeakTurns==3,"Spade King caps ATK and HP independently",passed);
+            }
+            {
+                var g=CurrentFixture();var t=CurrentUnit(g,"Diamond_K");var dealer=CurrentUnit(g,"Spade_2",1);var effect=dealer.Definition.EffectList[0];
+                InvokeWeak(g,"ApplyTimedAttackWeak",dealer,t,1,effect);
+                g.EndTurn(0);Require(t.AttackWeakTurns==2,"Application during owner turn does not consume a partial turn",passed);
+                g.EndTurn(1);g.EndTurn(0);Require(t.AttackWeakTurns==1,"First full target-owner turn consumes one duration",passed);
+                g.EndTurn(1);g.EndTurn(0);Require(t.CardWeakening==0,"Second full target-owner turn expires 2-turn state",passed);
+            }
+            {
+                var g=CurrentFixture();var t=CurrentUnit(g,"Heart_2",1);int baseAtk=t.Attack;PlayCurrent(g,"Spade_J",0,1);
+                Require(t.Attack==0 && t.CardWeakening==3,"Attack display never drops below zero while retaining capped state",passed);
+                g.EndTurn(0);g.State.Players[1].CurrentMana=10;var joker=CurrentHand(g,"Joker_1",1);g.DebugNextGamble=true;g.Gamble(1,joker.InstanceID,t.InstanceID);
+                g.EndTurn(1);g.EndTurn(0);g.EndTurn(1);g.EndTurn(0);g.EndTurn(1);
+                Require(t.Attack==baseAtk && t.CardWeakening==0,"JOKER on a zero-ATK weakened unit does not overrestore attack",passed);
+            }
+            {
+                var g=CurrentFixture();var t=CurrentUnit(g,"Diamond_K",1);PlayCurrent(g,"Spade_5",0,1);g.EndTurn(0);
+                PlayCurrent(g,"Heart_6",1,1,0);int max=t.MaxHP;int hp=t.CurrentHP;
+                g.EndTurn(1);g.EndTurn(0);g.EndTurn(1);
+                Require(t.MaxHP==max+2 && t.CurrentHP==hp+2,"Max-HP growth survives HP weakening expiry",passed);
+            }
+            {
+                var g=CurrentFixture();var t=CurrentUnit(g,"Diamond_K",1);PlayCurrent(g,"Spade_3",0,1);
+                var a=CurrentUnit(g,"Spade_9",0,1);int hp=t.CurrentHP;g.Attack(0,a.InstanceID,0);
+                Require(hp-t.CurrentHP==a.Definition.Attack+3,"Spade 9 recognizes HP-only weakening",passed);
+            }
+            {
+                var g=CurrentFixture();var t=CurrentUnit(g,"Diamond_K",1);PlayCurrent(g,"Spade_7",0,1);
+                var s=UnityEngine.JsonUtility.FromJson<BattleSnapshot>(UnityEngine.JsonUtility.ToJson(BattleSnapshot.For(g,0,0,0,false,new BattleEvent[0])));var c=BattleEngine.CreateView(s).State.Players[1].Board[0];
+                Require(c.CardWeakening==t.CardWeakening && c.HealthWeakening==t.HealthWeakening && c.HealthWeakCurrent==t.HealthWeakCurrent && c.AttackWeakTurns==3 && c.HealthWeakTurns==3 && c.AttackWeakAppliedTurn==t.AttackWeakAppliedTurn && c.HealthWeakSource==t.HealthWeakSource,"Network round-trip preserves independent values, timers and restoration ledger",passed);
+                t.CurrentHP=1;g.State.Players[0].CurrentMana=10;PlayCurrent(g,"Diamond_2",1,1);
+                Require(!g.State.Players[1].Board.Contains(t) && t.CardWeakening==0 && t.HealthWeakening==0 && t.AttackWeakTurns==0 && t.HealthWeakTurns==0,"Death clears all weakening state without revival",passed);
+            }
+            {
+                var options=new SingleBattleOptions{stage=new SingleStage{kind=SingleNodeKind.Battle,turnLimit=20,startMana=10,manaRecovery=10,turnSpendLimit=10,manaBudget=100,enemyHP=100},difficulty=new SingleDifficulty(),deck=CardDatabase.Deck.Where(c=>c.CardType==CardType.Normal).Select(c=>c.CardID).ToArray(),augments=new[]{"2"},augmentData=new[]{new SingleAugment{id="2",duration=1}},hp=30,maxHP=30,seed=1711};
+                var g=new BattleEngine(1711,new BattleConfig{StartingHand=0,StartingMana=10,EnablePoker=false,Single=options},new SingleRandom(1711));g.State.Players[0].HandCards.Clear();var t=CurrentUnit(g,"Diamond_K",1);
+                PlayCurrent(g,"Spade_4",0,1);Require(t.AttackWeakTurns==3 && g.Single.Progress.weakening.Count==0,"Existing single augment adds its unchanged +1 duration once",passed);
+                var save=g.SaveSingle();var restored=BattleEngine.CreateSingle(options,save);var copy=restored.State.Players[1].Board[0];
+                Require(copy.CardWeakening==2 && copy.AttackWeakTurns==3 && copy.AttackWeakAppliedTurn==t.AttackWeakAppliedTurn,"Single save/continue preserves timed weakening",passed);
+            }
+            return passed.ToArray();
+        }
+
         public static string[] VerifyCurrentCards() {
             var passed=new List<string>();
             foreach(var d in CardDatabase.All.Where(c=>c.CardType==CardType.Normal)) {
@@ -56,7 +126,7 @@ namespace Unknown.Battle
                 PlayCurrent(g,"Spade_J",0,1);PlayCurrent(g,"Spade_4",1,1);
                 Require(t.CardWeakening==3 && t.Attack==atk-3,"Weakening capped at 3",passed);
                 g.EndTurn(0);Require(t.CardWeakening==3,"Weakening persists through target owner turn",passed);
-                g.EndTurn(1);Require(t.CardWeakening==0 && t.Attack==atk,"Weakening expires at next target-owner turn end",passed);
+                g.EndTurn(1);g.EndTurn(0);g.EndTurn(1);g.EndTurn(0);g.EndTurn(1);Require(t.CardWeakening==0 && t.Attack==atk,"Weakening expires after three target-owner turns",passed);
             }
             {
                 var g=CurrentFixture();var t=CurrentUnit(g,"Diamond_K");int hp=t.CurrentHP;
@@ -108,7 +178,7 @@ namespace Unknown.Battle
                 var g=CurrentFixture();var a=CurrentUnit(g,"Heart_K",1);a.CardWeakening=1;a.Attack--;a.AbilityAttack--;
                 var b=CurrentUnit(g,"Heart_K",1,1);int hpA=a.CurrentHP,hpB=b.CurrentHP;
                 PlayCurrent(g,"Spade_A",0);Require(g.NeedsTarget && g.IsValidEffectTarget(1,0) && !g.IsValidEffectTarget(1,1),"Spade Ace targets only previously weakened enemies",passed);
-                g.SelectEffectTarget(0,1,0);Require(a.CurrentHP==hpA-3 && b.CurrentHP==hpB,"Spade Ace damage occurs once after all-enemy weakening",passed);
+                g.SelectEffectTarget(0,1,0);Require(a.CurrentHP==hpA-4 && b.CurrentHP==hpB-1,"Spade Ace damage occurs once after all-enemy weakening",passed);
             }
             {
                 var g=CurrentFixture();var a=CurrentUnit(g,"Heart_9");int atk=a.Attack;
@@ -139,6 +209,7 @@ namespace Unknown.Battle
                 var g=new BattleEngine(1711,new BattleConfig{StartingHand=0,StartingMana=10,EnablePoker=false,Single=options},new SingleRandom(1711));
                 g.State.Players[0].HandCards.Clear();var t=CurrentUnit(g,"Diamond_K",1);int atk=t.Attack;
                 PlayCurrent(g,"Spade_4",0,1);Require(g.Single.Progress.weakening.Count==0,"Single weakening uses one expiry owner",passed);
+                g.EndTurn(0);g.EndTurn(1);Require(t.CardWeakening==2 && t.AttackWeakTurns==1,"Single two-turn weakening remains after one turn",passed);
                 g.EndTurn(0);g.EndTurn(1);Require(t.Attack==atk && t.CardWeakening==0,"Single weakening restores once",passed);
                 g.EndTurn(0);g.EndTurn(1);Require(t.Attack==atk,"Single later turns cannot restore weakening twice",passed);
                 PlayCurrent(g,"Club_5",1);g.Single.Progress.spent=99;g.Single.Progress.turnSpent=9;

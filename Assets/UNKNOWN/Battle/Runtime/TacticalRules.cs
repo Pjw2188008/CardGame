@@ -21,10 +21,7 @@ namespace Unknown.Battle
         void TacticalEndTurn(int owner) {
             foreach(var c in State.Players.SelectMany(p=>p.Slots).Where(c=>c!=null)) {
                 if(c.TemporaryAttack!=0){int n=c.TemporaryAttack;c.ImportCore(c.RawAttack-n,c.RawHP);c.AbilityAttack-=n;c.TemporaryAttack=0;Emit(new BattleEvent(BattleEventKind.AttackChanged,c.Owner,target:c.InstanceID,amount:-n));}
-                if(c.Owner==owner && c.CardWeakening>0 && State.Players[owner].TurnsStarted>=c.WeakUntil) {
-                    int n=c.CardWeakening;c.ImportCore(c.RawAttack+n,c.RawHP);c.AbilityAttack+=n;c.CardWeakening=0;c.WeakUntil=0;
-                    Emit(new BattleEvent(BattleEventKind.AttackChanged,c.Owner,target:c.InstanceID,amount:n));
-                }
+                if(c.Owner==owner)TickWeakness(c);
             }
             var ending=State.Players[owner];if(ending.DiscountTurn>0){ending.NextDiscount=0;ending.DiscountTurn=0;}
             ReconcilePoker();
@@ -51,11 +48,7 @@ namespace Unknown.Battle
             MeasureTactical(dealer,e,target,n,"resolved");
         }
         void TacticalWeaken(CardInstance dealer,CardInstance target,int n,CardEffect e) {
-            int actual=Math.Min(n,Math.Min(3-target.CardWeakening,target.Attack));
-            target.ImportCore(target.RawAttack-actual,target.RawHP);target.AbilityAttack-=actual;target.CardWeakening+=actual;
-            if(target.CardWeakening>0)target.WeakUntil=State.Players[target.Owner].TurnsStarted+1;
-            Emit(new BattleEvent(BattleEventKind.AttackChanged,target.Owner,dealer.InstanceID,target.InstanceID,-actual,suit:dealer.Definition.Suit));
-            MeasureTactical(dealer,e,target,-actual,"resolved");
+            ApplyTimedAttackWeak(dealer,target,n,e);
         }
         void Protect(CardInstance dealer,CardInstance target,int n,CardEffect e) {
             int gained=Math.Max(0,n-target.Protection);
@@ -76,8 +69,9 @@ namespace Unknown.Battle
         }
         int TacticalStrike(CardInstance c,CardInstance target,int n) {
             if(!Modern(c))return n;
+            foreach(var condition in c.Definition.EffectList.Where(e=>e.Kind==EffectKind.WeakStrike))MeasureWeakCondition(c,IsWeakened(target));
             foreach(var e in c.Definition.EffectList) {
-                if(e.Kind==EffectKind.StrikeBonus || e.Kind==EffectKind.FullStrike && c.CurrentHP==c.MaxHP || e.Kind==EffectKind.WeakStrike && target?.CardWeakening>0){n+=e.Amount;MeasureTactical(c,e,target,e.Amount,"resolved");}
+                if(e.Kind==EffectKind.StrikeBonus || e.Kind==EffectKind.FullStrike && c.CurrentHP==c.MaxHP || e.Kind==EffectKind.WeakStrike && IsWeakened(target)){n+=e.Amount;MeasureTactical(c,e,target,e.Amount,"resolved");}
             }return n;
         }
         void TacticalBeforeAttack(CardInstance c,CardInstance target) {
@@ -105,9 +99,11 @@ namespace Unknown.Battle
                 waitingExchange=true;return true;
             }
             if(e.Kind==EffectKind.WeakenThenDamage) {
-                var targets=Targets(EffectTarget.Enemy);var prior=targets.Where(c=>c.CardWeakening>0).ToArray();
+                var targets=Targets(EffectTarget.Enemy);var prior=targets.Where(IsWeakened).ToArray();
+                MeasureWeakCondition(source,prior.Length>0);
                 // Record the pre-application eligible IDs using the existing target continuation.
-                foreach(var c in targets)TacticalWeaken(source,c,1,e);
+                if(targets.Count==0)MeasureBalanceEffect(e,null,0,"no_target");
+                foreach(var c in targets){TacticalWeaken(source,c,1,e);ApplyTimedHealthWeak(source,c,1,e);}
                 chainHits.Clear();foreach(var c in prior)chainHits.Add(c.InstanceID);
                 effectIndex++;return false;
             }
@@ -116,6 +112,7 @@ namespace Unknown.Battle
         bool ApplyTactical(CardEffect e,CardInstance target) {
             var c=source;int before=target.CurrentHP,n=e.Amount;
             switch(e.Kind) {
+                case EffectKind.HealthWeaken:ApplyTimedHealthWeak(c,target,n,e);return true;
                 case EffectKind.CardWeaken:TacticalWeaken(c,target,n,e);return true;
                 case EffectKind.Protection:Protect(c,target,n,e);return true;
                 case EffectKind.TemporaryAttack:TacticalAttack(c,target,n,true,e);return true;

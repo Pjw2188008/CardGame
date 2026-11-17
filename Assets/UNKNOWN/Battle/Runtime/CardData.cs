@@ -8,7 +8,7 @@ namespace Unknown.Battle
     public enum Rank { Two = 2, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Ace, Jack, Queen, King, Joker }
     public enum CardType { Normal, Joker, Unknown }
     public enum CardBalanceVersion { Revised=0, Baseline=1, HeartNerf=2, DiamondBuff=3, DiamondHeartRework=4, DiamondReworkOnly=5, HeartReworkOnly=6, FullStatsOnly=7, FullDiamondOnly=8, FullHeartMapOnly=9, FullBalanceRework=10 }
-    public enum EffectKind { Damage, Heal, ModifyAttack, IncreaseMaxHP, DrawCard, SelfDamage, ChainDamage, RandomDamage, DiscardCard, FirstAttackHeal, GainMana, Exchange, ChainWeaken, StrikeBonus, IgnoreProtection, KillHero, KillGrow, WeakStrike, AttackWeaken, FullStrike, TurnHealSelf, TurnGrow, WoundedDamage, WeakDamage, CardWeaken, Protection, TemporaryAttack, RemoveProtection, DamageGrow, DamageHero, DamageTeamGrow, WeakBonusDamage, DiamondBonusDamage, WeakenThenDamage, PriorWeakDamage, HealProtect, HealFullAttack, TacticalExchange, Discount }
+    public enum EffectKind { Damage, Heal, ModifyAttack, IncreaseMaxHP, DrawCard, SelfDamage, ChainDamage, RandomDamage, DiscardCard, FirstAttackHeal, GainMana, Exchange, ChainWeaken, StrikeBonus, IgnoreProtection, KillHero, KillGrow, WeakStrike, AttackWeaken, FullStrike, TurnHealSelf, TurnGrow, WoundedDamage, WeakDamage, CardWeaken, Protection, TemporaryAttack, RemoveProtection, DamageGrow, DamageHero, DamageTeamGrow, WeakBonusDamage, DiamondBonusDamage, WeakenThenDamage, PriorWeakDamage, HealProtect, HealFullAttack, TacticalExchange, Discount, HealthWeaken }
     public enum EffectTarget { Self, Enemy, Ally, AllEnemies, AllAllies, None }
 
     public sealed class CardEffect
@@ -17,8 +17,9 @@ namespace Unknown.Battle
         public EffectTarget Target { get; }
         public int Amount { get; }
         public bool FreshTarget { get; }
-        public CardEffect(EffectKind kind, int amount, EffectTarget target = EffectTarget.None, bool freshTarget=false)
-        { Kind = kind; Amount = amount; Target = target; FreshTarget=freshTarget; }
+        public int Duration {get;}
+        public CardEffect(EffectKind kind, int amount, EffectTarget target = EffectTarget.None, bool freshTarget=false,int duration=0)
+        { Kind = kind; Amount = amount; Target = target; FreshTarget=freshTarget;Duration=duration; }
     }
 
     public sealed class CardDefinition
@@ -65,7 +66,7 @@ namespace Unknown.Battle
         internal int RawAttack => coreAttack;
         internal int RawHP => coreHP;
         internal void ImportCore(int attack,int hp) { coreAttack=attack; coreHP=hp; }
-        public int Attack { get=>Math.Max(0,coreAttack+PokerAttack); internal set=>coreAttack=value-PokerAttack; }
+        public int Attack { get=>Math.Max(0,coreAttack+PokerAttack); internal set {if(CardWeakening>0 && coreAttack+PokerAttack<0 && value>=0)coreAttack+=value-Attack;else coreAttack=value-PokerAttack;} }
         public int MaxHP { get=>Math.Max(1,coreHP+PokerHP); internal set=>coreHP=value-PokerHP; }
         public int OtherAttack => coreAttack-Definition.Attack-MapAttack-JokerAttack-AbilityAttack;
         public int OtherHP => coreHP-Definition.MaxHP-MapHP-JokerHP-AbilityHP;
@@ -73,6 +74,16 @@ namespace Unknown.Battle
         public int ProtectionSource {get;internal set;}
         public int CardWeakening {get;internal set;}
         public int WeakUntil {get;internal set;}
+        public int AttackWeakTurns {get;internal set;}
+        public int HealthWeakTurns {get;internal set;}
+        public int HealthWeakening {get;internal set;}
+        public int HealthWeakCurrent {get;internal set;}
+        public int AttackWeakAppliedTurn {get;internal set;}=-1;
+        public int HealthWeakAppliedTurn {get;internal set;}=-1;
+        public int LastWeakTickTurn {get;internal set;}=-1;
+        public int AttackWeakSource {get;internal set;}
+        public int HealthWeakSource {get;internal set;}
+
         public int TemporaryAttack {get;internal set;}
         public int GrowthCount {get;internal set;}
         public int LastCardTurn {get;internal set;}=-1;

@@ -105,7 +105,7 @@ namespace Unknown.Battle
         readonly List<BattleEvent> events = new List<BattleEvent>();
         public IReadOnlyList<BattleEvent> DrainEvents()
         { var result = events.ToArray(); events.Clear(); return result; }
-        void Emit(BattleEvent entry) { if(Single!=null)entry=Single.Event(entry);events.Add(entry); ObserveBalanceEvent(entry); }
+        void Emit(BattleEvent entry) { if(Single!=null)entry=Single.Event(entry);events.Add(entry); ObserveBalanceEvent(entry);if(entry.Kind==BattleEventKind.Destroy)ClearWeaknessOnDeath(entry.TargetID); }
         partial void ObserveBalanceEvent(BattleEvent entry);
         partial void MeasureDamageAttempt(CardInstance dealer, CardInstance target, int requested, int actual);
         partial void MeasureBalanceEffect(CardEffect effect, CardInstance target, int actual, string outcome);
@@ -546,8 +546,9 @@ namespace Unknown.Battle
                     Emit(new BattleEvent(BattleEventKind.Heal, target.Owner, source.InstanceID, target.InstanceID, healed, suit: source.Definition.Suit));
                     Log($"{target.Definition.CardName}: 체력 +{healed}"); break;
                 case EffectKind.ModifyAttack:case EffectKind.ChainWeaken:
-                    int attackBefore = target.Attack; target.Attack = Math.Max(0, target.Attack + (effect.Kind==EffectKind.ChainWeaken ? -effect.Amount : effect.Amount));
-                    target.AbilityAttack+=target.Attack-attackBefore;
+                    int attackBefore = target.Attack;
+                    if(effect.Kind==EffectKind.ModifyAttack && effect.Amount>0 && target.CardWeakening>0){target.ImportCore(target.RawAttack+effect.Amount,target.RawHP);target.AbilityAttack+=effect.Amount;}
+                    else {target.Attack = Math.Max(0, target.Attack + (effect.Kind==EffectKind.ChainWeaken ? -effect.Amount : effect.Amount));target.AbilityAttack+=target.Attack-attackBefore;}
                     Emit(new BattleEvent(BattleEventKind.AttackChanged, target.Owner, source.InstanceID, target.InstanceID, target.Attack - attackBefore, suit: source.Definition.Suit));
                     Log($"{target.Definition.CardName}: 공격력 {target.Attack - attackBefore:+0;-0;0}"); break;
                 case EffectKind.IncreaseMaxHP:
