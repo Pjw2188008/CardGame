@@ -253,7 +253,7 @@ namespace Unknown.Battle
         IEnumerator ActionPresentation(IReadOnlyList<BattleEvent> entries)
         {
             entries=HumanAiEvents(entries);
-            tutorial?.Observe(entries);
+            tutorial?.Observe(entries);ObserveSingleGuide(entries);
             if(tutorial!=null && entries.Any(e=>e.Kind==BattleEventKind.Summon || e.Kind==BattleEventKind.Attack || e.Kind==BattleEventKind.Discard || e.Kind==BattleEventKind.PokerChanged || e.Kind==BattleEventKind.JokerSuccess || e.Kind==BattleEventKind.JokerFailure || e.Kind==BattleEventKind.Combine))TutorialCue(!entries.Any(e=>e.Kind==BattleEventKind.JokerFailure));
             ObserveAttackResult(entries);
             actionBusy = true;

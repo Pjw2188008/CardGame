@@ -94,7 +94,7 @@ namespace Unknown.Battle
             foreach(var n in r.nodes) {
                 var stage=Campaign.Data.stages.First(s=>s.id==n.stage);var pos=Position(n);int id=n.id;var state=Campaign.NodeState(id);
                 string turns=Combat(stage)?"◷ 제한 턴 "+EffectiveTurns(stage,n.id):"";
-                var button=Button((n.id+1).ToString("00")+" · "+ShortKind(stage.kind)+"\n"+turns+"\n◆ 진입 토큰 "+stage.cost+"\n"+StateName(state),pos.x-.035f,pos.y-.105f,.07f,.21f,()=>{selected=id;Map();},true,plot);
+                var button=Button((n.id+1).ToString("00")+" · "+(stage.kind==SingleNodeKind.Start?"시작 · 튜토리얼":ShortKind(stage.kind))+"\n"+turns+"\n◆ 진입 토큰 "+stage.cost+"\n"+StateName(state),pos.x-.035f,pos.y-.105f,.07f,.21f,()=>{selected=id;Map();},true,plot);
                 button.name="Node "+id;button.GetComponent<Image>().color=NodeColor(state);
                 var edge=button.GetComponent<Outline>();edge.effectDistance=Vector2.one*(selected==id?3:1);edge.effectColor=selected==id?new Color(1,.8f,.32f):new Color(.48f,.35f,.2f);
             }
@@ -103,18 +103,65 @@ namespace Unknown.Battle
             MapDetail();
             Button("메인 메뉴",.04f,.055f,.18f,.06f,()=>{Campaign.Save();Home();});Button("현재 덱",.25f,.055f,.18f,.06f,Deck);Button("증강",.46f,.055f,.18f,.06f,Augments);
             Canvas.ForceUpdateCanvases();mapScroll.horizontalNormalizedPosition=mapOffset<0?Mathf.Clamp01((r.nodes[r.current].layer-1)/6f):mapOffset;
+            ShowStartGuide();
+        }
+        // These pages only introduce the route; battle objectives use actual engine events.
+        void StartGuide(int page) {
+            if(Campaign.Run==null || Campaign.Run.current!=0 || Campaign.Run.phase!="map")return;
+            Campaign.Run.startGuide=Mathf.Clamp(page,-1,7);
+            if(page<0)Campaign.Run.battleGuide=-1;
+            Campaign.Save();Map();
+        }
+        void BeginLiveGuide() {
+            var run=Campaign.Run;if(run.current!=0 || run.phase!="map")return;
+            run.startGuide=7;run.battleGuide=1;run.battleGuideTurn=0;Campaign.Save();selected=-1;Map();
+        }
+        void ShowStartGuide() {
+            var run=Campaign.Run;
+            if(run.current!=0 || run.phase!="map" || run.startGuide<0 || run.startGuide>=7)return;
+            int page=Mathf.Clamp(run.startGuide,0,3);
+            // No filled highlight or Outline: the route and its labels stay visible.
+            var overlay=Rect(root,"Start tutorial",0,0,1,1,Color.clear);
+            var panel=Rect(overlay,"Tutorial panel",.72f,.145f,.25f,.68f,new Color(.035f,.018f,.03f,1f));
+            Text("01 · 시작",.05f,.88f,.90f,.07f,28,panel).color=new Color(1,.80f,.40f);
+            string[] titles={"싱글플레이 안내","경로 선택","HP와 토큰","덱과 실전 전투"};
+            Text(titles[page],.06f,.77f,.88f,.08f,23,panel);
+            string body;
+            switch(page) {
+                case 0:body="경로와 자원을 살펴본 뒤 실제 첫 전투에서 직접 배웁니다.\n\n카드 소환 → 턴 종료 → 적 행동 → 공격 → 승리와 보상\n\n안내는 언제든 스킵할 수 있습니다.\n\n안내 선택에는 토큰이 들지 않으며, 실제 전투 진입과 결과는 기존 런 규칙을 따릅니다.";break;
+                case 1:body="현재 노드에서 밝게 연결된 다음 구역을 선택하세요.\n같은 다음 층의 모든 구역으로 이동할 수 있습니다.\n\n노드를 누르면 오른쪽에 정보가 표시됩니다.\n아래 스크롤바로 먼 경로도 볼 수 있습니다.\n\n선택만으로 이동하지 않으며, 진입을 눌러야 토큰을 지불합니다.";break;
+                case 2:body=$"현재 HP {run.hp}/{run.maxHP} · 런 토큰 {run.tokens}\n\nHP는 다음 전투로 이어집니다.\n런 토큰은 스테이지 진입에 사용합니다.\n\n승리 시 남은 HP 비율에 따라 토큰을 얻습니다.\nHP가 0이 되거나 다음 경로의 진입 토큰이 부족하면 런이 종료됩니다.\n\n영구 토큰은 챕터 클리어로 얻으며 해금에 사용합니다.";break;
+                default:body=$"현재 덱 {run.deck.Count}장\n\n현재 덱 버튼으로 카드와 효과를 확인할 수 있습니다.\n전투 보상으로 카드를 추가하고 덱 정리 노드에서 제거·교체합니다.\n증강은 런 동안 유지되며 최대 3개를 장착합니다.\n\n이제 실전 전투로 배우기를 누르고 다음 전투 노드를 선택해 진입하세요.\n전투에서 소환·턴·공격을 직접 하면 안내가 진행됩니다.";break;
+            }
+            Text(body,.07f,.20f,.86f,.55f,20,panel);
+            if(page==0) {
+                Button("안내 시작",.08f,.105f,.84f,.07f,()=>StartGuide(1),true,panel);
+                Button("스킵하고 출발",.08f,.025f,.84f,.065f,()=>StartGuide(-1),true,panel);
+            } else {
+                Text(page+" / 3",.35f,.12f,.30f,.05f,17,panel);
+                Button("이전",.06f,.04f,.23f,.065f,()=>StartGuide(page-1),true,panel);
+                Button("스킵",.32f,.04f,.23f,.065f,()=>StartGuide(-1),true,panel);
+                Button(page==3?"실전으로":"다음",.58f,.04f,.36f,.065f,()=>{if(page==3)BeginLiveGuide();else StartGuide(page+1);},true,panel);
+            }
         }
         void MapDetail() {
             var panel=Rect(root,"Stage detail",.72f,.145f,.25f,.68f,new Color(.035f,.018f,.03f,.96f));
-            if(selected<0 || selected>=Campaign.Run.nodes.Length){Text("스테이지 선택",.05f,.44f,.9f,.1f,24,panel);return;}
-            var stage=Campaign.Data.stages.First(s=>s.id==Campaign.Run.nodes[selected].stage);var maps=Resources.Load<BattleMapSettings>("BattleMapSettings");
+            if(selected<0 || selected>=Campaign.Run.nodes.Length){Text(Campaign.Run.battleGuide==1 && Campaign.Run.current==0?"실전 안내 준비 완료\n다음 전투 노드를 선택하세요.": "스테이지 선택",.05f,.44f,.9f,.1f,24,panel);return;}
+            var stage=Campaign.Data.stages.First(s=>s.id==Campaign.Run.nodes[selected].stage);
+            if(stage.kind==SingleNodeKind.Start) {
+                Text("01 · 시작",.06f,.72f,.88f,.10f,28,panel);
+                Text("싱글플레이 튜토리얼\n\n경로·토큰·전투·성장 흐름을 안내합니다.\n원하면 스킵하고 바로 출발할 수 있습니다.",.07f,.32f,.86f,.35f,21,panel);
+                Button("튜토리얼 다시 보기",.08f,.12f,.84f,.08f,()=>StartGuide(0),Campaign.Run.current==0,panel);
+                return;
+            }
+            var maps=Resources.Load<BattleMapSettings>("BattleMapSettings");
             if(maps!=null && Combat(stage))Artwork(panel,"Stage map artwork",maps.BackgroundFor(stage.map),.04f,.73f,.92f,.23f);
             Text(stage.name,.04f,.65f,.92f,.065f,25,panel);
             Text(NodeIcon(stage.kind)+" "+BattleTypeName(stage),.04f,.59f,.92f,.05f,18,panel);
             string details=Combat(stage)?$"난이도: {Campaign.Data.difficulties[Campaign.Run.difficulty].name}\n적 HP {stage.enemyHP}\n◷ 제한 턴 {EffectiveTurns(stage,selected)}\n총 마나 예산 {Campaign.ManaBudgetFor(stage)}":"";
             Text(details+"\n◆ 진입 토큰 "+stage.cost+"\n방해 효과: "+Restrictions(stage)+"\n보상: "+RewardName(stage),.06f,.29f,.88f,.29f,19,panel);
             Text("이전: "+string.Join(" · ",Campaign.Run.nodes.Where(n=>n.next.Contains(selected)).Select(n=>(n.id+1).ToString("00")))+"\n다음: "+(Campaign.Run.nodes[selected].next.Length==0?"도착":string.Join(" · ",Campaign.Run.nodes[selected].next.Select(id=>(id+1).ToString("00")))),.06f,.19f,.88f,.09f,18,panel);
-            string reason=Campaign.EntryError(selected);Text(reason,.06f,.115f,.88f,.065f,18,panel).color=new Color(1,.64f,.57f);
+            string reason=Campaign.EntryError(selected);Text(reason.Length==0 && Campaign.Run.battleGuide==1 && Campaign.Run.current==0?"진입 후 전투에서 직접 배웁니다.":reason,.06f,.115f,.88f,.065f,18,panel).color=new Color(1,.64f,.57f);
             Button("진입",.10f,.035f,.80f,.075f,()=>{Campaign.Enter(selected);Prepare();},reason.Length==0,panel);
         }
         Vector2 Position(SingleNode n) {
@@ -142,6 +189,7 @@ namespace Unknown.Battle
                 Text($"{BattleTypeName(s)} · {s.enemyType} · 적 HP {s.enemyHP} · ◷ 제한 턴 {Campaign.CurrentTurnLimit}\n총 마나 예산 {Campaign.CurrentManaBudget} · 매 턴 소환 {s.enemySummonsPerTurn}장"+(s.kind==SingleNodeKind.Battle?"":" · 조건 충족 시 최대 2장")+"\n\n"+string.Join(" / ",s.restrictions.Concat(new[]{SingleRestriction.FirstCost,SingleRestriction.AttackLimit,SingleRestriction.HalfHealing}.Take(d.extraRestrictions)).Distinct().Select(RestrictionName))+"\n\n"+RewardName(s),.15f,.36f,.7f,.35f,24);
                 var info=Button("전투 상세",.37f,.27f,.26f,.05f,()=>{});
                 Hint(info.gameObject,$"시작 마나 {s.startMana} · 회복 {s.manaRecovery} · 턴 상한 {s.turnSpendLimit}\n총 마나 예산 {Campaign.CurrentManaBudget}\n초기 적: "+string.Join(" / ",s.units.Select(u=>CardDatabase.Get(u.card).CardName))+(Campaign.IsTeachingBattle?"\n첫 전투 손패에 A·J 보장":""));
+                if(Campaign.Run.battleGuide>0 && Campaign.Run.battleGuide<5 && Campaign.IsTeachingBattle)Text("실전 안내 · 직접 소환하고 공격하며 배웁니다. 언제든 스킵할 수 있습니다.",.12f,.73f,.76f,.05f,20);
                 Button("전투 시작",.34f,.16f,.32f,.08f,LaunchBattle);
             }else {
                 Text(Kind(s.kind)+"\n"+RewardName(s)+$"\n진입 토큰 {s.cost} 차감 완료",.15f,.34f,.7f,.3f,26);
@@ -155,6 +203,7 @@ namespace Unknown.Battle
         void Reward() {
             var r=Campaign.Run;Clear(r.phase=="card" || r.phase=="augment" ? (Campaign.Stage.kind==SingleNodeKind.Augment?"증강 선택":"VICTORY") : Kind(Campaign.Stage.kind));
             if(r.phase=="card" || r.phase=="augment") {
+                if(r.battleGuide==5 && Campaign.IsTeachingBattle)Text("실전 안내 완료 · 승리 보상 중 하나를 선택하거나 건너뛰고 다음 경로로 이동하세요.",.1f,.79f,.8f,.06f,20);
                 Text("남은 HP "+r.hp+"/"+r.maxHP+"   ◆ 획득 토큰 +"+(Campaign.Stage.kind==SingleNodeKind.Augment?0:r.lastRunAward)+"   런 토큰 "+r.tokens,.1f,.70f,.8f,.05f);
                 if(r.phase=="augment" && r.augments.Count==3){Text("교체할 증강을 먼저 선택하세요.",.1f,.60f,.8f,.05f);for(int i=0;i<3;i++){int n=i;Button((replaceSlot==i?"✓ ":"")+Campaign.Data.augments.First(a=>a.id==r.augments[i]).name,.1f+i*.28f,.51f,.26f,.07f,()=>{replaceSlot=n;Reward();});}}
                 for(int i=0;i<r.offers.Count;i++) {

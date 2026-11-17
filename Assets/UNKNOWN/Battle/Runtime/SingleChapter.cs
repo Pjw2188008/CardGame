@@ -180,6 +180,10 @@ namespace Unknown.Battle
     {
         public string id,phase="map",failure="",starter;public int graphVersion;public int seed,difficulty,current,tokens,hp,maxHP,permanentAward,lastRunAward,firstClearAward;
         public SingleNode[] nodes;public List<int> visited=new List<int>{0};public List<string> deck=new List<string>(),augments=new List<string>(),offers=new List<string>();
+        // Start-node guide: 0=offer, 1..6=page, 7=completed, -1=skipped. Older saves default to 0.
+        public int startGuide;
+        // Optional first-battle guidance: 0=off, 1..4=live objectives, 5=won, -1=skipped.
+        public int battleGuide,battleGuideTurn;
         public SingleBattleSave battle;public bool settled,legacyCombatBorders;public List<string> usedCards=new List<string>();
     }
     [Serializable] public sealed class SingleHistory { public string id,result,starter;public int seed,difficulty,visited,hp,reward; }
