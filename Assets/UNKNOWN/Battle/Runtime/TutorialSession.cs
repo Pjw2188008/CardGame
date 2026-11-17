@@ -81,7 +81,7 @@ namespace Unknown.Battle
                     case 2:return summoned && p.Board.Any(c=>c!=null) && p.CurrentMana<initialMana && !Engine.NeedsTarget;
                     case 3:return UnitAttack && DirectAttack && Engine.State.Players[1].HP<30 && Engine.State.Players[1].Board.All(c=>c==null);
                     case 4:return OverflowShown && discarded && p.ManualDiscardUsed && p.Hand.Count==7 && p.DiscardCount==2;
-                    case 5:return !Engine.NeedsTarget && p.Poker.kind==PokerKind.OnePair && p.Board.Count(c=>c!=null && c.PokerAttack==2 && c.Attack==c.NonPokerAttack+2)==2;
+                    case 5:return !Engine.NeedsTarget && p.Poker.kind==PokerKind.OnePair && p.Board.Count(c=>c!=null && c.CurrentHP>0 && p.Poker.members.Contains(c.InstanceID))==2;
                     case 6:return Gambled && p.DiscardCards.Any(c=>c.Definition.CardType==CardType.Joker);
                     case 7:return made.Contains(Rank.Jack) && made.Contains(Rank.Queen) && made.Contains(Rank.King) && p.UnknownProgress==3 && Engine.State.Winner==0 && Engine.State.VictoryReason==VictoryReason.UnknownComplete;
                     default:return false;
