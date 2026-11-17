@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 namespace Unknown.Battle
@@ -31,7 +31,7 @@ namespace Unknown.Battle
             float scale=Mathf.Clamp(rect.height*span.y/244f,.5f,3f);
             void Fit(Text text,int maximum,int minimum) {if(text==null)return;text.resizeTextForBestFit=true;text.resizeTextMinSize=minimum;text.resizeTextMaxSize=Mathf.Max(minimum,Mathf.RoundToInt(maximum*scale));text.fontSize=text.resizeTextMaxSize;}
             Fit(mana==null ? null : mana.GetComponentInChildren<Text>(),18,9);
-            Fit(description==null ? null : description.GetComponent<Text>(),10,7);
+            if(description!=null){var fit=description.GetComponent<CardDescriptionFit>();if(fit!=null)fit.SetMaximum(Mathf.RoundToInt(10*scale));}
             Fit(attack==null ? null : attack.GetComponent<Text>(),joker ? 12 : 18,joker ? 7 : 10);
             Fit(health==null ? null : health.GetComponent<Text>(),18,9);
         }

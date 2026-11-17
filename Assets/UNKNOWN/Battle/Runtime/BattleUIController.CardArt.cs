@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 namespace Unknown.Battle
 {
@@ -14,7 +14,8 @@ namespace Unknown.Battle
             var image=go.GetComponent<RawImage>();image.texture=texture;image.raycastTarget=false;
             var cost=(RectTransform)rect.Find("Mana cost");cost.GetComponent<Image>().color=Color.clear;cost.GetComponent<Image>().raycastTarget=false;
             var costText=cost.GetComponentInChildren<Text>();costText.rectTransform.offsetMin=costText.rectTransform.offsetMax=Vector2.zero;
-            var description=rect.Find("Card Description").GetComponent<Text>();description.color=new Color(.98f,.92f,.82f);description.resizeTextMinSize=7;description.resizeTextMaxSize=10;
+            var description=rect.Find("Card Description").GetComponent<Text>();description.color=new Color(.98f,.92f,.82f);
+            description.GetComponent<CardDescriptionFit>().SetMaximum(10);
             var atk=rect.Find("Stat ATK").GetComponent<Text>();var hp=rect.Find("Stat HP").GetComponent<Text>();atk.fontSize=18;hp.fontSize=16;
             atk.resizeTextForBestFit=hp.resizeTextForBestFit=true;atk.resizeTextMinSize=10;hp.resizeTextMinSize=9;atk.resizeTextMaxSize=18;hp.resizeTextMaxSize=16;
             foreach(var text in new[]{costText,description,atk,hp}) {var shadow=text.gameObject.AddComponent<Shadow>();shadow.effectColor=new Color(0,0,0,.85f);shadow.effectDistance=new Vector2(1,-1);}

@@ -67,9 +67,7 @@ namespace Unknown.Battle
             atk.color=ink;
             hp.text=card.Definition.CardType==CardType.Joker ? "" : card.CurrentHP.ToString();hp.color=ink;
             var description=rect.Find("Card Description")?.GetComponent<Text>();
-            if(description!=null){string status=card.CardWeakening>0 ? $"ATK -{card.CardWeakening} · {card.AttackWeakTurns}턴" : "";
-                if(card.HealthWeakening>0)status+=(status.Length>0 ? " / " : "")+$"HP -{card.HealthWeakening} · {card.HealthWeakTurns}턴";
-                description.text=card.Definition.Description+(status.Length>0 ? "\n"+status : "");}
+            if(description!=null)description.text=CardDisplayText.For(card);
             if(!onBoard)return;
             bool member=engine.State.Players[card.Owner].Poker.members.Contains(card.InstanceID);
             var icon=rect.Find("Poker Icon");

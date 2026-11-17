@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections;
 using System.Linq;
@@ -47,7 +47,7 @@ namespace Unknown.Battle
                 var card=new CardInstance(-1,definition,0);DrawCard(rect,card,false,false,()=>{},false);Canvas.ForceUpdateCanvases();
                 var art=rect.Find("Card Artwork")?.GetComponent<RawImage>();var expected=UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(ExpectedCardArtPath(definition));
                 verify(art!=null && expected!=null && art.texture==expected && !art.raycastTarget,"Exact supplied card artwork: "+definition.CardID);
-                verify(rect.Find("Mana cost").GetComponentInChildren<Text>().text==definition.ManaCost.ToString() && rect.Find("Card Description").GetComponent<Text>().text==definition.Description
+                verify(rect.Find("Mana cost").GetComponentInChildren<Text>().text==definition.ManaCost.ToString() && rect.Find("Card Description").GetComponent<Text>().text==CardDisplayText.For(card)
                     && rect.Find("Stat HP").GetComponent<Text>().text==(definition.CardType==CardType.Joker ? "" : card.CurrentHP.ToString()) && rect.Find("Stat ATK").GetComponent<Text>().text==(definition.CardType==CardType.Joker ? "50%" : card.Attack.ToString()),"Model supplies live cost, description and stats: "+definition.CardID);
                 verify(rect.GetComponent<Outline>().useGraphicAlpha && rect.GetComponent<Image>().color.a==0 && rect.Find("Artwork Border")==null,"No added border around card art: "+definition.CardID);
                                 var badgeTexts=new[]{rect.Find("Mana cost").GetComponentInChildren<Text>(),rect.Find("Stat ATK").GetComponent<Text>(),rect.Find("Stat HP").GetComponent<Text>()};

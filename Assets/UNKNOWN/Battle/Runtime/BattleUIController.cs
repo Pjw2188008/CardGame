@@ -459,8 +459,8 @@ namespace Unknown.Battle
             Label(cost, (!onBoard && card.Owner==ViewPlayer && def.CardType!=CardType.Joker && engine!=null ? engine.PlacementCost(card) : def.ManaCost).ToString(), Vector2.zero, Vector2.one, 22, Color.white);
             var rankLabel=Label(rect, def.CardType == CardType.Normal ? CardDatabase.RankText(def.Rank) : def.CardName, new Vector2(0.22f, 0.82f), new Vector2(0.98f, 0.99f), unknown ? 14 : 22, ink);rankLabel.name="Card Rank";
             var symbolLabel=Label(rect, unknown ? "UNKNOWN" : def.CardType == CardType.Joker ? "★" : CardDatabase.Symbol(def.Suit), new Vector2(0.05f, 0.48f), new Vector2(0.95f, 0.83f), unknown ? 22 : 46, ink);symbolLabel.name="Card Symbol";
-            var description = Label(rect, def.Description, new Vector2(0.04f, 0.23f), new Vector2(0.96f, 0.49f), 14, unknown ? ink : new Color(0.15f, 0.18f, 0.2f));
-            description.name="Card Description";description.resizeTextForBestFit = true; description.resizeTextMinSize = 11; description.resizeTextMaxSize = 14;
+            var description = Label(rect, CardDisplayText.For(card), new Vector2(0.04f, 0.23f), new Vector2(0.96f, 0.49f), 14, unknown ? ink : new Color(0.15f, 0.18f, 0.2f));
+            description.name="Card Description";description.gameObject.AddComponent<CardDescriptionFit>().SetMaximum(12);
             Label(rect, "", new Vector2(0.01f, 0.055f), new Vector2(0.34f, 0.24f), 26, ink).name="Stat ATK";
             Label(rect, "", new Vector2(0.55f, 0.055f), new Vector2(0.99f, 0.24f), 26, ink).name="Stat HP";
             UpdateCardStats(rect,card,false);
