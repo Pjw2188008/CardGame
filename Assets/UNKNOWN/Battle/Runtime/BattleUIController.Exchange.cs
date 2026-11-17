@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 namespace Unknown.Battle
 {
@@ -14,7 +14,7 @@ namespace Unknown.Battle
         {
             if(exchangeSkip==null)return;
             bool choosing=engine!=null && engine.NeedsExchange && engine.State.ActivePlayer==ViewPlayer;
-            exchangeSkip.gameObject.SetActive(choosing);exchangeSkip.interactable=choosing && !Blocked();
+            exchangeSkip.gameObject.SetActive(choosing && !engine.TargetPrompt.Contains("손패에서 버릴 카드 1장"));exchangeSkip.interactable=choosing && !Blocked();
         }
         void ExchangeCard(int id)
         {

@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 namespace Unknown.Battle
 {
     public sealed partial class BattleEngine
@@ -15,11 +15,20 @@ namespace Unknown.Battle
         {
             if(!Guard(actor,true) || !NeedsExchange)return false;
             if(cardID!=-1 && !State.Players[actor].HandCards.Any(c=>c.InstanceID==cardID))return Fail("남은 손패에서 버릴 카드를 선택하세요.");
+            if(source.Definition.EffectList[effectIndex].Kind==EffectKind.TacticalExchange && source.Definition.Rank!=Rank.Queen && cardID==-1)return Fail("버릴 손패를 선택하세요.");
             CompleteExchange(cardID);return true;
         }
         void CompleteExchange(int cardID)
         {
             var player=State.Players[source.Owner];var effect=source.Definition.EffectList[effectIndex];
+            if(effect.Kind==EffectKind.TacticalExchange) {
+                if(cardID<0 && source.Definition.Rank!=Rank.Queen && player.HandCards.Count>0)cardID=player.HandCards[0].InstanceID;
+                if(cardID>=0){var chosen=player.HandCards.First(c=>c.InstanceID==cardID);player.HandCards.Remove(chosen);player.DiscardCards.Add(chosen);exchangeChosen++;
+                    Emit(new BattleEvent(BattleEventKind.Discard,source.Owner,source:source.InstanceID,target:cardID,secondary:3));}
+                int limit=source.Definition.Rank==Rank.Queen ? 2 : 1;
+                if(cardID>=0 && exchangeChosen<limit && player.HandCards.Count>0)return;
+                FinishTacticalExchange();ResolveEffects();return;
+            }
             waitingExchange=false;
             if(cardID>=0) {
                 var card=player.HandCards.First(c=>c.InstanceID==cardID);

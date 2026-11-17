@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 namespace Unknown.Battle
 {
@@ -11,7 +11,7 @@ namespace Unknown.Battle
             int[][] hp={new[]{2,2,3,3,4,4,5,5,5,6,8,9,7},new[]{2,3,3,4,4,5,5,5,6,7,9,10,8},new[]{4,4,5,5,6,6,7,7,8,9,10,11,10},new[]{3,3,4,4,5,5,6,6,7,7,9,10,8}};
             string[] ranks={"2","3","4","5","6","7","8","9","10","J","Q","K","A"};
             var damage=new Dictionary<string,int>{{"6",6},{"7",4},{"8",6},{"9",6},{"10",8},{"J",9},{"Q",6},{"K",10},{"A",5}};
-            return before.ToDictionary(p=>p.Key,p=>{
+            var result=before.ToDictionary(p=>p.Key,p=>{
                 var c=p.Value;int attack=c.Attack,health=c.MaxHP;var effects=c.EffectList.ToArray();string description=c.Description;
                 if(c.CardType==CardType.Normal) {
                     int index=System.Array.IndexOf(ranks,RankText(c.Rank));
@@ -26,6 +26,8 @@ namespace Unknown.Battle
                 }
                 return new CardDefinition(c.CardID,c.CardName,c.Suit,c.Rank,attack,health,c.CardType,description,c.ManaCost,version,effects);
             });
+            if(version==CardBalanceVersion.FullBalanceRework)ApplyTacticalCards(result);
+            return result;
         }
     }
 }

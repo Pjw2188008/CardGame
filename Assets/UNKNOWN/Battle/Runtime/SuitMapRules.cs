@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 namespace Unknown.Battle
 {
@@ -49,6 +49,7 @@ namespace Unknown.Battle
         }
         void DamageUnit(CardInstance target,int amount,int sourceID,Suit suit,bool chain=false)
         {
+            amount=ProtectedDamage(target,amount);
             int actual=Math.Min(target.CurrentHP,amount);
             var dealer=State.Players.SelectMany(p=>p.Slots).FirstOrDefault(c=>c!=null && c.InstanceID==sourceID);
             MeasureDamageAttempt(dealer,target,amount,actual);

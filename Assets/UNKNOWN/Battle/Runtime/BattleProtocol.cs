@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,8 +23,10 @@ namespace Unknown.Battle
         public int pokerAttack,pokerHP,mapAttack,mapHP,jokerAttack,jokerHP,abilityAttack,abilityHP;
         public int rawAttack,rawHP;
         public bool hasStatLayers;
+        public int protection,protectionSource,cardWeakening,weakUntil,temporaryAttack,growthCount,lastCardTurn;
         public static CardViewData From(CardInstance c) => c == null ? new CardViewData() : new CardViewData {
             occupied = true,
+            protection=c.Protection,protectionSource=c.ProtectionSource,cardWeakening=c.CardWeakening,weakUntil=c.WeakUntil,temporaryAttack=c.TemporaryAttack,growthCount=c.GrowthCount,lastCardTurn=c.LastCardTurn,
             pokerStraightAttackSpent=c.PokerStraightAttackSpent,heartMapHealSpent=c.HeartMapHealSpent,firstAttackHealSpent=c.FirstAttackHealSpent,cardVersion=c.Definition.Version,
             id = c.InstanceID, owner = c.Owner, definition = c.Definition.CardID, attack = c.Attack,
             hp = c.CurrentHP, maxHP = c.MaxHP, summonedTurn = c.SummonedTurn, attacked = c.HasAttacked, jokerUsed = c.JokerUsed,
@@ -33,6 +35,7 @@ namespace Unknown.Battle
         public CardInstance ToCard() {
             if(!occupied)return null;
             var c=new CardInstance(id, CardDatabase.Get(definition,cardVersion), owner) {
+            Protection=protection,ProtectionSource=protectionSource,CardWeakening=cardWeakening,WeakUntil=weakUntil,TemporaryAttack=temporaryAttack,GrowthCount=growthCount,LastCardTurn=lastCardTurn,
             PokerStraightAttackSpent=pokerStraightAttackSpent,HeartMapHealSpent=heartMapHealSpent,FirstAttackHealSpent=firstAttackHealSpent,
             PokerAttack=pokerAttack,PokerHP=pokerHP,Attack = attack, CurrentHP = hp, MaxHP = maxHP, SummonedTurn = summonedTurn, HasAttacked = attacked, JokerUsed = jokerUsed,
             MapAttack=mapAttack,MapHP=mapHP,JokerAttack=jokerAttack,JokerHP=jokerHP,AbilityAttack=abilityAttack,AbilityHP=abilityHP };
@@ -47,6 +50,7 @@ namespace Unknown.Battle
         public PokerState poker;
         public bool manualDiscardUsed;
         public int discardCount;
+        public int nextDiscount,discountTurn,cardManaGained;
     }
     [Serializable] public sealed class EventViewData
     {
@@ -80,6 +84,7 @@ namespace Unknown.Battle
         public bool clockRunning = true;
         public bool expired, busy;
         public bool exchangePending;
+        public int exchangeChosen;
         public CardBalanceVersion cardVersion;
         public int pendingSource=-1,pendingIndex;
         public int[] pendingTargetKinds,pendingTargetIDs,pendingDistinctIDs;
@@ -100,7 +105,7 @@ namespace Unknown.Battle
             var s = engine.State;
             return new BattleSnapshot { revision = revision, recipient = recipient, active = s.ActivePlayer,
                 handLimit=engine.Config.HandLimit,firstPlayer=engine.Config.FirstPlayer,
-                cardVersion=engine.Config.CardVersion,exchangePending=engine.NeedsExchange,pendingSource=engine.PendingSourceID,pendingIndex=engine.PendingIndex,
+                exchangeChosen=engine.ExchangeChosen,cardVersion=engine.Config.CardVersion,exchangePending=engine.NeedsExchange,pendingSource=engine.PendingSourceID,pendingIndex=engine.PendingIndex,
                 pendingTargetKinds=engine.PendingKinds,pendingTargetIDs=engine.PendingIDs,pendingDistinctIDs=engine.PendingDistinct,
                 turn = s.TurnNumber, winner = s.Winner, victoryReason = s.VictoryReason, expired = s.TurnExpired, deadline = deadline, busy = busy, turnDuration = turnDuration, clockRunning = clockRunning,
                 map=engine.Config.Map, mapEvent=MapEventView.For(engine.MapEvent,recipient),
@@ -110,6 +115,7 @@ namespace Unknown.Battle
                     jokerSuccesses=owner==recipient ? p.JokerSuccesses : 0, jokerChanceDelta=owner==recipient ? p.JokerChanceDelta : 0,
                     deckCount = p.DeckCount, handCount = p.Hand.Count, unknownCreated = owner == recipient ? p.UnknownCreated : 0,
                     unknownProgress = owner == recipient ? p.UnknownProgress : 0,
+                    nextDiscount=p.NextDiscount,discountTurn=p.DiscountTurn,cardManaGained=p.CardManaGained,
                     poker=p.Poker.Copy(),manualDiscardUsed=p.ManualDiscardUsed,discardCount=p.DiscardCount,
                     hand = owner == recipient ? p.Hand.Select(CardViewData.From).ToArray() : new CardViewData[0],
                     board = p.Board.Select(CardViewData.From).ToArray() }).ToArray(),
@@ -145,6 +151,7 @@ namespace Unknown.Battle
                 var p = State.Players[owner]; var v = s.players[owner];
                 p.HP = v.hp; p.CurrentMana = v.mana; p.MaxMana = v.maxMana; p.UnknownCreated = v.unknownCreated;
                 p.JokerSuccesses=v.jokerSuccesses; p.JokerChanceDelta=v.jokerChanceDelta;
+                p.NextDiscount=v.nextDiscount;p.DiscountTurn=v.discountTurn;p.CardManaGained=v.cardManaGained;
                 p.Poker=v.poker?.Copy() ?? new PokerState();
                 p.ManualDiscardUsed=v.manualDiscardUsed;p.DiscardCards.Clear();for(int i=0;i<v.discardCount;i++)p.DiscardCards.Add(null);
                 p.HandCards.Clear(); p.DeckCards.Clear();

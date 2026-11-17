@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +20,9 @@ namespace Unknown.Battle
             => BalanceObserver?.Effect(this,source,effect,target,actual,outcome);
         partial void MeasureAttackRecovery(CardInstance card,CardEffect effect,int before,int actual)
             => BalanceObserver?.Effect(this,card,effect,card,actual,"resolved");
+        partial void MeasureTactical(CardInstance dealer,CardEffect e,CardInstance target,int actual,string outcome) => BalanceObserver?.Effect(this,dealer,e,target,actual,outcome);
+        partial void MeasureTacticalHealing(CardInstance dealer,int actual) => (BalanceObserver as BalanceMatchCollector)?.TacticalHealing(dealer,actual);
+        partial void MeasureProtection(int sourceID,int prevented) => (BalanceObserver as BalanceMatchCollector)?.ProtectionPrevented(sourceID,prevented);
         partial void MeasureAttackRecoverySkipped(CardInstance card,CardEffect effect)
             => BalanceObserver?.Effect(this,card,effect,card,0,"source_destroyed");
         internal void SetBalanceRandomTrace(Action<int,int,int> trace){if(random is SeededRandom seeded)seeded.Trace=trace;}
@@ -32,6 +35,7 @@ namespace Unknown.Battle
         public long appearances,uses,opportunities,discardedUnused,combinedAsMaterial,matchesUsed,playerMatchesUsed,winsUsed;
         public long useTurnSum,summons,survivalTurnSum,deadUnits,censoredUnits,manaPaid;
         public long attackDamage,effectDamage,enemyUnitDamage,enemyHeroDamage,selfDamage,damageReceived,kills;
+        public long protectionPrevented,weakenApplications;
         public long healing,attackIncrease,attackDecrease,extraHP,draws,discardEffects;
         public long afterAttackHealing,manaGained,manaWasted,exchangeDraws,exchangesSkipped,jokerPaidUses,jokerFreeUses,overflowDraws,unknownCreated;
         public long effectActivations,effectApplications,effectSuccesses,effectFailures,conditionsMet,invalidated;
@@ -69,7 +73,7 @@ namespace Unknown.Battle
     [Serializable]
     public sealed class BalanceMatchResult
     {
-        public int match,seed,turns,actions,winner=-1;
+        public int match,seed,turns,actions,firstPlayer,winner=-1;
         public string conditionID,swapID,version,initialFirstDeckHash,initialSecondDeckHash;
         public int firstDeckSeed,secondDeckSeed,firstPolicySeed,secondPolicySeed,randomCalls,firstUnknownSummonTurn=-1,secondUnknownSummonTurn=-1,firstUnknownCreationTurn=-1,secondUnknownCreationTurn=-1,firstUnknownMax,secondUnknownMax;
         public long randomFingerprint;
@@ -175,6 +179,8 @@ namespace Unknown.Battle
         {
             card.stats.uses++;card.stats.useTurnSum+=engine.State.TurnNumber;used.Add(card.card.InstanceID);
         }
+        public void TacticalHealing(CardInstance source,int actual){Track(source).stats.healing+=actual;}
+        public void ProtectionPrevented(int sourceID,int actual){var source=Find(sourceID);if(source!=null)source.stats.protectionPrevented+=actual;}
         public void DamageAttempt(CardInstance dealer,CardInstance target,int requested,int actual) {
             detail?.Invoke(new BalanceDetail{match=match,turn=engine.State.TurnNumber,kind="DamageAttempt",source=dealer?.InstanceID ?? -1,target=target?.InstanceID ?? -1,
                 actor=dealer?.Owner ?? -1,cardID=dealer?.Definition.CardID ?? "",targetCardID=target?.Definition.CardID ?? "",requested=requested,amount=actual,
@@ -217,6 +223,7 @@ namespace Unknown.Battle
                 case BattleEventKind.Attack:
                     Deal(source,target,e.Amount,false,target==null ? g.State.Players[e.TargetOwner].HP+e.Amount : target.card.CurrentHP);
                     if(target!=null)Deal(target,source,e.Secondary,false,source.card.CurrentHP);break;
+                case BattleEventKind.HeroChanged:if(source!=null && e.Amount<0)Deal(source,null,-e.Amount,true,g.State.Players[e.Owner].HP-e.Amount);break;
                 case BattleEventKind.Damage:
                     Deal(source,target,e.Amount,true,Math.Max(0,target.card.CurrentHP)+e.Amount);break;
                 case BattleEventKind.AttackChanged:case BattleEventKind.MaxHPChanged:
@@ -249,6 +256,7 @@ namespace Unknown.Battle
             BalanceEffectStats effect=null;
             if(source!=null) {
                 int index=source.card.Definition.CardType==CardType.Joker ? -1 : source.card.Definition.EffectList.ToList().FindIndex(x=>e.Kind==BattleEventKind.AttackChanged ? x.Kind==EffectKind.ModifyAttack || x.Kind==EffectKind.ChainWeaken : x.Kind==EffectKind.IncreaseMaxHP);
+                if(index<0 && source.card.Definition.CardType==CardType.Normal)index=source.card.Definition.EffectList.ToList().FindIndex(x=>x.Kind>=EffectKind.StrikeBonus);
                 effect=EffectRow(source,index,index<0 ? "Joker" : source.card.Definition.EffectList[index].Kind.ToString(),index<0 ? "Ally" : source.card.Definition.EffectList[index].Target.ToString());
                 if(index<0) {if(e.Kind==BattleEventKind.AttackChanged)source.stats.jokerAttackGain+=e.Amount;else source.stats.jokerHPGain+=e.Amount;}
             }
@@ -303,8 +311,9 @@ namespace Unknown.Battle
                 case EffectKind.Heal:source.stats.healing+=actual;break;
                 case EffectKind.FirstAttackHeal:source.stats.healing+=actual;source.stats.afterAttackHealing+=actual;break;
                 case EffectKind.GainMana:source.stats.manaGained+=actual;source.stats.manaWasted+=System.Math.Max(0,effect.Amount-actual);break;
-                case EffectKind.Exchange:source.stats.draws+=actual;source.stats.exchangeDraws+=actual;if(outcome!="resolved")source.stats.exchangesSkipped++;break;
-                case EffectKind.ModifyAttack:case EffectKind.ChainWeaken:if(actual>=0)source.stats.attackIncrease+=actual;else source.stats.attackDecrease-=actual;break;
+                case EffectKind.TacticalExchange:case EffectKind.Exchange:source.stats.draws+=actual;source.stats.exchangeDraws+=actual;if(outcome!="resolved")source.stats.exchangesSkipped++;break;
+                case EffectKind.CardWeaken:case EffectKind.AttackWeaken:case EffectKind.WeakenThenDamage:if(actual<0){source.stats.attackDecrease-=actual;source.stats.weakenApplications++;}break;
+                case EffectKind.TemporaryAttack:case EffectKind.TurnGrow:case EffectKind.ModifyAttack:case EffectKind.ChainWeaken:if(actual>=0)source.stats.attackIncrease+=actual;else source.stats.attackDecrease-=actual;break;
                 case EffectKind.IncreaseMaxHP:source.stats.extraHP+=actual;break;
                 case EffectKind.DrawCard:source.stats.draws+=actual;break;
                 case EffectKind.DiscardCard:source.stats.discardEffects+=actual;break;

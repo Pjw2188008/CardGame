@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +19,153 @@ namespace Unknown.Battle
         {var card=engine.NewCard(CardDatabase.Get(id,CardBalanceVersion.Baseline),owner);engine.State.Players[owner].Slots[slot]=card;return card;}
         static void Require(bool condition,string name,List<string> passed)
         {if(!condition)throw new InvalidOperationException("Balance verification failed: "+name);passed.Add(name);}
+        static BattleEngine CurrentFixture() {
+            var g=new BattleEngine(1711,new BattleConfig{StartingHand=0,StartingMana=10,ShuffleDecks=false,EnablePoker=false});
+            foreach(var p in g.State.Players)p.HandCards.Clear();g.DrainEvents();return g;
+        }
+        static CardInstance CurrentHand(BattleEngine g,string id,int owner=0) {
+            var c=g.NewCard(CardDatabase.Get(id),owner);g.State.Players[owner].HandCards.Add(c);return c;
+        }
+        static CardInstance CurrentUnit(BattleEngine g,string id,int owner=0,int slot=0) {
+            var c=g.NewCard(CardDatabase.Get(id),owner);g.State.Players[owner].Slots[slot]=c;return c;
+        }
+        static CardInstance PlayCurrent(BattleEngine g,string id,int slot,int targetOwner=-1,int targetSlot=0) {
+            int actor=g.State.ActivePlayer;var c=CurrentHand(g,id,actor);
+            if(!g.Summon(actor,c.InstanceID,slot))throw new InvalidOperationException(id+": "+g.State.LastError);
+            if(targetOwner>=0 && g.NeedsTarget && !g.SelectEffectTarget(actor,targetOwner,targetSlot))throw new InvalidOperationException(id+" target: "+g.State.LastError);
+            return c;
+        }
+        public static string[] VerifyCurrentCards() {
+            var passed=new List<string>();
+            foreach(var d in CardDatabase.All.Where(c=>c.CardType==CardType.Normal)) {
+                var g=CurrentFixture();var a=CurrentUnit(g,"Heart_K");a.CurrentHP=2;
+                var b=CurrentUnit(g,"Heart_J",0,1);b.CurrentHP=2;
+                for(int slot=0;slot<3;slot++){var t=CurrentUnit(g,"Unknown_K",1,slot);t.CurrentHP=8;t.CardWeakening=1;t.AbilityAttack=-1;t.Attack--;}
+                CurrentHand(g,"Heart_2");CurrentHand(g,"Spade_2");
+                PlayCurrent(g,d.CardID,2);
+                for(int step=0;step<20 && g.NeedsTarget;step++) {
+                    if(g.NeedsExchange){g.ChooseExchange(0,g.State.Players[0].Hand.FirstOrDefault()?.InstanceID ?? -1);continue;}
+                    bool selected=false;
+                    for(int owner=0;owner<2 && !selected;owner++)for(int slot=0;slot<5 && !selected;slot++)if(g.IsValidEffectTarget(owner,slot)){g.SelectEffectTarget(0,owner,slot);selected=true;}
+                    if(!selected)throw new InvalidOperationException("Unresolvable effect: "+d.CardID);
+                }
+                Require(!g.NeedsTarget,"52-card summon/target continuation: "+d.CardID,passed);
+            }
+            {
+                var g=CurrentFixture();var t=CurrentUnit(g,"Diamond_K",1);int atk=t.Attack;
+                PlayCurrent(g,"Spade_J",0,1);PlayCurrent(g,"Spade_4",1,1);
+                Require(t.CardWeakening==3 && t.Attack==atk-3,"Weakening capped at 3",passed);
+                g.EndTurn(0);Require(t.CardWeakening==3,"Weakening persists through target owner turn",passed);
+                g.EndTurn(1);Require(t.CardWeakening==0 && t.Attack==atk,"Weakening expires at next target-owner turn end",passed);
+            }
+            {
+                var g=CurrentFixture();var t=CurrentUnit(g,"Diamond_K");int hp=t.CurrentHP;
+                PlayCurrent(g,"Heart_3",1,0);PlayCurrent(g,"Heart_3",2,0);
+                Require(t.Protection==2,"Protection uses maximum rather than stacking",passed);
+                g.State.ActivePlayer=1;PlayCurrent(g,"Diamond_2",0,0);
+                Require(t.CurrentHP==hp && t.Protection==0,"Next positive spell hit consumes protection",passed);
+            }
+            {
+                var g=CurrentFixture();var a=CurrentUnit(g,"Diamond_7");var t=CurrentUnit(g,"Heart_K",1);t.Protection=3;int before=t.CurrentHP;
+                Require(g.Attack(0,a.InstanceID,0) && t.CurrentHP==before-a.Definition.Attack,"Diamond 7 ignores protection on attack",passed);
+            }
+            {
+                var g=CurrentFixture();var a=CurrentUnit(g,"Diamond_2");int atk=a.Attack;
+                PlayCurrent(g,"Diamond_8",1,0);Require(a.Attack==atk+2,"Temporary targeted attack applies",passed);
+                g.EndTurn(0);Require(a.Attack==atk && a.TemporaryAttack==0,"Temporary attack removed at turn end",passed);
+            }
+            {
+                var g=CurrentFixture();g.State.Players[0].CurrentMana=10;
+                PlayCurrent(g,"Club_3",0);PlayCurrent(g,"Club_3",1);PlayCurrent(g,"Club_3",2);
+                Require(g.State.Players[0].CardManaGained==2 && g.State.Players[0].CurrentMana==9,"Card mana gains capped at +2 per turn",passed);
+                g.EndTurn(0);g.EndTurn(1);Require(g.State.Players[0].CardManaGained==0,"Card mana allowance resets on owner turn",passed);
+            }
+            {
+                var g=CurrentFixture();PlayCurrent(g,"Club_8",0);var c=CurrentHand(g,"Diamond_2");
+                Require(g.PlacementCost(c)==1,"Discount respects minimum cost 1",passed);
+                int before=g.State.Players[0].CurrentMana;g.Summon(0,c.InstanceID,1);
+                Require(before-g.State.Players[0].CurrentMana==1 && g.State.Players[0].NextDiscount==0,"Next placement consumes discount once",passed);
+                PlayCurrent(g,"Club_5",2);g.EndTurn(0);Require(g.State.Players[0].NextDiscount==0,"This-turn discount expires",passed);
+            }
+            for(int choose=0;choose<=2;choose++) {
+                var g=CurrentFixture();var a=CurrentHand(g,"Heart_2");var b=CurrentHand(g,"Spade_2");var q=PlayCurrent(g,"Club_Q",0);
+                if(choose>0)g.ChooseExchange(0,a.InstanceID);if(choose>1)g.ChooseExchange(0,b.InstanceID);else g.ChooseExchange(0,-1);
+                Require(!g.NeedsTarget && g.State.Players[0].Hand.Count==4 && g.State.Players[0].DiscardCount==choose,"Club Queen choose/discard/draw count "+choose,passed);
+            }
+            {
+                var g=CurrentFixture();CurrentHand(g,"Heart_2");PlayCurrent(g,"Club_4",0);
+                Require(!g.ChooseExchange(0,-1) && g.NeedsExchange,"Mandatory discard cannot be skipped",passed);
+                var c=g.State.Players[0].Hand[0];g.ChooseExchange(0,c.InstanceID);
+                Require(g.State.Players[0].DiscardCards.Contains(c) && g.State.Players[0].Hand.Count==2,"Discard moves existing instance then draws 2",passed);
+            }
+            {
+                var g=CurrentFixture();var a=CurrentUnit(g,"Diamond_5");var t=CurrentUnit(g,"Heart_2",1);t.CurrentHP=1;
+                Require(g.Attack(0,a.InstanceID,0) && g.State.Players[1].HP==28,"Normal-attack kill triggers hero damage",passed);
+                g=CurrentFixture();t=CurrentUnit(g,"Heart_2",1);t.CurrentHP=1;var c=PlayCurrent(g,"Diamond_6",0,1);
+                Require(c.Attack==c.Definition.Attack+1 && g.State.Players[1].HP==30,"Summon kill grants only specified reward",passed);
+            }
+            {
+                var g=CurrentFixture();var a=CurrentUnit(g,"Heart_K",1);a.CardWeakening=1;a.Attack--;a.AbilityAttack--;
+                var b=CurrentUnit(g,"Heart_K",1,1);int hpA=a.CurrentHP,hpB=b.CurrentHP;
+                PlayCurrent(g,"Spade_A",0);Require(g.NeedsTarget && g.IsValidEffectTarget(1,0) && !g.IsValidEffectTarget(1,1),"Spade Ace targets only previously weakened enemies",passed);
+                g.SelectEffectTarget(0,1,0);Require(a.CurrentHP==hpA-3 && b.CurrentHP==hpB,"Spade Ace damage occurs once after all-enemy weakening",passed);
+            }
+            {
+                var g=CurrentFixture();var a=CurrentUnit(g,"Heart_9");int atk=a.Attack;
+                for(int i=0;i<3;i++){g.EndTurn(0);g.EndTurn(1);}
+                Require(a.GrowthCount==2 && a.Attack==atk+2,"Heart 9 permanent growth limited to 2 owner turns",passed);
+            }
+            {
+                var g=CurrentFixture();var a=CurrentUnit(g,"Heart_K");a.CurrentHP-=2;var b=CurrentUnit(g,"Heart_10",0,1);b.CurrentHP--;
+                var q=PlayCurrent(g,"Heart_Q",2);Require(a.CurrentHP==a.MaxHP && b.CurrentHP==b.MaxHP && q.Protection==2,"Heart Queen counts actually healed units",passed);
+                g.State.Players[0].CurrentMana=10;var h=PlayCurrent(g,"Heart_A",3);int atk=a.Definition.Attack;
+                Require(a.Attack==atk+1 && a.TemporaryAttack==1,"Heart Ace buffs units full after recovery",passed);
+                g.EndTurn(0);Require(a.Attack==atk,"Heart Ace full-health buff expires",passed);
+            }
+            {
+                var g=CurrentFixture();var t=CurrentUnit(g,"Heart_9");t.Protection=3;t.ProtectionSource=t.InstanceID;t.CardWeakening=2;t.WeakUntil=2;t.TemporaryAttack=1;t.GrowthCount=1;
+                g.State.Players[0].NextDiscount=2;g.State.Players[0].CardManaGained=1;
+                var s=UnityEngine.JsonUtility.FromJson<BattleSnapshot>(UnityEngine.JsonUtility.ToJson(BattleSnapshot.For(g,0,1,0,false,new BattleEvent[0])));
+                var restored=BattleEngine.CreateView(s);var c=restored.State.Players[0].Board[0];
+                Require(c.Protection==3 && c.ProtectionSource==t.InstanceID && c.CardWeakening==2 && c.WeakUntil==2 && c.TemporaryAttack==1 && c.GrowthCount==1 && restored.State.Players[0].NextDiscount==2,"Network snapshot round-trip preserves all card state and cost discount",passed);
+            }
+            foreach(string face in new[]{"J","Q","K"}) {
+                var g=CurrentFixture();var a=CurrentHand(g,"Diamond_A");var f=CurrentHand(g,"Heart_"+face);
+                Require(g.Combine(0,a.InstanceID,f.InstanceID) && g.State.Players[0].Hand.Any(c=>c.Definition.CardID=="Unknown_"+face),"Existing hand-only UNKNOWN combination "+face,passed);
+            }
+            {
+                var stage=new SingleStage{kind=SingleNodeKind.Battle,turnLimit=20,startMana=10,manaRecovery=10,turnSpendLimit=10,manaBudget=100,enemyHP=100};
+                var options=new SingleBattleOptions{stage=stage,difficulty=new SingleDifficulty(),deck=CardDatabase.Deck.Where(c=>c.CardType==CardType.Normal).Select(c=>c.CardID).ToArray(),augments=new string[0],hp=30,maxHP=30,seed=1711};
+                var g=new BattleEngine(1711,new BattleConfig{StartingHand=0,StartingMana=10,EnablePoker=false,Single=options},new SingleRandom(1711));
+                g.State.Players[0].HandCards.Clear();var t=CurrentUnit(g,"Diamond_K",1);int atk=t.Attack;
+                PlayCurrent(g,"Spade_4",0,1);Require(g.Single.Progress.weakening.Count==0,"Single weakening uses one expiry owner",passed);
+                g.EndTurn(0);g.EndTurn(1);Require(t.Attack==atk && t.CardWeakening==0,"Single weakening restores once",passed);
+                g.EndTurn(0);g.EndTurn(1);Require(t.Attack==atk,"Single later turns cannot restore weakening twice",passed);
+                PlayCurrent(g,"Club_5",1);g.Single.Progress.spent=99;g.Single.Progress.turnSpent=9;
+                var hand=CurrentHand(g,"Diamond_4");Require(g.Single.SummonError(hand,2)=="" && g.PlacementCost(hand)==1,"Single budget and turn cap use discounted cost",passed);
+                Require(g.Summon(0,hand.InstanceID,2) && g.Single.Progress.spent==100 && g.Single.Progress.turnSpent==10,"Single discounted payment uses actual budget",passed);
+                var dead=g.NewCard(CardDatabase.Get("Heart_9"),0);dead.Protection=3;dead.CardWeakening=2;dead.WeakUntil=5;dead.TemporaryAttack=2;dead.GrowthCount=2;dead.LastCardTurn=9;g.State.Players[0].DiscardCards.Add(dead);
+                Require(g.Single.Recycle(0) && dead.Protection==0 && dead.CardWeakening==0 && dead.WeakUntil==0 && dead.TemporaryAttack==0 && dead.GrowthCount==0 && dead.LastCardTurn==-1,"Single recycling clears previous field-only card states",passed);
+            }
+            {
+                foreach(var c in CardDatabase.All.Where(c=>c.CardType!=CardType.Normal)) {
+                    var before=CardDatabase.Get(c.CardID,CardBalanceVersion.Revised);
+                    Require(c.Attack==before.Attack && c.MaxHP==before.MaxHP && c.ManaCost==before.ManaCost && c.Description==before.Description && c.EffectList.Select(e=>e.Kind+":"+e.Amount+":"+e.Target).SequenceEqual(before.EffectList.Select(e=>e.Kind+":"+e.Amount+":"+e.Target)),"Unchanged non-normal definition: "+c.CardID,passed);
+                }
+                var g=CurrentFixture();CurrentUnit(g,"Unknown_J");CurrentUnit(g,"Unknown_Q",0,1);
+                PlayCurrent(g,"Unknown_K",2);while(g.NeedsTarget){bool chosen=false;for(int owner=0;owner<2 && !chosen;owner++)for(int slot=0;slot<5 && !chosen;slot++)if(g.IsValidEffectTarget(owner,slot)){g.SelectEffectTarget(0,owner,slot);chosen=true;}if(!chosen)throw new Exception("UNKNOWN continuation");}
+                Require(g.State.IsOver && g.State.VictoryReason==VictoryReason.UnknownComplete,"Existing three living UNKNOWN victory",passed);
+                g=CurrentFixture();var a=CurrentUnit(g,"Heart_K");var j=CurrentHand(g,"Joker_1");g.DebugNextGamble=true;
+                Require(g.Gamble(0,j.InstanceID,a.InstanceID) && a.Attack==(int)Math.Ceiling(a.Definition.Attack*1.5),"Existing JOKER success scaling",passed);
+                g=CurrentFixture();a=CurrentUnit(g,"Heart_K");j=CurrentHand(g,"Joker_2");g.DebugNextGamble=false;
+                Require(g.Gamble(0,j.InstanceID,a.InstanceID) && !g.State.Players[0].Board.Contains(a),"Existing JOKER failure destroys target",passed);
+                g=new BattleEngine(1711,new BattleConfig{StartingHand=0,StartingMana=10,EnablePoker=true});g.State.Players[0].HandCards.Clear();
+                a=CurrentUnit(g,"Diamond_2");var b=PlayCurrent(g,"Heart_2",1,0);var unrelated=PlayCurrent(g,"Club_3",2);
+                Require(g.State.Players[0].Poker.kind==PokerKind.OnePair && a.PokerAttack==1 && b.PokerAttack==1 && unrelated.PokerAttack==0,"Existing poker pair affects only member cards",passed);
+            }
+            return passed.ToArray();
+        }
+
         public static List<string> Run(string parent)
         {
             var passed=new List<string>();

@@ -53,7 +53,7 @@ namespace Unknown.Battle
         public bool Payable(int amount)=>amount<=RemainingBudget && Progress.turnSpent+amount<=Options.stage.turnSpendLimit;
         public string SummonError(CardInstance c,int slot) {
             if(c.Owner!=0)return "";
-            if(!Payable(Cost(c)))return "턴당 마나 사용 상한 또는 총 마나 예산이 부족합니다.";
+            if(!Payable(g.PlacementCost(c)))return "턴당 마나 사용 상한 또는 총 마나 예산이 부족합니다.";
             if(Has(SingleRestriction.Parity) && c.Definition.CardType==CardType.Normal && (PokerSynergy.RankValue(c.Definition.Rank)%2)!=(Round%2))return "이번 턴에는 "+(Round%2==0?"짝수":"홀수")+" 계급만 소환할 수 있습니다.";
             return "";
         }
@@ -170,7 +170,7 @@ namespace Unknown.Battle
             if(owner!=0)return false;var p=g.State.Players[owner];
             var cards=p.DiscardCards.Where(c=>c.Definition.CardType!=CardType.Unknown).ToArray();
             if(cards.Length==0)return false;
-            foreach(var c in cards){p.DiscardCards.Remove(c);c.PokerAttack=c.PokerHP=0;c.ImportCore(c.Definition.Attack,c.Definition.MaxHP);c.CurrentHP=c.MaxHP;c.AbilityAttack=c.AbilityHP=c.MapAttack=c.MapHP=c.JokerAttack=c.JokerHP=0;c.HasAttacked=c.JokerUsed=c.FirstAttackHealSpent=c.PokerStraightAttackSpent=c.HeartMapHealSpent=false;p.DeckCards.Add(c);}
+            foreach(var c in cards){p.DiscardCards.Remove(c);c.PokerAttack=c.PokerHP=0;c.ImportCore(c.Definition.Attack,c.Definition.MaxHP);c.CurrentHP=c.MaxHP;c.AbilityAttack=c.AbilityHP=c.MapAttack=c.MapHP=c.JokerAttack=c.JokerHP=0;c.HasAttacked=c.JokerUsed=c.FirstAttackHealSpent=c.PokerStraightAttackSpent=c.HeartMapHealSpent=false;c.Protection=c.ProtectionSource=c.CardWeakening=c.WeakUntil=c.TemporaryAttack=c.GrowthCount=0;c.LastCardTurn=-1;p.DeckCards.Add(c);}
             g.SingleShuffle(p.DeckCards);return true;
         }
         public bool CancelDraw(int owner) {
@@ -214,7 +214,9 @@ namespace Unknown.Battle
                         if(!Progress.firstWeakening){Progress.firstWeakening=true;Progress.weakenSource=e.SourceID;Progress.weakenIndex=g.PendingIndex;Progress.weakenTurn=g.State.TurnNumber;}
                         if(Progress.weakenSource==e.SourceID && Progress.weakenIndex==g.PendingIndex && Progress.weakenTurn==g.State.TurnNumber)duration+=Options.augmentData?.FirstOrDefault(a=>a.id=="2")?.duration ?? 1;
                     }
-                    Progress.weakening.Add(new SingleWeakening{id=unit.InstanceID,amount=-e.Amount,expires=g.State.TurnNumber+duration*2});
+                    if(dealer.Definition.CardType==CardType.Normal && dealer.Definition.Version==CardDatabase.DefaultVersion && unit.CardWeakening>0)
+                        unit.WeakUntil=Math.Max(unit.WeakUntil,g.State.Players[unit.Owner].TurnsStarted+duration);
+                    else Progress.weakening.Add(new SingleWeakening{id=unit.InstanceID,amount=-e.Amount,expires=g.State.TurnNumber+duration*2});
                 }
                 if(e.Kind==BattleEventKind.Discard && e.Owner==0 && e.Secondary==2 && Aug(7) && !Progress.once[7]){Progress.once[7]=true;g.Draw(0,Amount(7));}
                 if(e.Kind==BattleEventKind.JokerSuccess && e.Owner==0 && Aug(10))g.Draw(0,Amount(10));
@@ -294,12 +296,12 @@ namespace Unknown.Battle
             var s=save.snapshot;State.ActivePlayer=s.active;State.TurnNumber=s.turn;State.Winner=s.winner;State.VictoryReason=s.victoryReason;State.TurnExpired=s.expired;
             for(int owner=0;owner<2;owner++) {
                 var p=State.Players[owner];var v=s.players[owner];p.HandCards.Clear();p.DeckCards.Clear();p.DiscardCards.Clear();
-                p.HP=v.hp;p.MaxMana=v.maxMana;p.CurrentMana=v.mana;p.TurnsStarted=save.turnsStarted[owner];p.Poker=v.poker.Copy();p.ManualDiscardUsed=v.manualDiscardUsed;p.UnknownCreated=v.unknownCreated;p.JokerSuccesses=v.jokerSuccesses;
+                p.HP=v.hp;p.NextDiscount=v.nextDiscount;p.DiscountTurn=v.discountTurn;p.CardManaGained=v.cardManaGained;p.MaxMana=v.maxMana;p.CurrentMana=v.mana;p.TurnsStarted=save.turnsStarted[owner];p.Poker=v.poker.Copy();p.ManualDiscardUsed=v.manualDiscardUsed;p.UnknownCreated=v.unknownCreated;p.JokerSuccesses=v.jokerSuccesses;
                 p.HandCards.AddRange(v.hand.Select(c=>c.ToCard()));p.DeckCards.AddRange((owner==0?save.firstDeck:save.secondDeck).Select(c=>c.ToCard()));p.DiscardCards.AddRange((owner==0?save.firstDiscard:save.secondDiscard).Select(c=>c.ToCard()));
                 for(int i=0;i<p.Slots.Length;i++)p.Slots[i]=v.board[i].ToCard();
             }
             nextID=State.Players.SelectMany(p=>p.Hand.Concat(p.Board).Concat(p.DeckCards).Concat(p.DiscardCards)).Where(c=>c!=null).Select(c=>c.InstanceID).DefaultIfEmpty(0).Max();
-            source=SingleFind(s.pendingSource);effectIndex=s.pendingIndex;waitingExchange=s.exchangePending;selectedTargets.Clear();chainHits.Clear();
+            source=SingleFind(s.pendingSource);effectIndex=s.pendingIndex;waitingExchange=s.exchangePending;exchangeChosen=s.exchangeChosen;selectedTargets.Clear();chainHits.Clear();
             if(s.pendingTargetKinds!=null)for(int i=0;i<s.pendingTargetKinds.Length;i++)selectedTargets[(EffectTarget)s.pendingTargetKinds[i]]=s.pendingTargetIDs[i];
             if(s.pendingDistinctIDs!=null)foreach(int id in s.pendingDistinctIDs)chainHits.Add(id);
             Single.Progress=save.progress;((SingleRandom)random).Restore(save.randomBounds);State.Entries.Clear();State.Entries.AddRange(s.log);State.EntryOwners.Clear();events.Clear();Single.ExpireBeforeTurnEffects();

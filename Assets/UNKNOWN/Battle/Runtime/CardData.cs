@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +8,7 @@ namespace Unknown.Battle
     public enum Rank { Two = 2, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Ace, Jack, Queen, King, Joker }
     public enum CardType { Normal, Joker, Unknown }
     public enum CardBalanceVersion { Revised=0, Baseline=1, HeartNerf=2, DiamondBuff=3, DiamondHeartRework=4, DiamondReworkOnly=5, HeartReworkOnly=6, FullStatsOnly=7, FullDiamondOnly=8, FullHeartMapOnly=9, FullBalanceRework=10 }
-    public enum EffectKind { Damage, Heal, ModifyAttack, IncreaseMaxHP, DrawCard, SelfDamage, ChainDamage, RandomDamage, DiscardCard, FirstAttackHeal, GainMana, Exchange, ChainWeaken }
+    public enum EffectKind { Damage, Heal, ModifyAttack, IncreaseMaxHP, DrawCard, SelfDamage, ChainDamage, RandomDamage, DiscardCard, FirstAttackHeal, GainMana, Exchange, ChainWeaken, StrikeBonus, IgnoreProtection, KillHero, KillGrow, WeakStrike, AttackWeaken, FullStrike, TurnHealSelf, TurnGrow, WoundedDamage, WeakDamage, CardWeaken, Protection, TemporaryAttack, RemoveProtection, DamageGrow, DamageHero, DamageTeamGrow, WeakBonusDamage, DiamondBonusDamage, WeakenThenDamage, PriorWeakDamage, HealProtect, HealFullAttack, TacticalExchange, Discount }
     public enum EffectTarget { Self, Enemy, Ally, AllEnemies, AllAllies, None }
 
     public sealed class CardEffect
@@ -69,6 +69,13 @@ namespace Unknown.Battle
         public int MaxHP { get=>Math.Max(1,coreHP+PokerHP); internal set=>coreHP=value-PokerHP; }
         public int OtherAttack => coreAttack-Definition.Attack-MapAttack-JokerAttack-AbilityAttack;
         public int OtherHP => coreHP-Definition.MaxHP-MapHP-JokerHP-AbilityHP;
+        public int Protection {get;internal set;}
+        public int ProtectionSource {get;internal set;}
+        public int CardWeakening {get;internal set;}
+        public int WeakUntil {get;internal set;}
+        public int TemporaryAttack {get;internal set;}
+        public int GrowthCount {get;internal set;}
+        public int LastCardTurn {get;internal set;}=-1;
         public int CurrentHP { get; internal set; }
         public int SummonedTurn { get; internal set; } = -1;
         public bool HasAttacked { get; internal set; }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -56,6 +56,9 @@ namespace Unknown.Battle
         public int DeckCount => DeckCards.Count;
         public int DiscardCount => DiscardCards.Count;
         public int HP { get; internal set; }
+        public int NextDiscount {get;internal set;}
+        public int DiscountTurn {get;internal set;}
+        public int CardManaGained {get;internal set;}
         public int CurrentMana { get; internal set; }
         public int MaxMana { get; internal set; }
         public int TurnsStarted { get; internal set; }
@@ -117,7 +120,7 @@ namespace Unknown.Battle
             {
                 if (viewOnly) return viewPrompt;
                 if (source == null) return "";
-                if(NeedsExchange)return "남은 손패에서 버릴 카드 1장을 선택하거나 교환을 건너뛰세요";
+                if(NeedsExchange)return source.Definition.EffectList[effectIndex].Kind==EffectKind.TacticalExchange ? (source.Definition.Rank==Rank.Queen ? $"손패에서 최대 2장 버리기 ({exchangeChosen}/2), 선택 완료 가능" : "손패에서 버릴 카드 1장을 선택하세요") : "남은 손패에서 버릴 카드 1장을 선택하거나 교환을 건너뛰세요";
                 var effect = source.Definition.EffectList[effectIndex];
                 if(effect.FreshTarget)return "피해 처리 후 살아 있는 적 1명을 새로 선택해 약화하세요";
                 return IsDistinctEffect(effect) ? $"서로 다른 적 선택 ({chainHits.Count + 1}/2)"
@@ -253,6 +256,7 @@ namespace Unknown.Battle
             foreach (var unit in current.Slots) if (unit != null) unit.HasAttacked = false;
             StartPokerTurn(player);
             StartMapTurn(player);
+            if(!State.IsOver)TacticalStartTurn(player);
         }
         public bool ExpireTurn(int actor)
         {
@@ -274,7 +278,7 @@ namespace Unknown.Battle
         public bool FinishExpiredTurn(int actor)
         {
             if (State.IsOver || !State.TurnExpired || NeedsTarget || actor != State.ActivePlayer) return false;
-            BeginTurn(1 - actor); return true;
+            TacticalEndTurn(actor); BeginTurn(1 - actor); return true;
         }
         public bool DiscardHand(int actor,int cardID)
         {
@@ -297,7 +301,7 @@ namespace Unknown.Battle
         {
             if(NeedsExchange && actor==State.ActivePlayer && !viewOnly && !State.TurnExpired)CompleteExchange(-1);
             if (!Guard(actor)) return false;
-            BeginTurn(1 - actor); return true;
+            TacticalEndTurn(actor); BeginTurn(1 - actor); return true;
         }
         public bool Summon(int actor, int handID, int slot)
         {
@@ -308,8 +312,9 @@ namespace Unknown.Battle
             if (card.Definition.CardType == CardType.Joker) return Fail("조커는 유닛으로 소환할 수 없습니다.");
             if (slot < 0 || slot >= rules.FieldSlots || player.Slots[slot] != null) return Fail("비어 있는 아군 필드 칸을 선택하세요.");
             if(Single!=null){string error=Single.SummonError(card,slot);if(error.Length>0)return Fail(error);}
-            if (player.CurrentMana < (Single?.Cost(card) ?? card.Definition.ManaCost)) return Fail($"마나가 부족합니다.\n필요 마나: {card.Definition.ManaCost} / 현재 마나: {player.CurrentMana}");
-            SpendMana(actor, Single?.Cost(card) ?? card.Definition.ManaCost);
+            if (player.CurrentMana < PlacementCost(card)) return Fail($"마나가 부족합니다.\n필요 마나: {card.Definition.ManaCost} / 현재 마나: {player.CurrentMana}");
+            SpendMana(actor, PlacementCost(card));
+            ConsumeDiscount(actor);
             player.HandCards.Remove(card); player.Slots[slot] = card;
             card.SummonedTurn = State.TurnNumber; card.HasAttacked = false; State.SummonsThisTurn++;
             Log($"P{actor + 1}: {card.Definition.CardName} 소환");
@@ -320,7 +325,7 @@ namespace Unknown.Battle
             bool sealedEffect=Single!=null && Single.Seal(card);
             if(Single!=null)Single.Progress.firstSummon=true;
             if(sealedEffect)return true;
-            source = card; effectIndex = 0; selectedTargets.Clear(); chainHits.Clear();
+            source = card; effectIndex = 0; exchangeChosen=0; selectedTargets.Clear(); chainHits.Clear();
             ResolveEffects(); return true;
         }
         public bool CanAttack(int actor, CardInstance unit) => !State.IsOver && !State.TurnExpired && !NeedsTarget && actor == State.ActivePlayer && unit != null
@@ -336,7 +341,7 @@ namespace Unknown.Battle
             if (enemySlot == -1)
             {
                 if (opponent.Slots.Any(c => c != null)) return Fail("상대 필드에 유닛이 있어 직접 공격할 수 없습니다.");
-                int outgoingDamage = Single!=null ? Single.Damage(attacker,null,PokerAttackDamage(attacker)) : PokerAttackDamage(attacker);
+                int outgoingDamage = Single!=null ? Single.Damage(attacker,null,TacticalStrike(attacker,null,PokerAttackDamage(attacker))) : TacticalStrike(attacker,null,PokerAttackDamage(attacker));
                 int damage = Math.Min(opponent.HP, outgoingDamage);
                 bool first=!attacker.FirstAttackHealSpent;attacker.FirstAttackHealSpent=true;
                 attacker.HasAttacked = true; opponent.HP = Math.Max(0, opponent.HP - outgoingDamage);
@@ -351,8 +356,11 @@ namespace Unknown.Battle
             var defender = opponent.Slots[enemySlot];
             bool firstAttack=!attacker.FirstAttackHealSpent;attacker.FirstAttackHealSpent=true;
             attacker.HasAttacked = true;
+            TacticalBeforeAttack(attacker,defender);
             // Both attacks use the pre-combat stats, even if one of the hits is lethal.
-            int outgoing = Single!=null ? Single.Damage(attacker,defender,PokerAttackDamage(attacker)) : PokerAttackDamage(attacker), incoming = defender.Attack;
+            int outgoing = Single!=null ? Single.Damage(attacker,defender,TacticalStrike(attacker,defender,PokerAttackDamage(attacker))) : TacticalStrike(attacker,defender,PokerAttackDamage(attacker)), incoming = defender.Attack;
+            outgoing=ProtectedDamage(defender,outgoing,Modern(attacker) && attacker.Definition.EffectList.Any(e=>e.Kind==EffectKind.IgnoreProtection));
+            incoming=ProtectedDamage(attacker,incoming);
             int actualOutgoing = Math.Min(defender.CurrentHP, outgoing), actualIncoming = Math.Min(attacker.CurrentHP, incoming);
             MeasureDamageAttempt(attacker, defender, outgoing, actualOutgoing);
             MeasureDamageAttempt(defender, attacker, incoming, actualIncoming);
@@ -361,7 +369,7 @@ namespace Unknown.Battle
             attacker.CurrentHP -= incoming; defender.CurrentHP -= outgoing;
             ApplyHeartMapRecovery(attacker, actualIncoming); ApplyHeartMapRecovery(defender, actualOutgoing);
             Log($"{attacker.Definition.CardName} ↔ {defender.Definition.CardName}: 피해 {actualOutgoing} / 반격 {actualIncoming}");
-            RemoveDead();if(firstAttack)ApplyAttackRecovery(attacker);return true;
+            RemoveDead();TacticalAfterAttack(attacker,defender,actualOutgoing);if(firstAttack)ApplyAttackRecovery(attacker);return true;
         }
         public CardDefinition CombinationPreview(int actor, int aceID, int faceID)
         {
@@ -444,7 +452,7 @@ namespace Unknown.Battle
             if (!NeedsTarget || owner < 0 || owner > 1 || slot < 0 || slot >= rules.FieldSlots) return false;
             var card = State.Players[owner].Slots[slot];
             var effect = source.Definition.EffectList[effectIndex];
-            return card != null && Targets(effect.Target).Contains(card) && (!IsDistinctEffect(effect) || !chainHits.Contains(card.InstanceID));
+            return card != null && EffectTargets(effect).Contains(card) && (!IsDistinctEffect(effect) || !chainHits.Contains(card.InstanceID));
         }
         public bool SelectEffectTarget(int actor, int owner, int slot)
         {
@@ -471,6 +479,10 @@ namespace Unknown.Battle
                     Log("소환 유닛 파괴: 남은 소환 효과 취소"); break;
                 }
                 var effect = source.Definition.EffectList[effectIndex];
+                int priorIndex=effectIndex;
+                bool handled=ResolveTactical(effect);
+                if(handled){if(waitingExchange)return;continue;}
+                if(effectIndex!=priorIndex)continue;
                 if(effect.Kind==EffectKind.FirstAttackHeal){effectIndex++;continue;}
                 if(effect.Kind==EffectKind.Exchange) {
                     if(State.Players[source.Owner].HandCards.Count==0){MeasureBalanceEffect(effect,null,0,"no_hand");effectIndex++;continue;}
@@ -478,7 +490,9 @@ namespace Unknown.Battle
                 }
                 if(effect.Kind==EffectKind.GainMana) {
                     var player=State.Players[source.Owner];int before=player.CurrentMana;
-                    player.CurrentMana=Math.Min(10,player.CurrentMana+effect.Amount);
+                    int gain=Modern(source) ? Math.Min(effect.Amount,Math.Max(0,2-player.CardManaGained)) : effect.Amount;
+                    player.CurrentMana=Math.Min(10,player.CurrentMana+gain);
+                    if(Modern(source))player.CardManaGained+=player.CurrentMana-before;
                     Emit(new BattleEvent(BattleEventKind.ManaGained,source.Owner,source:source.InstanceID,amount:player.CurrentMana-before,secondary:before));
                     MeasureBalanceEffect(effect,null,player.CurrentMana-before,"resolved");effectIndex++;continue;
                 }
@@ -499,7 +513,7 @@ namespace Unknown.Battle
                     MeasureBalanceEffect(effect,null,before-enemy.HandCards.Count,"resolved");effectIndex++; continue;
                 }
                 if (effect.Target == EffectTarget.Self) { Apply(effect, source); effectIndex++; continue; }
-                var targets = Targets(effect.Target);
+                var targets = EffectTargets(effect);
                 if (effect.Target == EffectTarget.AllAllies || effect.Target == EffectTarget.AllEnemies)
                 { if(targets.Count==0)MeasureBalanceEffect(effect,null,0,"no_target");foreach (var target in targets) Apply(effect, target); effectIndex++; continue; }
                 if (effect.Kind == EffectKind.RandomDamage)
@@ -521,6 +535,7 @@ namespace Unknown.Battle
         void Apply(CardEffect effect, CardInstance target)
         {
             if (!IsOnBoard(target)) { MeasureBalanceEffect(effect,target,0,"invalidated");return; }
+            if(ApplyTactical(effect,target))return;
             int beforeHP=target.CurrentHP,beforeAttack=target.Attack,beforeMax=target.MaxHP;
             switch (effect.Kind)
             {

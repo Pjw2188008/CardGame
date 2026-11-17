@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +12,7 @@ namespace Unknown.Battle
     {
         public int matches=1000,seed=7312026,maxTurns=1000,maxActions=20000;
         public bool detailedLog;
+        public int completedPerMap;
     }
     public sealed class BalanceTestRun : IDisposable
     {
@@ -31,12 +32,13 @@ namespace Unknown.Battle
         BalanceMatchResult current;
         StreamWriter log;
         readonly BalanceScheduledMatch[] schedule;
+        int scheduleCursor;
         public BalanceTestRun(BalanceTestSettings settings,string parentDirectory,BattleConfig rules=null,BalanceScheduledMatch[] schedule=null)
         {
             Settings=JsonUtility.FromJson<BalanceTestSettings>(JsonUtility.ToJson(settings));
             this.schedule=schedule;if(schedule!=null)Settings.matches=schedule.Length;
             if(Settings.matches<1 || Settings.matches>1000000 || Settings.maxTurns<1 || Settings.maxActions<1)throw new ArgumentOutOfRangeException(nameof(settings));
-            Rules=(rules ?? new BattleConfig{MapRules=BattleMapSettings.LoadRules(),MapEvents=JokerMapSettings.LoadRules()}).Copy();Rules.EnablePoker=false;
+            Rules=(rules ?? new BattleConfig{MapRules=BattleMapSettings.LoadRules(),MapEvents=JokerMapSettings.LoadRules()}).Copy();
             DirectoryPath=Path.Combine(parentDirectory,DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff")+"-"+Guid.NewGuid().ToString("N").Substring(0,8));
             Directory.CreateDirectory(DirectoryPath);
             foreach(var card in CardDatabase.AllFor(Rules.CardVersion)) {
@@ -58,7 +60,11 @@ namespace Unknown.Battle
         void BeginMatch()
         {
             int index=Matches.Count,pair=index/6%16;
-            if(schedule!=null) {BeginScheduledMatch(schedule[index],index);return;}
+            if(schedule!=null) {
+                while(scheduleCursor<schedule.Length && Settings.completedPerMap>0 && Matches.Count(m=>m.status=="completed" && m.map==schedule[scheduleCursor].map.ToString() && m.firstPlayer==schedule[scheduleCursor].firstPlayer)>=Settings.completedPerMap/2)scheduleCursor++;
+                if(scheduleCursor>=schedule.Length){Finish("AttemptLimitReached");return;}
+                BeginScheduledMatch(schedule[scheduleCursor++],index);return;
+            }
             int first=pair/4,second=pair%4;
             if(index%2==1){int swap=first;first=second;second=swap;}
             current=new BalanceMatchResult{match=index,seed=unchecked(Settings.seed+index*104729),map=((BattleMap)(index%6)).ToString(),firstAI=((BalanceAI)first).ToString(),secondAI=((BalanceAI)second).ToString(),status="running"};
@@ -74,6 +80,7 @@ namespace Unknown.Battle
             do {
                 try {
                     if(engine==null)BeginMatch();
+                    if(Finished)return;
                     if(engine.State.IsOver){FinishMatch("completed",null);continue;}
                     if(engine.State.TurnNumber>Settings.maxTurns || current.actions>=Settings.maxActions){FinishMatch("unresolved","Safety limit reached. No winner assigned.");continue;}
                     if(IsIrreversibleExhaustion(engine)){FinishMatch("unresolved","Irreversible exhaustion: no deck, no summonable hand and no future damaging unit. Existing no-fatigue rules preserved.");continue;}
@@ -92,7 +99,7 @@ namespace Unknown.Battle
         {
             if(current==null)throw new InvalidOperationException("Match initialization failed.");
             current.status=status;current.error=error ?? "";current.turns=engine?.State.TurnNumber ?? 0;
-            current.version=Rules.CardVersion.ToString();current.randomCalls=engine?.RandomCalls ?? 0;current.randomFingerprint=engine?.RandomFingerprint ?? 0;
+            current.firstPlayer=engine?.Config.FirstPlayer ?? 0;current.version=Rules.CardVersion.ToString();current.randomCalls=engine?.RandomCalls ?? 0;current.randomFingerprint=engine?.RandomFingerprint ?? 0;
             if(policies!=null){current.firstPolicyRandomCalls=policies[0].RandomCalls;current.secondPolicyRandomCalls=policies[1].RandomCalls;current.firstPolicyRandomFingerprint=policies[0].RandomFingerprint;current.secondPolicyRandomFingerprint=policies[1].RandomFingerprint;}
             if(engine!=null) {
                 var first=engine.State.Players[0];var second=engine.State.Players[1];
@@ -114,7 +121,7 @@ namespace Unknown.Battle
             }
             if(engine!=null)engine.BalanceObserver=null;
             Matches.Add(current);engine=null;collector=null;current=null;log?.Flush();
-            if(Matches.Count>=Settings.matches && status!="cancelled")Finish("Completed");
+            if(status!="cancelled" && (Matches.Count>=Settings.matches || Settings.completedPerMap>0 && Enum.GetValues(typeof(BattleMap)).Cast<BattleMap>().All(map=>Matches.Count(m=>m.status=="completed" && m.map==map.ToString())>=Settings.completedPerMap)))Finish("Completed");
         }
         void Merge(BalanceCardStats row,string scope,string group,HashSet<string> seen)
         {
@@ -136,7 +143,7 @@ namespace Unknown.Battle
         void BeginScheduledMatch(BalanceScheduledMatch entry,int index)
         {
             current=new BalanceMatchResult{match=index,conditionID=entry.conditionID,swapID=entry.swapID,seed=entry.combatSeed,map=entry.map.ToString(),firstAI=entry.first.ToString(),secondAI=entry.second.ToString(),firstDeckSeed=entry.firstDeckSeed,secondDeckSeed=entry.secondDeckSeed,firstPolicySeed=entry.firstPolicySeed,secondPolicySeed=entry.secondPolicySeed,status="running"};
-            var config=Rules.Copy();config.Map=entry.map;config.InitialDeckSeeds=new[]{entry.firstDeckSeed,entry.secondDeckSeed};
+            var config=Rules.Copy();config.Map=entry.map;if(entry.firstPlayer>=0)config.FirstPlayer=entry.firstPlayer;config.InitialDeckSeeds=new[]{entry.firstDeckSeed,entry.secondDeckSeed};
             current.initialFirstDeckHash=InitialDeckHash(entry.firstDeckSeed);current.initialSecondDeckHash=InitialDeckHash(entry.secondDeckSeed);
             engine=new BattleEngine(entry.combatSeed,config);
             policies=new[]{new BalancePolicy(entry.first,entry.firstPolicySeed),new BalancePolicy(entry.second,entry.secondPolicySeed)};
@@ -172,6 +179,7 @@ namespace Unknown.Battle
         public string conditionID,swapID;
         public BattleMap map;
         public BalanceAI first,second;
+        public int firstPlayer=-1;
         public int combatSeed,firstDeckSeed,secondDeckSeed,firstPolicySeed,secondPolicySeed;
     }
 }

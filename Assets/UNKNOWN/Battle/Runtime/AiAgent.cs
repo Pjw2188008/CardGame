@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -129,12 +129,12 @@ namespace Unknown.Battle
         {
             var s=o.View;int a=o.Actor;var p=s.players[a];var enemy=s.players[1-a];var moves=new List<AiMove>();
             if(s.winner>=0 || s.expired || s.active!=a)return moves;
-            if(s.exchangePending){moves.Add(new AiMove(BattleAction.Exchange,-1));foreach(var card in p.hand)moves.Add(new AiMove(BattleAction.Exchange,card.id));return moves;}
+            if(s.exchangePending){if(!s.prompt.Contains("손패에서 버릴 카드 1장"))moves.Add(new AiMove(BattleAction.Exchange,-1));foreach(var card in p.hand)moves.Add(new AiMove(BattleAction.Exchange,card.id));return moves;}
             if(s.targets.Length>0){foreach(int t in s.targets)moves.Add(new AiMove(BattleAction.Target,t/p.board.Length,t%p.board.Length));return moves;}
             int empty=Array.FindIndex(p.board,c=>c==null || !c.occupied);
             foreach(var h in p.hand) {
                 var d=h.Definition;
-                if(d.CardType!=CardType.Joker && d.ManaCost<=p.mana && empty>=0)moves.Add(new AiMove(BattleAction.Summon,h.id,empty));
+                if(d.CardType!=CardType.Joker && BattleEngine.PlacementCost(h,p)<=p.mana && empty>=0)moves.Add(new AiMove(BattleAction.Summon,h.id,empty));
                 if(d.CardType==CardType.Joker && d.ManaCost<=p.mana)foreach(var c in p.board.Where(c=>c?.occupied==true && !c.jokerUsed))moves.Add(new AiMove(BattleAction.Joker,h.id,c.id));
             }
             foreach(var c in p.board.Where(c=>c?.occupied==true && !c.attacked && c.hp>0 && c.summonedTurn<s.turn)) {

@@ -1,0 +1,61 @@
+{
+    "candidates": [
+        {
+            "cardID": "Spade_10",
+            "category": "effect_activation_review",
+            "metric": "WeakDamage",
+            "group": "Enemy",
+            "sample": 456,
+            "value": 4.0,
+            "reference": 456.0,
+            "evidence": [
+                "Few fulfilled target conditions or at least 80% zero-result applications.",
+                "Skipped targets, source destruction and capped effects are logged separately.",
+                "This does not establish a description/rule mismatch."
+            ]
+        },
+        {
+            "cardID": "Spade_5",
+            "category": "effect_activation_review",
+            "metric": "WeakDamage",
+            "group": "Enemy",
+            "sample": 487,
+            "value": 58.0,
+            "reference": 487.0,
+            "evidence": [
+                "Few fulfilled target conditions or at least 80% zero-result applications.",
+                "Skipped targets, source destruction and capped effects are logged separately.",
+                "This does not establish a description/rule mismatch."
+            ]
+        },
+        {
+            "cardID": "Spade_7",
+            "category": "effect_activation_review",
+            "metric": "RemoveProtection",
+            "group": "Enemy",
+            "sample": 434,
+            "value": 13.0,
+            "reference": 434.0,
+            "evidence": [
+                "Few fulfilled target conditions or at least 80% zero-result applications.",
+                "Skipped targets, source destruction and capped effects are logged separately.",
+                "This does not establish a description/rule mismatch."
+            ]
+        },
+        {
+            "cardID": "Spade_A",
+            "category": "effect_activation_review",
+            "metric": "PriorWeakDamage",
+            "group": "Enemy",
+            "sample": 310,
+            "value": 4.0,
+            "reference": 310.0,
+            "evidence": [
+                "Few fulfilled target conditions or at least 80% zero-result applications.",
+                "Skipped targets, source destruction and capped effects are logged separately.",
+                "This does not establish a description/rule mismatch."
+            ]
+        }
+    ],
+    "rule": "Exploratory review only. At least 200 natural uses overall and 30 uses per map. No automatic card changes."
+}

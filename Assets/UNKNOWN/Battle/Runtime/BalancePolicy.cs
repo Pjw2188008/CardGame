@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,9 +54,12 @@ namespace Unknown.Battle
             if(move.Action==BattleAction.Target) {
                 var target=view.players[move.First].board[move.Second];var effect=observation.Pending;
                 if(effect==null)return Value(target);
-                if(effect.Kind==EffectKind.ChainWeaken)return Math.Min(effect.Amount,target.attack)*3;
+                if(effect.Kind==EffectKind.CardWeaken || effect.Kind==EffectKind.ChainWeaken)return Math.Min(effect.Amount,target.attack)*3;
                 if(effect.Kind==EffectKind.Heal)return Math.Min(effect.Amount,target.maxHP-target.hp)*(control ? 5 : 3);
                 if(effect.Kind==EffectKind.ModifyAttack)return effect.Amount>0 ? effect.Amount*(target.attacked ? 1 : 3) : Math.Min(-effect.Amount,target.attack)*3;
+                if(effect.Kind==EffectKind.Protection)return Math.Max(0,effect.Amount-target.protection)*(control ? 3 : 2);
+                if(effect.Kind==EffectKind.TemporaryAttack)return effect.Amount*(target.attacked ? 1 : 3);
+                if(effect.Kind==EffectKind.RemoveProtection)return target.protection*3;
                 if(effect.Kind==EffectKind.IncreaseMaxHP)return effect.Amount*(target.hp<4 ? 4 : 2);
                 return Math.Min(target.hp,effect.Amount)*2+(target.hp<=effect.Amount ? Value(target)+6 : 0);
             }
@@ -83,16 +86,16 @@ namespace Unknown.Battle
                 var targets=effect.Target==EffectTarget.AllEnemies || effect.Target==EffectTarget.Enemy ? foes : allies.Concat(new[]{hand}).ToArray();
                 double count=effect.Target==EffectTarget.AllEnemies || effect.Target==EffectTarget.AllAllies ? targets.Length : Math.Min(1,targets.Length);
                 switch(effect.Kind) {
-                    case EffectKind.Damage:case EffectKind.RandomDamage:case EffectKind.ChainDamage:
+                    case EffectKind.WoundedDamage:case EffectKind.WeakDamage:case EffectKind.DamageGrow:case EffectKind.DamageHero:case EffectKind.DamageTeamGrow:case EffectKind.WeakBonusDamage:case EffectKind.DiamondBonusDamage:case EffectKind.PriorWeakDamage:case EffectKind.Damage:case EffectKind.RandomDamage:case EffectKind.ChainDamage:
                         ability+=foes.Length==0 ? 0 : Math.Min(effect.Amount,foes.Max(c=>c.hp))*(effect.Kind==EffectKind.ChainDamage ? Math.Min(2,foes.Length) : count)*2;break;
                     case EffectKind.SelfDamage:ability-=effect.Amount;break;
                     case EffectKind.Heal:ability+=targets.Length==0 ? 0 : Math.Min(effect.Amount,targets.Max(c=>c.maxHP-c.hp))*count*(control ? 3 : 1);break;
-                    case EffectKind.ModifyAttack:ability+=Math.Abs(effect.Amount)*count*(effect.Amount<0 ? 2 : 1.5);break;
+                    case EffectKind.CardWeaken:case EffectKind.Protection:case EffectKind.TemporaryAttack:case EffectKind.ModifyAttack:ability+=Math.Abs(effect.Amount)*count*(effect.Amount<0 ? 2 : 1.5);break;
                     case EffectKind.IncreaseMaxHP:ability+=effect.Amount*count*(control ? 2 : 1);break;
                     case EffectKind.DrawCard:ability+=Math.Min(effect.Amount,Math.Min(own.deckCount,8-own.handCount+1))*(control ? 4 : 2);break;
                     case EffectKind.DiscardCard:ability+=Math.Min(effect.Amount,enemy.handCount)*2;break;
                     case EffectKind.GainMana:ability+=Math.Min(effect.Amount,10-(own.mana-definition.ManaCost))*2;break;
-                    case EffectKind.Exchange:ability+=own.handCount>1 ? Math.Min(effect.Amount,Math.Min(own.deckCount,9-own.handCount))*2-1 : 0;break;
+                    case EffectKind.TacticalExchange:case EffectKind.Exchange:ability+=own.handCount>1 ? Math.Min(effect.Amount,Math.Min(own.deckCount,9-own.handCount))*2-1 : 0;break;
                     case EffectKind.FirstAttackHeal:ability+=foes.Any(t=>t.attack<definition.MaxHP && t.attack>0) ? Math.Min(effect.Amount,foes.Max(t=>t.attack))*(control ? 3 : 1.5) : 0;break;
                     case EffectKind.ChainWeaken:ability+=Math.Min(2,foes.Length)*effect.Amount*2;break;
                 }
