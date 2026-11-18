@@ -2627,5 +2627,55 @@
   ],
   "eventDamage": 5,
   "eventTokens": 4,
-  "eventHealing": 4
+  "eventHealing": 4,
+  "economy": {
+      "entryCosts": [
+          0,
+          0,
+          2,
+          4,
+          6,
+          8,
+          10,
+          13,
+          16,
+          20
+      ],
+      "normalRewards": [
+          0,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          10,
+          12,
+          14
+      ],
+      "eliteRewards": [
+          0,
+          5,
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          19,
+          22
+      ],
+      "bossRewards": [
+          0,
+          8,
+          10,
+          13,
+          16,
+          19,
+          22,
+          26,
+          31,
+          36
+      ]
+  }
 }

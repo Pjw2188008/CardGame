@@ -39,9 +39,41 @@ namespace Unknown.Battle
     [Serializable] public sealed class SingleAugment { public string id,name,description;public int amount=1,duration=1; }
     [Serializable] public sealed class SingleUnlock { public string id,name;public int cost,clear=-1;public string[] cards=new string[0]; }
     [Serializable] public sealed class SingleStarter { public string id,name,unlock;public string[] cards; }
+    // Indexed by the existing zero-based layer (0 = start, 9 = boss).
+    [Serializable] public sealed class SingleEconomySettings
+    {
+        public int[] entryCosts={0,0,2,4,6,8,10,13,16,20};
+        public int[] normalRewards={0,3,4,5,6,7,8,10,12,14};
+        public int[] eliteRewards={0,5,6,8,10,12,14,16,19,22};
+        public int[] bossRewards={0,8,10,13,16,19,22,26,31,36};
+        public int EntryCost(SingleStage stage,int layer)=>stage.IsCombat?entryCosts[Math.Max(0,Math.Min(9,layer))]:stage.cost;
+        public int BaseReward(SingleStage stage,int layer) {
+            if(!stage.IsCombat)return 0;
+            var rewards=stage.kind==SingleNodeKind.Boss?bossRewards:stage.kind==SingleNodeKind.Elite?eliteRewards:normalRewards;
+            return rewards[Math.Max(0,Math.Min(9,layer))];
+        }
+        public void Validate() {
+            foreach(var values in new[]{entryCosts,normalRewards,eliteRewards,bossRewards})
+                if(values==null || values.Length!=10 || values.Any(v=>v<0))throw new InvalidDataException("Invalid layer token economy");
+        }
+    }
+    [Serializable] public sealed class SingleTokenReward
+    {
+        public int baseTokens,startHP,endHP,maxHP,lostHP,deducted,finalTokens;
+        public float LossRatio=>(float)lostHP/Math.Max(1,maxHP);
+        public static SingleTokenReward Calculate(int baseTokens,int startHP,int endHP,int maxHP) {
+            var result=new SingleTokenReward{baseTokens=Math.Max(0,baseTokens),startHP=startHP,endHP=endHP,maxHP=Math.Max(1,maxHP)};
+            result.lostHP=(int)Math.Max(0,Math.Min(result.maxHP,(long)startHP-endHP));
+            // Integer division gives exact floor, including boundaries such as 30% loss.
+            result.finalTokens=(int)((long)result.baseTokens*(result.maxHP-result.lostHP)/result.maxHP);
+            result.deducted=result.baseTokens-result.finalTokens;return result;
+        }
+        public string Summary=>$"기본 보상: {baseTokens} 토큰 · 체력 손실: {LossRatio*100:0.#}%\n보상 감소: -{deducted} 토큰 · 최종 획득: {finalTokens} 토큰";
+    }
     [Serializable] public sealed class SingleChapterData
     {
         public SingleShopSettings shop=new SingleShopSettings();
+        public SingleEconomySettings economy=new SingleEconomySettings();
         public int startingDeckSize=8;
         public int startingTokens=10,maxHP=30,healing=8,firstClearBonus=20,eventDamage=5,eventTokens=4,eventHealing=4;
         public int[] runRewards={1,2,3,4,5},permanentRewards={10,15,20,25,30};
@@ -53,6 +85,7 @@ namespace Unknown.Battle
         }
         public void Validate() {
             if(stages==null || stages.Length!=25+stages.Count(s=>s.kind==SingleNodeKind.Shop) || stages.Select(s=>s.id).Distinct().Count()!=stages.Length)throw new InvalidDataException("Chapter requires 25 unique stages");
+            if(economy==null)economy=new SingleEconomySettings();economy.Validate();
             if(shop==null)shop=new SingleShopSettings();shop.Validate(stages.Count(s=>s.kind==SingleNodeKind.Shop));
             int[] counts={1,11,4,3,2,2,1,1};for(int i=0;i<counts.Length;i++)if(stages.Count(s=>(int)s.kind==i)!=counts[i])throw new InvalidDataException("Invalid node composition");
             if(startingDeckSize<5 || difficulties.Length!=4 || augments.Length!=12 || starters.Any(s=>s.cards.Length!=12))throw new InvalidDataException("Invalid chapter content");
@@ -149,7 +182,7 @@ namespace Unknown.Battle
             foreach(var node in nodes)node.next=edges[node.id].OrderBy(id=>id).ToArray();
             Validate(data,nodes,true,combatBorders);return nodes;
         }
-        public static void Validate(SingleChapterData data,SingleNode[] nodes,bool growthRules=true,bool combatBorders=true) {
+        public static void Validate(SingleChapterData data,SingleNode[] nodes,bool growthRules=true,bool combatBorders=true,bool checkEconomy=true) {
             if(nodes.Length!=25 || nodes.Select(n=>n.stage).Distinct().Count()!=25 || nodes.Where((n,i)=>n.id!=i).Any() || nodes[0].layer!=0 || nodes[24].layer!=9)throw new InvalidDataException("Invalid graph size");
             if(data.stages.First(s=>s.id==nodes[0].stage).kind!=SingleNodeKind.Start || data.stages.First(s=>s.id==nodes[24].stage).kind!=SingleNodeKind.Boss)throw new InvalidDataException("Invalid start/boss stages");
             var seen=new HashSet<int>{0};var economy=new Dictionary<int,int>{{0,data.startingTokens}};
@@ -160,9 +193,9 @@ namespace Unknown.Battle
                 foreach(int id in n.next) {
                     if(id<=n.id || id>=25 || nodes[id].layer<=n.layer)throw new InvalidDataException("Cycle or invalid edge");seen.Add(id);
                     var s=data.stages.First(x=>x.id==nodes[id].stage);int balance;
-                    if(economy.TryGetValue(n.id,out balance) && balance>=s.cost) {
-                        int reward=s.kind==SingleNodeKind.Battle || s.kind==SingleNodeKind.Elite || s.kind==SingleNodeKind.Boss ? data.runRewards.Max() : 0;
-                        int next=balance-s.cost+reward;if(!economy.ContainsKey(id) || economy[id]<next)economy[id]=next;
+                    if(economy.TryGetValue(n.id,out balance) && balance>=data.economy.EntryCost(s,nodes[id].layer)) {
+                        int reward=data.economy.BaseReward(s,nodes[id].layer);
+                        int next=balance-data.economy.EntryCost(s,nodes[id].layer)+reward;if(!economy.ContainsKey(id) || economy[id]<next)economy[id]=next;
                     }
                 }
             }
@@ -180,12 +213,12 @@ namespace Unknown.Battle
             var reachesBoss=new HashSet<int>{24};
             for(int i=nodes.Length-2;i>=0;i--)if(nodes[i].next.Any(reachesBoss.Contains))reachesBoss.Add(i);
             if(reachesBoss.Count!=nodes.Length)throw new InvalidDataException("Node cannot reach boss");
-            if(!economy.ContainsKey(24))throw new InvalidDataException("No affordable perfect-health boss route");
+            if(checkEconomy && !economy.ContainsKey(24))throw new InvalidDataException("No affordable perfect-health boss route");
         }
     }
     [Serializable] public sealed class SingleRun
     {
-        public string id,phase="map",failure="",starter;public int graphVersion;public int seed,difficulty,current,tokens,hp,maxHP,permanentAward,lastRunAward,firstClearAward;
+        public string id,phase="map",failure="",starter;public SingleTokenReward lastTokenReward;public int graphVersion;public int seed,difficulty,current,tokens,hp,maxHP,permanentAward,lastRunAward,firstClearAward;
         public SingleNode[] nodes;public List<int> visited=new List<int>{0};public List<string> deck=new List<string>(),augments=new List<string>(),offers=new List<string>();
         // Start-node guide: 0=offer, 1..6=page, 7=completed, -1=skipped. Older saves default to 0.
         public int startGuide;
@@ -210,11 +243,11 @@ namespace Unknown.Battle
             Profile=File.Exists(SavePath) ? JsonUtility.FromJson<SingleProfile>(File.ReadAllText(SavePath)) : new SingleProfile();
             if(Profile==null || Profile.version!=1)throw new InvalidDataException("Unsupported chapter save version");
             if(Run!=null) {
-                SingleGraph.Validate(Data,Run.nodes,false);
+                SingleGraph.Validate(Data,Run.nodes,false,true,false);
                 if(Run.graphVersion<2){
                     Run.legacyCombatBorders=Run.graphVersion==0;
                     Run.nodes=SingleGraph.RequireCombatBetweenSupport(Data,Run.nodes,!Run.legacyCombatBorders);Run.graphVersion=2;Save();
-                } else SingleGraph.Validate(Data,Run.nodes,true,!Run.legacyCombatBorders);
+                } else SingleGraph.Validate(Data,Run.nodes,true,!Run.legacyCombatBorders,false);
             }
         }
         public void Save()=>SaveCommitted(null);
@@ -265,6 +298,12 @@ namespace Unknown.Battle
             if(Run.phase=="map" && Run.nodes[Run.current].next.Contains(node))return EntryError(node).Length==0?SingleNodeState.Available:SingleNodeState.InsufficientTokens;
             return SingleNodeState.Unreached;
         }
+        public int EntryCostFor(int node) {
+            var n=Run.nodes[node];return Data.economy.EntryCost(Data.stages.First(s=>s.id==n.stage),n.layer);
+        }
+        public int BaseRewardFor(int node) {
+            var n=Run.nodes[node];return Data.economy.BaseReward(Data.stages.First(s=>s.id==n.stage),n.layer);
+        }
         public string EntryError(int node) {
             if(Run==null || node<0 || node>=Run.nodes.Length)return "현재 위치에서 이동할 수 없습니다.";
             if(node==Run.current)return "현재 위치입니다.";
@@ -274,20 +313,22 @@ namespace Unknown.Battle
             if(!Run.nodes[Run.current].next.Contains(node))return Run.nodes[node].layer<=Run.nodes[Run.current].layer?"선택하지 않은 이전 분기입니다.":"연결되지 않은 경로입니다.";
             var nextStage=Data.stages.First(s=>s.id==Run.nodes[node].stage);
             if(Run.current!=0 && !Stage.IsCombat && !nextStage.IsCombat)return "다음 비전투 노드에 가려면 먼저 전투를 클리어해야 합니다.";
-            int cost=nextStage.cost;
+            int cost=EntryCostFor(node);
             return Run.tokens<cost?$"필요 {cost} / 보유 {Run.tokens} · {cost-Run.tokens}토큰 부족":"";
         }
         public void Enter(int node) {
             string reason=EntryError(node);if(reason.Length>0)throw new InvalidOperationException(reason);
             var stage=Data.stages.First(s=>s.id==Run.nodes[node].stage);
-            Run.tokens-=stage.cost;Run.current=node;Run.visited.Add(node);Run.phase="prepare";Run.battle=null;Run.settled=false;Run.offers.Clear();if(stage.kind==SingleNodeKind.Shop){OpenShop();return;}Save();
+            Run.tokens-=EntryCostFor(node);Run.lastTokenReward=null;Run.lastRunAward=0;Run.current=node;Run.visited.Add(node);Run.phase="prepare";Run.battle=null;Run.settled=false;Run.offers.Clear();if(stage.kind==SingleNodeKind.Shop){OpenShop();return;}Save();
         }
         public static int Tier(int hp,int maxHP)=>hp<=0?0:Math.Min(4,Math.Max(0,(int)(((long)hp*5-1)/Math.Max(1,maxHP))));
         public void BattleResult(BattleEngine engine) {
             if(Run.phase!="battle" || Run.settled || !engine.State.IsOver)return;
+            int startHP=engine.Single?.Options.hp??Run.hp;int maxHP=engine.Single?.Options.maxHP??Run.maxHP;
             Run.settled=true;Run.hp=engine.State.Players[0].HP;Run.battle=null;
             if(engine.State.Winner!=0){Finish(false,engine.Single.Failure.Length>0?engine.Single.Failure:"PLAYER HP ZERO");return;}
-            Run.lastRunAward=Data.runRewards[Tier(Run.hp,Run.maxHP)];Run.tokens+=Run.lastRunAward;
+            Run.lastTokenReward=SingleTokenReward.Calculate(BaseRewardFor(Run.current),startHP,Run.hp,maxHP);
+            Run.lastRunAward=Run.lastTokenReward.finalTokens;Run.tokens+=Run.lastRunAward;
             if(Stage.kind==SingleNodeKind.Boss){Finish(true,"");return;}
             Offer(Stage.kind==SingleNodeKind.Elite?"augment":"card");Save();
         }
@@ -326,7 +367,7 @@ namespace Unknown.Battle
         }
         public void CompleteNode() {
             Run.phase="map";Run.offers.Clear();Run.battle=null;
-            if(!Next.Any(n=>Data.stages.First(s=>s.id==n.stage).cost<=Run.tokens))Finish(false,"INSUFFICIENT TOKENS");else Save();
+            if(!Next.Any(n=>EntryCostFor(n.id)<=Run.tokens))Finish(false,"INSUFFICIENT TOKENS");else Save();
         }
         public void Finish(bool clear,string failure) {
             if(Run==null || Run.phase=="done")return;

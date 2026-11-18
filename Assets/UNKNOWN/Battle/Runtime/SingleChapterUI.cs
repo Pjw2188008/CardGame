@@ -76,8 +76,6 @@ namespace Unknown.Battle
             var viewport=Rect(root,"Route viewport",.035f,.18f,.66f,.60f,new Color(.025f,.018f,.035f,.82f));viewport.gameObject.AddComponent<RectMask2D>();
             mapScroll=viewport.gameObject.AddComponent<ScrollRect>();mapScroll.horizontal=true;mapScroll.vertical=false;mapScroll.scrollSensitivity=45;mapScroll.viewport=viewport;mapScroll.movementType=ScrollRect.MovementType.Clamped;
             var plot=Rect(viewport,"Route graph",0,0,0,1);plot.pivot=new Vector2(0,.5f);plot.sizeDelta=new Vector2(2800,0);mapScroll.content=plot;
-            var destinations=r.nodes[r.current].next;
-            Text("현재 "+(r.current+1).ToString("00")+" → 이동 경로: "+string.Join(" · ",destinations.Select(id=>"<color="+(Campaign.EntryError(id).Length==0?"#70E5C4":"#E69586")+">"+(id+1).ToString("00")+"</color>")),.05f,.782f,.62f,.028f,18);
             for(int layer=0;layer<10;layer++)Text(layer==0?"START":layer==9?"BOSS":layer.ToString("00"),.045f+layer*.10f-.035f,.945f,.07f,.04f,18,plot);
             foreach(var n in r.nodes)foreach(int target in n.next) {
                 bool passed=Enumerable.Range(0,Math.Max(0,r.visited.Count-1)).Any(i=>r.visited[i]==n.id && r.visited[i+1]==target);
@@ -93,8 +91,8 @@ namespace Unknown.Battle
             foreach(var path in plot.GetComponentsInChildren<SinglePathLine>().OrderBy(p=>p.width))path.transform.SetAsLastSibling();
             foreach(var n in r.nodes) {
                 var stage=Campaign.Data.stages.First(s=>s.id==n.stage);var pos=Position(n);int id=n.id;var state=Campaign.NodeState(id);
-                string turns=Combat(stage)?"◷ 제한 턴 "+EffectiveTurns(stage,n.id):"";
-                var button=Button((n.id+1).ToString("00")+" · "+(stage.kind==SingleNodeKind.Start?"시작 · 튜토리얼":ShortKind(stage.kind))+"\n"+turns+"\n◆ 진입 토큰 "+stage.cost+"\n"+StateName(state),pos.x-.035f,pos.y-.105f,.07f,.21f,()=>{selected=id;Map();},true,plot);
+                string reward=stage.IsCombat?Campaign.BaseRewardFor(id)+" 토큰":stage.kind==SingleNodeKind.Start?"없음":stage.kind==SingleNodeKind.Shop?"카드 구매":RewardName(stage);
+                var button=Button((stage.kind==SingleNodeKind.Start?"시작":Kind(stage.kind))+"\n진입 토큰: "+Campaign.EntryCostFor(id)+"\n보상: "+reward,pos.x-.035f,pos.y-.105f,.07f,.21f,()=>{selected=id;Map();},true,plot);
                 button.name="Node "+id;button.GetComponent<Image>().color=NodeColor(state);
                 var edge=button.GetComponent<Outline>();edge.effectDistance=Vector2.one*(selected==id?3:1);edge.effectColor=selected==id?new Color(1,.8f,.32f):new Color(.48f,.35f,.2f);
             }
@@ -130,7 +128,7 @@ namespace Unknown.Battle
             switch(page) {
                 case 0:body="경로와 자원을 살펴본 뒤 실제 첫 전투에서 직접 배웁니다.\n\n카드 소환 → 턴 종료 → 적 행동 → 공격 → 승리와 보상\n\n안내는 언제든 스킵할 수 있습니다.\n\n안내 선택에는 토큰이 들지 않으며, 실제 전투 진입과 결과는 기존 런 규칙을 따릅니다.";break;
                 case 1:body="현재 노드에서 밝게 연결된 다음 구역을 선택하세요.\n같은 다음 층의 모든 구역으로 이동할 수 있습니다.\n\n노드를 누르면 오른쪽에 정보가 표시됩니다.\n아래 스크롤바로 먼 경로도 볼 수 있습니다.\n\n선택만으로 이동하지 않으며, 진입을 눌러야 토큰을 지불합니다.";break;
-                case 2:body=$"현재 HP {run.hp}/{run.maxHP} · 런 토큰 {run.tokens}\n\nHP는 다음 전투로 이어집니다.\n런 토큰은 스테이지 진입에 사용합니다.\n\n승리 시 남은 HP 비율에 따라 토큰을 얻습니다.\nHP가 0이 되거나 다음 경로의 진입 토큰이 부족하면 런이 종료됩니다.\n\n영구 토큰은 챕터 클리어로 얻으며 해금에 사용합니다.";break;
+                case 2:body=$"현재 HP {run.hp}/{run.maxHP} · 런 토큰 {run.tokens}\n\nHP는 다음 전투로 이어집니다.\n런 토큰은 스테이지 진입에 사용합니다.\n\n전투 등급·층별 기본 보상에서 해당 전투의 HP 손실 비율만큼 토큰이 감소합니다.\nHP가 0이 되거나 다음 경로의 진입 토큰이 부족하면 런이 종료됩니다.\n\n영구 토큰은 챕터 클리어로 얻으며 해금에 사용합니다.";break;
                 default:body=$"현재 덱 {run.deck.Count}장\n\n현재 덱 버튼으로 카드와 효과를 확인할 수 있습니다.\n전투 보상으로 카드를 추가하고 덱 정리 노드에서 제거·교체합니다.\n증강은 런 동안 유지되며 최대 3개를 장착합니다.\n\n이제 실전 전투로 배우기를 누르고 다음 전투 노드를 선택해 진입하세요.\n전투에서 소환·턴·공격을 직접 하면 안내가 진행됩니다.";break;
             }
             Text(body,.07f,.20f,.86f,.55f,20,panel);
@@ -155,13 +153,17 @@ namespace Unknown.Battle
                 return;
             }
             var maps=Resources.Load<BattleMapSettings>("BattleMapSettings");
-            if(maps!=null && Combat(stage))Artwork(panel,"Stage map artwork",maps.BackgroundFor(stage.map),.04f,.73f,.92f,.23f);
-            Text(stage.name,.04f,.65f,.92f,.065f,25,panel);
-            Text(NodeIcon(stage.kind)+" "+BattleTypeName(stage),.04f,.59f,.92f,.05f,18,panel);
-            string details=Combat(stage)?$"난이도: {Campaign.Data.difficulties[Campaign.Run.difficulty].name}\n적 HP {stage.enemyHP}\n◷ 제한 턴 {EffectiveTurns(stage,selected)}\n총 마나 예산 {Campaign.ManaBudgetFor(stage)}":"";
-            Text(details+"\n◆ 진입 토큰 "+stage.cost+"\n방해 효과: "+Restrictions(stage)+"\n보상: "+RewardName(stage),.06f,.29f,.88f,.29f,19,panel);
-            Text("이전: "+string.Join(" · ",Campaign.Run.nodes.Where(n=>n.next.Contains(selected)).Select(n=>(n.id+1).ToString("00")))+"\n다음: "+(Campaign.Run.nodes[selected].next.Length==0?"도착":string.Join(" · ",Campaign.Run.nodes[selected].next.Select(id=>(id+1).ToString("00")))),.06f,.19f,.88f,.09f,18,panel);
-            string reason=Campaign.EntryError(selected);Text(reason.Length==0 && Campaign.Run.battleGuide==1 && Campaign.Run.current==0?"진입 후 전투에서 직접 배웁니다.":reason,.06f,.115f,.88f,.065f,18,panel).color=new Color(1,.64f,.57f);
+            if(maps!=null && stage.IsCombat)Artwork(panel,"Stage map artwork",maps.BackgroundFor(stage.map),.04f,.73f,.92f,.23f);
+            string details="난이도: "+Campaign.Data.difficulties[Campaign.Run.difficulty].name
+                +"\n적 HP: "+(stage.IsCombat?stage.enemyHP.ToString():"—")
+                +"\n제한 턴: "+(stage.IsCombat?EffectiveTurns(stage,selected).ToString():"—")
+                +"\n마나 예산: "+(stage.IsCombat?Campaign.ManaBudgetFor(stage).ToString():"—")
+                +"\n진입 토큰: "+Campaign.EntryCostFor(selected)
+                +"\n방해효과: "+Restrictions(stage)
+                +"\n보상: "+RewardForNode(stage,selected);
+            Text(details,.06f,.24f,.88f,stage.IsCombat?.48f:.60f,22,panel);
+            string reason=Campaign.EntryError(selected);
+            if(reason.Length>0)Text(reason,.06f,.115f,.88f,.065f,18,panel).color=new Color(1,.64f,.57f);
             Button("진입",.10f,.035f,.80f,.075f,()=>{Campaign.Enter(selected);Prepare();},reason.Length==0,panel);
         }
         Vector2 Position(SingleNode n) {
@@ -186,13 +188,13 @@ namespace Unknown.Battle
             bool combat=s.kind==SingleNodeKind.Battle || s.kind==SingleNodeKind.Elite || s.kind==SingleNodeKind.Boss;
             if(combat) {
                 var d=Campaign.Data.difficulties[Campaign.Run.difficulty];
-                Text($"{BattleTypeName(s)} · {s.enemyType} · 적 HP {s.enemyHP} · ◷ 제한 턴 {Campaign.CurrentTurnLimit}\n총 마나 예산 {Campaign.CurrentManaBudget} · 매 턴 소환 {s.enemySummonsPerTurn}장"+(s.kind==SingleNodeKind.Battle?"":" · 조건 충족 시 최대 2장")+"\n\n"+string.Join(" / ",s.restrictions.Concat(new[]{SingleRestriction.FirstCost,SingleRestriction.AttackLimit,SingleRestriction.HalfHealing}.Take(d.extraRestrictions)).Distinct().Select(RestrictionName))+"\n\n"+RewardName(s),.15f,.36f,.7f,.35f,24);
+                Text($"{BattleTypeName(s)} · {s.enemyType} · 적 HP {s.enemyHP} · ◷ 제한 턴 {Campaign.CurrentTurnLimit}\n총 마나 예산 {Campaign.CurrentManaBudget} · 매 턴 소환 {s.enemySummonsPerTurn}장"+(s.kind==SingleNodeKind.Battle?"":" · 조건 충족 시 최대 2장")+"\n\n"+string.Join(" / ",s.restrictions.Concat(new[]{SingleRestriction.FirstCost,SingleRestriction.AttackLimit,SingleRestriction.HalfHealing}.Take(d.extraRestrictions)).Distinct().Select(RestrictionName))+"\n\n"+RewardForNode(s,Campaign.Run.current),.15f,.36f,.7f,.35f,24);
                 var info=Button("전투 상세",.37f,.27f,.26f,.05f,()=>{});
                 Hint(info.gameObject,$"시작 마나 {s.startMana} · 회복 {s.manaRecovery} · 턴 상한 {s.turnSpendLimit}\n총 마나 예산 {Campaign.CurrentManaBudget}\n초기 적: "+string.Join(" / ",s.units.Select(u=>CardDatabase.Get(u.card).CardName))+(Campaign.IsTeachingBattle?"\n첫 전투 손패에 A·J 보장":""));
                 if(Campaign.Run.battleGuide>0 && Campaign.Run.battleGuide<5 && Campaign.IsTeachingBattle)Text("실전 안내 · 직접 소환하고 공격하며 배웁니다. 언제든 스킵할 수 있습니다.",.12f,.73f,.76f,.05f,20);
                 Button("전투 시작",.34f,.16f,.32f,.08f,LaunchBattle);
             }else {
-                Text(Kind(s.kind)+"\n"+RewardName(s)+$"\n진입 토큰 {s.cost} 차감 완료",.15f,.34f,.7f,.3f,26);
+                Text(Kind(s.kind)+"\n"+RewardName(s)+$"\n진입 토큰 {Campaign.EntryCostFor(Campaign.Run.current)} 차감 완료",.15f,.34f,.7f,.3f,26);
                 Button("진행",.34f,.18f,.32f,.08f,()=>{Campaign.ResolveSupport();Continue();});
             }
         }
@@ -203,8 +205,8 @@ namespace Unknown.Battle
         void Reward() {
             var r=Campaign.Run;Clear(r.phase=="card" || r.phase=="augment" ? (Campaign.Stage.kind==SingleNodeKind.Augment?"증강 선택":"VICTORY") : Kind(Campaign.Stage.kind));
             if(r.phase=="card" || r.phase=="augment") {
-                if(r.battleGuide==5 && Campaign.IsTeachingBattle)Text("실전 안내 완료 · 승리 보상 중 하나를 선택하거나 건너뛰고 다음 경로로 이동하세요.",.1f,.79f,.8f,.06f,20);
-                Text("남은 HP "+r.hp+"/"+r.maxHP+"   ◆ 획득 토큰 +"+(Campaign.Stage.kind==SingleNodeKind.Augment?0:r.lastRunAward)+"   런 토큰 "+r.tokens,.1f,.70f,.8f,.05f);
+                if(r.battleGuide==5 && Campaign.IsTeachingBattle)Text("실전 안내 완료 · 보상을 선택하거나 건너뛰세요.",.1f,.82f,.8f,.04f,20);
+                Text("남은 HP "+r.hp+"/"+r.maxHP+" · 런 토큰 "+r.tokens+(Campaign.Stage.IsCombat && r.lastTokenReward!=null?"\n"+r.lastTokenReward.Summary:""),.1f,.685f,.8f,.12f,21);
                 if(r.phase=="augment" && r.augments.Count==3){Text("교체할 증강을 먼저 선택하세요.",.1f,.60f,.8f,.05f);for(int i=0;i<3;i++){int n=i;Button((replaceSlot==i?"✓ ":"")+Campaign.Data.augments.First(a=>a.id==r.augments[i]).name,.1f+i*.28f,.51f,.26f,.07f,()=>{replaceSlot=n;Reward();});}}
                 for(int i=0;i<r.offers.Count;i++) {
                     string id=r.offers[i];string text=r.phase=="card"?CardDatabase.Get(id).CardName+"\n"+CardDatabase.Get(id).Description:Campaign.Data.augments.First(a=>a.id==id).name+"\n"+Campaign.Data.augments.First(a=>a.id==id).description;
@@ -247,7 +249,7 @@ namespace Unknown.Battle
             Button("돌아가기",.35f,.06f,.3f,.065f,Home);
         }
         void Result() {
-            var r=Campaign.Run;Clear(r.failure.Length==0?"CHAPTER CLEAR":r.failure);Text($"{Campaign.Data.difficulties[r.difficulty].name}\n남은 HP {r.hp}/{r.maxHP}\n획득 영구 토큰 {r.permanentAward}\n최초 클리어 보너스 {r.firstClearAward}",.22f,.39f,.56f,.34f,26);
+            var r=Campaign.Run;Clear(r.failure.Length==0?"CHAPTER CLEAR":r.failure);Text($"{Campaign.Data.difficulties[r.difficulty].name}\n남은 HP {r.hp}/{r.maxHP}\n획득 영구 토큰 {r.permanentAward}\n최초 클리어 보너스 {r.firstClearAward}"+(r.lastTokenReward!=null?"\n\n마지막 전투\n"+r.lastTokenReward.Summary:""),.18f,.32f,.64f,.47f,23);
             Button("새 런 / 난이도 선택",.16f,.2f,.3f,.08f,Home);Button("해금 가능한 콘텐츠",.54f,.2f,.3f,.08f,Shop);Button("최종 덱 보기",.35f,.09f,.3f,.07f,Deck);
         }
         RawImage Artwork(Transform parent,string name,Texture2D texture,float x,float y,float w,float h,bool cover=false) {
@@ -288,7 +290,8 @@ namespace Unknown.Battle
         }
         void OnDestroy(){if(battle!=null)Destroy(battle.gameObject);if(font!=null)Unknown.Battle.PlatformFont.Release(font);}
         public static string Kind(SingleNodeKind k)=>new[]{"시작","일반 전투","엘리트","증강","회복","덱 정리","이벤트","최종 보스","상점"}[(int)k];
-        static string RewardName(SingleStage s)=>s.kind==SingleNodeKind.Shop?"런 토큰으로 카드 구매":s.kind==SingleNodeKind.Battle?"HP 비율 토큰 1~5 + 카드 3택1":s.kind==SingleNodeKind.Elite?"HP 비율 토큰 1~5 + 증강 3택1":s.kind==SingleNodeKind.Boss?"챕터 클리어 / 영구 토큰":s.kind==SingleNodeKind.Heal?"HP 회복":s.kind==SingleNodeKind.Purge?"카드 제거 또는 교체":s.kind==SingleNodeKind.Event?"HP와 토큰 선택":"증강 3택1";
+        string RewardForNode(SingleStage stage,int node)=>(stage.IsCombat?"기본 "+Campaign.BaseRewardFor(node)+" 토큰 · ":"")+RewardName(stage);
+        static string RewardName(SingleStage s)=>s.kind==SingleNodeKind.Shop?"런 토큰으로 카드 구매":s.kind==SingleNodeKind.Battle?"카드 3택1":s.kind==SingleNodeKind.Elite?"증강 3택1":s.kind==SingleNodeKind.Boss?"챕터 클리어 / 영구 토큰":s.kind==SingleNodeKind.Heal?"HP 회복":s.kind==SingleNodeKind.Purge?"카드 제거 또는 교체":s.kind==SingleNodeKind.Event?"HP와 토큰 선택":"증강 3택1";
         public static string RestrictionName(SingleRestriction r)=>new[]{"없음","턴 공격 최대 2회","최강 유닛 첫 공격 -2","직접 공격 턴당 1회","첫 소환 출전 효과 봉인","3번 슬롯 포커 보너스 봉인","스페이드 출전 효과 봉인","회복량 절반","전투 종료 회복 금지","소환 시 내 HP -1","첫 추가 드로우 1장 무효","마나 회복 -1","첫 소환 비용 +1","턴 홀짝 계급 소환 제한","매 턴 제약 변경","턴마다 1·5번 슬롯 교환"}[(int)r];
     }
     public sealed class SingleChapterHint : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler {
