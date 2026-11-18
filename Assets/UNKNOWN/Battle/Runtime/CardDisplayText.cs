@@ -66,6 +66,11 @@ namespace Unknown.Battle
             var d=card.Definition;
             string text=d.CardType==CardType.Joker ? "도박 · 유닛당 1회\n50%: ATK·최대 HP ×1.5\n실패: 대상 파괴"
                 : d.Version==CardDatabase.DefaultVersion && compact.TryGetValue(d.CardID,out var shortText) ? shortText : d.Description;
+            // Placement timing is implicit on cards; reserve the whole area for the effect.
+            if(text.StartsWith("출전",System.StringComparison.Ordinal)){
+                int firstLine=text.IndexOf('\n');
+                return firstLine>=0 ? text.Substring(firstLine+1) : text.Substring(2).TrimStart(' ',':','·');
+            }
             int split=text.IndexOf('\n');
             if(split>=0){
                 string heading=text.Substring(0,split),body=text.Substring(split+1);

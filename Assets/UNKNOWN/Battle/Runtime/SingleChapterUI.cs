@@ -63,7 +63,7 @@ namespace Unknown.Battle
         }
         void Exit(){returnTitle?.Invoke();Destroy(gameObject);}
         void Continue() {
-            switch(Campaign.Run.phase){case "map":Map();break;case "battle":LaunchBattle();break;case "prepare":Prepare();break;case "done":Result();break;default:Reward();break;}
+            switch(Campaign.Run.phase){case "map":Map();break;case "battle":LaunchBattle();break;case "prepare":Prepare();break;case "shop":RunShopScreen();break;case "done":Result();break;default:Reward();break;}
         }
         void Header() {
             var r=Campaign.Run;Text($"HP {r.hp}/{r.maxHP}   ◆ 런 토큰 {r.tokens}   덱 {r.deck.Count}장   {Campaign.Data.difficulties[r.difficulty].name}",.08f,.83f,.84f,.045f,21);
@@ -174,7 +174,7 @@ namespace Unknown.Battle
         static string StateName(SingleNodeState state)=>new[]{"현재 위치","이동 가능","토큰 부족","미도달","완료","이전 분기"}[(int)state];
         static Color NodeColor(SingleNodeState state)=>new[]{new Color(.42f,.29f,.10f),new Color(.08f,.29f,.25f),new Color(.36f,.09f,.11f),new Color(.08f,.065f,.09f),new Color(.18f,.22f,.27f),new Color(.07f,.06f,.065f)}[(int)state];
         static string BattleTypeName(SingleStage s)=>s.IsCombat?new[]{"일반전","속공전","방어 돌파전","마나 제한전","카드 제한전","엘리트전","보스전"}[(int)s.battleType]:Kind(s.kind);
-        static string ShortKind(SingleNodeKind kind)=>new[]{"시작","일반 전투","엘리트","증강","회복","덱 정리","이벤트","BOSS"}[(int)kind];
+        static string ShortKind(SingleNodeKind kind)=>new[]{"시작","일반 전투","엘리트","증강","회복","덱 정리","이벤트","BOSS","▣ 상점"}[(int)kind];
         void Augments() {
             Clear("증강");var r=Campaign.Run;
             if(r.augments.Count==0)Text("장착 증강 없음",.15f,.42f,.7f,.12f,24);
@@ -182,7 +182,7 @@ namespace Unknown.Battle
             Button("돌아가기",.35f,.08f,.3f,.065f,Continue);
         }
         void Prepare() {
-            var s=Campaign.Stage;Clear(s.name);Header();
+            var s=Campaign.Stage;if(s.kind==SingleNodeKind.Shop){if(Campaign.Run.phase=="prepare")Campaign.ResolveSupport();RunShopScreen();return;}Clear(s.name);Header();
             bool combat=s.kind==SingleNodeKind.Battle || s.kind==SingleNodeKind.Elite || s.kind==SingleNodeKind.Boss;
             if(combat) {
                 var d=Campaign.Data.difficulties[Campaign.Run.difficulty];
@@ -254,7 +254,7 @@ namespace Unknown.Battle
             if(texture==null)return null;var frame=Rect(parent,name,x,y,w,h);if(cover)frame.gameObject.AddComponent<RectMask2D>();var rect=Rect(frame,"Texture",0,0,1,1);var image=rect.gameObject.AddComponent<RawImage>();image.texture=texture;image.raycastTarget=false;
             var fit=rect.gameObject.AddComponent<AspectRatioFitter>();fit.aspectRatio=(float)texture.width/texture.height;fit.aspectMode=cover?AspectRatioFitter.AspectMode.EnvelopeParent:AspectRatioFitter.AspectMode.FitInParent;return image;
         }
-        RectTransform CardPreview(Transform parent,string id,float x,float y,float w,float h,Action click,bool enabled,bool compact=false) {
+        RectTransform CardPreview(Transform parent,string id,float x,float y,float w,float h,Action click,bool enabled,bool compact=true) {
             var def=CardDatabase.Get(id);var rect=Rect(parent,"Card "+id,x,y,w,h,Color.clear);rect.GetComponent<Image>().raycastTarget=true;
             var button=rect.gameObject.AddComponent<Button>();button.interactable=enabled;button.onClick.AddListener(()=>{try{click();}catch(Exception ex){error=ex.Message;Continue();}});
             var texture=CardArtSettings.TextureFor(id);if(texture==null){Text(def.CardName,0,0,1,1,22,rect);return rect;}
@@ -271,7 +271,7 @@ namespace Unknown.Battle
             rect.gameObject.AddComponent<CardHover>().Configure(null,null,true,parent.GetComponent<LayoutGroup>()==null);
             return rect;
         }
-        static string NodeIcon(SingleNodeKind k)=>new[]{"●","⚔","◆","✦","+","−","?","♛"}[(int)k];
+        static string NodeIcon(SingleNodeKind k)=>new[]{"●","⚔","◆","✦","+","−","?","♛","▣"}[(int)k];
         void Hint(GameObject target,string value) {
             var h=target.AddComponent<SingleChapterHint>();h.show=()=>ShowHint(value);h.hide=HideHint;
         }
@@ -287,8 +287,8 @@ namespace Unknown.Battle
             point-=root.rect.min;tooltip.anchoredPosition=new Vector2(Mathf.Clamp(point.x+18,0,Mathf.Max(0,root.rect.width-tooltip.rect.width)),Mathf.Clamp(point.y+18,0,Mathf.Max(0,root.rect.height-tooltip.rect.height)));
         }
         void OnDestroy(){if(battle!=null)Destroy(battle.gameObject);if(font!=null)Unknown.Battle.PlatformFont.Release(font);}
-        public static string Kind(SingleNodeKind k)=>new[]{"시작","일반 전투","엘리트","증강","회복","덱 정리","이벤트","최종 보스"}[(int)k];
-        static string RewardName(SingleStage s)=>s.kind==SingleNodeKind.Battle?"HP 비율 토큰 1~5 + 카드 3택1":s.kind==SingleNodeKind.Elite?"HP 비율 토큰 1~5 + 증강 3택1":s.kind==SingleNodeKind.Boss?"챕터 클리어 / 영구 토큰":s.kind==SingleNodeKind.Heal?"HP 회복":s.kind==SingleNodeKind.Purge?"카드 제거 또는 교체":s.kind==SingleNodeKind.Event?"HP와 토큰 선택":"증강 3택1";
+        public static string Kind(SingleNodeKind k)=>new[]{"시작","일반 전투","엘리트","증강","회복","덱 정리","이벤트","최종 보스","상점"}[(int)k];
+        static string RewardName(SingleStage s)=>s.kind==SingleNodeKind.Shop?"런 토큰으로 카드 구매":s.kind==SingleNodeKind.Battle?"HP 비율 토큰 1~5 + 카드 3택1":s.kind==SingleNodeKind.Elite?"HP 비율 토큰 1~5 + 증강 3택1":s.kind==SingleNodeKind.Boss?"챕터 클리어 / 영구 토큰":s.kind==SingleNodeKind.Heal?"HP 회복":s.kind==SingleNodeKind.Purge?"카드 제거 또는 교체":s.kind==SingleNodeKind.Event?"HP와 토큰 선택":"증강 3택1";
         public static string RestrictionName(SingleRestriction r)=>new[]{"없음","턴 공격 최대 2회","최강 유닛 첫 공격 -2","직접 공격 턴당 1회","첫 소환 출전 효과 봉인","3번 슬롯 포커 보너스 봉인","스페이드 출전 효과 봉인","회복량 절반","전투 종료 회복 금지","소환 시 내 HP -1","첫 추가 드로우 1장 무효","마나 회복 -1","첫 소환 비용 +1","턴 홀짝 계급 소환 제한","매 턴 제약 변경","턴마다 1·5번 슬롯 교환"}[(int)r];
     }
     public sealed class SingleChapterHint : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler {

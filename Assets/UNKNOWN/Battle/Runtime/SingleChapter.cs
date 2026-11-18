@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unknown.Battle
 {
-    public enum SingleNodeKind { Start, Battle, Elite, Augment, Heal, Purge, Event, Boss }
+    public enum SingleNodeKind { Start, Battle, Elite, Augment, Heal, Purge, Event, Boss, Shop }
     public enum SingleRestriction { None, AttackLimit, StrongestPenalty, DirectLimit, SealFirstSummon, SealSlot, SealSuit, HalfHealing, EndHealLimit, SummonBlood, CancelExtraDraw, LessMana, FirstCost, Parity, Changing, SwapSlots }
     public enum SinglePatternKind { Strengthen, Summon, Weaken, Rally }
     [Serializable] public sealed class SingleUnit { public string card; public int slot; }
@@ -41,6 +41,7 @@ namespace Unknown.Battle
     [Serializable] public sealed class SingleStarter { public string id,name,unlock;public string[] cards; }
     [Serializable] public sealed class SingleChapterData
     {
+        public SingleShopSettings shop=new SingleShopSettings();
         public int startingDeckSize=8;
         public int startingTokens=10,maxHP=30,healing=8,firstClearBonus=20,eventDamage=5,eventTokens=4,eventHealing=4;
         public int[] runRewards={1,2,3,4,5},permanentRewards={10,15,20,25,30};
@@ -51,7 +52,8 @@ namespace Unknown.Battle
             var d=JsonUtility.FromJson<SingleChapterData>(text.text);d.Validate();return d;
         }
         public void Validate() {
-            if(stages==null || stages.Length!=25 || stages.Select(s=>s.id).Distinct().Count()!=25)throw new InvalidDataException("Chapter requires 25 unique stages");
+            if(stages==null || stages.Length!=25+stages.Count(s=>s.kind==SingleNodeKind.Shop) || stages.Select(s=>s.id).Distinct().Count()!=stages.Length)throw new InvalidDataException("Chapter requires 25 unique stages");
+            if(shop==null)shop=new SingleShopSettings();shop.Validate(stages.Count(s=>s.kind==SingleNodeKind.Shop));
             int[] counts={1,11,4,3,2,2,1,1};for(int i=0;i<counts.Length;i++)if(stages.Count(s=>(int)s.kind==i)!=counts[i])throw new InvalidDataException("Invalid node composition");
             if(startingDeckSize<5 || difficulties.Length!=4 || augments.Length!=12 || starters.Any(s=>s.cards.Length!=12))throw new InvalidDataException("Invalid chapter content");
             if(difficulties.Any(d=>d.additionalTurns<0))throw new InvalidDataException("Invalid difficulty turn bonus");
@@ -80,7 +82,11 @@ namespace Unknown.Battle
         public static SingleNode[] Generate(SingleChapterData data,int seed) {
             var r=new System.Random(seed);int[] sizes={1,3,3,3,3,3,3,3,2,1};
             var early=data.stages.Where(s=>s.kind==SingleNodeKind.Battle).OrderBy(s=>s.enemyHP).ThenBy(s=>s.id,StringComparer.Ordinal).ToList();
-            var rest=data.stages.Where(s=>s.kind!=SingleNodeKind.Start && s.kind!=SingleNodeKind.Boss && s.kind!=SingleNodeKind.Battle).OrderBy(_=>r.Next()).ToList();
+            var rest=data.stages.Where(s=>s.kind!=SingleNodeKind.Start && s.kind!=SingleNodeKind.Boss && s.kind!=SingleNodeKind.Battle && s.kind!=SingleNodeKind.Shop).OrderBy(_=>r.Next()).ToList();
+            // Reuse support slots without changing node count, combat stages or any edges.
+            int shopCount=r.Next(data.shop.minNodes,data.shop.maxNodes+1);
+            foreach(var replaced in rest.Where(s=>!s.IsCombat).OrderBy(_=>r.Next()).Take(shopCount).ToArray())rest.Remove(replaced);
+            rest.AddRange(data.stages.Where(s=>s.kind==SingleNodeKind.Shop).OrderBy(_=>r.Next()).Take(shopCount));
             var order=early.Take(6).OrderBy(_=>r.Next()).Concat(early.Skip(6).Concat(rest).OrderBy(_=>r.Next())).ToList();
             var nodes=new List<SingleNode>();int cursor=0;
             for(int layer=0;layer<10;layer++)for(int lane=0;lane<sizes[layer];lane++)nodes.Add(new SingleNode{id=nodes.Count,layer=layer,lane=lane,stage=layer==0 ? data.stages.First(s=>s.kind==SingleNodeKind.Start).id : layer==9 ? data.stages.First(s=>s.kind==SingleNodeKind.Boss).id : order[cursor++].id});
@@ -185,6 +191,7 @@ namespace Unknown.Battle
         public int startGuide;
         // Optional first-battle guidance: 0=off, 1..4=live objectives, 5=won, -1=skipped.
         public int battleGuide,battleGuideTurn;
+        public List<SingleShopStock> shops=new List<SingleShopStock>();
         public SingleBattleSave battle;public bool settled,legacyCombatBorders;public List<string> usedCards=new List<string>();
     }
     [Serializable] public sealed class SingleHistory { public string id,result,starter;public int seed,difficulty,visited,hp,reward; }
@@ -194,7 +201,7 @@ namespace Unknown.Battle
         public List<int> unlocked=new List<int>{0},cleared=new List<int>();public List<string> content=new List<string>(),settledRuns=new List<string>();
         public List<SingleHistory> history=new List<SingleHistory>();public SingleRun run;
     }
-    public sealed class SingleCampaign
+    public sealed partial class SingleCampaign
     {
         public readonly SingleChapterData Data;public SingleProfile Profile;public SingleRun Run=>Profile.run;
         public string SavePath {get;}public event Action Changed;
@@ -210,7 +217,8 @@ namespace Unknown.Battle
                 } else SingleGraph.Validate(Data,Run.nodes,true,!Run.legacyCombatBorders);
             }
         }
-        public void Save() {
+        public void Save()=>SaveCommitted(null);
+        void SaveCommitted(Action committed) {
             string dir=Path.GetDirectoryName(SavePath);Directory.CreateDirectory(dir);string temp=SavePath+".tmp";
             File.WriteAllText(temp,JsonUtility.ToJson(Profile,true));
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -220,7 +228,7 @@ namespace Unknown.Battle
 #else
             if(File.Exists(SavePath))File.Replace(temp,SavePath,null);else File.Move(temp,SavePath);
 #endif
-            Changed?.Invoke();
+            committed?.Invoke();Changed?.Invoke();
         }
         public bool CanUse(SingleStarter s)=>string.IsNullOrEmpty(s.unlock)||Profile.content.Contains(s.unlock);
         public void Start(int difficulty,int seed)=>StartSelected(difficulty,SingleStartingDeck.Build(CardPool(),Data.startingDeckSize,SingleDeckConcept.Attack),seed);
@@ -272,7 +280,7 @@ namespace Unknown.Battle
         public void Enter(int node) {
             string reason=EntryError(node);if(reason.Length>0)throw new InvalidOperationException(reason);
             var stage=Data.stages.First(s=>s.id==Run.nodes[node].stage);
-            Run.tokens-=stage.cost;Run.current=node;Run.visited.Add(node);Run.phase="prepare";Run.battle=null;Run.settled=false;Run.offers.Clear();Save();
+            Run.tokens-=stage.cost;Run.current=node;Run.visited.Add(node);Run.phase="prepare";Run.battle=null;Run.settled=false;Run.offers.Clear();if(stage.kind==SingleNodeKind.Shop){OpenShop();return;}Save();
         }
         public static int Tier(int hp,int maxHP)=>hp<=0?0:Math.Min(4,Math.Max(0,(int)(((long)hp*5-1)/Math.Max(1,maxHP))));
         public void BattleResult(BattleEngine engine) {
@@ -299,6 +307,7 @@ namespace Unknown.Battle
                 case SingleNodeKind.Heal:Run.hp=Math.Min(Run.maxHP,Run.hp+Data.healing);CompleteNode();break;
                 case SingleNodeKind.Purge:Run.phase="purge";Save();break;
                 case SingleNodeKind.Event:Run.phase="event";Save();break;
+                case SingleNodeKind.Shop:OpenShop();break;
             }
         }
         public void TakeReward(string id,int replace=-1) {

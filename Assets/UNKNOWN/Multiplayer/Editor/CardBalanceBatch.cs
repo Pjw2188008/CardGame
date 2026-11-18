@@ -25,6 +25,7 @@ namespace Unknown.Multiplayer.Editor
         }
         static void WatchOverhaul(){
             if(EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode)return;
+            if(File.Exists("Library/SingleShop/request")){File.Delete("Library/SingleShop/request");SingleShopChecks.Run();return;}
             string request=OverhaulFolder+"/request";
             if(overhaulRun==null && File.Exists(request)){
                 File.Delete(request);

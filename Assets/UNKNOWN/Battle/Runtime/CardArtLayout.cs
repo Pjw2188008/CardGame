@@ -33,7 +33,7 @@ namespace Unknown.Battle
             float scale=Mathf.Clamp(rect.height*span.y/244f,.5f,3f);
             void Fit(Text text,int maximum,int minimum) {if(text==null)return;text.resizeTextForBestFit=true;text.resizeTextMinSize=minimum;text.resizeTextMaxSize=Mathf.Max(minimum,Mathf.RoundToInt(maximum*scale));text.fontSize=text.resizeTextMaxSize;}
             Fit(mana==null ? null : mana.GetComponentInChildren<Text>(),18,9);
-            if(description!=null){var fit=description.GetComponentInChildren<CardDescriptionFit>();if(fit!=null)fit.SetMaximum(Mathf.RoundToInt(11*scale));}
+            if(description!=null){var fit=description.GetComponentInChildren<CardDescriptionFit>();if(fit!=null)fit.SetMaximum(Mathf.RoundToInt(12*scale));}
             Fit(attack==null ? null : attack.GetComponent<Text>(),joker ? 12 : 18,joker ? 7 : 10);
             Fit(health==null ? null : health.GetComponent<Text>(),18,9);
             Fit(protection==null ? null : protection.GetComponent<Text>(),14,8);
