@@ -52,8 +52,8 @@ namespace Unknown.Battle
                     verify(transitioning && Blocked() && clock.Remaining>39.9,"Map turn animation blocks input and freezes forty-second clock: "+map);
                     yield return DragWait();
                     verify(presentedMapEvents.Count==1,"Suit effect banner presents once: "+map);
-                    verify(normalMapName.gameObject.activeSelf && normalMapName.text.Contains(info.name) && mapStatus.text==info.Effects,"Compact map name and effects visible: "+map);
-                    ShowMapTooltip(DragData(normalMapName.rectTransform)); verify(tooltip.gameObject.activeSelf && detail.text.Contains(info.Effects),"Hover details include configured map effects: "+map); HideTooltip();
+                    verify(mapInfoPanel.gameObject.activeSelf && mapEffectIcon.texture==mapBackgroundSettings.EffectIconFor(map) && !mapStatus.gameObject.activeSelf,"Map effect icon visible: "+map);
+                    ShowMapTooltip(DragData(mapInfoPanel)); verify(tooltip.gameObject.activeSelf && detail.text.Contains(info.Effects),"Hover details include configured map effects: "+map); HideTooltip();
                     verify(unknownLabels[0].text.StartsWith("내 UNKNOWN") && unknownLabels[1]==null,"Suit map shows only own UNKNOWN progression: "+map);
                     verify(File.Exists(CaptureAttackFrame(1920,ownBoard,"SuitMap-"+map,false)),"Rendered themed battlefield: "+map);
                     foreach(int recipient in new[]{0,1}) {

@@ -13,6 +13,19 @@ namespace Unknown.Battle
         public Texture2D normalCardBack,jokerCardBack,diamondCardBack,spadeCardBack,heartCardBack,clubCardBack;
         [Header("Single-player node backs (Assets/CARD/CardBack)")]
         public Texture2D startNodeBack,bossNodeBack,augmentNodeBack,healNodeBack,shopNodeBack,eventNodeBack;
+        [Header("Effect icons (Assets/ICON)")]
+        public Texture2D jokerEffectIcon,diamondEffectIcon,spadeEffectIcon,heartEffectIcon,clubEffectIcon;
+        public Texture2D EffectIconFor(BattleMap map)
+        {
+            switch(map){
+                case BattleMap.JokerGame:return jokerEffectIcon;
+                case BattleMap.Diamond:return diamondEffectIcon;
+                case BattleMap.Spade:return spadeEffectIcon;
+                case BattleMap.Heart:return heartEffectIcon;
+                case BattleMap.Club:return clubEffectIcon;
+                default:return null;
+            }
+        }
         public Texture2D NodeCardBackFor(SingleStage stage)
         {
             Texture2D back;

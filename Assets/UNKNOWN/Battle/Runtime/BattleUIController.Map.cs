@@ -7,9 +7,8 @@ namespace Unknown.Battle
     public sealed partial class BattleUIController
     {
         readonly HashSet<int> presentedMapEvents=new HashSet<int>();
-        RectTransform mapDecor,mapInfoPanel,mapTextViewport,mapDetailsHover;
-        ScrollRect mapInfoScroll;
-        string lastMapPanelText;
+        RectTransform mapDecor,mapInfoPanel,mapDetailsHover;
+        RawImage mapEffectIcon;Text mapEffectFallback;
         RawImage mapBackground;
         AspectRatioFitter mapBackgroundAspect;
         BattleMapSettings mapBackgroundSettings;
@@ -26,10 +25,15 @@ namespace Unknown.Battle
         {
             if(AttackDragging || dragged!=null || passOverlay.activeSelf || resultOverlay.activeSelf)return;
             HideCardPreview();tooltip.sizeDelta=new Vector2(440,280);
-            var d=MapInfo(engine.Config.Map);detail.text=d.symbol+" "+d.name+"\n\n"+MapDescription(d.map);
-            if(d.map==BattleMap.JokerGame){var visible=MapEventView.For(engine.MapEvent,ViewPlayer);if(visible!=null)detail.text+="\n\n"+visible.name+"\n"+visible.detail;}
+            detail.fontSize=18;detail.resizeTextForBestFit=false;detail.horizontalOverflow=HorizontalWrapMode.Wrap;
+            var d=MapInfo(engine.Config.Map);
+            detail.text=singleCampaign!=null ? "방해 효과\n\n"+SingleRestrictionText() : d.symbol+" "+d.name+"\n\n"+MapDescription(d.map);
+            if(singleCampaign==null && d.map==BattleMap.JokerGame){
+                detail.text+="\n\n다음 JOKER "+engine.JokerChance(ViewPlayer)+"%";
+                var visible=MapEventView.For(engine.MapEvent,ViewPlayer);if(visible!=null)detail.text+="\n\n"+visible.name+"\n"+visible.detail;
+            }
             Canvas.ForceUpdateCanvases();
-            tooltip.sizeDelta=new Vector2(440,Mathf.Clamp((detail.preferredHeight+24)/.9f,240,Mathf.Max(240,interactionRoot.rect.height-40)));
+            tooltip.sizeDelta=new Vector2(440,Mathf.Clamp((detail.preferredHeight+24)/.9f,160,Mathf.Max(160,interactionRoot.rect.height-40)));
             PositionTooltip(data);
         }
         IEnumerator PresentRandomMap(BattleMap result)
@@ -100,7 +104,7 @@ namespace Unknown.Battle
                 mapHeader.text="조커의 유희\n♠  ♦  ♣  ♥\n다음 JOKER "+engine.JokerChance(ViewPlayer)+"%";
                 var visible=MapEventView.For(engine.MapEvent,ViewPlayer);mapStatus.text=visible==null ? "" : visible.name+"\n"+visible.detail;
             }
-            if(singleCampaign==null)RefreshReadableMapPanel(info);
+            RefreshEffectIcon(info);
             foreach(var pip in unknownPips[0])
             {
                 if(pip==null)continue; var icon=pip.transform.Find("Joker Icon");
@@ -108,39 +112,26 @@ namespace Unknown.Battle
                 if(icon!=null)icon.gameObject.SetActive(joker);
             }
         }
-        void RefreshReadableMapPanel(MapDefinition info)
+        void RefreshEffectIcon(MapDefinition info)
         {
+            // The tooltip uses live rules; this replaces the persistent description panel.
+            normalMapName.gameObject.SetActive(false);mapHeader.gameObject.SetActive(false);mapStatus.gameObject.SetActive(false);
+            mapDetailsHover.gameObject.SetActive(false);
             if(mapInfoPanel==null){
-                mapInfoPanel=Box(battlefield,"Map effect information",new Vector2(.012f,.65f),new Vector2(.19f,.93f),new Color(.018f,.015f,.03f,.96f));
-                mapInfoPanel.GetComponent<Image>().raycastTarget=false;
-                var edge=mapInfoPanel.gameObject.AddComponent<Outline>();edge.effectDistance=new Vector2(1,-1);
-                foreach(var heading in new[]{normalMapName,mapHeader}){
-                    heading.transform.SetParent(mapInfoPanel,false);heading.rectTransform.anchorMin=new Vector2(.05f,.74f);heading.rectTransform.anchorMax=new Vector2(.95f,.98f);
-                    heading.rectTransform.offsetMin=heading.rectTransform.offsetMax=Vector2.zero;
-                    heading.fontSize=20;heading.fontStyle=FontStyle.Bold;
-                }
-                mapTextViewport=Box(mapInfoPanel,"Map effect text viewport",new Vector2(.04f,.04f),new Vector2(.96f,.71f),Color.clear);
-                mapTextViewport.GetComponent<Image>().raycastTarget=true;mapTextViewport.gameObject.AddComponent<RectMask2D>();
-                mapStatus.transform.SetParent(mapTextViewport,false);
-                mapStatus.rectTransform.anchorMin=new Vector2(0,1);mapStatus.rectTransform.anchorMax=Vector2.one;mapStatus.rectTransform.pivot=new Vector2(.5f,1);
-                mapStatus.rectTransform.sizeDelta=new Vector2(-16,0);mapStatus.rectTransform.anchoredPosition=Vector2.zero;
-                mapStatus.fontSize=18;mapStatus.resizeTextForBestFit=false;mapStatus.alignment=TextAnchor.UpperLeft;
-                mapStatus.horizontalOverflow=HorizontalWrapMode.Wrap;mapStatus.verticalOverflow=VerticalWrapMode.Overflow;mapStatus.lineSpacing=1.1f;
-                mapInfoScroll=mapTextViewport.gameObject.AddComponent<ScrollRect>();mapInfoScroll.horizontal=false;mapInfoScroll.vertical=true;
-                mapInfoScroll.viewport=mapTextViewport;mapInfoScroll.content=mapStatus.rectTransform;mapInfoScroll.movementType=ScrollRect.MovementType.Clamped;mapInfoScroll.scrollSensitivity=25;
-                mapDetailsHover.SetParent(mapInfoPanel,false);mapDetailsHover.anchorMin=new Vector2(.02f,.73f);mapDetailsHover.anchorMax=new Vector2(.98f,.99f);
-                mapDetailsHover.offsetMin=mapDetailsHover.offsetMax=Vector2.zero;
+                mapInfoPanel=Box(battlefield,"Map effect icon",Vector2.zero,Vector2.zero,Color.clear);
+                mapInfoPanel.sizeDelta=new Vector2(80,80);mapInfoPanel.GetComponent<Image>().raycastTarget=true;
+                var artwork=new GameObject("Effect artwork",typeof(RectTransform),typeof(RawImage),typeof(AspectRatioFitter));
+                artwork.transform.SetParent(mapInfoPanel,false);mapEffectIcon=artwork.GetComponent<RawImage>();mapEffectIcon.raycastTarget=false;
+                var fit=artwork.GetComponent<AspectRatioFitter>();fit.aspectMode=AspectRatioFitter.AspectMode.FitInParent;
+                mapEffectFallback=Label(mapInfoPanel,"N",Vector2.zero,Vector2.one,30,gold);mapEffectFallback.raycastTarget=false;
+                mapInfoPanel.gameObject.AddComponent<CardHover>().Configure(ShowMapTooltip,HideTooltip,false,false);
             }
-            normalMapName.color=mapHeader.color=mapStatus.color=Color.white;
-            if(info.map==BattleMap.JokerGame)mapHeader.text="조커의 유희\n다음 JOKER "+engine.JokerChance(ViewPlayer)+"%";
-            mapInfoPanel.GetComponent<Outline>().effectColor=MapTint(info.map);
-            // Keep the base map rules visible even before the first Joker event occurs.
-            mapStatus.text=info.Effects;
-            if(info.map==BattleMap.JokerGame){var visible=MapEventView.For(engine.MapEvent,ViewPlayer);if(visible!=null)mapStatus.text+="\n\n"+visible.name+"\n"+visible.detail;}
-            Canvas.ForceUpdateCanvases();
-            mapStatus.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,Mathf.Max(mapTextViewport.rect.height,mapStatus.preferredHeight+16));
-            if(lastMapPanelText!=mapStatus.text){mapInfoScroll.verticalNormalizedPosition=1;lastMapPanelText=mapStatus.text;}
-            // Background decoration must not place readable text behind cards or other HUD elements.
+            var anchor=singleCampaign!=null ? new Vector2(.08f,.575f) : new Vector2(.08f,.855f);
+            mapInfoPanel.anchorMin=mapInfoPanel.anchorMax=anchor;mapInfoPanel.anchoredPosition=Vector2.zero;
+            var texture=mapBackgroundSettings==null?null:mapBackgroundSettings.EffectIconFor(info.map);
+            mapEffectIcon.texture=texture;mapEffectIcon.gameObject.SetActive(texture!=null);mapEffectFallback.gameObject.SetActive(texture==null);
+            mapEffectFallback.text=info.symbol.Length>0?info.symbol:"N";
+            if(texture!=null)mapEffectIcon.GetComponent<AspectRatioFitter>().aspectRatio=(float)texture.width/texture.height;
             mapInfoPanel.SetAsLastSibling();if(battleMenu!=null && battleMenu.gameObject.activeSelf)battleMenu.SetAsLastSibling();
         }
 #if UNITY_EDITOR
@@ -155,9 +146,11 @@ namespace Unknown.Battle
                 ResetHandViews();Refresh();yield return null;yield return null;Canvas.ForceUpdateCanvases();
                 ButtonTextLayout.VerifyVisible(gameObject,verify,"battle "+map+" / "+recipient);
                 verify(endTurn is SingleButtonSkin,"Shared online/AI/tutorial combat button artwork: "+map+" / "+recipient);
-                verify(mapInfoPanel.gameObject.activeInHierarchy && mapStatus.transform.IsChildOf(mapInfoPanel),"Foreground map information for recipient "+recipient+": "+map);
-                verify(mapStatus.color==Color.white && mapStatus.fontSize==18 && !mapStatus.resizeTextForBestFit,"Readable fixed-size map text: "+map+" / "+recipient);
-                verify(mapStatus.text.StartsWith(MapInfo(map).Effects) && mapStatus.rectTransform.rect.height>=mapStatus.preferredHeight,"Complete current map rules have scrollable content: "+map+" / "+recipient);
+                verify(mapInfoPanel.gameObject.activeInHierarchy && !mapStatus.gameObject.activeSelf && !normalMapName.gameObject.activeSelf,"Effects replaced by hover icon: "+map+" / "+recipient);
+                verify(mapEffectIcon.texture==mapBackgroundSettings.EffectIconFor(map) && (map==BattleMap.Normal || mapEffectIcon.texture!=null),"Correct imported effect icon: "+map+" / "+recipient);
+                mapInfoPanel.GetComponent<CardHover>().OnPointerEnter(DragData(mapInfoPanel));
+                verify(tooltip.gameObject.activeSelf && detail.text.Contains(MapInfo(map).Effects),"Icon hover shows actual map effects: "+map+" / "+recipient);
+                verify(detail.rectTransform.rect.height>=detail.preferredHeight,"Map tooltip fits full description: "+map+" / "+recipient);
                 if(map==BattleMap.Heart && recipient==0 || map==BattleMap.JokerGame && recipient==1){
                     ScreenCapture.CaptureScreenshot(System.IO.Path.GetFullPath(folder+"/map-text-"+map+".png"));yield return new WaitForEndOfFrame();yield return null;
                 }
@@ -167,11 +160,13 @@ namespace Unknown.Battle
             var solo=soloObject.AddComponent<BattleUIController>();solo.ConfigureSingle(campaign,()=>{});
             yield return null;yield return null;
             solo.StopAllCoroutines();solo.animations.ResetAll();solo.actionBusy=solo.transitioning=solo.paused=false;solo.passOverlay.SetActive(false);solo.Refresh();
-            solo.singleExpanded=true;solo.RefreshSingleUI();solo.singleDetails.gameObject.SetActive(true);
+            solo.RefreshSingleUI();
             yield return null;yield return null;Canvas.ForceUpdateCanvases();
             ButtonTextLayout.VerifyVisible(solo.gameObject,verify,"single battle");
-            verify(solo.singleIntent.text==solo.SingleRestrictionText(),"Single combat information contains only actual restrictions");
-            verify(!solo.singleIntent.text.Contains("난이도:") && !solo.singleIntent.text.Contains("마나 예산") && !solo.singleIntent.text.Contains("증강:"),"Single information removes difficulty, resources, enemy intent and augment summaries");
+            verify(!System.Linq.Enumerable.Any(solo.GetComponentsInChildren<Button>(true),b=>b.name=="전투 정보") && solo.transform.Find("Chapter intent")==null,"Single combat info button and panel removed");
+            solo.mapInfoPanel.GetComponent<CardHover>().OnPointerEnter(solo.DragData(solo.mapInfoPanel));
+            verify(solo.tooltip.gameObject.activeSelf && solo.detail.text=="방해 효과\n\n"+solo.SingleRestrictionText(),"Single icon hover shows actual active restrictions");
+            verify(solo.detail.rectTransform.rect.height>=solo.detail.preferredHeight,"Single restriction tooltip fits full text");
             ScreenCapture.CaptureScreenshot(System.IO.Path.GetFullPath(folder+"/single-restrictions.png"));yield return new WaitForEndOfFrame();yield return null;
             Destroy(soloObject);gameObject.SetActive(true);
         }

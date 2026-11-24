@@ -115,3 +115,8 @@ MonoBehaviour:
   healNodeBack: {fileID: 2800000, guid: 6414cc7633e770b4484ba4f8e42dbc32, type: 3}
   shopNodeBack: {fileID: 2800000, guid: 76d773f3f27aa7e45a600ad5afcdbed5, type: 3}
   eventNodeBack: {fileID: 2800000, guid: e070105fec7e1984f83dd0b89f25e3ac, type: 3}
+  jokerEffectIcon: {fileID: 2800000, guid: 1800e101f71b1914e934def4c9da0756, type: 3}
+  diamondEffectIcon: {fileID: 2800000, guid: 74ff8cd1ddeb4ef498dc94a012cdfecf, type: 3}
+  spadeEffectIcon: {fileID: 2800000, guid: 7fe0fc61c49da684ba97f1e24c872591, type: 3}
+  heartEffectIcon: {fileID: 2800000, guid: 9f21e985384da28448f751b3d5b65b69, type: 3}
+  clubEffectIcon: {fileID: 2800000, guid: 6c16771552ebde04a9fa3d2da18a0dd2, type: 3}

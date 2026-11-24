@@ -6,7 +6,7 @@ namespace Unknown.Battle
 {
     public sealed partial class BattleUIController
     {
-        SingleCampaign singleCampaign;Action singleReturn;bool singleFinished;Text singleIntent;RectTransform singleDetails;bool singleExpanded;RectTransform singleNotice;
+        SingleCampaign singleCampaign;Action singleReturn;bool singleFinished;RectTransform singleNotice;
         public void ConfigureSingle(SingleCampaign campaign,Action onReturn) {
             singleCampaign=campaign;singleReturn=onReturn;aiMode=true;revealHands=false;turnDuration=86400;
             returned=()=>{singleReturn?.Invoke();};
@@ -57,7 +57,7 @@ namespace Unknown.Battle
                 singleGuideBody.resizeTextForBestFit=true;singleGuideBody.resizeTextMinSize=14;singleGuideBody.resizeTextMaxSize=18;
                 ActionButton(singleGuidePanel,"안내 스킵",new Vector2(.12f,.04f),new Vector2(.88f,.17f),()=>{singleCampaign.Run.battleGuide=-1;singleCampaign.Save();singleGuidePanel.gameObject.SetActive(false);});
             }
-            singleGuidePanel.gameObject.SetActive(!MenuOpen && !GamePreferences.IsOpen && !state.IsOver && !singleExpanded);
+            singleGuidePanel.gameObject.SetActive(!MenuOpen && !GamePreferences.IsOpen && !state.IsOver);
             singleGuideTitle.text=new[]{"","1 · 카드 소환","2 · 턴과 적 행동","3 · 공격","4 · 승리와 보상"}[run.battleGuide];
             string status=$"남은 {Math.Max(0,single.Limit-single.Round+1)}턴 · 마나 예산 {single.RemainingBudget}/{single.Budget}\n";
             string instruction;
@@ -65,22 +65,13 @@ namespace Unknown.Battle
             else if(state.ActivePlayer==1)instruction="적이 카드를 소환하고 공격하는 중입니다. 내 턴이 돌아오면 이어서 행동하세요.";
             else if(run.battleGuide==1)instruction="패의 카드를 빈 아군 슬롯에 드래그하세요. 현재 마나·비용·턴 사용 상한을 확인하세요.";
             else if(run.battleGuide==2)instruction="소환 완료! 소환한 유닛은 다음 내 턴부터 공격합니다. 턴 종료를 눌러 적 행동과 마나 회복을 확인하세요.";
-            else if(run.battleGuide==3)instruction=state.Players[0].Board.Any(c=>engine.CanAttack(0,c))?"공격 가능한 아군을 적 유닛에 드래그하세요. 적 필드가 비면 적 HP 영역에 드래그해 직접 공격하세요.":"지금 공격 가능한 유닛이 없습니다. 소환 후 다음 내 턴을 준비하세요. 전투 정보에서 방해 효과도 확인하세요.";
-            else instruction="공격 성공! 제한 턴 안에 적 HP를 0으로 만드세요. 전투 정보에서 적 행동·방해 효과를 확인하세요. 승리 후 카드 보상과 런 토큰을 얻습니다.";
+            else if(run.battleGuide==3)instruction=state.Players[0].Board.Any(c=>engine.CanAttack(0,c))?"공격 가능한 아군을 적 유닛에 드래그하세요. 적 필드가 비면 적 HP 영역에 드래그해 직접 공격하세요.":"지금 공격 가능한 유닛이 없습니다. 소환 후 다음 내 턴을 준비하세요. 방해효과 아이콘에 마우스를 올려 제약을 확인하세요.";
+            else instruction="공격 성공! 제한 턴 안에 적 HP를 0으로 만드세요. 방해효과 아이콘에 마우스를 올려 제약을 확인하세요. 승리 후 카드 보상과 런 토큰을 얻습니다.";
             singleGuideBody.text=status+"\n"+instruction;
         }
         string SingleRestrictionText()=>singleCampaign==null?"":string.Join("\n",engine.Single.Restrictions.Where(r=>r!=SingleRestriction.None).Select(SingleChapterUI.RestrictionName).DefaultIfEmpty("없음"));
         void RefreshSingleUI() {
             if(singleCampaign==null)return;
-            if(singleDetails==null) {
-                ActionButton(battlefield,"전투 정보",new Vector2(.015f,.545f),new Vector2(.19f,.59f),()=>{singleExpanded=!singleExpanded;singleDetails.gameObject.SetActive(singleExpanded);});
-                var intent=Box(battlefield,"Chapter intent",new Vector2(.01f,.27f),new Vector2(.15f,.53f),new Color(.035f,.03f,.06f,.9f));
-                singleDetails=intent;intent.gameObject.AddComponent<RectMask2D>();
-                singleIntent=Label(intent,"",new Vector2(0,1),new Vector2(1,1),16,Color.white);singleIntent.alignment=TextAnchor.UpperLeft;singleIntent.verticalOverflow=VerticalWrapMode.Overflow;
-                var content=singleIntent.rectTransform;content.pivot=new Vector2(.5f,1);content.sizeDelta=new Vector2(-16,0);content.anchoredPosition=Vector2.zero;
-                var scroll=intent.gameObject.AddComponent<ScrollRect>();scroll.horizontal=false;scroll.viewport=intent;scroll.content=content;scroll.movementType=ScrollRect.MovementType.Clamped;
-                singleDetails.gameObject.SetActive(singleExpanded);
-            }
             if(singleNotice==null) {
                 singleNotice=Box(interactionRoot,"Single action notice",new Vector2(.28f,.56f),new Vector2(.72f,.65f),new Color(.025f,.025f,.04f,.96f));
                 singleNotice.GetComponent<Image>().raycastTarget=false;
@@ -92,8 +83,6 @@ namespace Unknown.Battle
             singleNotice.gameObject.SetActive(!engine.State.IsOver && !IsPaused && notice.text.Length>0);
             if(singleNotice.gameObject.activeSelf)singleNotice.SetAsLastSibling();
             RefreshSingleGuide();
-            singleIntent.text=SingleRestrictionText();
-            singleIntent.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,Math.Max(singleDetails.rect.height,singleIntent.preferredHeight+16));
             if(mapStatus!=null)mapStatus.text="";
             if(mapHeader!=null)mapHeader.text=singleCampaign.Stage.name;
             opponentInfo.text=$"{singleCampaign.Stage.name}   HP {engine.State.Players[1].HP}/{singleCampaign.Stage.enemyHP}";
