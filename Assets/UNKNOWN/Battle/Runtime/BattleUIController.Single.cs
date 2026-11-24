@@ -69,7 +69,7 @@ namespace Unknown.Battle
             else instruction="공격 성공! 제한 턴 안에 적 HP를 0으로 만드세요. 전투 정보에서 적 행동·방해 효과를 확인하세요. 승리 후 카드 보상과 런 토큰을 얻습니다.";
             singleGuideBody.text=status+"\n"+instruction;
         }
-        string SingleRestrictionText()=>singleCampaign==null?"":string.Join(" / ",engine.Single.Restrictions.Select(SingleChapterUI.RestrictionName));
+        string SingleRestrictionText()=>singleCampaign==null?"":string.Join("\n",engine.Single.Restrictions.Where(r=>r!=SingleRestriction.None).Select(SingleChapterUI.RestrictionName).DefaultIfEmpty("없음"));
         void RefreshSingleUI() {
             if(singleCampaign==null)return;
             if(singleDetails==null) {
@@ -92,8 +92,7 @@ namespace Unknown.Battle
             singleNotice.gameObject.SetActive(!engine.State.IsOver && !IsPaused && notice.text.Length>0);
             if(singleNotice.gameObject.activeSelf)singleNotice.SetAsLastSibling();
             RefreshSingleGuide();
-            var s=engine.Single;
-            singleIntent.text=$"난이도: {s.Options.difficulty.name} · 제한 {s.Limit}턴\n마나 예산 {s.RemainingBudget}/{s.Budget} · 턴 사용 {s.Progress.turnSpent}/{s.Options.stage.turnSpendLimit}\n덱 {engine.State.Players[0].DeckCount}장\n"+s.Intent()+"\n\n제한: "+SingleRestrictionText()+"\n\n증강: "+string.Join(" / ",singleCampaign.Run.augments.Select(id=>singleCampaign.Data.augments.First(a=>a.id==id).name))+"\n보호막 "+s.Progress.shield;
+            singleIntent.text=SingleRestrictionText();
             singleIntent.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,Math.Max(singleDetails.rect.height,singleIntent.preferredHeight+16));
             if(mapStatus!=null)mapStatus.text="";
             if(mapHeader!=null)mapHeader.text=singleCampaign.Stage.name;

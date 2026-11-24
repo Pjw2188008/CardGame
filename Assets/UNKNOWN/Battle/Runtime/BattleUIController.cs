@@ -110,7 +110,7 @@ namespace Unknown.Battle
             BuildCombinationSlots();
             combineButton = ActionButton(battlefield, "UNKNOWN 조합", new Vector2(0.42f, 0.502f), new Vector2(0.58f, 0.533f), Combine);
             combineButton.gameObject.AddComponent<CardHover>().Configure(ShowCombinationPreview,HideTooltip,false,false);
-            selectionInfo = Label(battlefield, "", new Vector2(0.34f, 0.534f), new Vector2(0.66f, 0.56f), 16, gold);
+            selectionInfo = Label(battlefield, "", new Vector2(0.34f, 0.538f), new Vector2(0.66f, 0.564f), 16, gold);
             notice = Label(battlefield, "", new Vector2(0.29f, 0.30f), new Vector2(0.71f, 0.35f), 17, gold);
             log = Label(battlefield, "", new Vector2(0.015f, 0.025f), new Vector2(0.165f, 0.185f), 13, new Color(0.65f, 0.72f, 0.8f)); log.alignment = TextAnchor.LowerLeft;
             var handArea = Box(battlefield, "Hand Area", new Vector2(0.12f, 0.012f), new Vector2(0.88f, 0.225f), Color.clear);
@@ -189,6 +189,8 @@ namespace Unknown.Battle
         }
         void BindAnimations()
         {
+            animations.FieldCards=owner=>engine.State.Players[owner].Board;
+            animations.FieldCardPresentation=(rect,card)=>{DrawAnimationCard(rect,card.Definition);UpdateCardStats(rect,card,false);};
             int active = ViewPlayer;
             animations.Bind(cardViews,
                 (owner, slot) => SlotPoint(owner == active ? ownBoard : enemyBoard, slot),
@@ -221,8 +223,9 @@ namespace Unknown.Battle
         Button ActionButton(Transform parent, string text, Vector2 min, Vector2 max, Action action)
         {
             var rect = Box(parent, text, min, max, new Color(0.16f, 0.23f, 0.29f));
-            var button = rect.gameObject.AddComponent<Button>(); button.targetGraphic = rect.GetComponent<Image>(); button.onClick.AddListener(() => action());
-            Label(rect, text, Vector2.zero, Vector2.one, 16, Color.white); return button;
+            Button button=singleCampaign!=null?rect.gameObject.AddComponent<SingleButtonSkin>():rect.gameObject.AddComponent<Button>();button.targetGraphic=rect.GetComponent<Image>();button.onClick.AddListener(()=>action());
+            bool themed=button is SingleButtonSkin skin && skin.ApplyArtwork();
+            var caption=Label(rect,text,Vector2.zero,Vector2.one,16,Color.white);ButtonTextLayout.Configure(button,caption,40,16,themed);return button;
         }
         void ClearChildren(Transform parent)
         {

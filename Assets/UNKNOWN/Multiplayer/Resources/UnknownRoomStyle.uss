@@ -25,7 +25,7 @@
     border-width: 0; border-radius: 0; background-color: rgba(0, 0, 0, 0); color: rgb(195, 205, 212);
     transition-property: background-color, color; transition-duration: 0.2s;
 }
-.action-text { font-size: 22px; -unity-text-align: middle-center; margin: 0 22px; }
+.action-text { font-size: 22px; -unity-text-align: middle-center; margin: 0 12px; min-width: 0; flex-grow: 1; flex-shrink: 1; white-space: normal; }
 .selection-mark { font-size: 15px; color: rgb(224, 237, 244); opacity: 0; transition-property: opacity; transition-duration: 0.18s; }
 .menu-action:hover, .menu-action:focus { background-color: rgba(145, 178, 197, 0.055); color: rgb(255, 255, 255); }
 .menu-action:hover .selection-mark, .menu-action:focus .selection-mark { opacity: 1; }

@@ -10,6 +10,8 @@ namespace Unknown.Battle
     public sealed class CardAnimationController : MonoBehaviour
     {
         public Action<RectTransform,CardDefinition> CardFacePresentation;
+        public Func<int,IReadOnlyList<CardInstance>> FieldCards;
+        public Action<RectTransform,CardInstance> FieldCardPresentation;
         RectTransform layer;
         Font font;
         Func<bool> paused;
@@ -237,7 +239,7 @@ namespace Unknown.Battle
                     case BattleEventKind.TimeOut:
                         yield return Banner("TIME OUT", red, 0.3f); break;
                     case BattleEventKind.GameOver:
-                        if (entry.Secondary == (int)VictoryReason.UnknownComplete) yield return UnknownComplete();
+                        if (entry.Secondary == (int)VictoryReason.UnknownComplete) yield return UnknownComplete(entry.Owner);
                         else yield return Banner($"PLAYER {entry.Owner + 1} WINS", gold, 0.7f);
                         break;
                 }
@@ -273,13 +275,36 @@ namespace Unknown.Battle
             yield return Step(0.15f, t => result.localScale = Vector3.one * (0.1f + t * 1.1f));
             yield return Step(0.32f, t => { result.anchoredPosition = Vector2.Lerp(Vector2.zero, handPoint(entry.Owner), Smooth(t)); result.localScale = Vector3.one * (1.2f - t * 0.2f); });
         }
-        IEnumerator UnknownComplete()
+        IEnumerator UnknownComplete(int winner)
         {
-            var cards = new RectTransform[3];
-            for (int i = 0; i < 3; i++) cards[i] = CardBack(-1000-i, new Vector2((i-1)*180, 0), "UNKNOWN", new Color(0.15f, 0.06f, 0.25f));
-            StartCoroutine(Pulse(Vector2.zero, purple, 680, 1.2f));
-            yield return Step(0.55f, t => { for (int i = 0; i < 3; i++) cards[i].localScale = Vector3.one * (0.7f + 0.3f*t); });
-            yield return Banner("UNKNOWN COMPLETE", purple, 1.1f);
+            // Public board state is authoritative on both peers, including the just-summoned third card.
+            var field=FieldCards?.Invoke(winner);var cards=new List<RectTransform>();var origins=new List<Vector2>();
+            if(field!=null)for(int slot=0;slot<field.Count && cards.Count<3;slot++){
+                var unit=field[slot];
+                if(unit==null || unit.CurrentHP<=0 || unit.Definition.CardType!=CardType.Unknown)continue;
+                bool hadView=View(unit.InstanceID)!=null;
+                var card=Clone(unit.InstanceID,winner);
+                // An opponent's newest summon may still be an anonymous playback ghost.
+                if(card.Find("Stat ATK")==null)FieldCardPresentation?.Invoke(card,unit);
+                if(!hadView)card.anchoredPosition=slotPoint(winner,slot);
+                Group(card).alpha=1;cards.Add(card);origins.Add(card.anchoredPosition);
+            }
+            if(cards.Count==3){
+                yield return Step(.5f,t=>{
+                    for(int i=0;i<cards.Count;i++){
+                        cards[i].anchoredPosition=Vector2.Lerp(origins[i],new Vector2((i-1)*42,0),Smooth(t));
+                        cards[i].localScale=Vector3.one*(1+.1f*Mathf.Sin(t*Mathf.PI));
+                    }
+                });
+                yield return Step(.22f,t=>{
+                    for(int i=0;i<cards.Count;i++){
+                        cards[i].anchoredPosition=Vector2.Lerp(new Vector2((i-1)*42,0),Vector2.zero,Smooth(t));
+                        cards[i].localScale=Vector3.one*(1-Smooth(t));Group(cards[i]).alpha=1-Smooth(t);
+                    }
+                });
+            }
+            yield return SheetVfx(Vector2.zero,unknownVfxSheet,4,22,"UNKNOWN victory merge VFX",500,purple);
+            yield return Banner("UNKNOWN COMPLETE",purple,1.1f);
         }
         IEnumerator Beam(Vector2 from, Vector2 to, Color color, float duration)
         {

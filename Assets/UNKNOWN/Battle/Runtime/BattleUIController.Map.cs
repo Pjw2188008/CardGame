@@ -7,7 +7,9 @@ namespace Unknown.Battle
     public sealed partial class BattleUIController
     {
         readonly HashSet<int> presentedMapEvents=new HashSet<int>();
-        RectTransform mapDecor;
+        RectTransform mapDecor,mapInfoPanel,mapTextViewport,mapDetailsHover;
+        ScrollRect mapInfoScroll;
+        string lastMapPanelText;
         RawImage mapBackground;
         AspectRatioFitter mapBackgroundAspect;
         BattleMapSettings mapBackgroundSettings;
@@ -23,8 +25,12 @@ namespace Unknown.Battle
         void ShowMapTooltip(UnityEngine.EventSystems.PointerEventData data)
         {
             if(AttackDragging || dragged!=null || passOverlay.activeSelf || resultOverlay.activeSelf)return;
-            HideCardPreview();tooltip.sizeDelta=new Vector2(340,220);
-            var d=MapInfo(engine.Config.Map); detail.text=d.symbol+" "+d.name+"\n\n"+MapDescription(d.map); PositionTooltip(data);
+            HideCardPreview();tooltip.sizeDelta=new Vector2(440,280);
+            var d=MapInfo(engine.Config.Map);detail.text=d.symbol+" "+d.name+"\n\n"+MapDescription(d.map);
+            if(d.map==BattleMap.JokerGame){var visible=MapEventView.For(engine.MapEvent,ViewPlayer);if(visible!=null)detail.text+="\n\n"+visible.name+"\n"+visible.detail;}
+            Canvas.ForceUpdateCanvases();
+            tooltip.sizeDelta=new Vector2(440,Mathf.Clamp((detail.preferredHeight+24)/.9f,240,Mathf.Max(240,interactionRoot.rect.height-40)));
+            PositionTooltip(data);
         }
         IEnumerator PresentRandomMap(BattleMap result)
         {
@@ -65,7 +71,7 @@ namespace Unknown.Battle
                 mapHeader=Label(mapDecor,"",new Vector2(0.015f,0.84f),new Vector2(0.18f,0.925f),20,new Color(0.88f,0.67f,1));
                 mapStatus=Label(mapDecor,"",new Vector2(0.015f,0.66f),new Vector2(0.18f,0.81f),15,new Color(0.8f,0.68f,0.85f));
                 var hover=Box(battlefield,"Map details hover",new Vector2(0.015f,0.84f),new Vector2(0.18f,0.925f),Color.clear);
-                hover.GetComponent<Image>().raycastTarget=true; hover.gameObject.AddComponent<CardHover>().Configure(ShowMapTooltip,HideTooltip,true,false);
+                mapDetailsHover=hover;hover.GetComponent<Image>().raycastTarget=true; hover.gameObject.AddComponent<CardHover>().Configure(ShowMapTooltip,HideTooltip,true,false);
             }
             if(mapBackground==null)
             {
@@ -94,6 +100,7 @@ namespace Unknown.Battle
                 mapHeader.text="조커의 유희\n♠  ♦  ♣  ♥\n다음 JOKER "+engine.JokerChance(ViewPlayer)+"%";
                 var visible=MapEventView.For(engine.MapEvent,ViewPlayer);mapStatus.text=visible==null ? "" : visible.name+"\n"+visible.detail;
             }
+            if(singleCampaign==null)RefreshReadableMapPanel(info);
             foreach(var pip in unknownPips[0])
             {
                 if(pip==null)continue; var icon=pip.transform.Find("Joker Icon");
@@ -101,6 +108,73 @@ namespace Unknown.Battle
                 if(icon!=null)icon.gameObject.SetActive(joker);
             }
         }
+        void RefreshReadableMapPanel(MapDefinition info)
+        {
+            if(mapInfoPanel==null){
+                mapInfoPanel=Box(battlefield,"Map effect information",new Vector2(.012f,.65f),new Vector2(.19f,.93f),new Color(.018f,.015f,.03f,.96f));
+                mapInfoPanel.GetComponent<Image>().raycastTarget=false;
+                var edge=mapInfoPanel.gameObject.AddComponent<Outline>();edge.effectDistance=new Vector2(1,-1);
+                foreach(var heading in new[]{normalMapName,mapHeader}){
+                    heading.transform.SetParent(mapInfoPanel,false);heading.rectTransform.anchorMin=new Vector2(.05f,.74f);heading.rectTransform.anchorMax=new Vector2(.95f,.98f);
+                    heading.rectTransform.offsetMin=heading.rectTransform.offsetMax=Vector2.zero;
+                    heading.fontSize=20;heading.fontStyle=FontStyle.Bold;
+                }
+                mapTextViewport=Box(mapInfoPanel,"Map effect text viewport",new Vector2(.04f,.04f),new Vector2(.96f,.71f),Color.clear);
+                mapTextViewport.GetComponent<Image>().raycastTarget=true;mapTextViewport.gameObject.AddComponent<RectMask2D>();
+                mapStatus.transform.SetParent(mapTextViewport,false);
+                mapStatus.rectTransform.anchorMin=new Vector2(0,1);mapStatus.rectTransform.anchorMax=Vector2.one;mapStatus.rectTransform.pivot=new Vector2(.5f,1);
+                mapStatus.rectTransform.sizeDelta=new Vector2(-16,0);mapStatus.rectTransform.anchoredPosition=Vector2.zero;
+                mapStatus.fontSize=18;mapStatus.resizeTextForBestFit=false;mapStatus.alignment=TextAnchor.UpperLeft;
+                mapStatus.horizontalOverflow=HorizontalWrapMode.Wrap;mapStatus.verticalOverflow=VerticalWrapMode.Overflow;mapStatus.lineSpacing=1.1f;
+                mapInfoScroll=mapTextViewport.gameObject.AddComponent<ScrollRect>();mapInfoScroll.horizontal=false;mapInfoScroll.vertical=true;
+                mapInfoScroll.viewport=mapTextViewport;mapInfoScroll.content=mapStatus.rectTransform;mapInfoScroll.movementType=ScrollRect.MovementType.Clamped;mapInfoScroll.scrollSensitivity=25;
+                mapDetailsHover.SetParent(mapInfoPanel,false);mapDetailsHover.anchorMin=new Vector2(.02f,.73f);mapDetailsHover.anchorMax=new Vector2(.98f,.99f);
+                mapDetailsHover.offsetMin=mapDetailsHover.offsetMax=Vector2.zero;
+            }
+            normalMapName.color=mapHeader.color=mapStatus.color=Color.white;
+            if(info.map==BattleMap.JokerGame)mapHeader.text="조커의 유희\n다음 JOKER "+engine.JokerChance(ViewPlayer)+"%";
+            mapInfoPanel.GetComponent<Outline>().effectColor=MapTint(info.map);
+            // Keep the base map rules visible even before the first Joker event occurs.
+            mapStatus.text=info.Effects;
+            if(info.map==BattleMap.JokerGame){var visible=MapEventView.For(engine.MapEvent,ViewPlayer);if(visible!=null)mapStatus.text+="\n\n"+visible.name+"\n"+visible.detail;}
+            Canvas.ForceUpdateCanvases();
+            mapStatus.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,Mathf.Max(mapTextViewport.rect.height,mapStatus.preferredHeight+16));
+            if(lastMapPanelText!=mapStatus.text){mapInfoScroll.verticalNormalizedPosition=1;lastMapPanelText=mapStatus.text;}
+            // Background decoration must not place readable text behind cards or other HUD elements.
+            mapInfoPanel.SetAsLastSibling();if(battleMenu!=null && battleMenu.gameObject.activeSelf)battleMenu.SetAsLastSibling();
+        }
+#if UNITY_EDITOR
+        internal IEnumerator VerifyMapTextPresentation(System.Action<bool,string> verify,string folder,SingleCampaign campaign)
+        {
+            StopAllCoroutines();animations.ResetAll();actionBusy=transitioning=paused=false;
+            passOverlay.SetActive(false);resultOverlay.SetActive(false);
+            foreach(BattleMap map in System.Enum.GetValues(typeof(BattleMap)))foreach(int recipient in new[]{0,1}){
+                checkRecipient=recipient;singleCampaign=null;
+                var host=new BattleEngine(17,new BattleConfig{Map=map,StartingHand=0,CardVersion=CardDatabase.DefaultVersion});
+                engine=BattleEngine.CreateView(BattleSnapshot.For(host,recipient,1,0,false,new BattleEvent[0]));
+                ResetHandViews();Refresh();yield return null;yield return null;Canvas.ForceUpdateCanvases();
+                ButtonTextLayout.VerifyVisible(gameObject,verify,"battle "+map+" / "+recipient);
+                verify(mapInfoPanel.gameObject.activeInHierarchy && mapStatus.transform.IsChildOf(mapInfoPanel),"Foreground map information for recipient "+recipient+": "+map);
+                verify(mapStatus.color==Color.white && mapStatus.fontSize==18 && !mapStatus.resizeTextForBestFit,"Readable fixed-size map text: "+map+" / "+recipient);
+                verify(mapStatus.text.StartsWith(MapInfo(map).Effects) && mapStatus.rectTransform.rect.height>=mapStatus.preferredHeight,"Complete current map rules have scrollable content: "+map+" / "+recipient);
+                if(map==BattleMap.Heart && recipient==0 || map==BattleMap.JokerGame && recipient==1){
+                    ScreenCapture.CaptureScreenshot(System.IO.Path.GetFullPath(folder+"/map-text-"+map+".png"));yield return new WaitForEndOfFrame();yield return null;
+                }
+            }
+            // Enter single combat through its real lifecycle rather than repurposing the multiplayer HUD.
+            gameObject.SetActive(false);var soloObject=new GameObject("Existing single battle info checks");
+            var solo=soloObject.AddComponent<BattleUIController>();solo.ConfigureSingle(campaign,()=>{});
+            yield return null;yield return null;
+            solo.StopAllCoroutines();solo.animations.ResetAll();solo.actionBusy=solo.transitioning=solo.paused=false;solo.passOverlay.SetActive(false);solo.Refresh();
+            solo.singleExpanded=true;solo.RefreshSingleUI();solo.singleDetails.gameObject.SetActive(true);
+            yield return null;yield return null;Canvas.ForceUpdateCanvases();
+            ButtonTextLayout.VerifyVisible(solo.gameObject,verify,"single battle");
+            verify(solo.singleIntent.text==solo.SingleRestrictionText(),"Single combat information contains only actual restrictions");
+            verify(!solo.singleIntent.text.Contains("난이도:") && !solo.singleIntent.text.Contains("마나 예산") && !solo.singleIntent.text.Contains("증강:"),"Single information removes difficulty, resources, enemy intent and augment summaries");
+            ScreenCapture.CaptureScreenshot(System.IO.Path.GetFullPath(folder+"/single-restrictions.png"));yield return new WaitForEndOfFrame();yield return null;
+            Destroy(soloObject);gameObject.SetActive(true);
+        }
+#endif
         IEnumerator PresentMapEvent(BattleEvent e)
         {
             if(!presentedMapEvents.Add(e.SourceID))yield break;

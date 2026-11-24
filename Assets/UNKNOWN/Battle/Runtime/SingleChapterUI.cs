@@ -47,11 +47,12 @@ namespace Unknown.Battle
         Text Text(string value,float x,float y,float w,float h,int size=20,Transform parent=null) {
             var r=Rect(parent??root,"Text",x,y,w,h);var t=r.gameObject.AddComponent<Text>();t.font=font;t.text=value;t.fontSize=size;t.color=Color.white;t.alignment=TextAnchor.MiddleCenter;t.raycastTarget=false;t.horizontalOverflow=HorizontalWrapMode.Wrap;t.resizeTextForBestFit=true;t.resizeTextMinSize=Math.Min(14,size);t.resizeTextMaxSize=size;return t;
         }
-        Button Button(string title,float x,float y,float w,float h,Action action,bool enabled=true,Transform parent=null) {
+        Button Button(string title,float x,float y,float w,float h,Action action,bool enabled=true,Transform parent=null,bool useArtwork=true) {
             var p=parent??root;var r=Rect(p,title,x,y,w,h,new Color(.13f,.075f,.09f,.96f));var edge=r.gameObject.AddComponent<Outline>();edge.effectColor=new Color(.55f,.39f,.16f,.8f);edge.effectDistance=new Vector2(1,-1);
-            var b=r.gameObject.AddComponent<Button>();b.interactable=enabled;
+            Button b=useArtwork?r.gameObject.AddComponent<SingleButtonSkin>():r.gameObject.AddComponent<Button>();b.targetGraphic=r.GetComponent<Image>();b.interactable=enabled;
             var colors=b.colors;colors.disabledColor=new Color(.32f,.32f,.35f,.55f);b.colors=colors;
-            Text(title,.03f,.04f,.94f,.92f,18,r);b.onClick.AddListener(()=>{try{action();}catch(Exception ex){error=ex.Message;Debug.LogException(ex);Home();}});return b;
+            bool themed=b is SingleButtonSkin skin && skin.ApplyArtwork();
+            var caption=Text(title,0,0,1,1,18,r);ButtonTextLayout.Configure(b,caption,48,18,themed);b.onClick.AddListener(()=>{try{action();}catch(Exception ex){error=ex.Message;Debug.LogException(ex);Home();}});return b;
         }
         public void Home() {
             root.gameObject.SetActive(true);Clear("CHAPTER 1",true);
@@ -93,7 +94,7 @@ namespace Unknown.Battle
             foreach(var n in r.nodes) {
                 var stage=Campaign.Data.stages.First(s=>s.id==n.stage);var pos=Position(n);int id=n.id;var state=Campaign.NodeState(id);
                 string reward=stage.IsCombat?Campaign.BaseRewardFor(id)+" 토큰":stage.kind==SingleNodeKind.Start?"없음":stage.kind==SingleNodeKind.Shop?"카드 구매":RewardName(stage);
-                var button=Button((stage.kind==SingleNodeKind.Start?"시작":Kind(stage.kind))+"\n진입 토큰: "+Campaign.EntryCostFor(id)+"\n보상: "+reward,pos.x-.035f,pos.y-.105f,.07f,.21f,()=>{selected=id;Map();},true,plot);
+                var button=Button((stage.kind==SingleNodeKind.Start?"시작":Kind(stage.kind))+"\n진입 토큰: "+Campaign.EntryCostFor(id)+"\n보상: "+reward,pos.x-.035f,pos.y-.105f,.07f,.21f,()=>{selected=id;Map();},true,plot,false);
                 button.name="Node "+id;button.GetComponent<Image>().color=NodeColor(state);
                 var edge=button.GetComponent<Outline>();edge.effectDistance=Vector2.one*(selected==id?3:1);edge.effectColor=selected==id?new Color(1,.8f,.32f):new Color(.48f,.35f,.2f);
                 // Special nodes use dedicated artwork; other nodes keep their map card back.
@@ -253,7 +254,7 @@ namespace Unknown.Battle
             var content=Rect(viewport,"Content",0,1,1,0);content.pivot=new Vector2(.5f,1);scroll.content=content;return content;
         }
         void ListButton(RectTransform list,int index,string title,Action action,bool enabled=true) {
-            list.sizeDelta=new Vector2(0,(index+1)*65);var b=Button(title,0,1,1,0,action,enabled,list);var r=b.GetComponent<RectTransform>();r.pivot=new Vector2(.5f,1);r.sizeDelta=new Vector2(0,58);r.anchoredPosition=new Vector2(0,-index*65);
+            const int rowHeight=82;list.sizeDelta=new Vector2(0,(index+1)*rowHeight);var b=Button(title,0,1,1,0,action,enabled,list);var r=b.GetComponent<RectTransform>();r.pivot=new Vector2(.5f,1);r.sizeDelta=new Vector2(0,76);r.anchoredPosition=new Vector2(0,-index*rowHeight);
         }
         void Shop() {
             Clear("해금 콘텐츠",true);var list=Scroll();int index=0;

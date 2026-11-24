@@ -42,9 +42,23 @@ namespace Unknown.Battle
             SingleChapterUI.CheckSavePath=Dir+"/progress-"+Guid.NewGuid().ToString("N")+".json";
             ui=SingleChapterUI.Open(()=>{});yield return null;yield return null;
             var c=ui.Campaign;var data=c.Data;
+            ButtonTextLayout.VerifyVisible(ui.gameObject,Check,"single home");
+            ui.SendMessage("Shop");yield return null;yield return null;
+            ButtonTextLayout.VerifyVisible(ui.gameObject,Check,"unlock list");
+            ui.SendMessage("ChooseStartingDeck");yield return null;yield return null;
+            for(int pick=0;pick<8;pick++){
+                var card=ui.GetComponentsInChildren<CardArtLayout>().First(l=>!l.name.StartsWith("✓ "));
+                card.GetComponent<Button>().onClick.Invoke();yield return null;
+            }
+            yield return null;ButtonTextLayout.VerifyVisible(ui.gameObject,Check,"eight selected starting cards");
+            ScreenCapture.CaptureScreenshot(Path.GetFullPath(Dir+"/buttons-starting-deck.png"));yield return new WaitForEndOfFrame();yield return null;
+            Click("콘셉트 자동 선택");yield return null;yield return null;
+            ButtonTextLayout.VerifyVisible(ui.gameObject,Check,"automatic deck concepts");
+            ui.Home();yield return null;
+
             var shopCounts=new HashSet<int>();
             for(int seed=0;seed<24;seed++){
-                var nodes=SingleGraph.Generate(data,seed);SingleGraph.Validate(data,nodes);
+                c.Start(0,seed);var nodes=c.Run.nodes;SingleGraph.Validate(data,nodes);
                 int count=nodes.Count(n=>data.stages.First(s=>s.id==n.stage).kind==SingleNodeKind.Shop);shopCounts.Add(count);
                 Check(nodes.Length==25 && count>=1 && count<=2,"25 nodes and one/two shops: seed "+seed);
                 Check(nodes.Where(n=>n.layer<9).All(n=>n.next.SequenceEqual(nodes.Where(t=>t.layer==n.layer+1).Select(t=>t.id))),"Original complete next-layer edges: seed "+seed);
@@ -75,6 +89,21 @@ namespace Unknown.Battle
             ui.Home();Click("이어하기");yield return null;yield return null;
             Check(ui.GetComponentsInChildren<CardArtLayout>().Length==4 && ui.GetComponentsInChildren<CardArtLayout>().All(l=>l.artwork.texture!=null),"Existing shop UI displays four card previews");
             Check(ui.GetComponentsInChildren<Button>().Count(b=>b.name=="구매" && b.interactable)==4,"Four purchase buttons available");
+            ButtonTextLayout.VerifyVisible(ui.gameObject,Check,"card shop");
+            var visuals=Resources.Load<Unknown.Multiplayer.RoomVisualSettings>("RoomVisualSettings");
+            var purchase=Button("구매");var purchaseImage=purchase.targetGraphic as Image;
+            Check(purchase is SingleButtonSkin && purchaseImage.sprite==visuals.singleButtonNormal && purchaseImage.type==Image.Type.Sliced,"Single button uses the supplied normal artwork with preserved corners");
+            var pointer=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){button=UnityEngine.EventSystems.PointerEventData.InputButton.Left};
+            purchase.OnPointerEnter(pointer);purchase.OnPointerDown(pointer);
+            Check(purchaseImage.overrideSprite==visuals.singleButtonPressed,"Native pointer press switches to the supplied pressed artwork");
+            Canvas.ForceUpdateCanvases();yield return null;yield return null;
+            ScreenCapture.CaptureScreenshot(Path.GetFullPath(Dir+"/button-pressed.png"));yield return new WaitForEndOfFrame();yield return null;
+            purchase.OnPointerUp(pointer);
+            Check(purchaseImage.overrideSprite==visuals.singleButtonNormal,"Pointer release restores normal artwork");
+            purchase.interactable=false;purchase.OnPointerDown(pointer);
+            Check(purchaseImage.overrideSprite==visuals.singleButtonNormal,"Disabled button cannot display an active pressed state");
+            purchase.interactable=true;purchase.OnPointerExit(pointer);
+            Check(ui.GetComponentsInChildren<CardArtLayout>().All(l=>l.GetComponent<SingleButtonSkin>()==null),"Card previews keep their existing artwork and click targets");
             ScreenCapture.CaptureScreenshot(Path.GetFullPath(Dir+"/shop.png"));yield return new WaitForEndOfFrame();yield return null;yield return null;
             int tokens=c.Run.tokens,deck=c.Run.deck.Count,duplicates=c.Run.deck.Count(id=>id==savedCards[0]);
             Click("구매");yield return null;
@@ -101,6 +130,29 @@ namespace Unknown.Battle
             reloaded=new SingleCampaign(data,c.SavePath);
             Check(reloaded.Run.deck.SequenceEqual(deckAfter) && reloaded.Run.shops[0].purchased[0] && !reloaded.BuyShopCard(0),"Next node and resume preserve purchases and reject out-of-shop buying");
             foreach(SingleDeckConcept theme in Enum.GetValues(typeof(SingleDeckConcept)))Check(SingleStartingDeck.Build(c.CardPool(),data.startingDeckSize,theme).Count==8,"Existing automatic starting deck: "+theme);
+            // Reuse existing screens with isolated campaign data; do not claim rewards or change a live save.
+            string phase=c.Run.phase;var offers=c.Run.offers.ToArray();
+            c.Run.phase="card";c.Run.offers=c.CardPool().Take(3).ToList();ui.SendMessage("Continue");yield return null;yield return null;
+            ButtonTextLayout.VerifyVisible(ui.gameObject,Check,"card reward");
+            c.Run.phase="augment";c.Run.offers=data.augments.Take(3).Select(a=>a.id).ToList();ui.SendMessage("Continue");yield return null;yield return null;
+            ButtonTextLayout.VerifyVisible(ui.gameObject,Check,"augment choices");
+            c.Run.phase="event";ui.SendMessage("Continue");yield return null;yield return null;
+            ButtonTextLayout.VerifyVisible(ui.gameObject,Check,"event choices");
+            c.Run.phase=phase;c.Run.offers=offers.ToList();
+            c.Start(0,42);ui.SendMessage("Map");yield return null;yield return null;
+            ButtonTextLayout.VerifyVisible(ui.gameObject,Check,"start guide invitation");
+            Click("안내 시작");yield return null;yield return null;
+            ButtonTextLayout.VerifyVisible(ui.gameObject,Check,"guide navigation");
+            Click("스킵");yield return null;c.Enter(c.Run.nodes[0].next[0]);ui.SendMessage("Continue");yield return null;yield return null;
+            ButtonTextLayout.VerifyVisible(ui.gameObject,Check,"stage preparation");
+            var preferences=GamePreferences.Instance;preferences.Open();yield return null;yield return null;
+            ButtonTextLayout.VerifyVisible(preferences.gameObject,Check,"settings");preferences.Close();
+            ui.gameObject.SetActive(false);
+            var battleCheckObject=new GameObject("Existing battle map text checks");var battleCheck=battleCheckObject.AddComponent<BattleUIController>();
+            yield return null;yield return null;
+            var mapChecks=battleCheck.VerifyMapTextPresentation(Check,Dir,c);while(mapChecks.MoveNext())yield return mapChecks.Current;
+            Destroy(battleCheckObject);ui.gameObject.SetActive(true);
+
         }
     }
 }
