@@ -223,7 +223,7 @@ namespace Unknown.Battle
         Button ActionButton(Transform parent, string text, Vector2 min, Vector2 max, Action action)
         {
             var rect = Box(parent, text, min, max, new Color(0.16f, 0.23f, 0.29f));
-            Button button=singleCampaign!=null?rect.gameObject.AddComponent<SingleButtonSkin>():rect.gameObject.AddComponent<Button>();button.targetGraphic=rect.GetComponent<Image>();button.onClick.AddListener(()=>action());
+            Button button=rect.gameObject.AddComponent<SingleButtonSkin>();button.targetGraphic=rect.GetComponent<Image>();button.onClick.AddListener(()=>action());
             bool themed=button is SingleButtonSkin skin && skin.ApplyArtwork();
             var caption=Label(rect,text,Vector2.zero,Vector2.one,16,Color.white);ButtonTextLayout.Configure(button,caption,40,16,themed);return button;
         }

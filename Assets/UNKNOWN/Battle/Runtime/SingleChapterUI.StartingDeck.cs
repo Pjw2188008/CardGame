@@ -36,10 +36,10 @@ namespace Unknown.Battle
             else Text("카드를 눌러 선택하거나 취소하세요.",.06f,.735f,.60f,.045f,19);
 
             var list=Scroll();var viewport=(RectTransform)list.parent;
-            viewport.anchorMin=new Vector2(.045f,.19f);viewport.anchorMax=new Vector2(.69f,.70f);viewport.offsetMin=viewport.offsetMax=Vector2.zero;
+            viewport.anchorMin=new Vector2(.045f,.19f);viewport.anchorMax=new Vector2(.955f,.70f);viewport.offsetMin=viewport.offsetMax=Vector2.zero;
             var scroll=viewport.GetComponent<ScrollRect>();
             var pool=Campaign.CardPool().Select(id=>CardDatabase.Get(id)).OrderBy(c=>c.Suit).ThenBy(c=>c.ManaCost).ThenBy(c=>c.CardID,StringComparer.Ordinal).ToArray();
-            const int columns=5;const float cardHeight=292,rowHeight=326;
+            const int columns=7;const float cardHeight=292,rowHeight=326;
             int rows=(pool.Length+columns-1)/columns;list.sizeDelta=new Vector2(0,rows*rowHeight+12);
             for(int i=0;i<pool.Length;i++){
                 var card=pool[i];string id=card.CardID;bool picked=startingCards.Contains(id);
@@ -53,11 +53,6 @@ namespace Unknown.Battle
                 rect.pivot=new Vector2(.5f,1);rect.sizeDelta=new Vector2(0,cardHeight);rect.anchoredPosition=new Vector2(0,-(i/columns)*rowHeight-8);
                 if(picked){var mark=Text("✓ 선택됨",0,-.09f,1,.08f,18,rect);mark.color=new Color(.45f,1f,.78f);}
                 rect.GetComponent<CardArtLayout>()?.RefreshLayout();
-            }
-            Text("현재 선택",.72f,.65f,.23f,.045f,22);
-            for(int i=0;i<startingCards.Count;i++){
-                string id=startingCards[i];var card=CardDatabase.Get(id);
-                Button(card.CardName+" · "+card.ManaCost+" MP  ×",.72f,.60f-i*.045f,.23f,.04f,()=>{startingCards.Remove(id);StartingDeckScreen();});
             }
             Text(deckMessage,.05f,.125f,.90f,.045f,18);
             Button("돌아가기",.12f,.045f,.25f,.06f,Home);

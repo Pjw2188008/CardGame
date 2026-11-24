@@ -6,7 +6,7 @@ namespace Unknown.Multiplayer
     {
         public Texture2D titleBackground;
         public Texture2D menuBackground;
-        [Header("Single-player button artwork")]
+        [Header("Button artwork")]
         public Sprite singleButtonNormal,singleButtonPressed;
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -16,6 +16,7 @@ namespace Unknown.Multiplayer
         readonly List<Button> aiDifficultyButtons=new List<Button>();
         Label tutorialRecord;
         Button tutorialContinue,tutorialRestart;
+        RoomVisualSettings buttonVisuals;
         RoomController room;
         NetworkBattleController networkBattle;
         Unknown.Battle.BattleUIController battleUI;
@@ -205,6 +206,22 @@ namespace Unknown.Multiplayer
             Text(button, "◇", "selection-mark");
             Text(button, text, "action-text");
             Text(button, "◇", "selection-mark");
+            if(buttonVisuals==null)buttonVisuals=Resources.Load<RoomVisualSettings>("RoomVisualSettings");
+            if(parent!=pages[Page.Home] && buttonVisuals!=null && buttonVisuals.singleButtonNormal!=null){
+                button.AddToClassList("image-action");
+                foreach(var marker in button.Query<Label>(className:"selection-mark").ToList())marker.style.display=DisplayStyle.None;
+                var normal=buttonVisuals.singleButtonNormal;var pressed=buttonVisuals.singleButtonPressed!=null?buttonVisuals.singleButtonPressed:normal;
+                button.style.backgroundImage=new StyleBackground(normal);button.style.backgroundSize=new BackgroundSize(Length.Percent(100),Length.Percent(100));
+                button.style.unitySliceLeft=80;button.style.unitySliceRight=80;button.style.unitySliceTop=28;button.style.unitySliceBottom=28;button.style.unitySliceScale=.5f;
+                button.RegisterCallback<PointerDownEvent>(e=>{if(e.button==0 && button.enabledInHierarchy && !room.Busy)button.style.backgroundImage=new StyleBackground(pressed);},TrickleDown.TrickleDown);
+                button.RegisterCallback<PointerUpEvent>(_=>button.style.backgroundImage=new StyleBackground(normal));
+                button.RegisterCallback<PointerLeaveEvent>(_=>button.style.backgroundImage=new StyleBackground(normal));
+                button.RegisterCallback<PointerCancelEvent>(_=>button.style.backgroundImage=new StyleBackground(normal));
+                button.RegisterCallback<NavigationSubmitEvent>(_=>{
+                    if(!button.enabledInHierarchy || room.Busy)return;
+                    button.style.backgroundImage=new StyleBackground(pressed);button.schedule.Execute(()=>button.style.backgroundImage=new StyleBackground(normal)).StartingIn(100);
+                },TrickleDown.TrickleDown);
+            }
             button.tooltip = text;
             parent.Add(button);
             actions.Add(button);

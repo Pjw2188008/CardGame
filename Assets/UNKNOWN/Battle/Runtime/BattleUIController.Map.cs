@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -154,6 +154,7 @@ namespace Unknown.Battle
                 engine=BattleEngine.CreateView(BattleSnapshot.For(host,recipient,1,0,false,new BattleEvent[0]));
                 ResetHandViews();Refresh();yield return null;yield return null;Canvas.ForceUpdateCanvases();
                 ButtonTextLayout.VerifyVisible(gameObject,verify,"battle "+map+" / "+recipient);
+                verify(endTurn is SingleButtonSkin,"Shared online/AI/tutorial combat button artwork: "+map+" / "+recipient);
                 verify(mapInfoPanel.gameObject.activeInHierarchy && mapStatus.transform.IsChildOf(mapInfoPanel),"Foreground map information for recipient "+recipient+": "+map);
                 verify(mapStatus.color==Color.white && mapStatus.fontSize==18 && !mapStatus.resizeTextForBestFit,"Readable fixed-size map text: "+map+" / "+recipient);
                 verify(mapStatus.text.StartsWith(MapInfo(map).Effects) && mapStatus.rectTransform.rect.height>=mapStatus.preferredHeight,"Complete current map rules have scrollable content: "+map+" / "+recipient);

@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace Unknown.Battle
         readonly Report report=new Report();const string Dir="Library/SingleShop";
         SingleChapterUI ui;string previousSave;GameObject[] roots;
         void Check(bool ok,string text){if(!ok)throw new InvalidOperationException(text);report.checks++;report.passed.Add(text);}
-        void Error(string message,string stack,LogType type){if(type==LogType.Error || type==LogType.Exception)report.errors.Add(message);}
+        void Error(string message,string stack,LogType type){if(type==LogType.Error || type==LogType.Exception || message.Contains("Cannot change the sibling position"))report.errors.Add(message);}
         Button Button(string name)=>ui.GetComponentsInChildren<Button>().First(b=>b.name==name);
         void Click(string name){var b=Button(name);Check(b.interactable,"Button enabled: "+name);b.onClick.Invoke();}
         IEnumerator Start(){
@@ -48,8 +48,11 @@ namespace Unknown.Battle
             ui.SendMessage("ChooseStartingDeck");yield return null;yield return null;
             for(int pick=0;pick<8;pick++){
                 var card=ui.GetComponentsInChildren<CardArtLayout>().First(l=>!l.name.StartsWith("✓ "));
+                card.GetComponent<CardHover>().OnPointerEnter(new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current));
                 card.GetComponent<Button>().onClick.Invoke();yield return null;
             }
+            Check(!ui.GetComponentsInChildren<Text>().Any(t=>t.text=="현재 선택"),"Starting deck sidebar removed");
+            Check(ui.GetComponentsInChildren<CardArtLayout>().Count(l=>l.name.StartsWith("✓ "))==8,"Eight card selections remain marked after hover and rebuild");
             yield return null;ButtonTextLayout.VerifyVisible(ui.gameObject,Check,"eight selected starting cards");
             ScreenCapture.CaptureScreenshot(Path.GetFullPath(Dir+"/buttons-starting-deck.png"));yield return new WaitForEndOfFrame();yield return null;
             Click("콘셉트 자동 선택");yield return null;yield return null;
