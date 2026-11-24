@@ -127,3 +127,15 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: 827396b73f862d54794bc9fadc946d0d, type: 3}
   - cardID: Unknown_K
     texture: {fileID: 2800000, guid: 71b3a900f001947468f776d9ea6cfd84, type: 3}
+  attackVfxSheet: {fileID: 2800000, guid: 3c87ce92a0e6531419d1a985da79fa8d, type: 3}
+  healingVfxSheet: {fileID: 2800000, guid: 752ac7f305430ca4d8915dd0cd5d1742, type: 3}
+  weakenVfxSheet: {fileID: 2800000, guid: e6a5fda31e54be3468c8ba237370cea3, type: 3}
+  buffVfxSheet: {fileID: 2800000, guid: e70203e5a811d7045921ba7055ac83ed, type: 3}
+  protectionVfxSheet: {fileID: 2800000, guid: 8954002f367b77441b5ebb94434be295, type: 3}
+  unknownVfxSheet: {fileID: 2800000, guid: 9ea5ebcb4968c244ea7360fcef8f31ae, type: 3}
+  jokerRedVfxSheet: {fileID: 2800000, guid: ac8e88d4312173441b2088a4df16af39, type: 3}
+  jokerPurpleVfxSheet: {fileID: 2800000, guid: fc372f8f7094bb6499503c027aa73180, type: 3}
+  protectionBorder: {fileID: 2800000, guid: a4de382acb3e7c348a99de9b18c5ce86, type: 3}
+  protectionBreakVfxSheet: {fileID: 2800000, guid: 8c85cbda5383e8f47bb0a1ffbd93a114, type: 3}
+  weakeningBorder: {fileID: 2800000, guid: 16ddaf5daba99d14283e530c83513fe1, type: 3}
+  weakeningReleaseVfxSheet: {fileID: 2800000, guid: a986512db9bc66944b8e79afff517a38, type: 3}

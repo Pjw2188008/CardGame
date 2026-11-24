@@ -168,7 +168,7 @@ MonoBehaviour:
   handReflowDuration: 0.25
   drawInterval: 0.12
   fieldSlots: 5
-  seed: 0
+  seed: 10
   revealHands: 0
   turnDuration: 30
   localMap: 0

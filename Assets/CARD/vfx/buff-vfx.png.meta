@@ -1,0 +1,728 @@
+fileFormatVersion: 2
+guid: e70203e5a811d7045921ba7055ac83ed
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1924275845173111613
+    second: buff-vfx_0
+  - first:
+      213: 6313388961177358807
+    second: buff-vfx_1
+  - first:
+      213: 6671557180945500656
+    second: buff-vfx_2
+  - first:
+      213: 1654659463584915999
+    second: buff-vfx_3
+  - first:
+      213: 3245608289005937643
+    second: buff-vfx_4
+  - first:
+      213: -1021798965843725662
+    second: buff-vfx_5
+  - first:
+      213: -1687636366312379095
+    second: buff-vfx_6
+  - first:
+      213: 6356263564663243426
+    second: buff-vfx_7
+  - first:
+      213: 5575822008722419006
+    second: buff-vfx_8
+  - first:
+      213: 5836386203115890196
+    second: buff-vfx_9
+  - first:
+      213: 3383238026469816428
+    second: buff-vfx_10
+  - first:
+      213: 5708063952141261222
+    second: buff-vfx_11
+  - first:
+      213: -5606487321480924039
+    second: buff-vfx_12
+  - first:
+      213: 4537166124160588709
+    second: buff-vfx_13
+  - first:
+      213: 7232222803890957857
+    second: buff-vfx_14
+  - first:
+      213: 2739001502210627704
+    second: buff-vfx_15
+  - first:
+      213: 6454947638661861857
+    second: buff-vfx_16
+  - first:
+      213: 8583136864646837618
+    second: buff-vfx_17
+  - first:
+      213: 3677622517640569980
+    second: buff-vfx_18
+  - first:
+      213: 9212556086292991995
+    second: buff-vfx_19
+  - first:
+      213: 4645113155515805866
+    second: buff-vfx_20
+  - first:
+      213: 2943400054638198194
+    second: buff-vfx_21
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: buff-vfx_0
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 805
+        width: 76
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3b68699fa664ba10800000000000000
+      internalID: 1924275845173111613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_1
+      rect:
+        serializedVersion: 2
+        x: 601
+        y: 806
+        width: 78
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d159d77fc9ad9750800000000000000
+      internalID: 6313388961177358807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_2
+      rect:
+        serializedVersion: 2
+        x: 825
+        y: 809
+        width: 142
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f986fc98e1269c50800000000000000
+      internalID: 6671557180945500656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_3
+      rect:
+        serializedVersion: 2
+        x: 1076
+        y: 814
+        width: 153
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f12a73fe30886f610800000000000000
+      internalID: 1654659463584915999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_4
+      rect:
+        serializedVersion: 2
+        x: 1330
+        y: 818
+        width: 156
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be3234afa87ba0d20800000000000000
+      internalID: 3245608289005937643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_5
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 567
+        width: 157
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a2f5091147d1d1f0800000000000000
+      internalID: -1021798965843725662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_6
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 571
+        width: 158
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92d6be39aaf4498e0800000000000000
+      internalID: -1687636366312379095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_7
+      rect:
+        serializedVersion: 2
+        x: 561
+        y: 576
+        width: 159
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a2c28ef80cf53850800000000000000
+      internalID: 6356263564663243426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_8
+      rect:
+        serializedVersion: 2
+        x: 817
+        y: 581
+        width: 159
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3d64b0339c416d40800000000000000
+      internalID: 5575822008722419006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_9
+      rect:
+        serializedVersion: 2
+        x: 1073
+        y: 586
+        width: 159
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 416a6b844520ff050800000000000000
+      internalID: 5836386203115890196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_10
+      rect:
+        serializedVersion: 2
+        x: 1328
+        y: 591
+        width: 160
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c68b3565f0da3fe20800000000000000
+      internalID: 3383238026469816428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_11
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 341
+        width: 160
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a9979efbed173f40800000000000000
+      internalID: 5708063952141261222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_12
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 346
+        width: 159
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 974f56d4c71c132b0800000000000000
+      internalID: -5606487321480924039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_13
+      rect:
+        serializedVersion: 2
+        x: 561
+        y: 351
+        width: 159
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ab178d0d8047fe30800000000000000
+      internalID: 4537166124160588709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_14
+      rect:
+        serializedVersion: 2
+        x: 817
+        y: 356
+        width: 159
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12e666a72540e5460800000000000000
+      internalID: 7232222803890957857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_15
+      rect:
+        serializedVersion: 2
+        x: 1073
+        y: 362
+        width: 158
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 878968aba53e20620800000000000000
+      internalID: 2739001502210627704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_16
+      rect:
+        serializedVersion: 2
+        x: 1330
+        y: 367
+        width: 157
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e1df267da4949950800000000000000
+      internalID: 6454947638661861857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_17
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 118
+        width: 157
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 275b5d3c08d6d1770800000000000000
+      internalID: 8583136864646837618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_18
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 125
+        width: 155
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c74a1f5e13a890330800000000000000
+      internalID: 3677622517640569980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_19
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 139
+        width: 150
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bff4bd443f299df70800000000000000
+      internalID: 9212556086292991995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_20
+      rect:
+        serializedVersion: 2
+        x: 633
+        y: 141
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa07308ddc1c67040800000000000000
+      internalID: 4645113155515805866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buff-vfx_21
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 134
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bd339041ce09d820800000000000000
+      internalID: 2943400054638198194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      buff-vfx_0: 1924275845173111613
+      buff-vfx_1: 6313388961177358807
+      buff-vfx_10: 3383238026469816428
+      buff-vfx_11: 5708063952141261222
+      buff-vfx_12: -5606487321480924039
+      buff-vfx_13: 4537166124160588709
+      buff-vfx_14: 7232222803890957857
+      buff-vfx_15: 2739001502210627704
+      buff-vfx_16: 6454947638661861857
+      buff-vfx_17: 8583136864646837618
+      buff-vfx_18: 3677622517640569980
+      buff-vfx_19: 9212556086292991995
+      buff-vfx_2: 6671557180945500656
+      buff-vfx_20: 4645113155515805866
+      buff-vfx_21: 2943400054638198194
+      buff-vfx_3: 1654659463584915999
+      buff-vfx_4: 3245608289005937643
+      buff-vfx_5: -1021798965843725662
+      buff-vfx_6: -1687636366312379095
+      buff-vfx_7: 6356263564663243426
+      buff-vfx_8: 5575822008722419006
+      buff-vfx_9: 5836386203115890196
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

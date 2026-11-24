@@ -21,6 +21,7 @@ namespace Unknown.Battle
         {
             if(label==null)label=GetComponent<Text>();
             if(label==null || label.font==null)return;
+            label.fontStyle=FontStyle.Bold;
             label.resizeTextForBestFit=false;
             label.horizontalOverflow=HorizontalWrapMode.Wrap;
             // Generate every line; the measured font and mesh bounds keep it inside the card.

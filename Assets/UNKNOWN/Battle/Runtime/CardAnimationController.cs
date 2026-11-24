@@ -21,6 +21,10 @@ namespace Unknown.Battle
         Func<int, Vector2> heroPoint, deckPoint, handPoint;
         Sprite ring;
         Texture2D ringTexture;
+        Texture2D attackVfxSheet,healingVfxSheet,weakenVfxSheet,buffVfxSheet,protectionVfxSheet;
+        Texture2D unknownVfxSheet,jokerRedVfxSheet,jokerPurpleVfxSheet,protectionBreakVfxSheet;
+        Texture2D weakeningReleaseVfxSheet;
+        readonly HashSet<int> pendingProtectionBreaks=new HashSet<int>();
         int lastChainSource = -1;
         Vector2 lastChainPoint;
         readonly Color red = new Color(1, 0.25f, 0.25f), green = new Color(0.35f, 1, 0.57f), purple = new Color(0.73f, 0.4f, 1), gold = new Color(1, 0.82f, 0.3f);
@@ -28,6 +32,10 @@ namespace Unknown.Battle
         public void Initialize(RectTransform parent, Font uiFont, Func<bool> isPaused)
         {
             font = uiFont; paused = isPaused;
+            var art=Resources.Load<CardArtSettings>("CardArtSettings");
+            if(art!=null){attackVfxSheet=art.attackVfxSheet;healingVfxSheet=art.healingVfxSheet;weakenVfxSheet=art.weakenVfxSheet;buffVfxSheet=art.buffVfxSheet;protectionVfxSheet=art.protectionVfxSheet;}
+            if(art!=null){unknownVfxSheet=art.unknownVfxSheet;jokerRedVfxSheet=art.jokerRedVfxSheet;jokerPurpleVfxSheet=art.jokerPurpleVfxSheet;protectionBreakVfxSheet=art.protectionBreakVfxSheet;}
+            if(art!=null)weakeningReleaseVfxSheet=art.weakeningReleaseVfxSheet;
             var go = new GameObject("Battle FX", typeof(RectTransform), typeof(CanvasGroup));
             go.transform.SetParent(parent, false); layer = go.GetComponent<RectTransform>();
             layer.anchorMin = Vector2.zero; layer.anchorMax = Vector2.one; layer.offsetMin = layer.offsetMax = Vector2.zero;
@@ -138,7 +146,7 @@ namespace Unknown.Battle
                         yield return Step(0.12f,_=>{}); break;
                     case BattleEventKind.HeroChanged:
                         Floating(-1,heroPoint(entry.Owner),entry.Amount.ToString("+0;-0;0"),entry.Amount>0 ? green : red);
-                        StartCoroutine(Pulse(heroPoint(entry.Owner),entry.Amount>0 ? green : red,115,0.3f)); break;
+                        if(entry.Amount!=0)StartCoroutine(CombatVfx(heroPoint(entry.Owner),entry.Amount>0)); break;
                     case BattleEventKind.ManaGained:
                         Floating(-1,heroPoint(entry.Owner),"MP +"+entry.Amount,green);
                         for(int i=entry.Secondary;i<entry.Secondary+entry.Amount;i++)StartCoroutine(Pulse(manaPoint(entry.Owner,i),green,35,0.3f));
@@ -156,7 +164,8 @@ namespace Unknown.Battle
                     case BattleEventKind.Damage:
                         Vector2 damageFrom = entry.Chain && lastChainSource == entry.SourceID ? lastChainPoint : Position(entry.SourceID, 1 - entry.Owner);
                         if (entry.SourceID != entry.TargetID) yield return Beam(damageFrom, target, SuitColor(entry.Suit), 0.12f);
-                        StartCoroutine(Pulse(target, SuitColor(entry.Suit), 65 + entry.Amount * 5, 0.28f));
+                        BreakProtectionAtImpact(entry.TargetID);
+                        if(entry.Amount>0)StartCoroutine(CombatVfx(target,false));
                         StartCoroutine(Flash(view, entry.Suit == Suit.Spade ? purple : red, 0.18f));
                         Floating(entry.TargetID, target, "-" + entry.Amount, red); lastHurt = entry.TargetID;
                         if (entry.Chain) { lastChainSource = entry.SourceID; lastChainPoint = target; }
@@ -165,15 +174,29 @@ namespace Unknown.Battle
                         if (entry.Suit == Suit.Heart && lastHurt >= 0 && entry.SourceID == entry.TargetID)
                             yield return Beam(Position(lastHurt, 1 - entry.Owner), target, new Color(1, 0.6f, 0.8f), 0.14f);
                         Floating(entry.TargetID, target, "+" + entry.Amount, green);
-                        StartCoroutine(Flash(view, green, 0.2f)); StartCoroutine(Pulse(target, green, 110, 0.35f));
+                        StartCoroutine(Flash(view, green, 0.2f));
+                        if(entry.Amount>0)StartCoroutine(CombatVfx(target,true));
                         yield return Step(0.08f, _ => { }); break;
                     case BattleEventKind.AttackChanged:
                         Color attackColor = entry.Amount < 0 ? purple : gold;
+                        if(entry.Amount!=0 && entry.Secondary!=1)StartCoroutine(StatusVfx(target,entry.Amount<0?0:1));
                         Floating(entry.TargetID, target, (entry.Amount < 0 ? "↓ " : "↑ ") + "ATK " + entry.Amount.ToString("+0;-0;0"), attackColor);
                         StartCoroutine(Flash(view, attackColor, 0.22f)); yield return Step(0.08f, _ => { }); break;
+                    case BattleEventKind.WeaknessChanged:
+                        view?.GetComponent<CardProtectionVisual>()?.SetWeakness(entry.Amount>0);
+                        if(entry.Amount==0 && view!=null)StartCoroutine(ReleaseWeakness(view));
+                        break;
+                    case BattleEventKind.ProtectionGained:
+                        if(entry.Amount>0){view?.GetComponent<CardProtectionVisual>()?.SetProtection(entry.Secondary);StartCoroutine(StatusVfx(target,2));}
+                        yield return Step(0.08f,_=>{});break;
+                    case BattleEventKind.ProtectionBroken:
+                        // Damage resolution reports consumption before its Attack/Damage event.
+                        if(entry.Secondary==1)pendingProtectionBreaks.Add(entry.TargetID);
+                        else ShatterProtection(entry.TargetID);
+                        break;
                     case BattleEventKind.MaxHPChanged:
                         Floating(entry.TargetID, target, "MAX HP " + entry.Amount.ToString("+0;-0;0"), entry.Amount<0 ? red : green);
-                        StartCoroutine(Pulse(target, green, 145, 0.32f));
+                        if(entry.Amount!=0 && entry.Secondary!=1)StartCoroutine(StatusVfx(target,entry.Amount<0?0:1));
                         if (view != null) { Vector3 scale = view.localScale; yield return Step(0.13f, t => view.localScale = scale * (1 + 0.07f * Mathf.Sin(t * Mathf.PI))); }
                         break;
                     case BattleEventKind.Draw:
@@ -190,9 +213,10 @@ namespace Unknown.Battle
                     case BattleEventKind.Destroy:
                         if (view != null)
                         {
-                            var dying = Clone(entry.TargetID, entry.Owner); var dyingGroup = Group(dying); Vector2 dyingPoint = dying.anchoredPosition;
-                            StartCoroutine(Flash(dying, red, 0.16f));
-                            yield return Step(0.4f, t => { dying.anchoredPosition = dyingPoint + new Vector2(Mathf.Sin(t * 60) * 7 * (1 - t), 0); dying.localScale = Vector3.one * (1 - 0.9f * t); dyingGroup.alpha = 1 - t; });
+                            var dying = Clone(entry.TargetID, entry.Owner); var dyingGroup = Group(dying);
+                            // Preserve the card's size and position while its full artwork and text fade together.
+                            dyingGroup.alpha = 1;
+                            yield return Step(0.45f, t => dyingGroup.alpha = 1 - Smooth(t));
                         }
                         break;
                     case BattleEventKind.Combine:
@@ -200,8 +224,10 @@ namespace Unknown.Battle
                     case BattleEventKind.JokerTravel:
                         var joker = Clone(entry.SourceID, entry.Owner); Vector2 jokerFrom = joker.anchoredPosition;
                         yield return Step(0.25f, t => { joker.anchoredPosition = Vector2.Lerp(jokerFrom, target, Smooth(t)); joker.localScale = Vector3.one * (1 - 0.65f * t); });
-                        for (int i = 0; i < 3; i++) StartCoroutine(Orbit(target, purple, i * Mathf.PI * 2 / 3));
-                        yield return Step(0.3f, _ => { }); Group(joker).alpha = 0; break;
+                        Group(joker).alpha = 0;
+                        bool redJoker=entry.Definition!=null?entry.Definition.CardID=="Joker_1":joker.Find("Card Artwork")?.GetComponent<RawImage>()?.texture==CardArtSettings.TextureFor("Joker_1");
+                        yield return SheetVfx(target,redJoker?jokerRedVfxSheet:jokerPurpleVfxSheet,4,22,"Joker activation VFX",235,redJoker?red:purple);
+                        break;
                     case BattleEventKind.JokerSuccess:
                     case BattleEventKind.JokerFailure:
                         bool success = entry.Kind == BattleEventKind.JokerSuccess;
@@ -223,7 +249,8 @@ namespace Unknown.Battle
             Vector2 target = entry.TargetID < 0 ? heroPoint(entry.TargetOwner) : Position(entry.TargetID, entry.TargetOwner);
             yield return Step(0.1f, t => attacker.localScale = Vector3.one * (1 + 0.1f * t));
             yield return Step(0.13f, t => attacker.anchoredPosition = Vector2.Lerp(origin, target, Smooth(t)));
-            StartCoroutine(Pulse(target, red, 105 + entry.Amount * 4, 0.27f));
+            BreakProtectionAtImpact(entry.TargetID);BreakProtectionAtImpact(entry.SourceID);
+            StartCoroutine(CombatVfx(target,false));
             Floating(entry.TargetID, target, "-" + entry.Amount, red);
             if (entry.TargetID >= 0) { Floating(entry.SourceID, origin, "-" + entry.Secondary, red); StartCoroutine(Shake(View(entry.TargetID))); }
             yield return Step(0.08f, _ => { });
@@ -240,7 +267,7 @@ namespace Unknown.Battle
             Vector2 a = ace.anchoredPosition, b = face.anchoredPosition;
             yield return Step(0.35f, t => { ace.anchoredPosition = Vector2.Lerp(a, new Vector2(-40, 0), Smooth(t)); face.anchoredPosition = Vector2.Lerp(b, new Vector2(40, 0), Smooth(t)); });
             yield return Step(0.18f, t => { ace.localScale = face.localScale = Vector3.one * (1 - t); });
-            StartCoroutine(Pulse(Vector2.zero, purple, 260, 0.42f));
+            yield return SheetVfx(Vector2.zero,unknownVfxSheet,4,22,"UNKNOWN combination VFX",340,purple);
             var result = CardBack(entry.Secondary, Vector2.zero, entry.Definition.CardName + "\n" + entry.Definition.Attack + " / " + entry.Definition.MaxHP, new Color(0.15f, 0.08f, 0.25f));
             CardFacePresentation?.Invoke(result,entry.Definition);
             yield return Step(0.15f, t => result.localScale = Vector3.one * (0.1f + t * 1.1f));
@@ -258,6 +285,64 @@ namespace Unknown.Battle
         {
             var light = Shape("Ability light", from, new Vector2(18, 18), color);
             yield return Step(duration, t => light.anchoredPosition = Vector2.Lerp(from, to, t)); Destroy(light.gameObject);
+        }
+        void BreakProtectionAtImpact(int id)
+        {
+            if(pendingProtectionBreaks.Remove(id))ShatterProtection(id);
+        }
+        void ShatterProtection(int id)
+        {
+            var card=View(id);if(card==null)return;
+            card.GetComponent<CardProtectionVisual>()?.SetProtection(0);
+            var art=card.Find("Card Artwork") as RectTransform;
+            StartCoroutine(ShieldFragments(art!=null?art:card));
+        }
+        IEnumerator ShieldFragments(RectTransform card)
+        {
+            Vector2 center=Point(card);
+            float width=layer.InverseTransformVector(card.TransformVector(Vector3.right*card.rect.width)).magnitude;
+            float height=layer.InverseTransformVector(card.TransformVector(Vector3.up*card.rect.height)).magnitude;
+            // The break sheet has 448x544 cells surrounding the 320x432 static border artwork.
+            yield return SheetVfx(center,protectionBreakVfxSheet,3,18,"Protection break VFX",Mathf.Max(width,height),
+                new Color(.32f,.8f,1),firstFrame:0,displaySize:new Vector2(Mathf.Max(1,width-4)*448f/320,Mathf.Max(1,height-4)*544f/432));
+        }
+        IEnumerator ReleaseWeakness(RectTransform card)
+        {
+            var art=card.Find("Card Artwork") as RectTransform;if(art!=null)card=art;
+            float width=layer.InverseTransformVector(card.TransformVector(Vector3.right*card.rect.width)).magnitude;
+            float height=layer.InverseTransformVector(card.TransformVector(Vector3.up*card.rect.height)).magnitude;
+            // 6x3 cells; skip the empty final cell and align with the inset static border.
+            yield return SheetVfx(Point(card),weakeningReleaseVfxSheet,3,17,"Weakening release VFX",Mathf.Max(width,height),purple,
+                firstFrame:0,displaySize:new Vector2(Mathf.Max(1,width-12)*448f/320,Mathf.Max(1,height-12)*544f/432));
+        }
+        IEnumerator CombatVfx(Vector2 center,bool healing)
+        {
+            return SheetVfx(center,healing?healingVfxSheet:attackVfxSheet,healing?4:2,healing?22:10,
+                healing?"Healing card VFX":"Attack card VFX",healing?210:190,healing?green:red);
+        }
+        IEnumerator StatusVfx(Vector2 center,int kind)
+        {
+            return SheetVfx(center,kind==0?weakenVfxSheet:kind==1?buffVfxSheet:protectionVfxSheet,4,kind==2?22:20,
+                kind==0?"Weakening card VFX":kind==1?"Buff card VFX":"Protection card VFX",210,
+                kind==0?purple:kind==1?gold:new Color(.25f,.65f,1));
+        }
+        IEnumerator SheetVfx(Vector2 center,Texture2D texture,int rows,int frames,string name,float size,Color fallback,int firstFrame=1,Vector2? displaySize=null)
+        {
+            if(texture==null){yield return Pulse(center,fallback,size*.65f,.35f);yield break;}
+            // Full grid cells preserve alignment; each effect selects its first cell and frame count.
+            var go=new GameObject(name,typeof(RectTransform),typeof(RawImage));
+            go.transform.SetParent(layer,false);
+            var rect=go.GetComponent<RectTransform>();rect.anchorMin=rect.anchorMax=rect.pivot=new Vector2(.5f,.5f);
+            rect.anchoredPosition=center;rect.sizeDelta=displaySize??Vector2.one*size;
+            var image=go.GetComponent<RawImage>();image.texture=texture;image.raycastTarget=false;
+            image.uvRect=new Rect((firstFrame%6)/6f,1f-(firstFrame/6+1)/(float)rows,1f/6,1f/rows);
+            try {
+                yield return Step(frames/30f,t=>{
+                    int frame=firstFrame+Mathf.Min(frames-1,Mathf.FloorToInt(t*frames));
+                    image.uvRect=new Rect((frame%6)/6f,1f-(frame/6+1)/(float)rows,1f/6,1f/rows);
+                    image.color=new Color(1,1,1,1-Mathf.Clamp01((t-.85f)/.15f));
+                });
+            } finally {if(go!=null)Destroy(go);}
         }
         IEnumerator Pulse(Vector2 center, Color color, float size, float duration)
         {
@@ -302,7 +387,7 @@ namespace Unknown.Battle
         {
             foreach (var group in hidden) if (group != null) group.alpha = 1;
             foreach (var ghost in ghosts.Values) if (ghost != null) Destroy(ghost.gameObject);
-            hidden.Clear(); ghosts.Clear();
+            hidden.Clear(); ghosts.Clear();pendingProtectionBreaks.Clear();
         }
         public void ResetAll()
         {

@@ -1,0 +1,1976 @@
+fileFormatVersion: 2
+guid: a986512db9bc66944b8e79afff517a38
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6485401876074624056
+    second: weaken-release-vfx_0
+  - first:
+      213: 5049210203530108398
+    second: weaken-release-vfx_1
+  - first:
+      213: 5834956780751008635
+    second: weaken-release-vfx_2
+  - first:
+      213: -2829355888598828434
+    second: weaken-release-vfx_3
+  - first:
+      213: 6473582526820922041
+    second: weaken-release-vfx_4
+  - first:
+      213: -5167063908047672155
+    second: weaken-release-vfx_5
+  - first:
+      213: -5611022058207688072
+    second: weaken-release-vfx_6
+  - first:
+      213: 654210026975811828
+    second: weaken-release-vfx_7
+  - first:
+      213: 2911188259424829754
+    second: weaken-release-vfx_8
+  - first:
+      213: -8722264268356775824
+    second: weaken-release-vfx_9
+  - first:
+      213: 2410505421551912332
+    second: weaken-release-vfx_10
+  - first:
+      213: 405104966549190294
+    second: weaken-release-vfx_11
+  - first:
+      213: -2603992847564480903
+    second: weaken-release-vfx_12
+  - first:
+      213: -6199442367318019282
+    second: weaken-release-vfx_13
+  - first:
+      213: -1193324086078391307
+    second: weaken-release-vfx_14
+  - first:
+      213: 5143599196780846751
+    second: weaken-release-vfx_15
+  - first:
+      213: -6689517905340783902
+    second: weaken-release-vfx_16
+  - first:
+      213: -3432902508736852011
+    second: weaken-release-vfx_17
+  - first:
+      213: 4685185417053853762
+    second: weaken-release-vfx_18
+  - first:
+      213: -2393886806348131233
+    second: weaken-release-vfx_19
+  - first:
+      213: 3624668176331927780
+    second: weaken-release-vfx_20
+  - first:
+      213: -5183456776424308520
+    second: weaken-release-vfx_21
+  - first:
+      213: -8036045534556643234
+    second: weaken-release-vfx_22
+  - first:
+      213: -1898180510291172791
+    second: weaken-release-vfx_23
+  - first:
+      213: -7686550004110822437
+    second: weaken-release-vfx_24
+  - first:
+      213: 7797434973045997807
+    second: weaken-release-vfx_25
+  - first:
+      213: 1197109708000493279
+    second: weaken-release-vfx_26
+  - first:
+      213: -3964166123811618243
+    second: weaken-release-vfx_27
+  - first:
+      213: -7495088756193516398
+    second: weaken-release-vfx_28
+  - first:
+      213: -8265089928285680210
+    second: weaken-release-vfx_29
+  - first:
+      213: -2619254775600902612
+    second: weaken-release-vfx_30
+  - first:
+      213: -2324175006988287867
+    second: weaken-release-vfx_31
+  - first:
+      213: -2897354186046950434
+    second: weaken-release-vfx_32
+  - first:
+      213: -4596542105705763869
+    second: weaken-release-vfx_33
+  - first:
+      213: -6005851750669102474
+    second: weaken-release-vfx_34
+  - first:
+      213: 1810913054523556888
+    second: weaken-release-vfx_35
+  - first:
+      213: 2322692168100500359
+    second: weaken-release-vfx_36
+  - first:
+      213: -510370247120629595
+    second: weaken-release-vfx_37
+  - first:
+      213: -4108439491174882534
+    second: weaken-release-vfx_38
+  - first:
+      213: -4056809207759275751
+    second: weaken-release-vfx_39
+  - first:
+      213: -1048859359800594103
+    second: weaken-release-vfx_40
+  - first:
+      213: 552529308668262453
+    second: weaken-release-vfx_41
+  - first:
+      213: 2412366871817227306
+    second: weaken-release-vfx_42
+  - first:
+      213: 7524197391885111302
+    second: weaken-release-vfx_43
+  - first:
+      213: 7540363721342253224
+    second: weaken-release-vfx_44
+  - first:
+      213: -4693391539271409744
+    second: weaken-release-vfx_45
+  - first:
+      213: -2952517800305245238
+    second: weaken-release-vfx_46
+  - first:
+      213: 3346632365205553701
+    second: weaken-release-vfx_47
+  - first:
+      213: 3525341486094952258
+    second: weaken-release-vfx_48
+  - first:
+      213: -6977811083026070201
+    second: weaken-release-vfx_49
+  - first:
+      213: 1684175003321448160
+    second: weaken-release-vfx_50
+  - first:
+      213: 6165498800512805139
+    second: weaken-release-vfx_51
+  - first:
+      213: 2358992588231808548
+    second: weaken-release-vfx_52
+  - first:
+      213: -4175372898632884268
+    second: weaken-release-vfx_53
+  - first:
+      213: -7091035742706818044
+    second: weaken-release-vfx_54
+  - first:
+      213: 2529966447141462843
+    second: weaken-release-vfx_55
+  - first:
+      213: 4409197098473113573
+    second: weaken-release-vfx_56
+  - first:
+      213: -8804432427816352309
+    second: weaken-release-vfx_57
+  - first:
+      213: -3320132468392240266
+    second: weaken-release-vfx_58
+  - first:
+      213: 3828603011660708661
+    second: weaken-release-vfx_59
+  - first:
+      213: -3877914094783401525
+    second: weaken-release-vfx_60
+  - first:
+      213: -1822920505885261616
+    second: weaken-release-vfx_61
+  - first:
+      213: -7349329730210578733
+    second: weaken-release-vfx_62
+  - first:
+      213: 6916323227171027325
+    second: weaken-release-vfx_63
+  - first:
+      213: -5218008311628734396
+    second: weaken-release-vfx_64
+  - first:
+      213: 8356518805233527963
+    second: weaken-release-vfx_65
+  - first:
+      213: -6714012395601969487
+    second: weaken-release-vfx_66
+  - first:
+      213: -8348578661787731059
+    second: weaken-release-vfx_67
+  - first:
+      213: -6270474622437035391
+    second: weaken-release-vfx_68
+  - first:
+      213: -5491612960754459251
+    second: weaken-release-vfx_69
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: weaken-release-vfx_0
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 1146
+        width: 320
+        height: 428
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 834741925a6c00a50800000000000000
+      internalID: 6485401876074624056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_1
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 1146
+        width: 320
+        height: 428
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eed90b1ade5621640800000000000000
+      internalID: 5049210203530108398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_2
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 1146
+        width: 320
+        height: 430
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b73bb64f64ee9f050800000000000000
+      internalID: 5834956780751008635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_3
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 1146
+        width: 320
+        height: 432
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6a38e45fcb1cb8d0800000000000000
+      internalID: -2829355888598828434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_4
+      rect:
+        serializedVersion: 2
+        x: 1857
+        y: 1147
+        width: 318
+        height: 434
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b236577209c6d950800000000000000
+      internalID: 6473582526820922041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_5
+      rect:
+        serializedVersion: 2
+        x: 2305
+        y: 1147
+        width: 318
+        height: 436
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5aca31d70c6ea48b0800000000000000
+      internalID: -5167063908047672155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_6
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 603
+        width: 318
+        height: 438
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87a46a1aa25a122b0800000000000000
+      internalID: -5611022058207688072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_7
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 603
+        width: 318
+        height: 440
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f8546aad88341900800000000000000
+      internalID: 654210026975811828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_8
+      rect:
+        serializedVersion: 2
+        x: 962
+        y: 604
+        width: 316
+        height: 441
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a310e4d3c4e966820800000000000000
+      internalID: 2911188259424829754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_9
+      rect:
+        serializedVersion: 2
+        x: 1410
+        y: 604
+        width: 316
+        height: 444
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07013874cda44f680800000000000000
+      internalID: -8722264268356775824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_10
+      rect:
+        serializedVersion: 2
+        x: 1857
+        y: 605
+        width: 317
+        height: 445
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8541c4d8e5d37120800000000000000
+      internalID: 2410505421551912332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_11
+      rect:
+        serializedVersion: 2
+        x: 2304
+        y: 606
+        width: 319
+        height: 437
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69639eb12d83f9500800000000000000
+      internalID: 405104966549190294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_12
+      rect:
+        serializedVersion: 2
+        x: 2467
+        y: 1027
+        width: 24
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97ed24b3d42ccdbd0800000000000000
+      internalID: -2603992847564480903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_13
+      rect:
+        serializedVersion: 2
+        x: 2542
+        y: 1025
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e23b082530827f9a0800000000000000
+      internalID: -6199442367318019282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_14
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 63
+        width: 318
+        height: 432
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fb3163f016707fe0800000000000000
+      internalID: -1193324086078391307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_15
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 480
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9e5b1fa73cb16740800000000000000
+      internalID: 5143599196780846751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_16
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 487
+        width: 23
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e22c8d58ee0a23a0800000000000000
+      internalID: -6689517905340783902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_17
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 486
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5df413a4b51eb50d0800000000000000
+      internalID: -3432902508736852011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_18
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 65
+        width: 316
+        height: 431
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 248d55a405f150140800000000000000
+      internalID: 4685185417053853762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_19
+      rect:
+        serializedVersion: 2
+        x: 642
+        y: 483
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f54102b02a437ced0800000000000000
+      internalID: -2393886806348131233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_20
+      rect:
+        serializedVersion: 2
+        x: 677
+        y: 490
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e07de680886d4230800000000000000
+      internalID: 3624668176331927780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_21
+      rect:
+        serializedVersion: 2
+        x: 749
+        y: 488
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d043a46689a018b0800000000000000
+      internalID: -5183456776424308520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_22
+      rect:
+        serializedVersion: 2
+        x: 970
+        y: 68
+        width: 308
+        height: 425
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5023e1c92b3a7090800000000000000
+      internalID: -8036045534556643234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_23
+      rect:
+        serializedVersion: 2
+        x: 997
+        y: 485
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 942668402ee48a5e0800000000000000
+      internalID: -1898180510291172791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_24
+      rect:
+        serializedVersion: 2
+        x: 1045
+        y: 477
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd372b01f73e35590800000000000000
+      internalID: -7686550004110822437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_25
+      rect:
+        serializedVersion: 2
+        x: 1068
+        y: 479
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe04d9f9bcd063c60800000000000000
+      internalID: 7797434973045997807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_26
+      rect:
+        serializedVersion: 2
+        x: 1091
+        y: 487
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fde7a86dfecfc9010800000000000000
+      internalID: 1197109708000493279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_27
+      rect:
+        serializedVersion: 2
+        x: 1127
+        y: 494
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d324297d9e37cf8c0800000000000000
+      internalID: -3964166123811618243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_28
+      rect:
+        serializedVersion: 2
+        x: 1180
+        y: 484
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 294af07ac781cf790800000000000000
+      internalID: -7495088756193516398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_29
+      rect:
+        serializedVersion: 2
+        x: 1199
+        y: 493
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ead8fd320808c4d80800000000000000
+      internalID: -8265089928285680210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_30
+      rect:
+        serializedVersion: 2
+        x: 1446
+        y: 489
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2e0014b8a986abd0800000000000000
+      internalID: -2619254775600902612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_31
+      rect:
+        serializedVersion: 2
+        x: 1463
+        y: 477
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5804f98252fdebfd0800000000000000
+      internalID: -2324175006988287867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_32
+      rect:
+        serializedVersion: 2
+        x: 1495
+        y: 481
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed33e28f7b78ac7d0800000000000000
+      internalID: -2897354186046950434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_33
+      rect:
+        serializedVersion: 2
+        x: 1519
+        y: 483
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3eb2842fe4dc530c0800000000000000
+      internalID: -4596542105705763869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_34
+      rect:
+        serializedVersion: 2
+        x: 1541
+        y: 491
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 672d5b337ade6aca0800000000000000
+      internalID: -6005851750669102474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_35
+      rect:
+        serializedVersion: 2
+        x: 1576
+        y: 500
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8148ef514d7a12910800000000000000
+      internalID: 1810913054523556888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_36
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 477
+        width: 19
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7835632883cdb3020800000000000000
+      internalID: 2322692168100500359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_37
+      rect:
+        serializedVersion: 2
+        x: 1629
+        y: 488
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a0527cd6fccae8f0800000000000000
+      internalID: -510370247120629595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_38
+      rect:
+        serializedVersion: 2
+        x: 1647
+        y: 496
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a13a55bdc04ebf6c0800000000000000
+      internalID: -4108439491174882534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_39
+      rect:
+        serializedVersion: 2
+        x: 1670
+        y: 478
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91979f9f48153b7c0800000000000000
+      internalID: -4056809207759275751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_40
+      rect:
+        serializedVersion: 2
+        x: 1861
+        y: 440
+        width: 62
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 941fdb728f3b171f0800000000000000
+      internalID: -1048859359800594103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_41
+      rect:
+        serializedVersion: 2
+        x: 1947
+        y: 485
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 538f9239a7afaa700800000000000000
+      internalID: 552529308668262453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_42
+      rect:
+        serializedVersion: 2
+        x: 1972
+        y: 486
+        width: 66
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2c069e73e27a7120800000000000000
+      internalID: 2412366871817227306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_43
+      rect:
+        serializedVersion: 2
+        x: 2051
+        y: 480
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6009b3bb9a15b6860800000000000000
+      internalID: 7524197391885111302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_44
+      rect:
+        serializedVersion: 2
+        x: 2080
+        y: 481
+        width: 50
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a8f8df9ad0c4a860800000000000000
+      internalID: 7540363721342253224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_45
+      rect:
+        serializedVersion: 2
+        x: 962
+        y: 462
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bf57edf249bddeb0800000000000000
+      internalID: -4693391539271409744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_46
+      rect:
+        serializedVersion: 2
+        x: 1410
+        y: 466
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac3c9c724bc8607d0800000000000000
+      internalID: -2952517800305245238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_47
+      rect:
+        serializedVersion: 2
+        x: 1420
+        y: 73
+        width: 305
+        height: 398
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52207e9a760a17e20800000000000000
+      internalID: 3346632365205553701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_48
+      rect:
+        serializedVersion: 2
+        x: 1699
+        y: 464
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24723ae47678ce030800000000000000
+      internalID: 3525341486094952258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_49
+      rect:
+        serializedVersion: 2
+        x: 2149
+        y: 467
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 745827e3ac5d92f90800000000000000
+      internalID: -6977811083026070201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_50
+      rect:
+        serializedVersion: 2
+        x: 2141
+        y: 442
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e6319c0e346f5710800000000000000
+      internalID: 1684175003321448160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_51
+      rect:
+        serializedVersion: 2
+        x: 1873
+        y: 385
+        width: 10
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 319a9ab2e70409550800000000000000
+      internalID: 6165498800512805139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_52
+      rect:
+        serializedVersion: 2
+        x: 2137
+        y: 390
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4261651b243dcb020800000000000000
+      internalID: 2358992588231808548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_53
+      rect:
+        serializedVersion: 2
+        x: 2139
+        y: 376
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4df913488781e06c0800000000000000
+      internalID: -4175372898632884268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_54
+      rect:
+        serializedVersion: 2
+        x: 1870
+        y: 264
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 404ac5adf84979d90800000000000000
+      internalID: -7091035742706818044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_55
+      rect:
+        serializedVersion: 2
+        x: 1877
+        y: 298
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b33268f441f3c1320800000000000000
+      internalID: 2529966447141462843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_56
+      rect:
+        serializedVersion: 2
+        x: 1879
+        y: 330
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e74c2f666d903d30800000000000000
+      internalID: 4409197098473113573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_57
+      rect:
+        serializedVersion: 2
+        x: 2146
+        y: 262
+        width: 23
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc58313da5f50d580800000000000000
+      internalID: -8804432427816352309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_58
+      rect:
+        serializedVersion: 2
+        x: 1873
+        y: 215
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67b5d3e5c158ce1d0800000000000000
+      internalID: -3320132468392240266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_59
+      rect:
+        serializedVersion: 2
+        x: 2135
+        y: 97
+        width: 35
+        height: 127
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53bf600872ee12530800000000000000
+      internalID: 3828603011660708661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_60
+      rect:
+        serializedVersion: 2
+        x: 1871
+        y: 172
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc174f64da1ee2ac0800000000000000
+      internalID: -3877914094783401525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_61
+      rect:
+        serializedVersion: 2
+        x: 1877
+        y: 100
+        width: 47
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d00fe8457fa3b6e0800000000000000
+      internalID: -1822920505885261616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_62
+      rect:
+        serializedVersion: 2
+        x: 1979
+        y: 111
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3deb49d7c8fe10a90800000000000000
+      internalID: -7349329730210578733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_63
+      rect:
+        serializedVersion: 2
+        x: 2069
+        y: 117
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d79ff43b457bbff50800000000000000
+      internalID: 6916323227171027325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_64
+      rect:
+        serializedVersion: 2
+        x: 2071
+        y: 105
+        width: 28
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44065563619e597b0800000000000000
+      internalID: -5218008311628734396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_65
+      rect:
+        serializedVersion: 2
+        x: 1938
+        y: 92
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9ce0d0249158f370800000000000000
+      internalID: 8356518805233527963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_66
+      rect:
+        serializedVersion: 2
+        x: 1964
+        y: 94
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1be339e6c4903d2a0800000000000000
+      internalID: -6714012395601969487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_67
+      rect:
+        serializedVersion: 2
+        x: 2009
+        y: 93
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8b7cb490f3e32c80800000000000000
+      internalID: -8348578661787731059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_68
+      rect:
+        serializedVersion: 2
+        x: 2032
+        y: 99
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 182f984ad8ccaf8a0800000000000000
+      internalID: -6270474622437035391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weaken-release-vfx_69
+      rect:
+        serializedVersion: 2
+        x: 2055
+        y: 101
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8d9c46ab1fd9c3b0800000000000000
+      internalID: -5491612960754459251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      weaken-release-vfx_0: 6485401876074624056
+      weaken-release-vfx_1: 5049210203530108398
+      weaken-release-vfx_10: 2410505421551912332
+      weaken-release-vfx_11: 405104966549190294
+      weaken-release-vfx_12: -2603992847564480903
+      weaken-release-vfx_13: -6199442367318019282
+      weaken-release-vfx_14: -1193324086078391307
+      weaken-release-vfx_15: 5143599196780846751
+      weaken-release-vfx_16: -6689517905340783902
+      weaken-release-vfx_17: -3432902508736852011
+      weaken-release-vfx_18: 4685185417053853762
+      weaken-release-vfx_19: -2393886806348131233
+      weaken-release-vfx_2: 5834956780751008635
+      weaken-release-vfx_20: 3624668176331927780
+      weaken-release-vfx_21: -5183456776424308520
+      weaken-release-vfx_22: -8036045534556643234
+      weaken-release-vfx_23: -1898180510291172791
+      weaken-release-vfx_24: -7686550004110822437
+      weaken-release-vfx_25: 7797434973045997807
+      weaken-release-vfx_26: 1197109708000493279
+      weaken-release-vfx_27: -3964166123811618243
+      weaken-release-vfx_28: -7495088756193516398
+      weaken-release-vfx_29: -8265089928285680210
+      weaken-release-vfx_3: -2829355888598828434
+      weaken-release-vfx_30: -2619254775600902612
+      weaken-release-vfx_31: -2324175006988287867
+      weaken-release-vfx_32: -2897354186046950434
+      weaken-release-vfx_33: -4596542105705763869
+      weaken-release-vfx_34: -6005851750669102474
+      weaken-release-vfx_35: 1810913054523556888
+      weaken-release-vfx_36: 2322692168100500359
+      weaken-release-vfx_37: -510370247120629595
+      weaken-release-vfx_38: -4108439491174882534
+      weaken-release-vfx_39: -4056809207759275751
+      weaken-release-vfx_4: 6473582526820922041
+      weaken-release-vfx_40: -1048859359800594103
+      weaken-release-vfx_41: 552529308668262453
+      weaken-release-vfx_42: 2412366871817227306
+      weaken-release-vfx_43: 7524197391885111302
+      weaken-release-vfx_44: 7540363721342253224
+      weaken-release-vfx_45: -4693391539271409744
+      weaken-release-vfx_46: -2952517800305245238
+      weaken-release-vfx_47: 3346632365205553701
+      weaken-release-vfx_48: 3525341486094952258
+      weaken-release-vfx_49: -6977811083026070201
+      weaken-release-vfx_5: -5167063908047672155
+      weaken-release-vfx_50: 1684175003321448160
+      weaken-release-vfx_51: 6165498800512805139
+      weaken-release-vfx_52: 2358992588231808548
+      weaken-release-vfx_53: -4175372898632884268
+      weaken-release-vfx_54: -7091035742706818044
+      weaken-release-vfx_55: 2529966447141462843
+      weaken-release-vfx_56: 4409197098473113573
+      weaken-release-vfx_57: -8804432427816352309
+      weaken-release-vfx_58: -3320132468392240266
+      weaken-release-vfx_59: 3828603011660708661
+      weaken-release-vfx_6: -5611022058207688072
+      weaken-release-vfx_60: -3877914094783401525
+      weaken-release-vfx_61: -1822920505885261616
+      weaken-release-vfx_62: -7349329730210578733
+      weaken-release-vfx_63: 6916323227171027325
+      weaken-release-vfx_64: -5218008311628734396
+      weaken-release-vfx_65: 8356518805233527963
+      weaken-release-vfx_66: -6714012395601969487
+      weaken-release-vfx_67: -8348578661787731059
+      weaken-release-vfx_68: -6270474622437035391
+      weaken-release-vfx_69: -5491612960754459251
+      weaken-release-vfx_7: 654210026975811828
+      weaken-release-vfx_8: 2911188259424829754
+      weaken-release-vfx_9: -8722264268356775824
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

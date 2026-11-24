@@ -12,6 +12,7 @@ namespace Unknown.Battle {
             target.WeakUntil=0;
             int actual=before-target.Attack;
             Emit(new BattleEvent(BattleEventKind.AttackChanged,target.Owner,dealer.InstanceID,target.InstanceID,-actual,suit:dealer.Definition.Suit));
+            if(IsWeakened(target))Emit(new BattleEvent(BattleEventKind.WeaknessChanged,target.Owner,dealer.InstanceID,target.InstanceID,target.CardWeakening+target.HealthWeakening));
             MeasureTactical(dealer,e,target,-actual,"resolved");MeasureWeakApplied(dealer,false,actual,delta>0 || target.CardWeakening>0);
         }
         void ApplyTimedHealthWeak(CardInstance dealer,CardInstance target,int amount,CardEffect e) {
@@ -21,22 +22,26 @@ namespace Unknown.Battle {
             target.HealthWeakening+=maximum;target.HealthWeakCurrent+=current;
             if(target.HealthWeakening>0){target.HealthWeakTurns=Math.Max(target.HealthWeakTurns,WeakDuration(dealer,e));target.HealthWeakAppliedTurn=State.TurnNumber;target.HealthWeakSource=dealer.InstanceID;}
             Emit(new BattleEvent(BattleEventKind.MaxHPChanged,target.Owner,dealer.InstanceID,target.InstanceID,-maximum,suit:dealer.Definition.Suit));
+            if(IsWeakened(target))Emit(new BattleEvent(BattleEventKind.WeaknessChanged,target.Owner,dealer.InstanceID,target.InstanceID,target.CardWeakening+target.HealthWeakening));
             MeasureTactical(dealer,e,target,-maximum,"resolved");MeasureWeakApplied(dealer,true,maximum,maximum>0 || target.HealthWeakening>0);
         }
         void TickWeakness(CardInstance c) {
             if(c.LastWeakTickTurn==State.TurnNumber)return;c.LastWeakTickTurn=State.TurnNumber;
+            int previousWeakness=c.CardWeakening+c.HealthWeakening;
             if(c.CardWeakening>0 && c.AttackWeakAppliedTurn!=State.TurnNumber){
                 c.AttackWeakTurns=Math.Max(0,c.AttackWeakTurns-1);
                 bool expire=c.AttackWeakTurns==0;MeasureWeakDuration(c.AttackWeakSource,false,expire);
                 if(expire){int n=c.CardWeakening;c.ImportCore(c.RawAttack+n,c.RawHP);c.AbilityAttack+=n;c.CardWeakening=c.WeakUntil=0;c.AttackWeakSource=0;
-                    Emit(new BattleEvent(BattleEventKind.AttackChanged,c.Owner,target:c.InstanceID,amount:n));}
+                    Emit(new BattleEvent(BattleEventKind.AttackChanged,c.Owner,target:c.InstanceID,amount:n,secondary:1));}
             }
             if(c.HealthWeakening>0 && c.HealthWeakAppliedTurn!=State.TurnNumber){
                 c.HealthWeakTurns=Math.Max(0,c.HealthWeakTurns-1);
                 bool expire=c.HealthWeakTurns==0;MeasureWeakDuration(c.HealthWeakSource,true,expire);
                 if(expire){int n=c.HealthWeakening,current=c.HealthWeakCurrent;c.ImportCore(c.RawAttack,c.RawHP+n);c.AbilityHP+=n;c.CurrentHP=Math.Min(c.MaxHP,c.CurrentHP+current);
-                    c.HealthWeakening=c.HealthWeakCurrent=c.HealthWeakSource=0;Emit(new BattleEvent(BattleEventKind.MaxHPChanged,c.Owner,target:c.InstanceID,amount:n));}
+                    c.HealthWeakening=c.HealthWeakCurrent=c.HealthWeakSource=0;Emit(new BattleEvent(BattleEventKind.MaxHPChanged,c.Owner,target:c.InstanceID,amount:n,secondary:1));}
             }
+            if(previousWeakness>0 && previousWeakness!=c.CardWeakening+c.HealthWeakening)
+                Emit(new BattleEvent(BattleEventKind.WeaknessChanged,c.Owner,target:c.InstanceID,amount:c.CardWeakening+c.HealthWeakening));
         }
         void ClearWeaknessOnDeath(int id) {
             var c=State.Players.SelectMany(p=>p.Slots).FirstOrDefault(c=>c!=null && c.InstanceID==id);if(c==null)return;

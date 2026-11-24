@@ -65,9 +65,11 @@ namespace Unknown.Battle
             bool hasArtwork=rect.Find("Card Artwork")!=null;var ink=hasArtwork ? new Color(.98f,.92f,.82f) : card.Definition.CardType==CardType.Unknown ? new Color(0.85f,0.73f,1) : SuitInk(card.Definition.Suit);
             atk.text=card.Definition.CardType==CardType.Joker ? "50%" : card.Attack.ToString();
             atk.color=ink;
-            hp.text=card.Definition.CardType==CardType.Joker ? "" : card.CurrentHP.ToString();hp.color=ink;
+            var shield=rect.GetComponent<CardProtectionVisual>();if(shield==null)shield=rect.gameObject.AddComponent<CardProtectionVisual>();
+            shield.SetState(hp,card.CurrentHP,card.Protection,ink,card.Definition.CardType!=CardType.Joker);
+            shield.SetWeakness(BattleEngine.IsWeakened(card));
             var protection=rect.Find("Stat Protection")?.GetComponent<Text>();
-            if(protection!=null)protection.text=card.Definition.CardType!=CardType.Joker && card.Protection>0 ? "+"+card.Protection : "";
+            if(protection!=null){protection.text="";protection.gameObject.SetActive(false);}
             var description=rect.Find("Card Description")?.GetComponentInChildren<Text>();
             if(description!=null){description.text=CardDisplayText.For(card);description.GetComponent<CardDescriptionFit>()?.RefitNow();}
             if(!onBoard)return;

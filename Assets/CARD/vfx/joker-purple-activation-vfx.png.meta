@@ -1,0 +1,832 @@
+fileFormatVersion: 2
+guid: fc372f8f7094bb6499503c027aa73180
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2836044623015941682
+    second: joker-purple-activation-vfx_0
+  - first:
+      213: 4402379460446221764
+    second: joker-purple-activation-vfx_1
+  - first:
+      213: -8141297666960886564
+    second: joker-purple-activation-vfx_2
+  - first:
+      213: -8815880284808505761
+    second: joker-purple-activation-vfx_3
+  - first:
+      213: -6815636337712166633
+    second: joker-purple-activation-vfx_4
+  - first:
+      213: 1913974218448420833
+    second: joker-purple-activation-vfx_5
+  - first:
+      213: -9071517657471452222
+    second: joker-purple-activation-vfx_6
+  - first:
+      213: -1398851240959117669
+    second: joker-purple-activation-vfx_7
+  - first:
+      213: -4839357726295028479
+    second: joker-purple-activation-vfx_8
+  - first:
+      213: -1926557659345930883
+    second: joker-purple-activation-vfx_9
+  - first:
+      213: -6238730556262917187
+    second: joker-purple-activation-vfx_10
+  - first:
+      213: 6763888509825623882
+    second: joker-purple-activation-vfx_11
+  - first:
+      213: -8669089098257139367
+    second: joker-purple-activation-vfx_12
+  - first:
+      213: 2469377761034424908
+    second: joker-purple-activation-vfx_13
+  - first:
+      213: -2456715868599124899
+    second: joker-purple-activation-vfx_14
+  - first:
+      213: -3801190077994538570
+    second: joker-purple-activation-vfx_15
+  - first:
+      213: -2792356853347694177
+    second: joker-purple-activation-vfx_16
+  - first:
+      213: -535644312174503007
+    second: joker-purple-activation-vfx_17
+  - first:
+      213: 7275008538303142556
+    second: joker-purple-activation-vfx_18
+  - first:
+      213: 6017050543983752964
+    second: joker-purple-activation-vfx_19
+  - first:
+      213: 2662151450828923232
+    second: joker-purple-activation-vfx_20
+  - first:
+      213: 5664410509178172080
+    second: joker-purple-activation-vfx_21
+  - first:
+      213: 1987528975567265724
+    second: joker-purple-activation-vfx_22
+  - first:
+      213: 3088910930589891469
+    second: joker-purple-activation-vfx_23
+  - first:
+      213: -6911057051088076704
+    second: joker-purple-activation-vfx_24
+  - first:
+      213: 1531842866002270707
+    second: joker-purple-activation-vfx_25
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_0
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 846
+        width: 125
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23695020f87ab5720800000000000000
+      internalID: 2836044623015941682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_1
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 845
+        width: 132
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c57f526bc4681d30800000000000000
+      internalID: 4402379460446221764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_2
+      rect:
+        serializedVersion: 2
+        x: 825
+        y: 845
+        width: 137
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd4741608ec440f80800000000000000
+      internalID: -8141297666960886564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_3
+      rect:
+        serializedVersion: 2
+        x: 1076
+        y: 842
+        width: 142
+        height: 119
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f569e99e693b7a580800000000000000
+      internalID: -8815880284808505761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_4
+      rect:
+        serializedVersion: 2
+        x: 1329
+        y: 837
+        width: 144
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7190c649cdef961a0800000000000000
+      internalID: -6815636337712166633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_5
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 576
+        width: 145
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1efbfd7396dcf8a10800000000000000
+      internalID: 1913974218448420833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_6
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 571
+        width: 149
+        height: 133
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cbfab4e0ce7b1280800000000000000
+      internalID: -9071517657471452222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_7
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 567
+        width: 153
+        height: 136
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9674013538469ce0800000000000000
+      internalID: -1398851240959117669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_8
+      rect:
+        serializedVersion: 2
+        x: 813
+        y: 564
+        width: 159
+        height: 141
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10d8427b9c527dcb0800000000000000
+      internalID: -4839357726295028479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_9
+      rect:
+        serializedVersion: 2
+        x: 1070
+        y: 562
+        width: 164
+        height: 146
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d75b063240e7345e0800000000000000
+      internalID: -1926557659345930883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_10
+      rect:
+        serializedVersion: 2
+        x: 1327
+        y: 561
+        width: 169
+        height: 150
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbbd2900d939b69a0800000000000000
+      internalID: -6238730556262917187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_11
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 305
+        width: 172
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a47a08853c82edd50800000000000000
+      internalID: 6763888509825623882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_12
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 303
+        width: 175
+        height: 155
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 959fb2c556531b780800000000000000
+      internalID: -8669089098257139367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_13
+      rect:
+        serializedVersion: 2
+        x: 561
+        y: 301
+        width: 178
+        height: 160
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c42d4b68dfdf44220800000000000000
+      internalID: 2469377761034424908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_14
+      rect:
+        serializedVersion: 2
+        x: 818
+        y: 300
+        width: 179
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5c751a0fedf7edd0800000000000000
+      internalID: -2456715868599124899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_15
+      rect:
+        serializedVersion: 2
+        x: 1072
+        y: 300
+        width: 180
+        height: 170
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b9656d73c57f3bc0800000000000000
+      internalID: -3801190077994538570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_16
+      rect:
+        serializedVersion: 2
+        x: 1319
+        y: 300
+        width: 188
+        height: 173
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9945168c3e8f39d0800000000000000
+      internalID: -2792356853347694177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_17
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 45
+        width: 192
+        height: 174
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ab51e606520198f0800000000000000
+      internalID: -535644312174503007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_18
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 47
+        width: 197
+        height: 173
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9a1e7f88b506f460800000000000000
+      internalID: 7275008538303142556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_19
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 50
+        width: 198
+        height: 169
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 407f8bd079bd08350800000000000000
+      internalID: 6017050543983752964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_20
+      rect:
+        serializedVersion: 2
+        x: 787
+        y: 47
+        width: 195
+        height: 173
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 061e2fcc3acd1f420800000000000000
+      internalID: 2662151450828923232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_21
+      rect:
+        serializedVersion: 2
+        x: 1043
+        y: 53
+        width: 128
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b2fd85c8570c9e40800000000000000
+      internalID: 5664410509178172080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_22
+      rect:
+        serializedVersion: 2
+        x: 1079
+        y: 119
+        width: 133
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbf9b79a21f159b10800000000000000
+      internalID: 1987528975567265724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_23
+      rect:
+        serializedVersion: 2
+        x: 1149
+        y: 44
+        width: 85
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8bb1a820240eda20800000000000000
+      internalID: 3088910930589891469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_24
+      rect:
+        serializedVersion: 2
+        x: 596
+        y: 48
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 060cf677a3ef610a0800000000000000
+      internalID: -6911057051088076704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: joker-purple-activation-vfx_25
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 50
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f918c778f2324510800000000000000
+      internalID: 1531842866002270707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      joker-purple-activation-vfx_0: 2836044623015941682
+      joker-purple-activation-vfx_1: 4402379460446221764
+      joker-purple-activation-vfx_10: -6238730556262917187
+      joker-purple-activation-vfx_11: 6763888509825623882
+      joker-purple-activation-vfx_12: -8669089098257139367
+      joker-purple-activation-vfx_13: 2469377761034424908
+      joker-purple-activation-vfx_14: -2456715868599124899
+      joker-purple-activation-vfx_15: -3801190077994538570
+      joker-purple-activation-vfx_16: -2792356853347694177
+      joker-purple-activation-vfx_17: -535644312174503007
+      joker-purple-activation-vfx_18: 7275008538303142556
+      joker-purple-activation-vfx_19: 6017050543983752964
+      joker-purple-activation-vfx_2: -8141297666960886564
+      joker-purple-activation-vfx_20: 2662151450828923232
+      joker-purple-activation-vfx_21: 5664410509178172080
+      joker-purple-activation-vfx_22: 1987528975567265724
+      joker-purple-activation-vfx_23: 3088910930589891469
+      joker-purple-activation-vfx_24: -6911057051088076704
+      joker-purple-activation-vfx_25: 1531842866002270707
+      joker-purple-activation-vfx_3: -8815880284808505761
+      joker-purple-activation-vfx_4: -6815636337712166633
+      joker-purple-activation-vfx_5: 1913974218448420833
+      joker-purple-activation-vfx_6: -9071517657471452222
+      joker-purple-activation-vfx_7: -1398851240959117669
+      joker-purple-activation-vfx_8: -4839357726295028479
+      joker-purple-activation-vfx_9: -1926557659345930883
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

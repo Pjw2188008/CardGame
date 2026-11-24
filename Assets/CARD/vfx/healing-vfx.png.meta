@@ -1,0 +1,832 @@
+fileFormatVersion: 2
+guid: 752ac7f305430ca4d8915dd0cd5d1742
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2776094355810764685
+    second: healing-vfx_0
+  - first:
+      213: -84319071789020983
+    second: healing-vfx_1
+  - first:
+      213: 5447731449725399275
+    second: healing-vfx_2
+  - first:
+      213: 5031400625793900824
+    second: healing-vfx_3
+  - first:
+      213: 7877635275894060399
+    second: healing-vfx_4
+  - first:
+      213: -3810231439336733373
+    second: healing-vfx_5
+  - first:
+      213: -1834992396879770692
+    second: healing-vfx_6
+  - first:
+      213: -2039012379096826815
+    second: healing-vfx_7
+  - first:
+      213: -1454976478814970940
+    second: healing-vfx_8
+  - first:
+      213: -1232665269203866355
+    second: healing-vfx_9
+  - first:
+      213: 256077082104592918
+    second: healing-vfx_10
+  - first:
+      213: 2106340815653247000
+    second: healing-vfx_11
+  - first:
+      213: -4108033584381462014
+    second: healing-vfx_12
+  - first:
+      213: 10125215140045201
+    second: healing-vfx_13
+  - first:
+      213: 5953790401239716650
+    second: healing-vfx_14
+  - first:
+      213: 8028559183788461421
+    second: healing-vfx_15
+  - first:
+      213: 2231188650175966354
+    second: healing-vfx_16
+  - first:
+      213: -7718948699273073883
+    second: healing-vfx_17
+  - first:
+      213: -7111788987115314353
+    second: healing-vfx_18
+  - first:
+      213: 4958050244446035408
+    second: healing-vfx_19
+  - first:
+      213: 1090765361125129453
+    second: healing-vfx_20
+  - first:
+      213: 5626449303878817028
+    second: healing-vfx_21
+  - first:
+      213: -5978963736581985719
+    second: healing-vfx_22
+  - first:
+      213: 9137490465122839234
+    second: healing-vfx_23
+  - first:
+      213: -6012446231091413664
+    second: healing-vfx_24
+  - first:
+      213: 2696878371952217351
+    second: healing-vfx_25
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: healing-vfx_0
+      rect:
+        serializedVersion: 2
+        x: 337
+        y: 846
+        width: 94
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d874115bb1ba68620800000000000000
+      internalID: 2776094355810764685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_1
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 846
+        width: 97
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c8893e304074def0800000000000000
+      internalID: -84319071789020983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_2
+      rect:
+        serializedVersion: 2
+        x: 844
+        y: 847
+        width: 104
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be03b94e3ea3a9b40800000000000000
+      internalID: 5447731449725399275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_3
+      rect:
+        serializedVersion: 2
+        x: 1096
+        y: 848
+        width: 112
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 811af1f263023d540800000000000000
+      internalID: 5031400625793900824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_4
+      rect:
+        serializedVersion: 2
+        x: 1349
+        y: 849
+        width: 119
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6570c1cb8bf25d60800000000000000
+      internalID: 7877635275894060399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_5
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 593
+        width: 126
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3450f4281b65f1bc0800000000000000
+      internalID: -3810231439336733373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_6
+      rect:
+        serializedVersion: 2
+        x: 317
+        y: 592
+        width: 134
+        height: 105
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbb4072232cc886e0800000000000000
+      internalID: -1834992396879770692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_7
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 590
+        width: 143
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14c3f4b5b09f3b3e0800000000000000
+      internalID: -2039012379096826815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_8
+      rect:
+        serializedVersion: 2
+        x: 819
+        y: 588
+        width: 152
+        height: 116
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cb5fafe992eecbe0800000000000000
+      internalID: -1454976478814970940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_9
+      rect:
+        serializedVersion: 2
+        x: 1071
+        y: 586
+        width: 159
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0d6426f771b4eee0800000000000000
+      internalID: -1232665269203866355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_10
+      rect:
+        serializedVersion: 2
+        x: 1322
+        y: 584
+        width: 168
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61a76f9dfb4cd8300800000000000000
+      internalID: 256077082104592918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_11
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 326
+        width: 177
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8181becdfc93b3d10800000000000000
+      internalID: 2106340815653247000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_12
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 324
+        width: 187
+        height: 139
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20a719568355df6c0800000000000000
+      internalID: -4108033584381462014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_13
+      rect:
+        serializedVersion: 2
+        x: 539
+        y: 321
+        width: 196
+        height: 143
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19162bb54d8f32000800000000000000
+      internalID: 10125215140045201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_14
+      rect:
+        serializedVersion: 2
+        x: 789
+        y: 319
+        width: 207
+        height: 146
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a23160d43dc10a250800000000000000
+      internalID: 5953790401239716650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_15
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 317
+        width: 216
+        height: 138
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6d49ef5a0c2b6f60800000000000000
+      internalID: 8028559183788461421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_16
+      rect:
+        serializedVersion: 2
+        x: 1085
+        y: 444
+        width: 26
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29c2f988146c6fe10800000000000000
+      internalID: 2231188650175966354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_17
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 316
+        width: 216
+        height: 140
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52b6d540e09c0e490800000000000000
+      internalID: -7718948699273073883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_18
+      rect:
+        serializedVersion: 2
+        x: 1298
+        y: 412
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f43e4799899dd4d90800000000000000
+      internalID: -7111788987115314353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_19
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 59
+        width: 221
+        height: 143
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0dd9ebead688ec440800000000000000
+      internalID: 4958050244446035408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_20
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 62
+        width: 222
+        height: 142
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: decf92b115d232f00800000000000000
+      internalID: 1090765361125129453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_21
+      rect:
+        serializedVersion: 2
+        x: 539
+        y: 69
+        width: 203
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 405d078e4d9251e40800000000000000
+      internalID: 5626449303878817028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_22
+      rect:
+        serializedVersion: 2
+        x: 791
+        y: 67
+        width: 211
+        height: 135
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94aa614d824760da0800000000000000
+      internalID: -5978963736581985719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_23
+      rect:
+        serializedVersion: 2
+        x: 1044
+        y: 65
+        width: 217
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ca6a206a23eece70800000000000000
+      internalID: 9137490465122839234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_24
+      rect:
+        serializedVersion: 2
+        x: 1045
+        y: 130
+        width: 100
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06df8a412008f8ca0800000000000000
+      internalID: -6012446231091413664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healing-vfx_25
+      rect:
+        serializedVersion: 2
+        x: 1160
+        y: 132
+        width: 99
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70d45a2379c3d6520800000000000000
+      internalID: 2696878371952217351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      healing-vfx_0: 2776094355810764685
+      healing-vfx_1: -84319071789020983
+      healing-vfx_10: 256077082104592918
+      healing-vfx_11: 2106340815653247000
+      healing-vfx_12: -4108033584381462014
+      healing-vfx_13: 10125215140045201
+      healing-vfx_14: 5953790401239716650
+      healing-vfx_15: 8028559183788461421
+      healing-vfx_16: 2231188650175966354
+      healing-vfx_17: -7718948699273073883
+      healing-vfx_18: -7111788987115314353
+      healing-vfx_19: 4958050244446035408
+      healing-vfx_2: 5447731449725399275
+      healing-vfx_20: 1090765361125129453
+      healing-vfx_21: 5626449303878817028
+      healing-vfx_22: -5978963736581985719
+      healing-vfx_23: 9137490465122839234
+      healing-vfx_24: -6012446231091413664
+      healing-vfx_25: 2696878371952217351
+      healing-vfx_3: 5031400625793900824
+      healing-vfx_4: 7877635275894060399
+      healing-vfx_5: -3810231439336733373
+      healing-vfx_6: -1834992396879770692
+      healing-vfx_7: -2039012379096826815
+      healing-vfx_8: -1454976478814970940
+      healing-vfx_9: -1232665269203866355
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

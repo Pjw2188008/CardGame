@@ -11,6 +11,22 @@ namespace Unknown.Battle
         public Texture2D normalBackground,jokerBackground,diamondBackground,spadeBackground,heartBackground,clubBackground;
         [Header("Deck backs (Assets/CARD/CardBack)")]
         public Texture2D normalCardBack,jokerCardBack,diamondCardBack,spadeCardBack,heartCardBack,clubCardBack;
+        [Header("Single-player node backs (Assets/CARD/CardBack)")]
+        public Texture2D startNodeBack,bossNodeBack,augmentNodeBack,healNodeBack,shopNodeBack,eventNodeBack;
+        public Texture2D NodeCardBackFor(SingleStage stage)
+        {
+            Texture2D back;
+            switch(stage.kind) {
+                case SingleNodeKind.Start:back=startNodeBack;break;
+                case SingleNodeKind.Boss:back=bossNodeBack;break;
+                case SingleNodeKind.Augment:back=augmentNodeBack;break;
+                case SingleNodeKind.Heal:back=healNodeBack;break;
+                case SingleNodeKind.Shop:back=shopNodeBack;break;
+                case SingleNodeKind.Event:back=eventNodeBack;break;
+                default:return CardBackFor(stage.map);
+            }
+            return back!=null?back:CardBackFor(stage.map);
+        }
         public Texture2D CardBackFor(BattleMap map)
         {
             switch(map) {

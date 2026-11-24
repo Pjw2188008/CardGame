@@ -8,6 +8,10 @@ namespace Unknown.Battle
     {
         [Serializable] public sealed class Entry {public string cardID;public Texture2D texture;}
         public Entry[] cards=new Entry[0];
+        [Header("Card combat VFX sheets (6 columns)")]
+        public Texture2D attackVfxSheet,healingVfxSheet,weakenVfxSheet,buffVfxSheet,protectionVfxSheet;
+        public Texture2D unknownVfxSheet,jokerRedVfxSheet,jokerPurpleVfxSheet,protectionBorder,protectionBreakVfxSheet;
+        public Texture2D weakeningBorder,weakeningReleaseVfxSheet;
         Dictionary<string,Texture2D> lookup;
         static CardArtSettings cached;
         void OnEnable(){lookup=null;}

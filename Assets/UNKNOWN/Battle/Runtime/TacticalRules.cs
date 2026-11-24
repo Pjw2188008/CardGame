@@ -53,7 +53,10 @@ namespace Unknown.Battle
         }
         void Protect(CardInstance dealer,CardInstance target,int n,CardEffect e) {
             int gained=Math.Max(0,n-target.Protection);
-            if(gained>0){target.Protection=n;target.ProtectionSource=dealer.InstanceID;}
+            if(gained>0){
+                target.Protection=n;target.ProtectionSource=dealer.InstanceID;
+                Emit(new BattleEvent(BattleEventKind.ProtectionGained,target.Owner,dealer.InstanceID,target.InstanceID,gained,secondary:target.Protection,suit:dealer.Definition.Suit));
+            }
             MeasureTactical(dealer,e,target,gained,"resolved");
         }
         int ProtectedDamage(CardInstance target,int damage,bool ignore=false) {
@@ -61,7 +64,9 @@ namespace Unknown.Battle
             int blocked=ignore ? 0 : Math.Min(damage,target.Protection);
             MeasureProtection(target.ProtectionSource,blocked);
             // A protection charge is consumed by the next positive hit, including a piercing attack.
-            target.Protection=0;target.ProtectionSource=0;return Math.Max(0,damage-blocked);
+            int shield=target.Protection;target.Protection=0;target.ProtectionSource=0;
+            Emit(new BattleEvent(BattleEventKind.ProtectionBroken,target.Owner,target:target.InstanceID,amount:shield,secondary:1));
+            return Math.Max(0,damage-blocked);
         }
         void TacticalHero(CardInstance dealer,int n,CardEffect e) {
             var p=State.Players[1-dealer.Owner];int actual=Math.Min(n,p.HP);p.HP-=actual;
@@ -117,7 +122,9 @@ namespace Unknown.Battle
                 case EffectKind.CardWeaken:TacticalWeaken(c,target,n,e);return true;
                 case EffectKind.Protection:Protect(c,target,n,e);return true;
                 case EffectKind.TemporaryAttack:TacticalAttack(c,target,n,true,e);return true;
-                case EffectKind.RemoveProtection:int removed=target.Protection;target.Protection=0;target.ProtectionSource=0;MeasureBalanceEffect(e,target,removed,"resolved");return true;
+                case EffectKind.RemoveProtection:int removed=target.Protection;target.Protection=0;target.ProtectionSource=0;
+                    if(removed>0)Emit(new BattleEvent(BattleEventKind.ProtectionBroken,target.Owner,c.InstanceID,target.InstanceID,removed));
+                    MeasureBalanceEffect(e,target,removed,"resolved");return true;
                 case EffectKind.WoundedDamage:case EffectKind.WeakDamage:case EffectKind.DamageGrow:case EffectKind.DamageHero:case EffectKind.DamageTeamGrow:case EffectKind.WeakBonusDamage:case EffectKind.DiamondBonusDamage:case EffectKind.PriorWeakDamage:
                     if(e.Kind==EffectKind.WeakBonusDamage && target.CardWeakening>0)n+=3;
                     if(e.Kind==EffectKind.DiamondBonusDamage && State.Players[c.Owner].Slots.Count(a=>a!=null && a!=c && a.CurrentHP>0 && a.Definition.Suit==Suit.Diamond)>=2)n+=2;

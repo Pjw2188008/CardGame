@@ -1,0 +1,728 @@
+fileFormatVersion: 2
+guid: 9ea5ebcb4968c244ea7360fcef8f31ae
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4337090610381508327
+    second: unknown-trio-burst-vfx_0
+  - first:
+      213: 6311397291504507737
+    second: unknown-trio-burst-vfx_1
+  - first:
+      213: 8857492844283761897
+    second: unknown-trio-burst-vfx_2
+  - first:
+      213: 3752202342215575830
+    second: unknown-trio-burst-vfx_3
+  - first:
+      213: 831877227149639114
+    second: unknown-trio-burst-vfx_4
+  - first:
+      213: 8482872915855010310
+    second: unknown-trio-burst-vfx_5
+  - first:
+      213: -4330580506661821922
+    second: unknown-trio-burst-vfx_6
+  - first:
+      213: -2887519010178643269
+    second: unknown-trio-burst-vfx_7
+  - first:
+      213: -4928057423925390080
+    second: unknown-trio-burst-vfx_8
+  - first:
+      213: -2644973018232923946
+    second: unknown-trio-burst-vfx_9
+  - first:
+      213: 2558531188800078045
+    second: unknown-trio-burst-vfx_10
+  - first:
+      213: -822107425252456711
+    second: unknown-trio-burst-vfx_11
+  - first:
+      213: -3884293286729703868
+    second: unknown-trio-burst-vfx_12
+  - first:
+      213: -6066774397268341490
+    second: unknown-trio-burst-vfx_13
+  - first:
+      213: 1874118267074816945
+    second: unknown-trio-burst-vfx_14
+  - first:
+      213: -4278825827020709684
+    second: unknown-trio-burst-vfx_15
+  - first:
+      213: -3386203501808333144
+    second: unknown-trio-burst-vfx_16
+  - first:
+      213: -756347088104226466
+    second: unknown-trio-burst-vfx_17
+  - first:
+      213: 627555281365588758
+    second: unknown-trio-burst-vfx_18
+  - first:
+      213: -1241622639092036509
+    second: unknown-trio-burst-vfx_19
+  - first:
+      213: 2318471771038237687
+    second: unknown-trio-burst-vfx_20
+  - first:
+      213: -3438504542390458459
+    second: unknown-trio-burst-vfx_21
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_0
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 845
+        width: 104
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9113789911f8fc3c0800000000000000
+      internalID: -4337090610381508327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_1
+      rect:
+        serializedVersion: 2
+        x: 582
+        y: 840
+        width: 117
+        height: 116
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95b1d7cb566969750800000000000000
+      internalID: 6311397291504507737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_2
+      rect:
+        serializedVersion: 2
+        x: 833
+        y: 835
+        width: 127
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e4191810d22cea70800000000000000
+      internalID: 8857492844283761897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_3
+      rect:
+        serializedVersion: 2
+        x: 1086
+        y: 832
+        width: 134
+        height: 133
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 619e5257620821430800000000000000
+      internalID: 3752202342215575830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_4
+      rect:
+        serializedVersion: 2
+        x: 1338
+        y: 828
+        width: 141
+        height: 140
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acdbdfc3eeb6b8b00800000000000000
+      internalID: 831877227149639114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_5
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 569
+        width: 148
+        height: 146
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60ae15809f739b570800000000000000
+      internalID: 8482872915855010310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_6
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 568
+        width: 153
+        height: 150
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e12e03d39ffa6e3c0800000000000000
+      internalID: -4330580506661821922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_7
+      rect:
+        serializedVersion: 2
+        x: 563
+        y: 566
+        width: 157
+        height: 155
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bba4d1c42c87de7d0800000000000000
+      internalID: -2887519010178643269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_8
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 564
+        width: 163
+        height: 160
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 005533602e50c9bb0800000000000000
+      internalID: -4928057423925390080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_9
+      rect:
+        serializedVersion: 2
+        x: 1070
+        y: 561
+        width: 168
+        height: 165
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d8dbb7bd0b2b4bd0800000000000000
+      internalID: -2644973018232923946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_10
+      rect:
+        serializedVersion: 2
+        x: 1324
+        y: 559
+        width: 172
+        height: 170
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd0cf2f7f8ab18320800000000000000
+      internalID: 2558531188800078045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_11
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 300
+        width: 178
+        height: 175
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f6cd9607a94794f0800000000000000
+      internalID: -822107425252456711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_12
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 297
+        width: 182
+        height: 180
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44e9a09e5d7381ac0800000000000000
+      internalID: -3884293286729703868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_13
+      rect:
+        serializedVersion: 2
+        x: 549
+        y: 294
+        width: 186
+        height: 186
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0dc26e24dc7ecba0800000000000000
+      internalID: -6066774397268341490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_14
+      rect:
+        serializedVersion: 2
+        x: 802
+        y: 290
+        width: 191
+        height: 192
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bba01862a4320a10800000000000000
+      internalID: 1874118267074816945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_15
+      rect:
+        serializedVersion: 2
+        x: 1055
+        y: 287
+        width: 196
+        height: 197
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc0e9ac949e8e94c0800000000000000
+      internalID: -4278825827020709684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_16
+      rect:
+        serializedVersion: 2
+        x: 1308
+        y: 284
+        width: 201
+        height: 202
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8aec7812bd9c101d0800000000000000
+      internalID: -3386203501808333144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_17
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 25
+        width: 208
+        height: 208
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5185a6a45ae085f0800000000000000
+      internalID: -756347088104226466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_18
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 22
+        width: 212
+        height: 213
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61b57b6143685b800800000000000000
+      internalID: 627555281365588758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_19
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 20
+        width: 216
+        height: 217
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36c06d3c9ced4cee0800000000000000
+      internalID: -1241622639092036509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_20
+      rect:
+        serializedVersion: 2
+        x: 788
+        y: 20
+        width: 216
+        height: 216
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f3418ebacddc2020800000000000000
+      internalID: 2318471771038237687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unknown-trio-burst-vfx_21
+      rect:
+        serializedVersion: 2
+        x: 1045
+        y: 21
+        width: 214
+        height: 214
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a7ef30365af740d0800000000000000
+      internalID: -3438504542390458459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      unknown-trio-burst-vfx_0: -4337090610381508327
+      unknown-trio-burst-vfx_1: 6311397291504507737
+      unknown-trio-burst-vfx_10: 2558531188800078045
+      unknown-trio-burst-vfx_11: -822107425252456711
+      unknown-trio-burst-vfx_12: -3884293286729703868
+      unknown-trio-burst-vfx_13: -6066774397268341490
+      unknown-trio-burst-vfx_14: 1874118267074816945
+      unknown-trio-burst-vfx_15: -4278825827020709684
+      unknown-trio-burst-vfx_16: -3386203501808333144
+      unknown-trio-burst-vfx_17: -756347088104226466
+      unknown-trio-burst-vfx_18: 627555281365588758
+      unknown-trio-burst-vfx_19: -1241622639092036509
+      unknown-trio-burst-vfx_2: 8857492844283761897
+      unknown-trio-burst-vfx_20: 2318471771038237687
+      unknown-trio-burst-vfx_21: -3438504542390458459
+      unknown-trio-burst-vfx_3: 3752202342215575830
+      unknown-trio-burst-vfx_4: 831877227149639114
+      unknown-trio-burst-vfx_5: 8482872915855010310
+      unknown-trio-burst-vfx_6: -4330580506661821922
+      unknown-trio-burst-vfx_7: -2887519010178643269
+      unknown-trio-burst-vfx_8: -4928057423925390080
+      unknown-trio-burst-vfx_9: -2644973018232923946
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -418,7 +418,7 @@ namespace Unknown.Battle
             var player=State.Players[actor];
             if(chargeMana)SpendMana(actor, joker.Definition.ManaCost);
             player.HandCards.Remove(joker); player.DiscardCards.Add(joker); unit.JokerUsed = true;
-            Emit(new BattleEvent(BattleEventKind.JokerTravel, actor, joker.InstanceID, unit.InstanceID,secondary:chargeMana ? 1 : 0));
+            Emit(new BattleEvent(BattleEventKind.JokerTravel, actor, joker.InstanceID, unit.InstanceID,secondary:chargeMana ? 1 : 0,definition:joker.Definition));
             bool success;
 #if UNITY_EDITOR
             if(DebugNextGamble.HasValue) { success=DebugNextGamble.Value; DebugNextGamble=null; }

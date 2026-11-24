@@ -89,12 +89,28 @@ namespace Unknown.Battle
                 path.detour=r.nodes[target].layer-n.layer>1;path.rail=.035f+(n.id%3)*.012f;
             }
             foreach(var path in plot.GetComponentsInChildren<SinglePathLine>().OrderBy(p=>p.width))path.transform.SetAsLastSibling();
+            var nodeMaps=Resources.Load<BattleMapSettings>("BattleMapSettings");
             foreach(var n in r.nodes) {
                 var stage=Campaign.Data.stages.First(s=>s.id==n.stage);var pos=Position(n);int id=n.id;var state=Campaign.NodeState(id);
                 string reward=stage.IsCombat?Campaign.BaseRewardFor(id)+" 토큰":stage.kind==SingleNodeKind.Start?"없음":stage.kind==SingleNodeKind.Shop?"카드 구매":RewardName(stage);
                 var button=Button((stage.kind==SingleNodeKind.Start?"시작":Kind(stage.kind))+"\n진입 토큰: "+Campaign.EntryCostFor(id)+"\n보상: "+reward,pos.x-.035f,pos.y-.105f,.07f,.21f,()=>{selected=id;Map();},true,plot);
                 button.name="Node "+id;button.GetComponent<Image>().color=NodeColor(state);
                 var edge=button.GetComponent<Outline>();edge.effectDistance=Vector2.one*(selected==id?3:1);edge.effectColor=selected==id?new Color(1,.8f,.32f):new Color(.48f,.35f,.2f);
+                // Special nodes use dedicated artwork; other nodes keep their map card back.
+                var back=nodeMaps==null?null:nodeMaps.NodeCardBackFor(stage);
+                if(back!=null) {
+                    button.GetComponentInChildren<Text>().gameObject.SetActive(false);
+                    button.GetComponent<Image>().color=Color.clear;edge.enabled=false;
+                    var iconArea=Rect(button.transform,"Node icon area",0,.18f,1,.82f);
+                    var frame=Rect(iconArea,"Node card frame",0,0,1,1,NodeColor(state));
+                    var frameImage=frame.GetComponent<Image>();frameImage.raycastTarget=false;
+                    var fit=frame.gameObject.AddComponent<AspectRatioFitter>();fit.aspectRatio=(float)back.width/back.height;fit.aspectMode=AspectRatioFitter.AspectMode.FitInParent;
+                    var border=frame.gameObject.AddComponent<Outline>();border.effectDistance=Vector2.one*(selected==id?3:2);
+                    border.effectColor=selected==id?new Color(1,.8f,.32f):NodeColor(state);
+                    Artwork(frame,"Map card back",back,.035f,.025f,.93f,.95f);
+                    button.targetGraphic=frameImage;
+                    Text(Kind(stage.kind),.02f,0,.96f,.15f,18,button.transform);
+                }
             }
             var track=Rect(root,"Route scrollbar",.04f,.145f,.65f,.014f,new Color(.11f,.08f,.09f));
             var handle=Rect(track,"Handle",0,0,.3f,1,new Color(.58f,.4f,.19f));var scrollbar=track.gameObject.AddComponent<Scrollbar>();scrollbar.handleRect=handle;scrollbar.targetGraphic=handle.GetComponent<Image>();scrollbar.direction=Scrollbar.Direction.LeftToRight;mapScroll.horizontalScrollbar=scrollbar;
@@ -161,6 +177,7 @@ namespace Unknown.Battle
                 +"\n진입 토큰: "+Campaign.EntryCostFor(selected)
                 +"\n방해효과: "+Restrictions(stage)
                 +"\n보상: "+RewardForNode(stage,selected);
+            if(stage.kind==SingleNodeKind.Event || stage.kind==SingleNodeKind.Heal || stage.kind==SingleNodeKind.Augment || stage.kind==SingleNodeKind.Shop || stage.kind==SingleNodeKind.Purge)details=RewardName(stage);
             Text(details,.06f,.24f,.88f,stage.IsCombat?.48f:.60f,22,panel);
             string reason=Campaign.EntryError(selected);
             if(reason.Length>0)Text(reason,.06f,.115f,.88f,.065f,18,panel).color=new Color(1,.64f,.57f);

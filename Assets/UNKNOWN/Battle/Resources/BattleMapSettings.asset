@@ -109,3 +109,9 @@ MonoBehaviour:
   spadeCardBack: {fileID: 2800000, guid: 71288c05835c9eb4f84ca48f279c9c46, type: 3}
   heartCardBack: {fileID: 2800000, guid: 7f8f1478a47f98743bdab6b0407b1f12, type: 3}
   clubCardBack: {fileID: 2800000, guid: 924bdea9684f3e041a5c930989dd8a20, type: 3}
+  startNodeBack: {fileID: 2800000, guid: eedc21c1b06f6204b867f4d260085cd8, type: 3}
+  bossNodeBack: {fileID: 2800000, guid: 1dbaa4b64cc944a4a9d12dddd9bd15f4, type: 3}
+  augmentNodeBack: {fileID: 2800000, guid: fbb74b185bff7484c8bd9a9474442b4e, type: 3}
+  healNodeBack: {fileID: 2800000, guid: 6414cc7633e770b4484ba4f8e42dbc32, type: 3}
+  shopNodeBack: {fileID: 2800000, guid: 76d773f3f27aa7e45a600ad5afcdbed5, type: 3}
+  eventNodeBack: {fileID: 2800000, guid: e070105fec7e1984f83dd0b89f25e3ac, type: 3}
