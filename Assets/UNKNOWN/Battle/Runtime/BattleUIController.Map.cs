@@ -85,6 +85,8 @@ namespace Unknown.Battle
                 mapBackground=background.GetComponent<RawImage>();mapBackground.raycastTarget=false;
                 mapBackgroundAspect=background.GetComponent<AspectRatioFitter>();
                 mapBackgroundAspect.aspectMode=AspectRatioFitter.AspectMode.EnvelopeParent;
+                var shade=Box(background.transform,"Background shade",Vector2.zero,Vector2.one,Unknown.Multiplayer.RoomVisualSettings.BattleShade);
+                shade.GetComponent<Image>().raycastTarget=false;
             }
             var texture=mapBackgroundSettings==null ? null : mapBackgroundSettings.BackgroundFor(info.map);
             RefreshDeckArtwork(info.map);

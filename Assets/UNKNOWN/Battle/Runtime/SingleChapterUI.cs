@@ -39,7 +39,7 @@ namespace Unknown.Battle
             tooltip=null;tooltipText=null;foreach(Transform child in root){child.gameObject.SetActive(false);Destroy(child.gameObject);}Rect(root,"Background",0,0,1,1,new Color(.025f,.03f,.05f));
             var visuals=Resources.Load<Unknown.Multiplayer.RoomVisualSettings>("RoomVisualSettings");
             if(visuals!=null && visuals.menuBackground!=null)Artwork(root,"Menu artwork",visuals.menuBackground,0,0,1,1,true);
-            var shade=Rect(root,"Shade",0,0,1,1,new Color(.015f,.008f,.018f,.48f));shade.GetComponent<Image>().raycastTarget=false;
+            var shade=Rect(root,"Shade",0,0,1,1,Unknown.Multiplayer.RoomVisualSettings.MenuShade);shade.GetComponent<Image>().raycastTarget=false;
             Text(title,.08f,.89f,.84f,.07f,34);
             if(Campaign!=null && permanent)Text("◆ 영구 토큰 "+Campaign.Profile.permanentTokens,.78f,.96f,.2f,.03f,18);
             if(error.Length>0){Text(error,.05f,.015f,.9f,.04f,18);error="";}
@@ -52,7 +52,7 @@ namespace Unknown.Battle
             Button b=useArtwork?r.gameObject.AddComponent<SingleButtonSkin>():r.gameObject.AddComponent<Button>();b.targetGraphic=r.GetComponent<Image>();b.interactable=enabled;
             var colors=b.colors;colors.disabledColor=new Color(.32f,.32f,.35f,.55f);b.colors=colors;
             bool themed=b is SingleButtonSkin skin && skin.ApplyArtwork();
-            var caption=Text(title,0,0,1,1,18,r);ButtonTextLayout.Configure(b,caption,48,18,themed);b.onClick.AddListener(()=>{try{action();}catch(Exception ex){error=ex.Message;Debug.LogException(ex);Home();}});return b;
+            var caption=Text(title,0,0,1,1,18,r);ButtonTextLayout.Configure(b,caption,SingleButtonSkin.StandardHeight,18,themed);b.onClick.AddListener(()=>{try{action();}catch(Exception ex){error=ex.Message;Debug.LogException(ex);Home();}});return b;
         }
         public void Home() {
             root.gameObject.SetActive(true);Clear("CHAPTER 1",true);

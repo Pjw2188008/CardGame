@@ -225,7 +225,11 @@ namespace Unknown.Battle
             var rect = Box(parent, text, min, max, new Color(0.16f, 0.23f, 0.29f));
             Button button=rect.gameObject.AddComponent<SingleButtonSkin>();button.targetGraphic=rect.GetComponent<Image>();button.onClick.AddListener(()=>action());
             bool themed=button is SingleButtonSkin skin && skin.ApplyArtwork();
-            var caption=Label(rect,text,Vector2.zero,Vector2.one,16,Color.white);ButtonTextLayout.Configure(button,caption,40,16,themed);return button;
+            var caption=Label(rect,text,Vector2.zero,Vector2.one,18,Color.white);
+            // Compact controls occupy narrow HUD rails; larger actions use the shared menu height.
+            float height=rect.rect.height<48 ? SingleButtonSkin.CompactHeight : SingleButtonSkin.StandardHeight;
+            ButtonTextLayout.Configure(button,caption,height,height==SingleButtonSkin.CompactHeight ? 16 : 18,themed);
+            return button;
         }
         void ClearChildren(Transform parent)
         {

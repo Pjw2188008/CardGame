@@ -60,9 +60,10 @@
 .footer { position: absolute; left: 0; right: 0; bottom: 12px; align-items: center; }
 .key-hints { font-size: 10px; color: rgb(113, 134, 150); -unity-text-align: middle-center; }
 
-.menu-action.image-action, .menu-art .menu-action.image-action, .title-art-home .menu-action.image-action {
-    min-height: 44px; padding: 6px 38px; background-color: rgba(0, 0, 0, 0);
+.menu-action.image-action, .menu-art .menu-action.image-action {
+    padding: 4px 27px; background-color: rgba(0, 0, 0, 0);
     -unity-background-image-tint-color: rgb(255, 255, 255);
 }
-.image-action .action-text { margin: 0; color: rgb(246, 226, 187); }
+.image-action .action-text { margin: 0; font-size: 14px; color: rgb(247, 232, 201); }
+.menu-action.image-action:hover, .menu-action.image-action:focus { -unity-background-image-tint-color: rgb(255, 249, 231); }
 .menu-action.image-action:disabled { opacity: 0.5; }

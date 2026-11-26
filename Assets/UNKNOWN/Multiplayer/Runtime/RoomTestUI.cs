@@ -28,6 +28,7 @@ namespace Unknown.Multiplayer
         VisualElement content, errorBox, menuViewport, menuShell;
         Image titleBackdrop;
         Image menuBackdrop;
+        VisualElement backdropShade;
         readonly Dictionary<Page, VisualElement> pages = new Dictionary<Page, VisualElement>();
         readonly List<Button> actions = new List<Button>();
         Label status, error, code, players, player1, player2, gameCode, waiting, busyMark;
@@ -81,6 +82,8 @@ namespace Unknown.Multiplayer
                 titleBackdrop=new Image {name="title-background",image=visuals.titleBackground,scaleMode=ScaleMode.ScaleAndCrop,pickingMode=PickingMode.Ignore};
                 titleBackdrop.AddToClassList("title-backdrop");root.Add(titleBackdrop);
             }
+            backdropShade=new VisualElement {pickingMode=PickingMode.Ignore};
+            backdropShade.AddToClassList("title-backdrop");root.Add(backdropShade);
             // Menus fit the viewport; only actual content lists (deck/routes) scroll.
             menuViewport = new VisualElement();
             menuViewport.AddToClassList("room-scroll");
@@ -212,7 +215,11 @@ namespace Unknown.Multiplayer
                 foreach(var marker in button.Query<Label>(className:"selection-mark").ToList())marker.style.display=DisplayStyle.None;
                 var normal=buttonVisuals.singleButtonNormal;var pressed=buttonVisuals.singleButtonPressed!=null?buttonVisuals.singleButtonPressed:normal;
                 button.style.backgroundImage=new StyleBackground(normal);button.style.backgroundSize=new BackgroundSize(Length.Percent(100),Length.Percent(100));
-                button.style.unitySliceLeft=80;button.style.unitySliceRight=80;button.style.unitySliceTop=28;button.style.unitySliceBottom=28;button.style.unitySliceScale=.5f;
+                var border=normal.border;
+                button.style.unitySliceLeft=Mathf.RoundToInt(border.x);button.style.unitySliceBottom=Mathf.RoundToInt(border.y);
+                button.style.unitySliceRight=Mathf.RoundToInt(border.z);button.style.unitySliceTop=Mathf.RoundToInt(border.w);
+                button.style.unitySliceScale=Unknown.Battle.SingleButtonSkin.MenuScale/2;
+                button.style.minHeight=Unknown.Battle.SingleButtonSkin.StandardHeight*Unknown.Battle.SingleButtonSkin.MenuScale;
                 button.RegisterCallback<PointerDownEvent>(e=>{if(e.button==0 && button.enabledInHierarchy && !room.Busy)button.style.backgroundImage=new StyleBackground(pressed);},TrickleDown.TrickleDown);
                 button.RegisterCallback<PointerUpEvent>(_=>button.style.backgroundImage=new StyleBackground(normal));
                 button.RegisterCallback<PointerLeaveEvent>(_=>button.style.backgroundImage=new StyleBackground(normal));
@@ -279,6 +286,8 @@ namespace Unknown.Multiplayer
             document.rootVisualElement.EnableInClassList("title-art-home",illustratedHome);
             if(titleBackdrop!=null)titleBackdrop.style.display=illustratedHome ? DisplayStyle.Flex : DisplayStyle.None;
             bool illustratedMenu=page!=Page.Home && menuBackdrop!=null;
+            backdropShade.style.display=illustratedHome || illustratedMenu ? DisplayStyle.Flex : DisplayStyle.None;
+            backdropShade.style.backgroundColor=illustratedHome ? RoomVisualSettings.TitleShade : RoomVisualSettings.MenuShade;
             document.rootVisualElement.EnableInClassList("menu-art",illustratedMenu);
             if(menuBackdrop!=null)menuBackdrop.style.display=illustratedMenu ? DisplayStyle.Flex : DisplayStyle.None;
             foreach (var entry in pages) entry.Value.style.display = entry.Key == page ? DisplayStyle.Flex : DisplayStyle.None;

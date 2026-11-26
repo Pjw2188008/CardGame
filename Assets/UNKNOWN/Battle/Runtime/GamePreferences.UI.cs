@@ -40,7 +40,15 @@ namespace Unknown.Battle
         Text TextAt(Transform parent,string value,float bottom,float top,int size=20)
         {var go=new GameObject(value,typeof(RectTransform),typeof(Text));go.transform.SetParent(parent,false);var r=(RectTransform)go.transform;r.anchorMin=new Vector2(0.12f,bottom);r.anchorMax=new Vector2(0.88f,top);r.offsetMin=r.offsetMax=Vector2.zero;var text=go.GetComponent<Text>();text.text=value;text.font=optionsFont;text.fontSize=size;text.color=new Color(0.91f,0.87f,0.75f);text.alignment=TextAnchor.MiddleCenter;text.raycastTarget=false;return text;}
         void ButtonAt(Transform parent,string label,Vector2 min,Vector2 max,Action action)
-        {var rect=Rect(parent,label,min,max,new Color(0.15f,0.19f,0.24f));var b=rect.gameObject.AddComponent<Button>();b.targetGraphic=rect.GetComponent<Image>();b.onClick.AddListener(()=>action());var caption=TextAt(rect,label,0,1,18);ButtonTextLayout.Configure(b,caption,40,18,false);}
+        {
+            var rect=Rect(parent,label,min,max,new Color(.15f,.19f,.24f));
+            var button=rect.gameObject.AddComponent<SingleButtonSkin>();
+            button.targetGraphic=rect.GetComponent<Image>();button.onClick.AddListener(()=>action());
+            bool compact=max.x-min.x<=.11f;
+            float height=(compact?SingleButtonSkin.CompactHeight:SingleButtonSkin.StandardHeight)*SingleButtonSkin.MenuScale;
+            var caption=TextAt(rect,label,0,1,14);
+            ButtonTextLayout.Configure(button,caption,height,14,button.ApplyArtwork(),SingleButtonSkin.MenuScale);
+        }
         Text CycleRow(Transform parent,float y,Action previous,Action next)
         {var r=Rect(parent,"Screen option",new Vector2(0.08f,y),new Vector2(0.92f,y+0.08f),Color.clear);ButtonAt(r,"◀",Vector2.zero,new Vector2(0.1f,1),previous);ButtonAt(r,"▶",new Vector2(0.9f,0),Vector2.one,next);return TextAt(r,"",0,1);}
         void VolumeRow(Transform parent,string label,float initial,float y,Action<float> change)
