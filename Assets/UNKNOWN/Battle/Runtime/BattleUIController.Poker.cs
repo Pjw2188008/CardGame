@@ -58,6 +58,35 @@ namespace Unknown.Battle
             if(c.CurrentHP<c.MaxHP)text+="\n받은 피해: "+(c.MaxHP-c.CurrentHP);
             return text;
         }
+        void RefreshTimedEffects(RectTransform rect,CardInstance card)
+        {
+            var parent=FeedbackSurface(rect);
+            int row=0;
+            SetBadge("Attack weakness turns","ATK↓",card.CardWeakening>0 ? card.AttackWeakTurns : 0,new Color(1,.76f,.96f));
+            SetBadge("Health weakness turns","HP↓",card.HealthWeakening>0 ? card.HealthWeakTurns : 0,new Color(1,.76f,.96f));
+            // Temporary attack expires at the end of the current turn.
+            SetBadge("Temporary attack turns",card.TemporaryAttack<0 ? "ATK↓" : "ATK↑",card.TemporaryAttack!=0 ? 1 : 0,new Color(.73f,1,.79f));
+
+            void SetBadge(string name,string icon,int turns,Color ink)
+            {
+                var badge=parent.Find(name) as RectTransform;
+                if(turns<=0){
+                    if(badge!=null)badge.gameObject.SetActive(false);
+                    return;
+                }
+                if(badge==null){
+                    badge=Box(parent,name,new Vector2(.5f,1),new Vector2(.96f,1),new Color(.045f,.025f,.07f,.96f));
+                    var text=Label(badge,"",Vector2.zero,Vector2.one,15,ink);
+                    text.resizeTextForBestFit=true;text.resizeTextMinSize=10;text.resizeTextMaxSize=15;
+                    text.raycastTarget=false;badge.GetComponent<Image>().raycastTarget=false;
+                }
+                badge.offsetMin=new Vector2(0,-25-22*row);
+                badge.offsetMax=new Vector2(0,-5-22*row);
+                var label=badge.GetComponentInChildren<Text>(true);
+                label.text=icon+" "+turns+"턴";label.color=ink;
+                badge.gameObject.SetActive(true);row++;
+            }
+        }
         void UpdateCardStats(RectTransform rect,CardInstance card,bool onBoard)
         {
             if(rect==null)return; // Hand views can be removed by a draw before the final board rebuild.
@@ -73,6 +102,7 @@ namespace Unknown.Battle
             var description=rect.Find("Card Description")?.GetComponentInChildren<Text>();
             if(description!=null){description.text=CardDisplayText.For(card);description.GetComponent<CardDescriptionFit>()?.RefitNow();}
             if(!onBoard)return;
+            RefreshTimedEffects(rect,card);
             bool member=engine.State.Players[card.Owner].Poker.members.Contains(card.InstanceID);
             var icon=rect.Find("Poker Icon");
             if(icon==null) { var marker=Label(rect,"✦",new Vector2(0.74f,0.66f),new Vector2(0.96f,0.83f),18,new Color(0.66f,0.4f,0.95f));marker.name="Poker Icon";icon=marker.transform;

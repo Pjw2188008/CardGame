@@ -37,7 +37,7 @@ namespace Unknown.Battle
             heroAttackArea.gameObject.AddComponent<CardDropZone>().Configure(this,CardDropKind.Hero);
             heroAttackArea.gameObject.AddComponent<AttackHeroHint>().Configure(this);
             heroAttackGlow=heroAttackArea.gameObject.AddComponent<Outline>(); heroAttackGlow.effectDistance=new Vector2(3,-3); heroAttackGlow.useGraphicAlpha=false; heroAttackGlow.enabled=false;
-            heroAttackIcon=Label(heroAttackArea,"⚔",new Vector2(0.92f,0),Vector2.one,24,attackRed); heroAttackIcon.gameObject.SetActive(false);
+            heroAttackIcon=Label(heroAttackArea,"⚔ 직접 공격 가능",new Vector2(0.78f,0),new Vector2(.99f,1),17,Color.white); heroAttackIcon.gameObject.SetActive(false);
         }
         void BuildAttackArrow()
         {
@@ -57,7 +57,28 @@ namespace Unknown.Battle
             int actor=ViewPlayer;
             return actor<0 || actor>=engine.State.Players.Count ? null : engine.State.Players[actor].Board.FirstOrDefault(c=>c!=null && c.InstanceID==id);
         }
-        bool ReadyToAttack(CardInstance card) => (tutorial==null || tutorial.Step==3) && !discardMode && card!=null && card.CurrentHP>0 && !Blocked() && !presenting && engine.CanAttack(ViewPlayer,card);
+        bool ReadyToAttack(CardInstance card) => (tutorial==null || tutorial.Step==3) && !discardMode && !combinationMode && dragged==null && card!=null && card.CurrentHP>0 && !Blocked() && !presenting && engine.CanAttack(ViewPlayer,card);
+        bool EnemyFieldEmpty => engine.State.Players[1-ViewPlayer].Board.All(c=>c==null);
+        bool HasAttackTarget(CardInstance card) =>
+            ReadyToAttack(card) && (engine.Single?.AttackError(card,EnemyFieldEmpty ? -1 : 0) ?? "")=="";
+        bool CanDirectAttack(CardInstance card) =>
+            EnemyFieldEmpty && HasAttackTarget(card);
+
+        static Transform FeedbackSurface(RectTransform card) => card.Find("Card Artwork") ?? card;
+        void BuildCombatBorder(RectTransform card)
+        {
+            var parent=FeedbackSurface(card);
+            var go=new GameObject("Attack Ready Glow",typeof(RectTransform),typeof(CanvasRenderer),typeof(AttackGlowGraphic));
+            go.transform.SetParent(parent,false);
+            var rect=(RectTransform)go.transform;
+            rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;
+            rect.offsetMin=rect.offsetMax=Vector2.zero;
+            go.GetComponent<AttackGlowGraphic>().raycastTarget=false;
+            go.SetActive(false);
+        }
+        AttackGlowGraphic CombatBorder(RectTransform card) =>
+            FeedbackSurface(card).Find("Attack Ready Glow")?.GetComponent<AttackGlowGraphic>();
+
         string AttackReason(CardInstance card)
         {
             if(engine.State.IsOver)return "게임이 종료되었습니다.";
@@ -66,13 +87,14 @@ namespace Unknown.Battle
             if(IsPresenting || engine.NeedsTarget || (online!=null && !online.CanAct))return "현재 다른 행동을 처리 중입니다.";
             if(card.HasAttacked)return "이미 공격한 유닛입니다.";
             if(card.SummonedTurn>=engine.State.TurnNumber)return "소환된 턴에는 공격할 수 없습니다. 다음 턴부터 공격 가능";
-            return "드래그하여 공격하세요.";
+            var restriction=engine.Single?.AttackError(card,EnemyFieldEmpty ? -1 : 0);
+            return string.IsNullOrEmpty(restriction) ? "드래그하여 공격하세요." : restriction;
         }
         public bool BeginAttackDrag(int id,PointerEventData data)
         {
             if(data.button!=PointerEventData.InputButton.Left || combinationMode || AttackDragging || dragged!=null)return false;
             var card=BoardCard(id);
-            if(!ReadyToAttack(card)){if(singleCampaign!=null && card!=null)Toast(AttackReason(card));return false;}
+            if(!HasAttackTarget(card)){if(singleCampaign!=null && card!=null)Toast(AttackReason(card));return false;}
             if(!cardViews.TryGetValue(id,out var source))return false;
             HideTooltip(); source.GetComponent<CardHover>()?.ResetHover();
             handID=attackerID=aceID=faceID=-1; RefreshCombinationSlots();
@@ -84,7 +106,7 @@ namespace Unknown.Battle
         public void MoveAttackDrag(PointerEventData data)
         {
             if(!AttackDragging)return;
-            if(!ReadyToAttack(BoardCard(attackDragID)) || attackSource==null) { EndAttackDrag(); return; }
+            if(!HasAttackTarget(BoardCard(attackDragID)) || attackSource==null) { EndAttackDrag(); return; }
             RectTransformUtility.ScreenPointToLocalPointInRectangle(attackVisualLayer,data.position,AttackCamera,out attackPointer);
             HighlightAttack(data.pointerCurrentRaycast.gameObject?.GetComponentInParent<CardDropZone>());
             DrawAttackArrow();
@@ -96,7 +118,7 @@ namespace Unknown.Battle
             if(simulateAttackPointer)return;
 #endif
             if(!AttackDragging)return;
-            if(!ReadyToAttack(BoardCard(attackDragID)) || attackSource==null) { EndAttackDrag(); return; }
+            if(!HasAttackTarget(BoardCard(attackDragID)) || attackSource==null) { EndAttackDrag(); return; }
             if(Mouse.current==null || EventSystem.current==null)return;
             var data=new PointerEventData(EventSystem.current){position=Mouse.current.position.ReadValue()};
             attackHits.Clear(); EventSystem.current.RaycastAll(data,attackHits);
@@ -105,8 +127,8 @@ namespace Unknown.Battle
         }
         bool CanAttackDrop(CardDropZone zone)
         {
-            if(zone==null || !ReadyToAttack(BoardCard(attackDragID)))return false;
-            if(zone.Kind==CardDropKind.Hero)return engine.State.Players[1-ViewPlayer].Board.All(c=>c==null);
+            if(zone==null || !HasAttackTarget(BoardCard(attackDragID)))return false;
+            if(zone.Kind==CardDropKind.Hero)return CanDirectAttack(BoardCard(attackDragID));
             if(zone.Kind!=CardDropKind.Unit || zone.Owner!=1-ViewPlayer || zone.Slot<0 || zone.Slot>=engine.Config.FieldSlots)return false;
             var target=engine.State.Players[zone.Owner].Board[zone.Slot]; return target!=null && target.CurrentHP>0;
         }
@@ -187,26 +209,47 @@ namespace Unknown.Battle
             if(ViewPlayer<0 || ViewPlayer>=engine.State.Players.Count)
             { heroAttackGlow.enabled=false; if(heroAttackIcon!=null)heroAttackIcon.gameObject.SetActive(false); return; }
             bool allowed=!Blocked() && !presenting;
-            bool any=false;
+            var source=BoardCard(AttackDragging ? attackDragID : attackerID);
+            bool choosingAttack=allowed && HasAttackTarget(source);
+            var joker=dragged;
+            bool choosingJoker=allowed && !engine.NeedsTarget && joker?.Definition.CardType==CardType.Joker
+                && engine.State.Players[ViewPlayer].CurrentMana>=joker.Definition.ManaCost
+                && (engine.Single?.Payable(joker.Definition.ManaCost) ?? true);
+            bool direct=false;
             foreach(var pair in cardViews)
             {
                 var view=pair.Value;
-                if(view==null || view.parent!=ownBoard)continue;
-                var card=BoardCard(pair.Key);
-                bool readyNow=allowed && card!=null && card.CurrentHP>0 && engine.CanAttack(ViewPlayer,card); any|=readyNow;
+                if(view==null || (view.parent!=ownBoard && view.parent!=enemyBoard))continue;
+                var zone=view.GetComponent<CardDropZone>();
+                var card=engine.State.Players[zone.Owner].Board[zone.Slot];
+                bool live=card!=null && card.InstanceID==pair.Key && card.CurrentHP>0;
+                bool own=zone.Owner==ViewPlayer;
+                bool readyNow=own && live && allowed && HasAttackTarget(card);
+                if(readyNow && CanDirectAttack(card))direct=true;
+                bool effectTarget=live && allowed && (engine.IsValidEffectTarget(zone.Owner,zone.Slot)
+                    || choosingJoker && own && !card.JokerUsed);
+                bool attackTarget=live && choosingAttack && !own;
+                bool selectedSource=readyNow && pair.Key==source?.InstanceID;
+                var tint=effectTarget ? gold : attackTarget ? attackRed : selectedSource ? attackYellow : ready;
+                var glow=CombatBorder(view);
+                if(glow!=null){
+                    glow.gameObject.SetActive(readyNow || effectTarget || attackTarget);
+                    tint.a=attackTarget && attackZone==zone ? 1f : .9f;
+                    glow.color=tint;
+                }
+                if(!own)continue;
                 var border=view.GetComponent<Outline>();
-                if(hoveredOutline!=border && targetAttackOutline!=border)border.effectColor=attackDragID==pair.Key ? attackYellow : readyNow ? ready : card==null ? attackInvalid : SuitInk(card.Definition.Suit);
+                if(hoveredOutline!=border && targetAttackOutline!=border)
+                    border.effectColor=selectedSource ? attackYellow : readyNow ? ready : live ? SuitInk(card.Definition.Suit) : attackInvalid;
                 var status=view.Find("Attack Status")?.GetComponent<Text>();
-                if(status!=null) { status.text=card==null ? "" : card.HasAttacked ? "공격 완료" : card.SummonedTurn>=engine.State.TurnNumber ? "◷" : readyNow ? "⚔" : ""; status.color=readyNow ? ready : new Color(0.5f,0.55f,0.62f); }
-                var glow=view.Find("Attack Ready Glow"); if(glow!=null) {
-                    glow.gameObject.SetActive(readyNow); var tint=attackDragID==pair.Key ? attackYellow : ready;
-                    glow.GetComponent<AttackGlowGraphic>().color=new Color(tint.r,tint.g,tint.b,attackDragID==pair.Key ? 0.4f : 0.22f);
+                if(status!=null){
+                    status.text=!live ? "" : card.HasAttacked ? "공격 완료" : card.SummonedTurn>=engine.State.TurnNumber ? "◷" : readyNow ? "⚔" : "";
+                    status.color=readyNow ? ready : new Color(.5f,.55f,.62f);
                 }
             }
-            bool direct=allowed && any && engine.State.Players[1-ViewPlayer].Board.All(c=>c==null);
             heroAttackGlow.enabled=direct;
-            heroAttackIcon.gameObject.SetActive(direct && AttackDragging && attackZone?.Kind==CardDropKind.Hero);
-            heroAttackGlow.effectColor=AttackDragging && attackZone?.Kind==CardDropKind.Hero && direct ? attackRed : new Color(1,0.25f,0.2f,0.3f);
+            heroAttackIcon.gameObject.SetActive(direct);
+            heroAttackGlow.effectColor=direct && attackZone?.Kind==CardDropKind.Hero ? attackRed : new Color(1,.38f,.25f,.88f);
         }
         public void ShowHeroAttackHint(PointerEventData data)
         {

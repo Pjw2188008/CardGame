@@ -146,7 +146,7 @@ namespace Unknown.Battle
             var group=dragGhost.GetComponent<CanvasGroup>(); if(group==null) group=dragGhost.gameObject.AddComponent<CanvasGroup>(); group.alpha=0.92f; group.blocksRaycasts=false;
             dragged=card; originalGroup=original.GetComponent<CanvasGroup>(); if(originalGroup==null) originalGroup=original.gameObject.AddComponent<CanvasGroup>(); originalAlpha=originalGroup.alpha; originalGroup.alpha=0.28f;
             var motion=original.GetComponent<HandCardMotion>(); if(motion!=null)motion.Held=true;
-            MoveCardDrag(data); return true;
+            MoveCardDrag(data); RefreshAttackIndicators(); return true;
         }
         public void MoveCardDrag(PointerEventData data)
         {
@@ -207,9 +207,10 @@ namespace Unknown.Battle
                 HandleBattleEscape();
             if(discardMode && (engine.State.TurnNumber!=discardTurn || engine.State.ActivePlayer!=ViewPlayer || engine.State.IsOver || engine.NeedsTarget))CancelInteractionSelection();
             if(dragged!=null && (Blocked() || engine.NeedsTarget)) EndCardDrag();
-            if(AttackDragging && !ReadyToAttack(BoardCard(attackDragID)))EndAttackDrag();
+            if(AttackDragging && !HasAttackTarget(BoardCard(attackDragID)))EndAttackDrag();
             if(combinationMode && (Blocked() || engine.NeedsTarget || combinationTurn!=engine.State.TurnNumber))CancelInteractionSelection();
             UpdateAttackPointer();
+            if(online==null)RefreshAttackIndicators();
             notice.text=NoticeText();
             if(layoutWidth==Screen.width && layoutHeight==Screen.height) return;
             layoutWidth=Screen.width; layoutHeight=Screen.height; Canvas.ForceUpdateCanvases();

@@ -32,7 +32,7 @@ namespace Unknown.Battle
                 verify(!BeginAttackDrag(source.InstanceID,rightClick) && !AttackDragging,"Only the left mouse button can start attacks");
                 AttackBegin(source);
                 verify(AttackState==AttackDragState.Dragging && sourceView.localScale==Vector3.one*1.08f && sourceView.GetComponent<Outline>().effectColor==attackYellow && attackHintText.text=="공격 대상 선택","Begin immediately enlarges source 1.08x with yellow border and cursor hint");
-                verify(sourceView.Find("Attack Ready Glow").GetComponent<AttackGlowGraphic>()!=null,"Source glow uses a hollow perimeter and never covers card content");
+                verify(CombatBorder(sourceView).gameObject.activeSelf && CombatBorder(cardViews[enemy.InstanceID]).gameObject.activeSelf,"Source glow uses a hollow perimeter and never covers card content");
                 verify(AttackDragging && attackArrow.gameObject.activeSelf && !attackArrow.raycastTarget,"Unity BeginDrag shows local non-raycast arrow");
                 verify(sourceView.anchoredPosition==position && !source.HasAttacked && enemy.CurrentHP==12,"Dragging fixes source in slot and does not commit combat");
                 verify(!BeginCardDrag(hand.InstanceID,cardViews[hand.InstanceID],DragData(cardViews[hand.InstanceID])),"Hand drag cannot start during attack drag");
@@ -92,7 +92,7 @@ namespace Unknown.Battle
                 verify(!AttackDragging && dragged==null,"Hand and attack contexts clean up independently");
                 CheckFixture(); source=CheckUnit("Heart_2",0); enemy=CheckUnit("Heart_K",1); Refresh();
                 sourceView=cardViews[source.InstanceID]; AttackBegin(source); DragDrop(UnitDrop(1,0));
-                verify(engine.State.Players[0].Board[0]==null && sourceView.GetComponent<Outline>().effectColor!=ready && !sourceView.Find("Attack Ready Glow").gameObject.activeSelf,"Destroyed attacker loses readiness before death presentation finishes");
+                verify(engine.State.Players[0].Board[0]==null && sourceView.GetComponent<Outline>().effectColor!=ready && !CombatBorder(sourceView).gameObject.activeSelf,"Destroyed attacker loses readiness before death presentation finishes");
                 yield return DragWait();
                 report.completed=true;
             }

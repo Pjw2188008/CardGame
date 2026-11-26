@@ -480,9 +480,10 @@ namespace Unknown.Battle
             {
                 rect.gameObject.AddComponent<UnitAttackDrag>().Configure(this,card.InstanceID);
                 var status=Label(rect,"",new Vector2(0.36f,0.84f),new Vector2(0.70f,0.96f),16,ready); status.name="Attack Status";
-                var glowGO=new GameObject("Attack Ready Glow",typeof(RectTransform),typeof(CanvasRenderer),typeof(AttackGlowGraphic)); glowGO.transform.SetParent(rect,false);
-                var glow=(RectTransform)glowGO.transform; glow.anchorMin=Vector2.zero; glow.anchorMax=Vector2.one; glow.offsetMin=glow.offsetMax=Vector2.zero;
-                glowGO.GetComponent<AttackGlowGraphic>().raycastTarget=false;glowGO.GetComponent<AttackGlowGraphic>().enabled=rect.GetComponent<CardArtLayout>()==null;
+            }
+            if(onBoard){
+                BuildCombatBorder(rect);
+                RefreshTimedEffects(rect,card);
             }
             if (!onBoard) rect.gameObject.AddComponent<CardDrag>().Configure(this, card.InstanceID);
             string state = !onBoard ? "" : card.JokerUsed ? "조커 사용됨" : "";
@@ -494,7 +495,7 @@ namespace Unknown.Battle
             bool allowed = !Blocked();
             endTurn.interactable = allowed && (!engine.NeedsTarget || engine.NeedsExchange);
             RefreshCombinationSlots();
-            directAttack.interactable = allowed && !engine.NeedsTarget && attackerID >= 0 && engine.State.Players[1 - ViewPlayer].Board.All(c => c == null);
+            directAttack.interactable = allowed && CanDirectAttack(BoardCard(attackerID));
             revealButton.interactable = allowed;
             newGameButton.interactable = !actionBusy && !transitioning;
             RefreshAttackIndicators();

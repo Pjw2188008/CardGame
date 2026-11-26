@@ -155,6 +155,27 @@ namespace Unknown.Battle
                     ScreenCapture.CaptureScreenshot(System.IO.Path.GetFullPath(folder+"/map-text-"+map+".png"));yield return new WaitForEndOfFrame();yield return null;
                 }
             }
+            checkRecipient=0;CheckFixture();
+            engine=new BattleEngine(17,new BattleConfig{StartingHand=0,StartingMana=10,CardVersion=CardDatabase.DefaultVersion});
+            engine.State.ActivePlayer=0;
+            var attacker=CheckUnit("Heart_K",0);
+            Refresh();
+            verify(CombatBorder(cardViews[attacker.InstanceID]).isActiveAndEnabled && heroAttackIcon.gameObject.activeSelf,"Art border and direct-attack badge appear before choosing an attacker");
+            var enemy=CheckUnit("Heart_K",1);
+            var otherEnemy=CheckUnit("Heart_2",1,1);
+            enemy.CardWeakening=1;enemy.AttackWeakTurns=2;enemy.HealthWeakening=1;enemy.HealthWeakTurns=3;
+            Refresh();attackerID=attacker.InstanceID;RefreshAttackIndicators();
+            verify(!heroAttackIcon.gameObject.activeSelf && CombatBorder(cardViews[enemy.InstanceID]).isActiveAndEnabled && CombatBorder(cardViews[otherEnemy.InstanceID]).isActiveAndEnabled,"All attackable enemy units glow and block direct attack");
+            var surface=FeedbackSurface(cardViews[enemy.InstanceID]);
+            verify(surface.Find("Attack weakness turns").GetComponentInChildren<Text>().text=="ATK↓ 2턴"
+                && surface.Find("Health weakness turns").GetComponentInChildren<Text>().text=="HP↓ 3턴","Independent weakness durations displayed");
+            enemy.CardWeakening=0;enemy.AttackWeakTurns=0;UpdateCardStats(cardViews[enemy.InstanceID],enemy,true);
+            verify(!surface.Find("Attack weakness turns").gameObject.activeSelf && surface.Find("Health weakness turns").gameObject.activeSelf,"Only the expired status badge disappears");
+            var spell=CheckHand("Diamond_2");
+            verify(engine.Summon(0,spell.InstanceID,1) && engine.NeedsTarget,"Targeting fixture opens a real effect selection");
+            Refresh();
+            verify(CombatBorder(cardViews[enemy.InstanceID]).color.r==gold.r && CombatBorder(cardViews[enemy.InstanceID]).color.g==gold.g
+                && !CombatBorder(cardViews[attacker.InstanceID]).gameObject.activeSelf,"Effect targets use gold while attack readiness is suppressed");
             // Enter single combat through its real lifecycle rather than repurposing the multiplayer HUD.
             gameObject.SetActive(false);var soloObject=new GameObject("Existing single battle info checks");
             var solo=soloObject.AddComponent<BattleUIController>();solo.ConfigureSingle(campaign,()=>{});
